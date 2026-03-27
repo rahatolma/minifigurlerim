@@ -15,8 +15,8 @@ interface FigureCardProps {
 export default function FigureCard({ id, name, seriesName, imageUrl, views, dailyViews, minRead, comments }: FigureCardProps) {
   return (
     <Link href={`/figurler/${id}`} className="block bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all hover:-translate-y-2 duration-300">
-      <div className="relative w-full aspect-[4/5] bg-[#fafafa] flex items-center justify-center p-4">
-        <Image src={imageUrl} alt={name} fill className="object-contain p-4 mix-blend-multiply hover:scale-110 transition-transform duration-500" />
+      <div className="relative w-full aspect-square bg-[#fafafa] flex items-center justify-center p-6 border-b border-gray-50">
+        <Image src={imageUrl} alt={name} fill className="object-contain p-8 mix-blend-multiply hover:scale-110 transition-transform duration-500" />
       </div>
       
       <div className="px-6 py-6 text-center border-t border-gray-100 bg-white">

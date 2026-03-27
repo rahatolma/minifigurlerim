@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { ChevronRight, ImagePlus, Wand2, Loader2, Save } from 'lucide-react';
 import { supabase } from '@/utils/supabase/client';
 import toast from 'react-hot-toast';
 
-export default function NewFigurePage() {
+export default function EditFigurePage() {
   const router = useRouter();
+  const params = useParams();
+  const figureId = params.id as string;
   const [magicEraser, setMagicEraser] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -38,16 +40,50 @@ export default function NewFigurePage() {
 
   useEffect(() => {
     async function loadData() {
+      if (!figureId) return;
       // Paralel DB çekimi
-      const [sRes, gRes, cRes] = await Promise.all([
+      const [sRes, gRes, cRes, fRes] = await Promise.all([
         supabase.from('series').select('id, title, category, series_no').order('created_at', { ascending: false }),
         supabase.from('definition_groups').select('*').neq('slug', 'seri_kategori').order('created_at', { ascending: true }),
-        supabase.from('categories').select('*').order('name', { ascending: true })
+        supabase.from('categories').select('*').order('name', { ascending: true }),
+        supabase.from('minifigures').select('*').eq('id', figureId).single()
       ]);
 
       if (sRes.data) setSeriesList(sRes.data);
       if (gRes.data) setDefGroups(gRes.data);
       if (cRes.data) setCategories(cRes.data);
+      
+      if (fRes.data) {
+        const fig = fRes.data;
+        setFormData({
+            series_id: fig.series_id || '',
+            brand: fig.brand || 'LEGO®',
+            name: fig.name || '',
+            description: fig.description || '',
+            figure_no: fig.figure_no || '',
+            code: fig.code || '',
+            piece_count: fig.piece_count ? fig.piece_count.toString() : '',
+            body_material: fig.body_material || 'Abs Plastik',
+            value_usd: fig.value_usd ? fig.value_usd.toString() : '',
+            release_month: fig.release_month || '',
+            release_year: fig.release_year || ''
+        });
+
+        const attrs = fig.custom_attributes || {};
+        if (fig.role) attrs['figur-rolu'] = fig.role;
+        if (fig.type) attrs['figur-tipi'] = fig.type;
+        if (fig.rarity) attrs['nadirlik-derecesi'] = fig.rarity;
+        
+        setCustomAttributes(attrs);
+        
+        if (fig.images && Array.isArray(fig.images)) {
+            const arr = ['', '', '', ''];
+            for(let i=0; i < fig.images.length; i++){
+                if(i < 4) arr[i] = fig.images[i];
+            }
+            setUploadedImages(arr);
+        }
+      }
     }
     loadData();
   }, []);
@@ -111,8 +147,7 @@ export default function NewFigurePage() {
     try {
       const { error } = await supabase
         .from('minifigures')
-        .insert([
-          {
+        .update({
             series_id: formData.series_id,
             name: formData.name,
             description: formData.description,
@@ -131,12 +166,12 @@ export default function NewFigurePage() {
             release_month: formData.release_month,
             release_year: formData.release_year,
             images: uploadedImages.filter(Boolean),
-            custom_attributes: finalCustomAttr // Yeni JSONB kolonu
-          }
-        ]);
+            custom_attributes: finalCustomAttr
+        })
+        .eq('id', figureId);
 
       if (error) throw error;
-      toast.success('Figür sisteme başarıyla kaydedildi.');
+      toast.success('Figür başarıyla güncellendi.');
       router.push('/admin/figurler');
     } catch (err: any) {
       console.error(err);
@@ -156,7 +191,7 @@ export default function NewFigurePage() {
           <div className="flex items-center gap-3 text-[11px] font-black tracking-widest uppercase text-gray-500">
             <Link href="/admin/figurler" className="hover:text-black transition-colors">FİGÜRLER</Link>
             <ChevronRight size={14} />
-            <span className="text-black">YENİ TANIMLAMA</span>
+            <span className="text-black">FİGÜRÜ DÜZENLE</span>
           </div>
         </div>
       </div>
@@ -395,9 +430,9 @@ export default function NewFigurePage() {
                 className="bg-black text-white hover:bg-[#D22B2B] disabled:bg-gray-400 transition-colors px-16 py-5 text-[11px] font-black tracking-widest uppercase rounded-sm flex items-center gap-3 w-full md:w-auto justify-center shadow-lg"
               >
                 {isSubmitting ? (
-                  <><Loader2 size={16} className="animate-spin" /> KAYDEDİLİYOR...</>
+                  <><Loader2 size={16} className="animate-spin" /> GÜNCELLENİYOR...</>
                 ) : (
-                  <><Save size={16} /> FİGÜRÜ KAYDET</>
+                  <><Save size={16} /> DEĞİŞİKLİKLERİ KAYDET</>
                 )}
               </button>
             </div>

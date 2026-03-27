@@ -1,6 +1,6 @@
 export default function AdminDashboard() {
   return (
-    <div className="p-12">
+    <div className="w-full max-w-[1600px] mx-auto p-12 pb-24">
       <h1 className="text-3xl font-black text-gray-900 mb-2">Dashboard</h1>
       <p className="text-sm font-semibold text-gray-500 uppercase tracking-widest">MINIFIG OS. ENTERPRISE SYSTEM</p>
       

@@ -33,13 +33,14 @@ export default async function SeriesDetail({
     <div className="bg-white min-h-screen pb-20 w-full">
       
       {/* Devasa Kapak Görseli ve Başlık */}
-      <section className="relative w-full h-[60px] md:h-[600px] flex items-end justify-center pb-12 overflow-hidden bg-[#0A0A0A]">
+      <section className="relative w-full h-[60px] md:h-[600px] flex items-end justify-center pb-12 overflow-hidden bg-black">
          {/* Arkaplan Hero Image */}
         <div 
-          className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-50" 
+          className="absolute inset-0 bg-cover bg-center" 
           style={{ backgroundImage: `url(${series.hero_image_url || 'https://via.placeholder.com/1920x600.png?text=Hero+Görseli+Yok'})` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+        {/* Sadece yazının okunabilmesi için alt kısma hafif gradient */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
         
         <h1 className="relative z-10 text-3xl md:text-[50px] text-white font-black pb-4 text-center max-w-6xl px-4 drop-shadow-xl leading-tight">
           {series.title}
@@ -153,7 +154,7 @@ export default async function SeriesDetail({
                         id={fig.id}
                         name={fig.name}
                         seriesName={series.title}
-                        imageUrl={fig.image_url_1 || 'https://via.placeholder.com/300x400.png?text=Görsel+Yok'}
+                        imageUrl={(fig.images && fig.images.length > 0) ? fig.images[0] : 'https://via.placeholder.com/300x400.png?text=Görsel+Yok'}
                         views={0}
                         dailyViews={0}
                         minRead={0}

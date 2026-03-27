@@ -160,15 +160,17 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] text-black pb-24">
-      <div className="w-full bg-white border-b border-gray-200 px-12 py-6 flex items-center justify-between sticky top-0 z-10">
-        <div className="flex items-center gap-3 text-[11px] font-black tracking-widest uppercase text-gray-500">
-          <Link href="/admin/seriler" className="hover:text-black transition-colors">SERİLER</Link>
-          <ChevronRight size={14} />
-          <span className="text-black">DÜZENLE: {formData.title}</span>
+      <div className="w-full bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="w-full max-w-[1600px] mx-auto px-12 py-6 flex items-center justify-between">
+          <div className="flex items-center gap-3 text-[11px] font-black tracking-widest uppercase text-gray-500">
+            <Link href="/admin/seriler" className="hover:text-black transition-colors">SERİLER</Link>
+            <ChevronRight size={14} />
+            <span className="text-black">DÜZENLE: {formData.title}</span>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-12 mt-12 grid grid-cols-1 lg:grid-cols-12 gap-16">
+      <div className="w-full max-w-[1600px] mx-auto px-12 mt-12 grid grid-cols-1 lg:grid-cols-12 gap-16">
         
         {/* Sol Kolon: Çoklu Görsel Yükleme */}
         <div className="lg:col-span-4 space-y-6">

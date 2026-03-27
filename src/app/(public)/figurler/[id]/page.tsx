@@ -1,5 +1,20 @@
+import { supabase } from '@/utils/supabase/client';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import FigureCard from '@/components/ui/FigureCard';
+import FigureGallery from '@/components/ui/FigureGallery';
+
+export const revalidate = 0; // Her zaman canlı data
+
+// Satır Bileşeni (Görsel 2 dikey liste tasarımı)
+const TableRow = ({ label, value }: { label: string, value: any }) => {
+    if (!value || value === '') return null;
+    return (
+        <div className="flex border-b border-gray-100 py-3 text-[14px]">
+            <div className="w-1/3 font-black text-black">{label}</div>
+            <div className="w-2/3 text-[#D22B2B] font-medium">{value}</div>
+        </div>
+    );
+}
 
 export default async function FigureDetail({
   params,
@@ -9,119 +24,85 @@ export default async function FigureDetail({
   const resolvedParams = await params;
   const { id } = resolvedParams;
 
-  const detail = {
-    name: 'Deep Sea Diver',
-    seriesName: 'LEGO® Minifigürler Serisi 1',
-    imageUrl: 'https://via.placeholder.com/500x700.png?text=Deep+Sea+Diver',
-    totalViews: 19,
-    dailyViews: 1,
-    description: 'Deep Sea Diver, okyanusun derinliklerine dalan cesur bir kaşiftir. Sualtının gizemli yaratıklarını inceler, kayıp hazinelerin peşine düşer. Karanlık sularda bile merakıyla yolunu bulur.',
-    properties: [
-      { label: 'Marka', value: 'LEGO®' },
-      { label: 'Seri Adı', value: 'LEGO® Minifigürler Serisi 16' },
-      { label: 'Seri No', value: '8683' },
-      { label: 'Seri Kategori', value: 'Klasik' },
-      { label: 'Figür Adı', value: 'Deep Sea Diver' },
-      { label: 'Figür Sıra No', value: '16' },
-      { label: 'Figür Rolü', value: 'Kaşif' },
-      { label: 'Figür Tipi', value: 'Cesur / Meraklı' },
-      { label: 'Figür Kodu', value: 'col01-16' },
-      { label: 'Parça Sayısı', value: '6' },
-      { label: 'Değer', value: '25 Usd' },
-      { label: 'Nadirlik Derecesi', value: 'Yaygın' },
-      { label: 'Çıkış Tarihi Ay', value: 'Aralık' },
-      { label: 'Çıkış Tarihi Yıl', value: '2010' },
-    ]
-  };
+  // Figür verisini çek
+  const { data: figure, error } = await supabase.from('minifigures').select('*').eq('id', id).single();
+  if (error || !figure) return notFound();
+
+  // Sistem tanım gruplarını çek (Custom attribute'ların labellarını eşleştirmek için)
+  const { data: defGroups } = await supabase.from('definition_groups').select('*');
+
+  // Ana Görseller (JSON array)
+  const images = (figure.images && Array.isArray(figure.images) && figure.images.length > 0) ? figure.images : [];
+  const primaryImage = images.length > 0 ? images[0] : 'https://via.placeholder.com/600x800.png?text=Görsel+Yok';
 
   return (
-    <div className="bg-white min-h-screen pb-20 w-full">
-      {/* Breadcrumb Alanı */}
-      <div className="w-full border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-8 py-4 text-[13px] font-bold flex flex-wrap gap-2 text-gray-800">
-          <Link href="/" className="hover:text-red-600">Home</Link>
-          <span className="text-gray-400 font-normal">|</span>
-          <Link href="/figurler" className="hover:text-red-600">LEGO® Minifigürleri</Link>
-          <span className="text-gray-400 font-normal">|</span>
-          <Link href="/seriler/1" className="hover:text-red-600">{detail.seriesName}</Link>
-          <span className="text-gray-400 font-normal">|</span>
-          <span className="text-[#D22B2B]">{detail.name}</span>
+    <div className="bg-white min-h-screen w-full pb-32">
+      
+      {/* Üst Navigasyon Bar (Breadcrumb - Görsel 2) */}
+      <div className="border-b border-gray-100 bg-white">
+        <div className="max-w-7xl mx-auto px-8 py-5 flex items-center text-[13px] font-medium text-black tracking-wide">
+             <Link href="/" className="hover:underline">Home</Link> <span className="mx-2">|</span> <Link href="/figurler" className="hover:underline">LEGO® Minifigürleri</Link> <span className="mx-2">|</span> {figure.series_id ? <Link href={`/seriler/${figure.series_id}`} className="hover:underline hover:text-[#002f6c]">{figure.series_name}</Link> : figure.series_name} <span className="mx-2">|</span> <span className="text-gray-500">{figure.name}</span>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-8 mt-12 mb-20 flex flex-col md:flex-row gap-16 items-start">
+      <div className="max-w-7xl mx-auto px-8 mt-6 grid grid-cols-1 lg:grid-cols-12 gap-12">
         
-        {/* Sol Kolon: Detaylar */}
-        <div className="flex-1 w-full flex flex-col">
-          <h1 className="text-[36px] font-black text-black leading-tight mb-4">{detail.name}</h1>
-          <div className="text-[14px] font-bold text-green-700 flex flex-col gap-1 mb-4">
-            <span>Total Views: {detail.totalViews}</span>
-            <span>Daily Views: {detail.dailyViews}</span>
-          </div>
-          <p className="text-[#d8b52f] font-bold text-[14px] mb-8">Be the first to leave a review.</p>
-          <div className="w-full h-px bg-gray-200 mb-8" />
-          
-          <p className="text-[15px] font-semibold text-gray-800 leading-relaxed mb-8">
-            {detail.description}
-          </p>
+        {/* SOL: Yazı Bloğu ve Veri Formu (Yüzde 50) */}
+        <div className="lg:col-span-6 flex flex-col items-start pt-2">
+            
+            <h1 className="text-4xl md:text-[42px] font-black text-black leading-none tracking-tight mb-6">
+                {figure.name}
+            </h1>
+            
+            <div className="flex flex-col gap-1 mb-6">
+                <p className="font-bold text-[#20803c] text-[14px]">Total Views: {figure.total_views}</p>
+                <p className="font-bold text-[#20803c] text-[14px]">Daily Views: {figure.daily_views}</p>
+            </div>
+            
+            <p className="text-[#e2b512] font-semibold text-[14px] mb-8">Be the first to leave a review.</p>
 
-          {/* Özellikler Tablosu */}
-          <div className="w-full max-w-lg mb-10">
-            {detail.properties.map((prop, i) => (
-              <div key={i} className="flex border-b border-gray-100 py-3 text-[14px]">
-                <div className="w-1/2 font-bold text-gray-900">{prop.label}</div>
-                <div className="w-1/2 font-bold text-[#D22B2B]">{prop.value}</div>
-              </div>
-            ))}
-          </div>
+            {/* Açıklama Alanı */}
+            {figure.description && (
+                <div className="text-black text-[15px] font-medium leading-relaxed mb-8 pb-4 w-full">
+                    {figure.description}
+                </div>
+            )}
 
-          {/* Dinamik Renklere Sahip Sosyal Paylaşım Butonları */}
-          <div className="flex gap-2">
-            {[
-              { id: 'fb', icon: 'f', bg: 'bg-[#3b5998]' },
-              { id: 'tw', icon: '𝕏', bg: 'bg-black' },
-              { id: 'in', icon: 'in', bg: 'bg-[#0077b5]' },
-              { id: 'wa', icon: 'W', bg: 'bg-[#25D366]' },
-              { id: 'pt', icon: 'P', bg: 'bg-[#bd081c]' },
-              { id: 'em', icon: '✉', bg: 'bg-gray-800' },
-              { id: 'sh', icon: '↑', bg: 'bg-gray-700' }
-            ].map(btn => (
-               <button key={btn.id} className={`w-9 h-9 rounded-sm ${btn.bg} text-white font-bold flex items-center justify-center text-[15px] shadow-sm hover:opacity-80 transition-opacity`}>
-                 {btn.icon}
-               </button>
-            ))}
-          </div>
+            {/* DİKEY ÖZELLİK LİSTESİ */}
+            <div className="flex flex-col border-t border-gray-100 w-full mt-2">
+                <TableRow label="Marka" value={figure.brand} />
+                <TableRow label="Seri Adı" value={figure.series_name} />
+                <TableRow label="Seri No" value={figure.series_no} />
+                <TableRow label="Seri Kategori" value={figure.category} />
+                <TableRow label="Figür Adı" value={figure.name} />
+                <TableRow label="Figür Sıra No" value={figure.figure_no} />
+                <TableRow label="Figür Rolü" value={figure.role} />
+                <TableRow label="Figür Tipi" value={figure.type} />
+                <TableRow label="Figür Kodu" value={figure.code} />
+                <TableRow label="Parça Sayısı" value={figure.piece_count} />
+                <TableRow label="Değer" value={figure.value_usd ? `${figure.value_usd} Usd` : null} />
+                <TableRow label="Nadirlik Derecesi" value={figure.rarity} />
+                <TableRow label="Çıkış Tarihi Ay" value={figure.release_month} />
+                <TableRow label="Çıkış Tarihi Yıl" value={figure.release_year} />
+                
+                {/* DİNAMİK JSON Özel Detaylar */}
+                {figure.custom_attributes && Object.keys(figure.custom_attributes).length > 0 && (
+                     Object.entries(figure.custom_attributes).map(([key, val]) => {
+                         const groupDef = defGroups?.find(g => g.slug === key);
+                         const label = groupDef ? groupDef.name : key;
+                         return (
+                             <TableRow key={key} label={label} value={val} />
+                         )
+                     })
+                )}
+            </div>
+
         </div>
 
-        {/* Sağ Kolon: Görsel */}
-        <div className="flex-1 w-full max-w-lg mx-auto sticky top-8">
-          <div className="w-full flex items-center justify-center p-8 bg-white border border-gray-50 rounded-2xl shadow-xl">
-            <img src={detail.imageUrl} alt={detail.name} className="w-full h-auto object-contain mix-blend-multiply hover:scale-110 transition-transform duration-700 ease-in-out cursor-zoom-in" />
-          </div>
-        </div>
+        {/* SAĞ: Görsel (Yüzde 50) */}
+        <FigureGallery images={images} name={figure.name} />
+
       </div>
-
-      {/* Yorumlar Alanı Mavi Şerit */}
-      <div className="w-full bg-[#1C57A5] text-white py-24 mt-20">
-        <div className="max-w-7xl mx-auto px-8">
-           <h2 className="text-[36px] font-black mb-8">Minifigür Yorumları</h2>
-           <p className="font-semibold text-sm mb-4">There are no reviews yet.</p>
-           <p className="font-semibold text-sm">Only logged in customers who have purchased this product may leave a review.</p>
-        </div>
-      </div>
-
-      {/* İlgili Figürler */}
-      <div className="max-w-7xl mx-auto px-8 py-24">
-        <h2 className="text-3xl font-black text-center mb-16">İlgili Figürler</h2>
-        
-        {/* FigureCard ile Render Edilmiş Mock Bağlantılar */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-           <FigureCard id="2" name="Forestman" seriesName="LEGO® Minifigürler Serisi 1" imageUrl="https://via.placeholder.com/300x400.png?text=Forest+Man" views={12} dailyViews={1} minRead={0} comments={0} />
-           <FigureCard id="3" name="Spaceman" seriesName="LEGO® Minifigürler Serisi 1" imageUrl="https://via.placeholder.com/300x400.png?text=Spaceman" views={5} dailyViews={0} minRead={0} comments={0} />
-           <FigureCard id="4" name="Super Wrestler" seriesName="LEGO® Minifigürler Serisi 1" imageUrl="https://via.placeholder.com/300x400.png?text=Wrestler" views={43} dailyViews={2} minRead={0} comments={0} />
-        </div>
-      </div>
-
     </div>
   );
 }

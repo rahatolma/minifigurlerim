@@ -15,7 +15,7 @@ export default function DefinitionsPage() {
   const [newGroupName, setNewGroupName] = useState('');
   const [isAddingGroup, setIsAddingGroup] = useState(false);
   
-  const [openGroup, setOpenGroup] = useState<string>('seri_kategori');
+  const [openGroup, setOpenGroup] = useState<string>('');
 
   useEffect(() => {
     fetchData();
@@ -35,10 +35,7 @@ export default function DefinitionsPage() {
       setDefinitionGroups(groupsRes.data || []);
       setCategories(catsRes.data || []);
       
-      // Eğer seçili grup yoksa ilkini aç
-      if (groupsRes.data && groupsRes.data.length > 0 && !openGroup) {
-          setOpenGroup(groupsRes.data[0].slug);
-      }
+      // Herhangi bir grubu otomatik açmayı iptal ettik (Kullanıcı talebi: Kapalı gelsin)
     } catch (err: any) {
       console.error(err);
       toast.error('Veriler yüklenirken bir hata oluştu.');

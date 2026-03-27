@@ -13,12 +13,12 @@ export default async function Home() {
     .order('created_at', { ascending: false })
     .limit(3);
 
-  // En son eklenen 4 Figür
+  // En son eklenen 3 Figür (3'lü yapıya uygun olması için)
   const { data: latestFiguresData } = await supabase
     .from('minifigures')
     .select('*, series(title)')
     .order('created_at', { ascending: false })
-    .limit(4);
+    .limit(3);
 
   const latestSeries = latestSeriesData || [];
   const latestFigures = latestFiguresData || [];
@@ -76,13 +76,13 @@ export default async function Home() {
           <p className="text-gray-800 font-semibold leading-relaxed text-[15px]">Minifigürlerim, sadece benim koleksiyonumun sergilendiği bir alan değil; aynı zamanda bu hobiye gönül verenlerin buluşma noktası. <strong className="text-black font-black">Koleksiyonerler, meraklılar ve yeni başlayanlar</strong> için keyifle vakit geçirilecek, bilgi alınacak ve paylaşım yapılacak bir merkez olmasını hedefliyorum.</p>
           <p className="text-gray-800 font-semibold leading-relaxed text-[15px]">Burada minifigür sevgisini paylaşacak, yepyeni hikâyeler keşfedecek ve bu hobiye dair ilham alacaksınız.</p>
           <div className="pt-8">
-            <span className="font-serif text-4xl italic font-light tracking-widest opacity-80" style={{ fontFamily: 'Georgia, serif' }}>Minifigür Hastası</span>
+            <img src="/uploads/media__1774632782593.png" alt="Minifigür Hastası İmza" className="h-14 md:h-16 w-auto mix-blend-multiply opacity-90 -ml-2" />
           </div>
         </div>
         <div className="flex-1 w-full">
-          {/* Mozaik Görseli için Placeholder */}
-          <div className="w-full aspect-square bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center border border-gray-200">
-             <img src="https://via.placeholder.com/600x600.png?text=Lego+Mozaik+Gorseli" alt="Lego Mosaic" className="w-full h-full object-cover" />
+          {/* Mozaik Görseli */}
+          <div className="w-full bg-white rounded-lg flex items-center justify-center">
+             <img src="/uploads/media__1774631624379.png" alt="Lego Mosaic" className="w-full h-auto object-contain rounded-lg drop-shadow-sm" />
           </div>
         </div>
       </section>
@@ -130,14 +130,14 @@ export default async function Home() {
             <button className="bg-[#D22B2B] text-white font-bold py-3 px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-sm">Tüm Figürler</button>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {latestFigures.map(fig => (
               <FigureCard 
                 key={fig.id} 
                 id={fig.id}
                 name={fig.name}
                 seriesName={(fig as any).series?.title || 'Bilinmeyen Seri'}
-                imageUrl={fig.image_url_1 || 'https://via.placeholder.com/300x400.png?text=Görsel+Yok'}
+                imageUrl={(fig.images && fig.images.length > 0) ? fig.images[0] : 'https://via.placeholder.com/300x400.png?text=Görsel+Yok'}
                 views={0}
                 dailyViews={0}
                 minRead={0}
