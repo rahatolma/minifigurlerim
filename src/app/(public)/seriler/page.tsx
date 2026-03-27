@@ -1,25 +1,8 @@
 import SeriesCard from '@/components/ui/SeriesCard';
 import FilterTabs from '@/components/ui/FilterTabs';
+import { supabase } from '@/utils/supabase/client';
 
-// Mock Series Verileri (Firestore/Supabase bağlandığında veritabanından gelecek)
-const mockSeriesData = [
-  { id: '1', title: 'LEGO® Minifigürler Serisi Spider Man Across The Spider Verse', imageUrl: 'https://via.placeholder.com/400x300.png?text=Spider+Man', views: 130, dailyViews: 0, minRead: 1.8, comments: 0, category: 'ozel-tematik' },
-  { id: '2', title: 'LEGO® Minifigürler Serisi F1 Race Cars', imageUrl: 'https://via.placeholder.com/400x300.png?text=F1+Cars', views: 10, dailyViews: 0, minRead: 0, comments: 0, category: 'ozel-tematik' },
-  { id: '3', title: 'LEGO® Minifigürler Serisi 27', imageUrl: 'https://via.placeholder.com/400x300.png?text=Series+27', views: 42, dailyViews: 0, minRead: 2.4, comments: 0, category: 'koleksiyon' },
-  { id: '4', title: 'LEGO® Minifigürler Serisi Dungeons And Dragons', imageUrl: 'https://via.placeholder.com/400x300.png?text=DnD', views: 16, dailyViews: 0, minRead: 2.5, comments: 0, category: 'ozel-tematik' },
-  { id: '5', title: 'LEGO® Minifigürler Serisi 26', imageUrl: 'https://via.placeholder.com/400x300.png?text=Series+26', views: 19, dailyViews: 0, minRead: 2.3, comments: 0, category: 'koleksiyon' },
-  { id: '6', title: 'LEGO® Minifigürler Serisi 25', imageUrl: 'https://via.placeholder.com/400x300.png?text=Series+25', views: 5, dailyViews: 0, minRead: 2.2, comments: 0, category: 'koleksiyon' },
-  { id: '7', title: 'LEGO® Minifigürler Serisi Marvel Studios 2', imageUrl: 'https://via.placeholder.com/400x300.png?text=Marvel', views: 5, dailyViews: 0, minRead: 2.3, comments: 0, category: 'karakter-paketleri' },
-  { id: '8', title: 'LEGO® Minifigürler Serisi Disney 100', imageUrl: 'https://via.placeholder.com/400x300.png?text=Disney', views: 4, dailyViews: 0, minRead: 2.2, comments: 0, category: 'karakter-paketleri' },
-  { id: '9', title: 'LEGO® Minifigürler Serisi 24', imageUrl: 'https://via.placeholder.com/400x300.png?text=Series+24', views: 4, dailyViews: 0, minRead: 2.2, comments: 0, category: 'koleksiyon' },
-];
-
-const seriesTabs = [
-  { id: 'all', label: 'All' },
-  { id: 'karakter-paketleri', label: 'Karakter Paketleri' },
-  { id: 'koleksiyon', label: 'Koleksiyon Serileri' },
-  { id: 'ozel-tematik', label: 'Özel Tematik Seriler' },
-];
+export const revalidate = 0; // Her zaman canlı veriyi çek (SSR)
 
 export default async function SeriesPage({
   searchParams,
@@ -27,29 +10,56 @@ export default async function SeriesPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const resolvedParams = await searchParams;
-  const category = (resolvedParams?.cat as string) || 'all';
+  const categorySlug = (resolvedParams?.cat as string) || 'all';
   
-  const filteredSeries = category === 'all' 
-    ? mockSeriesData 
-    : mockSeriesData.filter(s => s.category === category);
+  // 1. Kategorileri Supabase'den Çek
+  const { data: catData, error: catError } = await supabase.from('categories').select('*').order('created_at', { ascending: true });
+  
+  // 2. Dinamik Tab'ları oluştur
+  const seriesTabs = [
+    { id: 'all', label: 'Tüm Seriler' },
+    ...(catData || []).map(c => ({ id: c.slug, label: c.name }))
+  ];
+
+  // 3. Kategoriye göre Serileri Çek
+  let query = supabase.from('series').select('*').order('created_at', { ascending: false });
+  
+  if (categorySlug !== 'all') {
+    const selectedCat = catData?.find(c => c.slug === categorySlug);
+    if (selectedCat) {
+      query = query.eq('category', selectedCat.name);
+    }
+  }
+
+  const { data: seriesData, error: seriesError } = await query;
+  const filteredSeries = seriesData || [];
 
   return (
     <div className="bg-[#fcfcfc] min-h-screen pt-4 pb-20">
-      {/* Kategoriler (FilterTabs) */}
-      <FilterTabs tabs={seriesTabs} activeTab={category} basePath="/seriler" />
+      {/* Dinamik Kategoriler (FilterTabs) */}
+      <FilterTabs tabs={seriesTabs} activeTab={categorySlug} basePath="/seriler" />
       
-      {/* Seriler Izgarası */}
+      {/* Seriler Izgarası (Canlı) */}
       <div className="max-w-7xl mx-auto px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
            {filteredSeries.map(series => (
-            <SeriesCard key={series.id} {...series} />
+            <SeriesCard 
+                key={series.id} 
+                id={series.id}
+                title={series.title}
+                imageUrl={series.cover_image_url || 'https://via.placeholder.com/400x300.png?text=Görsel+Yok'}
+                views={0}
+                dailyViews={0}
+                minRead={Math.max(1, Math.floor((series.description?.length || 0) / 250))}
+                comments={0}
+            />
           ))}
         </div>
         
         {filteredSeries.length === 0 && (
           <div className="text-center py-20 text-gray-500 font-medium">
-            <h2 className="text-2xl font-bold text-black mb-2">Aradığınız Şey Bulunamadı...</h2>
-            <p>Bu kategoride henüz bir seri bulunmuyor.</p>
+            <h2 className="text-2xl font-bold text-black mb-2">Aradığınız Seri Bulunamadı...</h2>
+            <p>Bu kategoride henüz bir seri yüklenmemiş.</p>
           </div>
         )}
       </div>

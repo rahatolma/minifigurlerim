@@ -1,21 +1,28 @@
 import SeriesCard from '@/components/ui/SeriesCard';
 import FigureCard from '@/components/ui/FigureCard';
+import { supabase } from '@/utils/supabase/client';
 
-// Örnek sahte veriler (Mock Data)
-const mockSeries = [
-  { id: '1', title: 'LEGO® Minifigürler Serisi Spider Man Across The Spider Verse', imageUrl: 'https://via.placeholder.com/400x300.png?text=Spider+Man', views: 130, dailyViews: 0, minRead: 1.8, comments: 0 },
-  { id: '2', title: 'LEGO® Minifigürler Serisi F1 Race Cars', imageUrl: 'https://via.placeholder.com/400x300.png?text=F1+Cars', views: 10, dailyViews: 0, minRead: 0, comments: 0 },
-  { id: '3', title: 'LEGO® Minifigürler Serisi 27', imageUrl: 'https://via.placeholder.com/400x300.png?text=Series+27', views: 42, dailyViews: 0, minRead: 2.4, comments: 0 },
-];
+export const revalidate = 0; // Dinamik sayfa
 
-const mockFigures = [
-  { id: '1', name: 'Tribal Hunter', seriesName: 'LEGO® Minifigürler Serisi 1', imageUrl: 'https://via.placeholder.com/300x400.png?text=Tribal+Hunter', views: 11, dailyViews: 0, minRead: 0, comments: 0 },
-  { id: '2', name: 'Cheerleader', seriesName: 'LEGO® Minifigürler Serisi 1', imageUrl: 'https://via.placeholder.com/300x400.png?text=Cheerleader', views: 5, dailyViews: 0, minRead: 0, comments: 0 },
-  { id: '3', name: 'Caveman', seriesName: 'LEGO® Minifigürler Serisi 1', imageUrl: 'https://via.placeholder.com/300x400.png?text=Caveman', views: 12, dailyViews: 1, minRead: 0, comments: 0 },
-  { id: '4', name: 'Circus Clown', seriesName: 'LEGO® Minifigürler Serisi 1', imageUrl: 'https://via.placeholder.com/300x400.png?text=Clown', views: 43, dailyViews: 0, minRead: 0, comments: 0 },
-];
+export default async function Home() {
+  
+  // En son eklenen 3 Seri
+  const { data: latestSeriesData } = await supabase
+    .from('series')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(3);
 
-export default function Home() {
+  // En son eklenen 4 Figür
+  const { data: latestFiguresData } = await supabase
+    .from('minifigures')
+    .select('*, series(title)')
+    .order('created_at', { ascending: false })
+    .limit(4);
+
+  const latestSeries = latestSeriesData || [];
+  const latestFigures = latestFiguresData || [];
+
   return (
     <div className="w-full flex-col">
       {/* Hero Bağlantı / Kapak Alanı */}
@@ -92,10 +99,23 @@ export default function Home() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {mockSeries.map(series => (
-              <SeriesCard key={series.id} {...series} />
+            {latestSeries.map(series => (
+              <SeriesCard 
+                key={series.id} 
+                id={series.id}
+                title={series.title}
+                imageUrl={series.cover_image_url || 'https://via.placeholder.com/400x300.png?text=Görsel+Yok'}
+                views={0}
+                dailyViews={0}
+                minRead={Math.max(1, Math.floor((series.description?.length || 0) / 250))}
+                comments={0}
+              />
             ))}
           </div>
+
+          {latestSeries.length === 0 && (
+            <p className="text-gray-400 font-bold text-center mt-8">Henüz sistemde hiç seri yok.</p>
+          )}
         </div>
       </section>
 
@@ -111,10 +131,24 @@ export default function Home() {
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {mockFigures.map(fig => (
-              <FigureCard key={fig.id} {...fig} />
+            {latestFigures.map(fig => (
+              <FigureCard 
+                key={fig.id} 
+                id={fig.id}
+                name={fig.name}
+                seriesName={(fig as any).series?.title || 'Bilinmeyen Seri'}
+                imageUrl={fig.image_url_1 || 'https://via.placeholder.com/300x400.png?text=Görsel+Yok'}
+                views={0}
+                dailyViews={0}
+                minRead={0}
+                comments={0}
+              />
             ))}
           </div>
+
+          {latestFigures.length === 0 && (
+            <p className="text-gray-400 font-bold text-center mt-8">Henüz sistemde hiç figür yok.</p>
+          )}
         </div>
       </section>
       

@@ -3,66 +3,89 @@
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ChevronRight, ArrowLeft, ArrowRight, ImagePlus, Loader2, Save } from 'lucide-react';
+import { ChevronRight, ImagePlus, Loader2, Save } from 'lucide-react';
 import { supabase } from '@/utils/supabase/client';
+import toast from 'react-hot-toast';
 
 export default function EditSeriesPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-  // Next 15'te params artık bir Promise, use() ile çözüyoruz.
   const resolvedParams = use(params);
   const id = resolvedParams.id;
   
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
+  const [uploadingField, setUploadingField] = useState<string | null>(null);
+  const [categories, setCategories] = useState<any[]>([]);
+  
+  const [imageUrls, setImageUrls] = useState({
+    cover_image_url: null as string | null,
+    hero_image_url: null as string | null,
+    box_image_url: null as string | null,
+    collector_image_url: null as string | null,
+  });
   
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    category: 'Karakter Paketleri',
+    description_2: '',
+    category: '',
     series_no: '',
     brand: 'LEGO®',
     figure_count: '',
-    release_date: ''
+    release_month: '',
+    release_year: '',
+    collector_note: ''
   });
 
   useEffect(() => {
-    if (id) fetchSeries();
-  }, [id]);
-
-  const fetchSeries = async () => {
-    try {
-      const { data, error } = await supabase.from('series').select('*').eq('id', id).single();
-      if (error) throw error;
-      if (data) {
-        setFormData({
-          title: data.title || '',
-          description: data.description || '',
-          category: data.category || 'Karakter Paketleri',
-          series_no: data.series_no || '',
-          brand: data.brand || 'LEGO®',
-          figure_count: data.figure_count ? data.figure_count.toString() : '',
-          release_date: data.release_date || ''
-        });
-        setImageUrl(data.cover_image_url || null);
+    async function init() {
+      if (id) {
+           const { data: catData } = await supabase.from('categories').select('*').eq('type', 'seri_kategori').order('name');
+           if (catData) setCategories(catData);
+           
+           try {
+             const { data, error } = await supabase.from('series').select('*').eq('id', id).single();
+             if (error) throw error;
+             
+             if (data) {
+               setFormData({
+                 title: data.title || '',
+                 description: data.description || '',
+                 description_2: data.description_2 || '',
+                 category: data.category || (catData?.length ? catData[0].name : 'Karakter Paketleri'),
+                 series_no: data.series_no || '',
+                 brand: data.brand || 'LEGO®',
+                 figure_count: data.figure_count ? data.figure_count.toString() : '',
+                 release_month: data.release_month || '',
+                 release_year: data.release_year || '',
+                 collector_note: data.collector_note || ''
+               });
+               setImageUrls({
+                 cover_image_url: data.cover_image_url || null,
+                 hero_image_url: data.hero_image_url || null,
+                 box_image_url: data.box_image_url || null,
+                 collector_image_url: data.collector_image_url || null,
+               });
+             }
+           } catch (err: any) {
+             toast.error("Hata: Seri bulunamadı.");
+             router.push('/admin/seriler');
+           }
       }
-    } catch (err: any) {
-      alert("Hata: Seri bulanamadı.");
-      router.push('/admin/seriler');
-    } finally {
       setLoading(false);
     }
-  };
+    init();
+  }, [id, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>, fieldName: keyof typeof imageUrls) => {
     try {
-      setUploading(true);
       if (!event.target.files || event.target.files.length === 0) return;
+      setUploadingField(fieldName);
+      
       const file = event.target.files[0];
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
@@ -75,18 +98,19 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
       if (uploadError) throw uploadError;
       
       const { data: { publicUrl } } = supabase.storage.from('minifigure-images').getPublicUrl(filePath);
-      setImageUrl(publicUrl);
+      
+      setImageUrls(prev => ({ ...prev, [fieldName]: publicUrl }));
     } catch (error: any) {
-      alert('Resim Yükleme Hatası: ' + error.message);
+      toast.error('Resim Yükleme Hatası: ' + error.message);
     } finally {
-      setUploading(false);
+      setUploadingField(null);
     }
   };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.title) {
-      alert("Lütfen Seri Adı alanını doldurun.");
+      toast.error("Lütfen Seri Adı alanını doldurun.");
       return;
     }
     
@@ -98,24 +122,37 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
         .update({
           title: formData.title,
           description: formData.description,
+          description_2: formData.description_2,
           category: formData.category,
           series_no: formData.series_no,
           brand: formData.brand,
           figure_count: formData.figure_count ? parseInt(formData.figure_count) : null,
-          release_date: formData.release_date,
-          cover_image_url: imageUrl
+          release_month: formData.release_month,
+          release_year: formData.release_year,
+          collector_note: formData.collector_note,
+          cover_image_url: imageUrls.cover_image_url,
+          hero_image_url: imageUrls.hero_image_url,
+          box_image_url: imageUrls.box_image_url,
+          collector_image_url: imageUrls.collector_image_url
         })
         .eq('id', id);
 
       if (error) throw error;
-      alert('Seri başarıyla GÜNCELLENDİ! 🎉');
+      toast.success('Seri başarıyla GÜNCELLENDİ! 🎉');
       router.push('/admin/seriler');
     } catch (err: any) {
-      alert('Güncelleme Hatası: ' + err.message);
+      toast.error('Güncelleme Hatası: ' + err.message);
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  const imageUploadBoxes = [
+    { id: 'cover_image_url', title: '1. Kart (Kapak) Görseli', desc: 'Ana Sayfadaki listeleme kapak fotoğrafı.' },
+    { id: 'hero_image_url', title: '2. Hero (Slide) Görseli', desc: 'Detay sayfasının en üstündeki devasa arkaplan görseli.' },
+    { id: 'box_image_url', title: '3. Kutu / Paket Görseli', desc: 'Ana metnin solunda duran paket veya kutu fotoğrafı.' },
+    { id: 'collector_image_url', title: '4. Koleksiyoner Görseli', desc: 'Alt kısımdaki yorumun yanında duran kare görsel.' }
+  ];
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA]"><Loader2 className="animate-spin text-gray-400" size={48} /></div>;
@@ -123,7 +160,6 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] text-black pb-24">
-      {/* Header / Breadcrumb */}
       <div className="w-full bg-white border-b border-gray-200 px-12 py-6 flex items-center justify-between sticky top-0 z-10">
         <div className="flex items-center gap-3 text-[11px] font-black tracking-widest uppercase text-gray-500">
           <Link href="/admin/seriler" className="hover:text-black transition-colors">SERİLER</Link>
@@ -134,94 +170,173 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
 
       <div className="max-w-[1400px] mx-auto px-12 mt-12 grid grid-cols-1 lg:grid-cols-12 gap-16">
         
-        {/* Sol Kolon: Görsel Yükleme */}
-        <div className="lg:col-span-5 space-y-6">
+        {/* Sol Kolon: Çoklu Görsel Yükleme */}
+        <div className="lg:col-span-4 space-y-6">
           <div className="bg-white border text-left border-gray-200 p-6 rounded-md shadow-sm mb-4">
-            <h3 className="font-bold text-sm text-black mb-1">Seri Kapak Görseli</h3>
-            <p className="text-[11px] font-medium text-gray-500">Tavsiye edilen boyut: 800x600px. PNG veya WEBP.</p>
+             <h3 className="font-bold text-sm text-black mb-1">Seri Medya Yöneticisi</h3>
+             <p className="text-[11px] font-medium text-gray-500">Bu serinin detay sayfasında kullanılacak tüm görselleri eksiksiz yükleyin.</p>
           </div>
-          
-          <label className="aspect-[4/3] bg-white rounded-md border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400 hover:bg-gray-50 hover:border-black transition-all cursor-pointer relative overflow-hidden group shadow-sm">
-            {uploading ? (
-              <div className="flex flex-col items-center text-black">
-                <Loader2 size={32} className="animate-spin mb-4" />
-                <span className="text-[10px] font-black tracking-widest uppercase">YÜKLENİYOR...</span>
-              </div>
-            ) : imageUrl ? (
-              <img src={imageUrl} alt="Cover Preview" className="w-full h-full object-contain p-4 mix-blend-multiply" />
-            ) : (
-              <>
-                <ImagePlus size={32} className="mb-4 group-hover:scale-110 group-hover:text-black transition-transform" />
-                <span className="text-[10px] font-black tracking-widest uppercase group-hover:text-black transition-colors">Tıkla ve Görsel Seç</span>
-              </>
-            )}
-            <input type="file" accept="image/*" onChange={uploadImage} className="hidden" />
-          </label>
+
+          <div className="space-y-4">
+            {imageUploadBoxes.map((box) => (
+               <div key={box.id} className="bg-white rounded-md border border-gray-200 shadow-sm overflow-hidden">
+                 <div className="p-3 border-b border-gray-100 bg-gray-50">
+                    <p className="text-[11px] font-black uppercase tracking-wider text-black">{box.title}</p>
+                    <p className="text-[10px] font-medium text-gray-500">{box.desc}</p>
+                 </div>
+                 <label className="aspect-[2/1] bg-white flex flex-col items-center justify-center text-gray-400 hover:bg-gray-50 transition-colors cursor-pointer relative group">
+                    {uploadingField === box.id ? (
+                      <div className="flex flex-col items-center text-black">
+                        <Loader2 size={24} className="animate-spin mb-2" />
+                        <span className="text-[9px] font-black tracking-widest uppercase">YÜKLENİYOR...</span>
+                      </div>
+                    ) : (imageUrls as any)[box.id] ? (
+                      <img src={(imageUrls as any)[box.id]} alt="Preview" className="w-full h-full object-contain mix-blend-multiply border-none" />
+                    ) : (
+                      <>
+                        <ImagePlus size={20} className="mb-2 group-hover:scale-110 group-hover:text-black transition-transform" />
+                        <span className="text-[9px] font-black tracking-widest uppercase group-hover:text-black transition-colors">Tıkla ve Görsel Seç</span>
+                      </>
+                    )}
+                    <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, box.id as any)} className="hidden" />
+                 </label>
+               </div>
+            ))}
+          </div>
         </div>
 
         {/* Sağ Kolon: Form Verileri */}
-        <div className="lg:col-span-7 pb-20">
+        <div className="lg:col-span-8 pb-20">
           <form onSubmit={handleSave} className="space-y-0 w-full text-[13px] font-bold">
-            
-            {[
-              { name: 'title', label: 'Seri Adı (Title)', required: true, type: 'text', placeholder: 'Örn: LEGO® Minifigürler Serisi 27' },
-              { name: 'brand', label: 'Marka', required: true, type: 'text', placeholder: 'Örn: LEGO®' },
-              { name: 'series_no', label: 'Seri No', required: true, type: 'text', placeholder: 'Örn: 71050' },
-              { name: 'category', label: 'Kategori', required: true, type: 'select', 
-                options: ['Karakter Paketleri', 'Koleksiyon Serileri', 'Özel Tematik Seriler'] },
-              { name: 'figure_count', label: 'Figür Sayısı', required: false, type: 'number', placeholder: 'Örn: 12' },
-              { name: 'release_date', label: 'Çıkış Tarihi', required: false, type: 'text', placeholder: 'Örn: Eylül 2025' },
-            ].map((field) => (
-              <div key={field.name} className="flex border-b border-gray-200 items-center hover:bg-white transition-colors group">
-                <div className="w-1/3 py-5 pr-4 pl-3 border-l-2 border-transparent group-hover:border-black transition-colors">
-                  <label className="text-gray-900 block truncate font-black tracking-wide">
-                    {field.label} {field.required && <span className="text-[#D22B2B]">*</span>}
-                  </label>
+             
+            <div className="bg-white border border-gray-200 rounded-md shadow-sm mb-8 overflow-hidden">
+              <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+                <div className="w-1/3 py-5 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
+                    <label className="text-gray-900 block truncate font-black tracking-wide">Seri Adı (Title) <span className="text-[#D22B2B]">*</span></label>
                 </div>
                 <div className="w-2/3 py-3">
-                  {field.type === 'select' ? (
-                    <select 
-                      name={field.name}
-                      value={(formData as any)[field.name]}
-                      onChange={handleChange}
-                      className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold appearance-none"
-                    >
-                      {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                    </select>
-                  ) : (
-                    <input 
-                      name={field.name}
-                      type={field.type} 
-                      value={(formData as any)[field.name]}
-                      onChange={handleChange}
-                      placeholder={field.placeholder}
-                      required={field.required}
-                      className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold placeholder:font-medium placeholder:opacity-30" 
-                    />
-                  )}
+                    <input name="title" type="text" value={formData.title} onChange={handleChange} placeholder="Örn: LEGO® Minifigürler Serisi 27" required className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold placeholder:font-medium placeholder:opacity-30" />
                 </div>
               </div>
-            ))}
-            
-            {/* Description TextArea */}
-            <div className="flex border-b border-gray-200 items-start hover:bg-white transition-colors group">
-              <div className="w-1/3 pt-6 pr-4 pl-3 border-l-2 border-transparent group-hover:border-black transition-colors">
-                <label className="text-gray-900 block truncate font-black tracking-wide">
-                  Hikaye / Açıklama
-                </label>
+
+              <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+                <div className="w-1/3 py-5 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
+                    <label className="text-gray-900 block truncate font-black tracking-wide">Marka <span className="text-[#D22B2B]">*</span></label>
+                </div>
+                <div className="w-2/3 py-3">
+                    <input name="brand" type="text" value={formData.brand} onChange={handleChange} placeholder="Örn: LEGO®" required className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold placeholder:font-medium placeholder:opacity-30" />
+                </div>
               </div>
-              <div className="w-2/3 py-4">
-                <textarea 
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  placeholder="Bu serinin hikayesi ve detaylı açıklaması..."
-                  className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold placeholder:font-medium placeholder:opacity-30 min-h-[150px] resize-y" 
-                />
+              
+              <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+                <div className="w-1/3 py-5 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
+                    <label className="text-gray-900 block truncate font-black tracking-wide">Seri No <span className="text-[#D22B2B]">*</span></label>
+                </div>
+                <div className="w-2/3 py-3">
+                    <input name="series_no" type="text" value={formData.series_no} onChange={handleChange} placeholder="Örn: 71050" required className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold placeholder:font-medium placeholder:opacity-30" />
+                </div>
+              </div>
+
+              {/* Kategori Seçim Alanı (Dinamik) */}
+              <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+                <div className="w-1/3 py-5 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
+                    <label className="text-gray-900 block truncate font-black tracking-wide">Seri Kategorisi <span className="text-[#D22B2B]">*</span></label>
+                </div>
+                <div className="w-2/3 py-3">
+                    {categories.length === 0 ? (
+                        <span className="px-3 text-red-500 font-bold">Önce Ayarlardan Kategori Ekleyin!</span>
+                    ) : (
+                        <select name="category" value={formData.category} onChange={handleChange} required className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold appearance-none cursor-pointer">
+                            {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                        </select>
+                    )}
+                </div>
+              </div>
+
+              <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+                <div className="w-1/3 py-5 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
+                    <label className="text-gray-900 block truncate font-black tracking-wide">Figür Sayısı</label>
+                </div>
+                <div className="w-2/3 py-3">
+                    <input name="figure_count" type="number" value={formData.figure_count} onChange={handleChange} placeholder="Örn: 12" className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold placeholder:font-medium placeholder:opacity-30" />
+                </div>
+              </div>
+
+              {/* Çıkış Tarihi Ay */}
+              <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+                <div className="w-1/3 py-5 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
+                    <label className="text-gray-900 block truncate font-black tracking-wide">Çıkış Tarihi (Ay)</label>
+                </div>
+                <div className="w-2/3 py-3">
+                    <select name="release_month" value={formData.release_month} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold appearance-none cursor-pointer">
+                        <option value="">Seçiniz</option>
+                        {['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'].map(m => <option key={m} value={m}>{m}</option>)}
+                    </select>
+                </div>
+              </div>
+              
+              {/* Çıkış Tarihi Yıl */}
+              <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+                <div className="w-1/3 py-5 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
+                    <label className="text-gray-900 block truncate font-black tracking-wide">Çıkış Tarihi (Yıl)</label>
+                </div>
+                <div className="w-2/3 py-3">
+                    <input name="release_year" type="number" value={formData.release_year} onChange={handleChange} placeholder="Örn: 2025" className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold placeholder:font-medium placeholder:opacity-30" />
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white border border-gray-200 rounded-md shadow-sm mb-8 overflow-hidden">
+              {/* Hikaye 1 */}
+              <div className="flex border-b border-gray-100 items-start hover:bg-gray-50 transition-colors group">
+                <div className="w-1/3 pt-6 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
+                  <label className="text-gray-900 block font-black tracking-wide">Hikaye Alanı 1</label>
+                </div>
+                <div className="w-2/3 py-4">
+                  <textarea 
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    placeholder="Serinin ana hikayesi (Üst kısım)..."
+                    className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold placeholder:font-medium placeholder:opacity-30 min-h-[120px] resize-y" 
+                  />
+                </div>
+              </div>
+
+               {/* Hikaye 2 */}
+               <div className="flex border-b border-gray-100 items-start hover:bg-gray-50 transition-colors group">
+                <div className="w-1/3 pt-6 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
+                  <label className="text-gray-900 block font-black tracking-wide">Hikaye Alanı 2</label>
+                </div>
+                <div className="w-2/3 py-4">
+                  <textarea 
+                    name="description_2"
+                    value={formData.description_2}
+                    onChange={handleChange}
+                    placeholder="Serinin devam hikayesi (Alt kısım)..."
+                    className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold placeholder:font-medium placeholder:opacity-30 min-h-[120px] resize-y" 
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-start hover:bg-gray-50 transition-colors group">
+                <div className="w-1/3 pt-6 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
+                  <label className="text-gray-900 block font-black tracking-wide">
+                    Koleksiyoner Yorumu
+                  </label>
+                </div>
+                <div className="w-2/3 py-4">
+                  <textarea 
+                    name="collector_note"
+                    value={formData.collector_note}
+                    onChange={handleChange}
+                    placeholder="Bizim için bu seri... Kısacası Spider-Man Serisi inovatif tasarımlarıyla efsaneleşmiştir."
+                    className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold placeholder:font-medium placeholder:opacity-30 min-h-[120px] resize-y" 
+                  />
+                </div>
               </div>
             </div>
 
-            {/* update Button */}
             <div className="mt-12 flex justify-end">
               <button 
                 type="submit" 
