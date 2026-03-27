@@ -41,30 +41,12 @@ export default async function Home() {
 
       {/* Mini İkonlu Banner Alanı */}
       <section className="border-b border-gray-200 bg-white">
-        <div className="max-w-7xl mx-auto py-12 px-8 flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="flex items-center gap-5 text-center md:text-left flex-col md:flex-row">
-            <div className="w-16 h-16 rounded-full bg-red-100 text-[#D22B2B] flex items-center justify-center text-3xl font-black">🌍</div>
-            <div>
-              <h4 className="font-bold text-lg mb-1">Her Figür,</h4>
-              <p className="text-gray-600 text-[14px] font-semibold">Kendi Dünyasını Anlatır!</p>
+        <div className="max-w-7xl mx-auto px-8 py-32 flex flex-col items-center justify-center text-center">
+            <h2 className="text-4xl md:text-5xl font-black text-black mb-6 tracking-tight">Kusursuz Figür Koleksiyonunu Keşfet.</h2>
+            <p className="text-gray-500 font-medium text-lg max-w-2xl mb-12">LEGO® dünyasının en nadide ve detaylı mini figürlerini sizin için bir araya getirdik. Özel serilerden klasik karakterlere kadar benzersiz bir serüven sizi bekliyor.</p>
+            <div className="w-full max-w-md flex flex-col items-center pt-8 border-t border-gray-100">
+                <img src="/uploads/media__1774591780917.png" alt="Signature" className="h-16 w-auto opacity-80" />
             </div>
-          </div>
-          <div className="hidden md:block w-px h-16 bg-gray-200"></div>
-          <div className="flex items-center gap-5 text-center md:text-left flex-col md:flex-row">
-            <div className="w-16 h-16 rounded-full bg-red-100 text-[#D22B2B] flex items-center justify-center text-3xl font-black">🧩</div>
-            <div>
-              <h4 className="font-bold text-lg mb-1">Küçük Figürler,</h4>
-              <p className="text-gray-600 text-[14px] font-semibold">Sonsuz Hikayeler!</p>
-            </div>
-          </div>
-          <div className="hidden md:block w-px h-16 bg-gray-200"></div>
-          <div className="flex items-center gap-5 text-center md:text-left flex-col md:flex-row">
-            <div className="w-16 h-16 rounded-full bg-red-100 text-[#D22B2B] flex items-center justify-center text-3xl font-black">🦸</div>
-            <div>
-              <h4 className="font-bold text-lg mb-1">Mini Kahramanlar,</h4>
-              <p className="text-gray-600 text-[14px] font-semibold">Büyük Maceralar!</p>
-            </div>
-          </div>
         </div>
       </section>
 
