@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-brand-red: #D22B2B; /* LEGO Kırmızısına yakın dinamik kırmızı */
+  --color-brand-black: #000000;
+  --color-brand-white: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+@layer base {
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: Arial, Helvetica, sans-serif; /* İleride Next/Font eklenecek */
+  }
+
+  /* Kullanıcının İstediği Kesin Tipografi Standartları */
+  h1 { font-size: 36px; line-height: 1.2; font-weight: 700; }
+  h2 { font-size: 30px; line-height: 1.3; font-weight: 700; }
+  h3 { font-size: 28px; line-height: 1.3; font-weight: 600; }
+  h4 { font-size: 24px; line-height: 1.4; font-weight: 600; }
+  h5 { font-size: 20px; line-height: 1.4; font-weight: 600; }
+  h6 { font-size: 16px; line-height: 1.5; font-weight: 600; }
+  
+  /* H7 ve H8 standart HTML tag'i olmadığı için class olarak üretildi */
+  .h7 { font-size: 14px; line-height: 1.5; font-weight: 500; }
+  .h8 { font-size: 12px; line-height: 1.5; font-weight: 500; }
+}

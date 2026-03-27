@@ -1,0 +1,123 @@
+import SeriesCard from '@/components/ui/SeriesCard';
+import FigureCard from '@/components/ui/FigureCard';
+
+// Örnek sahte veriler (Mock Data)
+const mockSeries = [
+  { id: '1', title: 'LEGO® Minifigürler Serisi Spider Man Across The Spider Verse', imageUrl: 'https://via.placeholder.com/400x300.png?text=Spider+Man', views: 130, dailyViews: 0, minRead: 1.8, comments: 0 },
+  { id: '2', title: 'LEGO® Minifigürler Serisi F1 Race Cars', imageUrl: 'https://via.placeholder.com/400x300.png?text=F1+Cars', views: 10, dailyViews: 0, minRead: 0, comments: 0 },
+  { id: '3', title: 'LEGO® Minifigürler Serisi 27', imageUrl: 'https://via.placeholder.com/400x300.png?text=Series+27', views: 42, dailyViews: 0, minRead: 2.4, comments: 0 },
+];
+
+const mockFigures = [
+  { id: '1', name: 'Tribal Hunter', seriesName: 'LEGO® Minifigürler Serisi 1', imageUrl: 'https://via.placeholder.com/300x400.png?text=Tribal+Hunter', views: 11, dailyViews: 0, minRead: 0, comments: 0 },
+  { id: '2', name: 'Cheerleader', seriesName: 'LEGO® Minifigürler Serisi 1', imageUrl: 'https://via.placeholder.com/300x400.png?text=Cheerleader', views: 5, dailyViews: 0, minRead: 0, comments: 0 },
+  { id: '3', name: 'Caveman', seriesName: 'LEGO® Minifigürler Serisi 1', imageUrl: 'https://via.placeholder.com/300x400.png?text=Caveman', views: 12, dailyViews: 1, minRead: 0, comments: 0 },
+  { id: '4', name: 'Circus Clown', seriesName: 'LEGO® Minifigürler Serisi 1', imageUrl: 'https://via.placeholder.com/300x400.png?text=Clown', views: 43, dailyViews: 0, minRead: 0, comments: 0 },
+];
+
+export default function Home() {
+  return (
+    <div className="w-full flex-col">
+      {/* Hero Bağlantı / Kapak Alanı */}
+      <section className="relative w-full bg-black text-white py-32 flex flex-col items-center justify-center text-center px-4 overflow-hidden">
+        {/* Placeholder arkaplan - daha sonra asıl görsel ile değişecek */}
+        <div className="absolute inset-0 opacity-40 bg-[url('https://via.placeholder.com/1920x800.png?text=Lego+Arkaplan')] bg-cover bg-center"></div>
+        <div className="relative z-10 max-w-3xl space-y-6">
+          <h1 className="text-yellow-400 text-5xl md:text-6xl font-black tracking-tight drop-shadow-md">Renkli dünyamıza hoş geldiniz!</h1>
+          <p className="text-xl md:text-2xl font-medium tracking-wide drop-shadow-sm">Minifigür dünyasının kapılarını aralayın ve maceralarımıza katılın.</p>
+          <div className="flex gap-4 justify-center mt-10">
+            <button className="bg-[#D22B2B] text-white font-bold py-4 px-12 rounded-sm shadow-lg hover:bg-[#B22222] transition-colors uppercase tracking-widest text-sm">Seriler</button>
+            <button className="bg-transparent border-2 border-white text-white font-bold py-4 px-12 rounded-sm shadow-lg hover:bg-white hover:text-black transition-colors uppercase tracking-widest text-sm">Figürler</button>
+          </div>
+        </div>
+      </section>
+
+      {/* Mini İkonlu Banner Alanı */}
+      <section className="border-b border-gray-200 bg-white">
+        <div className="max-w-7xl mx-auto py-12 px-8 flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="flex items-center gap-5 text-center md:text-left flex-col md:flex-row">
+            <div className="w-16 h-16 rounded-full bg-red-100 text-[#D22B2B] flex items-center justify-center text-3xl font-black">🌍</div>
+            <div>
+              <h4 className="font-bold text-lg mb-1">Her Figür,</h4>
+              <p className="text-gray-600 text-[14px] font-semibold">Kendi Dünyasını Anlatır!</p>
+            </div>
+          </div>
+          <div className="hidden md:block w-px h-16 bg-gray-200"></div>
+          <div className="flex items-center gap-5 text-center md:text-left flex-col md:flex-row">
+            <div className="w-16 h-16 rounded-full bg-red-100 text-[#D22B2B] flex items-center justify-center text-3xl font-black">🧩</div>
+            <div>
+              <h4 className="font-bold text-lg mb-1">Küçük Figürler,</h4>
+              <p className="text-gray-600 text-[14px] font-semibold">Sonsuz Hikayeler!</p>
+            </div>
+          </div>
+          <div className="hidden md:block w-px h-16 bg-gray-200"></div>
+          <div className="flex items-center gap-5 text-center md:text-left flex-col md:flex-row">
+            <div className="w-16 h-16 rounded-full bg-red-100 text-[#D22B2B] flex items-center justify-center text-3xl font-black">🦸</div>
+            <div>
+              <h4 className="font-bold text-lg mb-1">Mini Kahramanlar,</h4>
+              <p className="text-gray-600 text-[14px] font-semibold">Büyük Maceralar!</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Hakkımızda / Merhaba Alanı */}
+      <section className="max-w-7xl mx-auto py-24 px-8 flex flex-col md:flex-row items-center gap-16">
+        <div className="flex-1 space-y-6">
+          <h2 className="text-[40px] font-black leading-tight mb-8">Merhaba, Minifigürlerim<br/>Websitesine Hoş Geldiniz!</h2>
+          <p className="text-gray-800 font-semibold leading-relaxed text-[15px]">2010'dan beri tutkuyla biriktirdiğim LEGO® minifigürleri artık bu platformda sizlerle buluşturuyorum. Kendi koleksiyonumdan özenle çekilmiş fotoğraflar, her figüre dair bilgiler ve minifigür dünyasına dair ilham veren içerikler burada yer alacak.</p>
+          <p className="text-gray-800 font-semibold leading-relaxed text-[15px]">Minifigürlerim, sadece benim koleksiyonumun sergilendiği bir alan değil; aynı zamanda bu hobiye gönül verenlerin buluşma noktası. <strong className="text-black font-black">Koleksiyonerler, meraklılar ve yeni başlayanlar</strong> için keyifle vakit geçirilecek, bilgi alınacak ve paylaşım yapılacak bir merkez olmasını hedefliyorum.</p>
+          <p className="text-gray-800 font-semibold leading-relaxed text-[15px]">Burada minifigür sevgisini paylaşacak, yepyeni hikâyeler keşfedecek ve bu hobiye dair ilham alacaksınız.</p>
+          <div className="pt-8">
+            <span className="font-serif text-4xl italic font-light tracking-widest opacity-80" style={{ fontFamily: 'Georgia, serif' }}>Minifigür Hastası</span>
+          </div>
+        </div>
+        <div className="flex-1 w-full">
+          {/* Mozaik Görseli için Placeholder */}
+          <div className="w-full aspect-square bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center border border-gray-200">
+             <img src="https://via.placeholder.com/600x600.png?text=Lego+Mozaik+Gorseli" alt="Lego Mosaic" className="w-full h-full object-cover" />
+          </div>
+        </div>
+      </section>
+
+      {/* Yeni Seriler Section */}
+      <section className="bg-white py-24 border-t border-gray-100">
+        <div className="max-w-7xl mx-auto px-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 bg-[#D22B2B] rounded-full flex items-center justify-center text-white text-2xl shadow-md border-4 border-red-100">📦</div>
+              <h2 className="text-4xl font-black">Yeni Seriler</h2>
+            </div>
+            <button className="bg-[#D22B2B] text-white font-bold py-3 px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-sm">Tüm Seriler</button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {mockSeries.map(series => (
+              <SeriesCard key={series.id} {...series} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Yeni Figürler Section */}
+      <section className="py-24 bg-gray-50 border-t border-gray-200">
+        <div className="max-w-7xl mx-auto px-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 bg-white border-2 border-[#D22B2B] text-[#D22B2B] rounded-full flex items-center justify-center text-2xl shadow-sm">👤</div>
+              <h2 className="text-4xl font-black">Yeni Figürler</h2>
+            </div>
+            <button className="bg-[#D22B2B] text-white font-bold py-3 px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-sm">Tüm Figürler</button>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {mockFigures.map(fig => (
+              <FigureCard key={fig.id} {...fig} />
+            ))}
+          </div>
+        </div>
+      </section>
+      
+    </div>
+  );
+}
