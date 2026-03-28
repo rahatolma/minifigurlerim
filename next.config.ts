@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   images: {
@@ -19,4 +20,20 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(
+  nextConfig,
+  {
+    org: "rahatolma",
+    project: "minifigurlerim",
+    silent: !process.env.CI,
+    widenClientFileUpload: true,
+    reactComponentAnnotation: {
+      enabled: true,
+    },
+    tunnelRoute: "/monitoring",
+    sourcemaps: {
+      disable: true,
+    },
+    disableLogger: true,
+  }
+);

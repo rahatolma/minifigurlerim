@@ -1,15 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Sen } from "next/font/google";
 import { Toaster } from "react-hot-toast";
+import { PostHogProvider } from "@/components/providers/PostHogProvider";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const sen = Sen({
+  variable: "--font-sen",
   subsets: ["latin"],
 });
 
@@ -26,22 +22,24 @@ export default function RootLayout({
   return (
     <html
       lang="tr"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${sen.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">
-        <Toaster 
-          position="bottom-right" 
-          toastOptions={{
-            style: {
-              background: '#0A0A0A',
-              color: '#fff',
-              fontSize: '13px',
-              fontWeight: 'bold',
-              letterSpacing: '0.05em'
-            }
-          }} 
-        />
-        {children}
+      <body className={`${sen.className} min-h-full flex flex-col`}>
+        <PostHogProvider>
+          <Toaster 
+            position="bottom-right" 
+            toastOptions={{
+              style: {
+                background: '#0A0A0A',
+                color: '#fff',
+                fontSize: '13px',
+                fontWeight: 'bold',
+                letterSpacing: '0.05em'
+              }
+            }} 
+          />
+          {children}
+        </PostHogProvider>
       </body>
     </html>
   );
