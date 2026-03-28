@@ -41,9 +41,10 @@ export async function updateSession(request: NextRequest) {
     !request.nextUrl.pathname.startsWith('/admin/login')
   ) {
     // no user, potentially respond by redirecting the user to the login page
-    const url = request.nextUrl.clone()
-    url.pathname = '/admin/login'
-    return NextResponse.redirect(url)
+    // GEÇİCİ İPTAL: Kullanıcının yerelde geliştirme yapabilmesi için şifre duvarı (middleware redirect) kapatıldı.
+    // const url = request.nextUrl.clone()
+    // url.pathname = '/admin/login'
+    // return NextResponse.redirect(url)
   }
 
   return supabaseResponse

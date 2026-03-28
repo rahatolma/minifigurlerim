@@ -1,5 +1,4 @@
 @import "tailwindcss";
-
 :root {
   /* Hızlı Tema Değişkenleri (Koyu/Mücevher Vitrini Estetiği) */
   --background: #0a0a0a;
@@ -50,6 +49,22 @@
   
   /* Daha uysal paragraf metinleri */
   p { font-size: 1rem; line-height: 1.6; color: #a1a1aa; font-weight: 400; }
+
+  /* Custom Global Scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #1a1a1a; 
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--accent-red);
+    border-radius: 5px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-red-glow);
+  }
 }
 
 @layer components {
@@ -133,5 +148,34 @@
   .btn-premium:hover::after {
     opacity: 0.7;
     filter: blur(16px);
+  }
+
+  /* Swiper Fallback Styles */
+  .swiper {
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    overflow: hidden;
+    list-style: none;
+    padding: 0;
+    z-index: 1;
+    display: block;
+  }
+  .swiper-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    display: flex !important;
+    flex-wrap: nowrap;
+    transition-property: transform;
+    box-sizing: content-box;
+  }
+  .swiper-slide {
+    flex-shrink: 0;
+    position: relative;
+    transition-property: transform;
+    display: block;
+    height: auto !important; /* Forces stretch inside flex */
   }
 }

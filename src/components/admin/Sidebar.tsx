@@ -7,6 +7,7 @@ export default function Sidebar() {
   
   const navItems = [
     { name: 'Dashboard', href: '/admin' },
+    { name: 'Sayfalar', href: '/admin/sayfalar' },
   ];
   
   const defItems = [

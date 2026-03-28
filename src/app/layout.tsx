@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Sen } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import { PostHogProvider } from "@/components/providers/PostHogProvider";
+import AntiCopyShield from "@/components/utils/AntiCopyShield";
 import "./globals.css";
 
 const sen = Sen({
@@ -26,6 +27,7 @@ export default function RootLayout({
     >
       <body className={`${sen.className} min-h-full flex flex-col`}>
         <PostHogProvider>
+          <AntiCopyShield />
           <Toaster 
             position="bottom-right" 
             toastOptions={{

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { ChevronRight, ImagePlus, Loader2, Save } from 'lucide-react';
 import { supabase } from '@/utils/supabase/client';
 import toast from 'react-hot-toast';
+import { slugify } from '@/utils/helpers';
 
 export default function EditSeriesPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -107,6 +108,24 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
     }
   };
 
+  const handleRemoveImage = async (e: React.MouseEvent, fieldName: keyof typeof imageUrls) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const url = (imageUrls as any)[fieldName];
+    if (!url) return;
+    try {
+      const path = url.split('/minifigure-images/')[1];
+      if (path) {
+        const { error } = await supabase.storage.from('minifigure-images').remove([path]);
+        if (error) throw error;
+      }
+      setImageUrls(prev => ({ ...prev, [fieldName]: null }));
+      toast.success('Görsel başarıyla silindi.');
+    } catch (err: any) {
+      toast.error('Görsel silinirken hata: ' + err.message);
+    }
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.title) {
@@ -115,11 +134,13 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
     }
     
     setIsSubmitting(true);
+    const generatedSlug = slugify(`${formData.title} ${formData.category}`);
     
     try {
       const { error } = await supabase
         .from('series')
         .update({
+          slug: generatedSlug,
           title: formData.title,
           description: formData.description,
           description_2: formData.description_2,
@@ -186,22 +207,35 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
                     <p className="text-[11px] font-black uppercase tracking-wider text-black">{box.title}</p>
                     <p className="text-[10px] font-medium text-gray-500">{box.desc}</p>
                  </div>
-                 <label className="aspect-[2/1] bg-white flex flex-col items-center justify-center text-gray-400 hover:bg-gray-50 transition-colors cursor-pointer relative group">
-                    {uploadingField === box.id ? (
-                      <div className="flex flex-col items-center text-black">
-                        <Loader2 size={24} className="animate-spin mb-2" />
-                        <span className="text-[9px] font-black tracking-widest uppercase">YÜKLENİYOR...</span>
-                      </div>
-                    ) : (imageUrls as any)[box.id] ? (
-                      <img src={(imageUrls as any)[box.id]} alt="Preview" className="w-full h-full object-contain mix-blend-multiply border-none" />
-                    ) : (
-                      <>
-                        <ImagePlus size={20} className="mb-2 group-hover:scale-110 group-hover:text-black transition-transform" />
-                        <span className="text-[9px] font-black tracking-widest uppercase group-hover:text-black transition-colors">Tıkla ve Görsel Seç</span>
-                      </>
-                    )}
-                    <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, box.id as any)} className="hidden" />
-                 </label>
+                 <div className="relative group">
+                   <label className="aspect-[2/1] w-full bg-white flex flex-col items-center justify-center text-gray-400 hover:bg-gray-50 transition-colors cursor-pointer relative z-10">
+                      {uploadingField === box.id ? (
+                        <div className="flex flex-col items-center text-black">
+                          <Loader2 size={24} className="animate-spin mb-2" />
+                          <span className="text-[9px] font-black tracking-widest uppercase">YÜKLENİYOR...</span>
+                        </div>
+                      ) : (imageUrls as any)[box.id] ? (
+                        <img src={(imageUrls as any)[box.id]} alt="Preview" className="w-full h-full object-contain mix-blend-multiply border-none" />
+                      ) : (
+                        <>
+                          <ImagePlus size={20} className="mb-2 group-hover:scale-110 group-hover:text-black transition-transform" />
+                          <span className="text-[9px] font-black tracking-widest uppercase group-hover:text-black transition-colors">Tıkla ve Görsel Seç</span>
+                        </>
+                      )}
+                      <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, box.id as any)} className="hidden" />
+                   </label>
+
+                   {(imageUrls as any)[box.id] && (
+                     <button 
+                       type="button" 
+                       onClick={(e) => handleRemoveImage(e, box.id as keyof typeof imageUrls)} 
+                       className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full shadow-md hover:bg-red-600 transition-colors z-20"
+                       title="Görseli Sil"
+                     >
+                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                     </button>
+                   )}
+                 </div>
                </div>
             ))}
           </div>

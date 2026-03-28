@@ -6,11 +6,10 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-4 gap-12">
         {/* Col 1 */}
         <div className="space-y-4">
-          <div className="flex items-center gap-2 mb-6">
-             <div className="w-8 h-8 rounded-md flex items-center justify-center" style={{ background: 'var(--color-brand-red)'}}>
-              <span className="text-xl">🙂</span>
-            </div>
-            <span className="text-2xl font-black tracking-tight uppercase">Minifigürlerim</span>
+          <div className="mb-6">
+            <Link href="/" className="inline-block">
+              <img src="/uploads/media__1774631571720.png" alt="Minifigürlerim Logo" className="h-[36px] w-auto" />
+            </Link>
           </div>
           <p className="text-sm font-semibold leading-relaxed">
             Son çıkan mini figürleri ve güncel haberleri yakından takip etmek istiyorsanız e-mail haber grubuna abone olun!
