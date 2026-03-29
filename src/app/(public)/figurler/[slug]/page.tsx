@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import FigureGallery from '@/components/ui/FigureGallery';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
+import ClientViewTracker from '@/components/ui/ClientViewTracker';
 
 import { slugify } from '@/utils/helpers';
 
@@ -43,7 +44,7 @@ export default async function FigureDetail({
   
   return (
     <div className="bg-[#fcfcfc] min-h-screen w-full pb-32">
-      
+      <ClientViewTracker table="minifigures" id={figure.id} />
       {/* 🧱 ÜST BLOĞU: Şablon Breadcrumb (İz Yolu) */}
       <div className="border-b border-gray-200 bg-white">
         <div className="max-w-7xl mx-auto px-8 flex flex-wrap items-center text-[10px] sm:text-[11px] font-black text-gray-400 tracking-[0.2em] uppercase" style={{ minHeight: '70px' }}>

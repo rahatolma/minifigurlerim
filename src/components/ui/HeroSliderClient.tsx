@@ -23,21 +23,9 @@ export default function HeroSliderClient({ sliders }: { sliders: any[] }) {
     setCurrentIndex((prev) => (prev + 1) % sliders.length);
   };
 
-  // Veri yoksa placeholder göster
+  // Veri yoksa placeholder gösterme, direkt gizle
   if (!sliders || sliders.length === 0) {
-    return (
-      <section className="relative w-full bg-black text-white py-32 flex flex-col items-center justify-center text-center px-4 overflow-hidden h-[400px] md:h-[600px]">
-        <div className="absolute inset-0 opacity-40 bg-[url('https://via.placeholder.com/1920x800.png?text=Lego+Arkaplan')] bg-cover bg-center"></div>
-        <div className="relative z-10 max-w-3xl space-y-6">
-          <h1 className="text-yellow-400 text-5xl md:text-6xl font-black tracking-tight drop-shadow-md">Renkli dünyamıza hoş geldiniz!</h1>
-          <p className="text-xl md:text-2xl font-medium tracking-wide drop-shadow-sm">Minifigür dünyasının kapılarını aralayın ve maceralarımıza katılın.</p>
-          <div className="flex gap-4 justify-center mt-10">
-            <Link href="/seriler" className="bg-[#D22B2B] text-white font-bold py-4 px-12 rounded-sm shadow-lg hover:bg-[#B22222] transition-colors uppercase tracking-widest text-sm inline-block">Seriler</Link>
-            <Link href="/figurler" className="bg-transparent border-2 border-white text-white font-bold py-4 px-12 rounded-sm shadow-lg hover:bg-white hover:text-black transition-colors uppercase tracking-widest text-sm inline-block">Figürler</Link>
-          </div>
-        </div>
-      </section>
-    );
+    return null;
   }
 
   return (

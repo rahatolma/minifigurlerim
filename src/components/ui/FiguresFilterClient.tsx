@@ -42,11 +42,31 @@ export default function FiguresFilterClient({
         params.set(name, value);
     }
 
-    router.push(`/figurler?${params.toString()}`);
+    router.push(`/figurler?${params.toString()}`, { scroll: false });
+
+    // Sayfa zaten çok aşağıdaysa (örneğin eski sonuçlarda), yeni filtre sonrası tekrar filtre alanına hizala (snap)
+    setTimeout(() => {
+        const filterSection = document.getElementById('filter-section');
+        if (filterSection) {
+            // Ekranda filtre barının üstünde kaldık (çok aşağıdayız), yukarı doğru yumuşak kaydır
+            const box = filterSection.getBoundingClientRect();
+            // Eğer elementin viewport'a göre konumu eksiyse (yani yukarıda bir yerdeyse, biz aşağı scroll etmişiz demektir)
+            // Ya da sıfırdan çok farklıysa, o the scrollIntoView komutunu uygula
+            if (box.top < 120 || box.top > 140) {
+                 filterSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    }, 50);
   };
 
   const clearFilters = () => {
-    router.push('/figurler');
+    router.push('/figurler', { scroll: false });
+    setTimeout(() => {
+        const filterSection = document.getElementById('filter-section');
+        if (filterSection) {
+             filterSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, 50);
   };
 
   const hasFilters = currentSeries !== 'all' || currentRole !== 'all' || currentType !== 'all' || currentRarity !== 'all' || currentSort !== 'newest';

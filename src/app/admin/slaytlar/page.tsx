@@ -53,7 +53,7 @@ export default function SlidersPage() {
               <h1 className="text-xl font-black uppercase tracking-widest text-[#0A0A0A]">Kapak / Slayt Yönetimi</h1>
               <p className="text-gray-500 font-medium text-sm mt-1">Ana sayfa kapak (Hero) görsellerini ve butonlarını yönetin.</p>
             </div>
-            <Link href="/admin/sayfalar/yeni" className="bg-black hover:bg-[#D22B2B] text-white transition-colors px-6 py-3 rounded-sm flex items-center gap-2 text-[11px] font-black uppercase tracking-widest shadow-md">
+            <Link href="/admin/slaytlar/yeni" className="bg-black hover:bg-[#D22B2B] text-white transition-colors px-6 py-3 rounded-sm flex items-center gap-2 text-[11px] font-black uppercase tracking-widest shadow-md">
                 <Plus size={16} /> YENİ SLAYT EKLE
             </Link>
         </div>
@@ -74,6 +74,7 @@ export default function SlidersPage() {
                             <th className="p-4 pl-6">Sıra</th>
                             <th className="p-4">Görsel</th>
                             <th className="p-4">Başlık</th>
+                            <th className="p-4">Konum</th>
                             <th className="p-4">Durum</th>
                             <th className="p-4 text-right pr-6">İşlemler</th>
                         </tr>
@@ -92,6 +93,9 @@ export default function SlidersPage() {
                                     </div>
                                 </td>
                                 <td className="p-4 text-gray-900 line-clamp-2">{s.title}</td>
+                                <td className="p-4 font-black text-gray-500 uppercase text-[9px] tracking-widest">
+                                    {s.location === 'bottom' ? 'Alt Slayt' : 'Üst Slayt (Hero)'}
+                                </td>
                                 <td className="p-4">
                                     {s.is_active ? 
                                         <span className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 px-3 py-1.5 rounded-sm text-[9px] uppercase tracking-widest font-black"><Eye size={12}/> Aktif</span> : 
@@ -99,7 +103,7 @@ export default function SlidersPage() {
                                     }
                                 </td>
                                 <td className="p-4 pr-6 flex justify-end gap-2">
-                                    <Link href={`/admin/sayfalar/${s.id}`} className="p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
+                                    <Link href={`/admin/slaytlar/${s.id}`} className="p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
                                         <Pencil size={18} />
                                     </Link>
                                     <button onClick={() => handleDelete(s.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors">

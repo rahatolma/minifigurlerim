@@ -7,13 +7,16 @@ export default function Sidebar() {
   
   const navItems = [
     { name: 'Dashboard', href: '/admin' },
-    { name: 'Sayfalar', href: '/admin/sayfalar' },
+    { name: 'Slaytlar', href: '/admin/slaytlar' },
+    { name: 'Gelen Mesajlar', href: '/admin/mesajlar' },
   ];
   
   const defItems = [
     { name: 'Tanımlar', href: '/admin/tanimlar' },
     { name: 'Seriler', href: '/admin/seriler' },
     { name: 'Figürler', href: '/admin/figurler' },
+    { name: 'Haberler', href: '/admin/haberler' },
+    { name: 'Sıkça Sorular', href: '/admin/sss' },
   ];
 
   return (
@@ -23,36 +26,33 @@ export default function Sidebar() {
           <p className="text-[9px] text-gray-500 font-bold tracking-[0.2em] mt-1">ENTERPRISE SYSTEM</p>
         </div>
         <nav className="flex-1 px-4 py-8 space-y-1 overflow-y-auto">
-          {/* System */}
-          <div className="mb-2">
-            <p className="text-[10px] text-gray-400 font-bold px-4 tracking-widest uppercase">System</p>
-          </div>
-          {navItems.map(item => {
-              const isActive = pathname === item.href;
-              return (
-                  <Link key={item.name} href={item.href} className={`block px-4 py-3 rounded-md text-[13px] font-bold transition-colors ${isActive ? 'bg-white text-black shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}>
-                      {item.name}
-                  </Link>
-              )
-          })}
+          
+          <Link href="/admin" className={`block px-4 py-3 rounded-md text-[13px] font-bold transition-colors ${pathname === '/admin' ? 'bg-white text-black shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}>Dashboard</Link>
           
           <div className="mt-8 mb-2">
-            <p className="text-[10px] text-gray-400 font-bold px-4 tracking-widest uppercase">Definitions</p>
+            <p className="text-[10px] text-gray-400 font-bold px-4 tracking-widest uppercase">Sayfalar</p>
           </div>
-          {defItems.map(item => {
-              // Exact match or sub-route match (e.g. /admin/seriler/yeni starts with /admin/seriler)
-              const isStrictActive = pathname ? (pathname === item.href || pathname.startsWith(item.href + '/')) : false;
-              return (
-                  <Link key={item.name} href={item.href} className={`block px-4 py-3 rounded-md text-[13px] font-bold transition-colors ${isStrictActive ? 'bg-white text-black shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}>
-                      {item.name}
-                  </Link>
-              )
-          })}
+          <Link href="/admin/hakkimizda" className={`block px-4 py-3 rounded-md text-[13px] font-bold transition-colors ${pathname === '/admin/hakkimizda' ? 'bg-white text-black shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}>Hakkımızda</Link>
+          <Link href="/admin/haberler" className={`block px-4 py-3 rounded-md text-[13px] font-bold transition-colors ${pathname?.startsWith('/admin/haberler') ? 'bg-white text-black shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}>Haberler</Link>
+          <Link href="/admin/sss" className={`block px-4 py-3 rounded-md text-[13px] font-bold transition-colors ${pathname?.startsWith('/admin/sss') ? 'bg-white text-black shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}>Sıkça Sorular</Link>
 
           <div className="mt-8 mb-2">
-            <p className="text-[10px] text-gray-400 font-bold px-4 tracking-widest uppercase">Settings</p>
+            <p className="text-[10px] text-gray-400 font-bold px-4 tracking-widest uppercase">Özellikler</p>
           </div>
-          <Link href="/admin/settings" className="block px-4 py-3 rounded-md text-[13px] font-bold text-gray-300 hover:text-white hover:bg-white/10 transition-colors">Authentication</Link>
+          <Link href="/admin/tanimlar" className={`block px-4 py-3 rounded-md text-[13px] font-bold transition-colors ${pathname?.startsWith('/admin/tanimlar') ? 'bg-white text-black shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}>Özellikler (Tanımlar)</Link>
+          <Link href="/admin/seriler" className={`block px-4 py-3 rounded-md text-[13px] font-bold transition-colors ${pathname?.startsWith('/admin/seriler') ? 'bg-white text-black shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}>Seriler</Link>
+          <Link href="/admin/figurler" className={`block px-4 py-3 rounded-md text-[13px] font-bold transition-colors ${pathname?.startsWith('/admin/figurler') ? 'bg-white text-black shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}>Figürler</Link>
+          <Link href="/admin/slaytlar" className={`block px-4 py-3 rounded-md text-[13px] font-bold transition-colors ${pathname?.startsWith('/admin/slaytlar') ? 'bg-white text-black shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}>Slaytlar</Link>
+
+          <div className="mt-8 mb-2">
+            <p className="text-[10px] text-gray-400 font-bold px-4 tracking-widest uppercase">İletişim</p>
+          </div>
+          <Link href="/admin/mesajlar" className={`block px-4 py-3 rounded-md text-[13px] font-bold transition-colors ${pathname?.startsWith('/admin/mesajlar') ? 'bg-white text-black shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}>Gelen Mesajlar</Link>
+
+          <div className="mt-8 mb-2">
+            <p className="text-[10px] text-gray-400 font-bold px-4 tracking-widest uppercase">Ayarlar</p>
+          </div>
+          <Link href="/admin/settings" className={`block px-4 py-3 rounded-md text-[13px] font-bold transition-colors ${pathname?.startsWith('/admin/settings') ? 'bg-white text-black shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}>Authentication</Link>
         </nav>
       </aside>
   )

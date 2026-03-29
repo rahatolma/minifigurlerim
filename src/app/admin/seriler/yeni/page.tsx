@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChevronRight, ImagePlus, Loader2, Save } from 'lucide-react';
+import RichTextEditor from '@/components/admin/RichTextEditor';
 import { supabase } from '@/utils/supabase/client';
 import { slugify } from '@/utils/helpers';
 
@@ -18,6 +19,7 @@ export default function NewSeriesPage() {
     hero_image_url: null as string | null,  // 2. Büyük Hero/Slayt
     box_image_url: null as string | null,   // 3. Paket/Kutu Görseli
     collector_image_url: null as string | null, // 4. Alt Koleksiyon Görseli
+    general_image_url: null as string | null, // 5. Genel Görsel
   });
   
   const [formData, setFormData] = useState({
@@ -121,8 +123,8 @@ export default function NewSeriesPage() {
             collector_note: formData.collector_note,
             cover_image_url: imageUrls.cover_image_url,
             hero_image_url: imageUrls.hero_image_url,
-            box_image_url: imageUrls.box_image_url,
-            collector_image_url: imageUrls.collector_image_url
+            collector_image_url: imageUrls.collector_image_url,
+            general_image_url: imageUrls.general_image_url
           }
         ]);
 
@@ -140,7 +142,8 @@ export default function NewSeriesPage() {
     { id: 'cover_image_url', title: '1. Kart (Kapak) Görseli', desc: 'Ana Sayfadaki listeleme kapak fotoğrafı.' },
     { id: 'hero_image_url', title: '2. Hero (Slide) Görseli', desc: 'Detay sayfasının en üstündeki devasa arkaplan görseli.' },
     { id: 'box_image_url', title: '3. Kutu / Paket Görseli', desc: 'Ana metnin solunda duran paket veya kutu fotoğrafı.' },
-    { id: 'collector_image_url', title: '4. Koleksiyoner Görseli', desc: 'Alt kısımdaki yorumun yanında duran kare görsel.' }
+    { id: 'collector_image_url', title: '4. Koleksiyoner Görseli', desc: 'Alt kısımdaki yorumun yanında duran kare görsel.' },
+    { id: 'general_image_url', title: '5. Genel Görsel', desc: 'Kutu görseli ve Hikaye Alanı 1 in hemen altında duran tam boy detay fotoğrafı.' }
   ];
 
   return (
@@ -294,12 +297,10 @@ export default function NewSeriesPage() {
                   <label className="text-gray-900 block font-black tracking-wide">Hikaye Alanı 1</label>
                 </div>
                 <div className="w-2/3 py-4">
-                  <textarea 
-                    name="description"
+                  <RichTextEditor
                     value={formData.description}
-                    onChange={handleChange}
+                    onChange={(val) => setFormData(prev => ({ ...prev, description: val }))}
                     placeholder="Serinin ana hikayesi (Üst kısım)..."
-                    className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold placeholder:font-medium placeholder:opacity-30 min-h-[120px] resize-y" 
                   />
                 </div>
               </div>
@@ -310,12 +311,10 @@ export default function NewSeriesPage() {
                   <label className="text-gray-900 block font-black tracking-wide">Hikaye Alanı 2</label>
                 </div>
                 <div className="w-2/3 py-4">
-                  <textarea 
-                    name="description_2"
+                  <RichTextEditor
                     value={formData.description_2}
-                    onChange={handleChange}
+                    onChange={(val) => setFormData(prev => ({ ...prev, description_2: val }))}
                     placeholder="Serinin devam hikayesi (Alt kısım)..."
-                    className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold placeholder:font-medium placeholder:opacity-30 min-h-[120px] resize-y" 
                   />
                 </div>
               </div>
@@ -326,13 +325,11 @@ export default function NewSeriesPage() {
                     Koleksiyoner Yorumu
                   </label>
                 </div>
-                <div className="w-2/3 py-4">
-                  <textarea 
-                    name="collector_note"
+                <div className="w-2/3 py-4 pr-1">
+                  <RichTextEditor
                     value={formData.collector_note}
-                    onChange={handleChange}
+                    onChange={(val) => setFormData(prev => ({ ...prev, collector_note: val }))}
                     placeholder="Bizim için bu seri... Kısacası Spider-Man Serisi inovatif tasarımlarıyla efsaneleşmiştir."
-                    className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold placeholder:font-medium placeholder:opacity-30 min-h-[120px] resize-y" 
                   />
                 </div>
               </div>

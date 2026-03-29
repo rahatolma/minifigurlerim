@@ -2,8 +2,10 @@ import FigureCard from '@/components/ui/FigureCard';
 import { supabase } from '@/utils/supabase/client';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import RichTextContent from '@/components/ui/RichTextContent';
 import { Package, Grid3X3, CalendarDays } from 'lucide-react';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
+import ClientViewTracker from '@/components/ui/ClientViewTracker';
 
 export const revalidate = 0; // Her zaman canlı veri
 
@@ -37,9 +39,9 @@ export default async function SeriesDetail({
 
   return (
     <div className="bg-white min-h-screen pb-20 w-full">
-      
+      <ClientViewTracker table="series" id={series.id} />
       {/* ŞABLON BREADCRUMB */}
-      <div className="border-b border-gray-200 bg-white">
+      <div className="border-b border-gray-200 bg-white relative z-20">
         <div className="max-w-7xl mx-auto px-8 flex flex-wrap items-center text-[10px] sm:text-[11px] font-black text-gray-400 tracking-[0.2em] uppercase" style={{ minHeight: '70px' }}>
              <Link href="/" className="hover:text-black transition-colors">Ana Sayfa</Link> 
              <span className="mx-3 text-gray-200">/</span> 
@@ -106,23 +108,34 @@ export default async function SeriesDetail({
 
       {/* Hikaye Alanı 1 & Kutu Görseli */}
       {(series.description || series.box_image_url) && (
-        <div className="max-w-7xl mx-auto px-8 mt-32 flex flex-col md:flex-row gap-16 items-center">
-            <div className="md:w-[40%]">
+        <div className="max-w-7xl mx-auto px-8 mt-32 flex flex-col md:flex-row gap-12 lg:gap-16 items-start">
+            <div className="w-full md:w-5/12 lg:w-4/12 flex-shrink-0 bg-white p-4 sm:p-8 rounded-2xl shadow-sm border border-gray-100 relative mt-[-100px] z-20">
                 {series.box_image_url ? (
-                    <img src={series.box_image_url} alt="Kutu Görseli" className="w-full rounded-lg shadow-sm border border-gray-100 object-cover aspect-[4/3]" />
+                    <img src={series.box_image_url} alt="Kutu Görseli" className="w-full rounded-lg shadow-sm object-cover aspect-[4/3] mix-blend-multiply" />
                 ) : (
-                    <div className="w-full aspect-[4/3] bg-gray-50 rounded-lg flex items-center justify-center text-sm font-bold text-gray-300 border border-gray-100">Kutu Görseli Yok</div>
+                    <div className="w-full aspect-[4/3] bg-gray-50 rounded-lg flex items-center justify-center text-sm font-bold text-gray-300">Kutu Görseli Yok</div>
                 )}
             </div>
-            <div className="md:w-[60%] text-[17px] font-semibold leading-loose text-gray-700 whitespace-pre-wrap">
-                <h2 className="text-[#D22B2B] text-4xl font-black mb-8 tracking-tight">Serinin Hikayesi</h2>
-                {series.description || <span className="opacity-50 italic">Hikaye metni girilmemiş.</span>}
+            <div className="w-full md:w-7/12 lg:w-8/12 text-[17px] font-semibold leading-loose text-gray-700 min-w-0">
+                <h2 className="text-[#D22B2B] text-4xl font-black mb-1 tracking-tight text-left">Serinin Hikayesi</h2>
+                {series.description ? (
+                     <RichTextContent html={series.description} className="prose-sm md:prose-base prose-p:mb-4" />
+                ) : (
+                     <span className="opacity-50 italic">Hikaye metni girilmemiş.</span>
+                )}
             </div>
         </div>
       )}
 
+      {/* Genel Görsel (Kutu tasarımının hemen altındaki statik dev görsel) */}
+      {series.general_image_url && (
+        <div className="max-w-7xl mx-auto px-8 mt-16">
+            <img src={series.general_image_url} alt="Genel Görsel" className="w-full rounded-lg shadow-sm object-cover" />
+        </div>
+      )}
+
       {/* Görüntülenme Metrikleri */}
-      <div className="max-w-7xl mx-auto px-8 mt-24 border-t border-gray-200 pt-24 grid grid-cols-2 text-center">
+      <div className="max-w-7xl mx-auto px-8 mt-32 border-t border-gray-200 pt-24 grid grid-cols-2 text-center">
         <div className="border-r border-gray-200">
           <div className="text-black text-6xl md:text-[80px] font-black mb-2 opacity-10">0</div>
           <p className="font-bold text-gray-400 tracking-widest uppercase text-sm">Toplam Görüntülenme</p>
@@ -135,18 +148,18 @@ export default async function SeriesDetail({
 
       {/* Hikaye Alanı 2 & Koleksiyoner Görseli Blok */}
       {(series.description_2 || series.collector_image_url) && (
-          <div className="max-w-7xl mx-auto px-8 mt-32 flex flex-col md:flex-row-reverse gap-16 items-center">
-            <div className="md:w-[40%]">
-              <div className="w-full aspect-square bg-[#fcfcfc] rounded-xl overflow-hidden border border-gray-100 p-8 flex items-center justify-center shadow-inner">
-                 {series.collector_image_url ? (
-                     <img src={series.collector_image_url} alt="Koleksiyoner" className="max-w-full max-h-full object-contain mix-blend-multiply hover:scale-105 transition-transform duration-500" />
-                 ) : (
-                     <div className="text-gray-300 font-bold text-sm tracking-widest uppercase">Görsel Yok</div>
-                 )}
-              </div>
+          <div className="max-w-7xl mx-auto px-8 mt-32 flex flex-col md:flex-row-reverse gap-12 lg:gap-16 items-start">
+            <div className="w-full md:w-5/12 lg:w-4/12 flex justify-center flex-shrink-0">
+               {series.collector_image_url ? (
+                   <img src={series.collector_image_url} alt="Koleksiyoner" className="w-full max-w-md object-contain hover:scale-105 transition-transform duration-500 rounded-lg shadow-sm mix-blend-multiply" />
+               ) : (
+                   <div className="text-gray-300 font-bold text-sm tracking-widest uppercase">Görsel Yok</div>
+               )}
             </div>
-            <div className="md:w-[60%] space-y-8 text-[17px] font-semibold leading-loose text-gray-700 whitespace-pre-wrap">
-              {series.description_2}
+            <div className="w-full md:w-7/12 lg:w-8/12 space-y-8 text-[17px] font-semibold leading-loose text-gray-700 min-w-0">
+              {series.description_2 && (
+                  <RichTextContent html={series.description_2} className="prose-sm md:prose-base prose-p:mb-4" />
+              )}
               
               <div className="bg-black text-white p-5 mt-10 rounded-sm text-center font-black tracking-widest text-sm uppercase shadow-lg border border-gray-800 hover:bg-[#D22B2B] transition-colors inline-block w-full">
                 Koleksiyoner Yorumu

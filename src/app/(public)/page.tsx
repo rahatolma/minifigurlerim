@@ -4,6 +4,8 @@ import HeroSliderClient from '@/components/ui/HeroSliderClient';
 import ItemCarousel from '@/components/ui/ItemCarousel';
 import NewsletterBlock from '@/components/ui/NewsletterBlock';
 import BeforeAfterSlider from '@/components/ui/BeforeAfterSlider';
+import InstagramBlock from '@/components/ui/InstagramBlock';
+import NewsCard from '@/components/ui/NewsCard';
 import { supabase } from '@/utils/supabase/client';
 import Link from 'next/link';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
@@ -32,13 +34,30 @@ export default async function Home() {
     .order('created_at', { ascending: false })
     .limit(12);
 
+  // Popüler 12 Figür (Carousel için - total_views kullanılarak)
+  const { data: popularFiguresData } = await supabase
+    .from('minifigures')
+    .select('*, series(title)')
+    .order('total_views', { ascending: false, nullsFirst: false })
+    .limit(12);
+
+  // En son yayınlanan 12 Haber (Carousel için)
+  const { data: latestNewsData } = await supabase
+    .from('news')
+    .select('*')
+    .eq('status', 'published')
+    .order('created_at', { ascending: false })
+    .limit(12);
+
   const latestSeries = latestSeriesData || [];
   const latestFigures = latestFiguresData || [];
+  const popularFigures = popularFiguresData || [];
+  const latestNews = latestNewsData || [];
 
   return (
     <div className="w-full flex-col">
-      {/* Hero / Kapak Alanı (Slider) */}
-      <HeroSliderClient sliders={activeSliders || []} />
+      {/* Hero / Kapak Alanı (Slider) - ÜST */}
+      <HeroSliderClient sliders={activeSliders?.filter(s => s.location !== 'bottom') || []} />
 
       {/* 3'lü Değer Önerisi (Features) Alanı */}
       <section className="bg-transparent border-b border-gray-100 py-[64px]">
@@ -111,7 +130,7 @@ export default async function Home() {
               </div>
             }
             actionButton={
-              <button className="bg-[#D22B2B] text-white font-bold py-3 px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[11px]">Tüm Seriler</button>
+              <Link href="/seriler" className="bg-[#D22B2B] text-white font-bold py-3 px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[11px] block text-center">Tüm Seriler</Link>
             }
           >
             {latestSeries.map(series => (
@@ -144,7 +163,7 @@ export default async function Home() {
               </div>
             }
             actionButton={
-              <button className="bg-[#D22B2B] text-white font-bold py-3 px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[11px]">Tüm Figürler</button>
+              <Link href="/figurler" className="bg-[#D22B2B] text-white font-bold py-3 px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[11px] block text-center">Tüm Figürler</Link>
             }
           >
             {latestFigures.map(fig => (
@@ -172,6 +191,90 @@ export default async function Home() {
            <NewsletterBlock />
         </div>
       </section>
+
+      {/* Popüler Figürler Section (En Çok Okunanlar/Ziyaret Edilenler) */}
+      <section className="py-[64px] bg-[#f9fafb] border-t border-gray-200">
+          <ItemCarousel
+            titleBlock={
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 bg-[#D22B2B] rounded-full flex items-center justify-center shadow-md border-4 border-red-100 text-white">
+                    <LegoHeadIcon mode="fire" className="w-[28px] h-[28px]" color="text-white" />
+                </div>
+                <div className="flex flex-col">
+                  <h2 className="text-4xl font-black text-gray-900">Popüler Figürler</h2>
+                  <span className="text-xs font-bold uppercase tracking-widest text-[#D22B2B] mt-1">EN ÇOK İNCELENENLER</span>
+                </div>
+              </div>
+            }
+            actionButton={
+              <Link href="/figurler?sort=popular" className="bg-[#D22B2B] text-white font-bold py-3 px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[11px] block text-center">Tüm Figürler</Link>
+            }
+          >
+            {popularFigures.map(fig => (
+              <FigureCard  
+                key={fig.id}
+                id={fig.slug || fig.id}
+                name={fig.name}
+                seriesName={(fig as any).series?.title || 'Bilinmeyen Seri'}
+                imageUrl={(fig.images && fig.images.length > 0) ? fig.images[0] : 'https://via.placeholder.com/300x400.png?text=Görsel+Yok'}
+                views={fig.total_views || 0}
+                dailyViews={fig.daily_views || 0}
+                minRead={0}
+                comments={0}
+              />
+            ))}
+            {popularFigures.length === 0 && (
+              <p className="text-gray-400 font-bold px-8 mt-8 w-full text-center">Henüz sistemde hiç figür yok.</p>
+            )}
+          </ItemCarousel>
+      </section>
+
+      {/* Instagram Bloğu Section */}
+      <section className="bg-transparent py-[64px] border-t border-gray-100">
+        <div className="max-w-7xl mx-auto px-8">
+           <InstagramBlock />
+        </div>
+      </section>
+
+      {/* Güncel Haberler / Blog Section */}
+      <section className="bg-transparent py-[64px] border-t border-gray-100">
+          <ItemCarousel
+            titleBlock={
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 bg-black rounded-full flex items-center justify-center text-[#D22B2B] shadow-sm">
+                    {/* Basit bir gazete / haber ikonu niyetine LegoHead (search mode) kullanalım şimdilik */}
+                    <LegoHeadIcon mode="search" className="w-[28px] h-[28px]" color="text-white" />
+                </div>
+                <div className="flex flex-col">
+                  <h2 className="text-4xl font-black text-gray-900">Haberler</h2>
+                  <span className="text-xs font-bold uppercase tracking-widest text-[#D22B2B] mt-1">GÜNCEL BLOG</span>
+                </div>
+              </div>
+            }
+            actionButton={
+              <Link href="/haberler" className="bg-[#D22B2B] text-white font-bold py-3 px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[11px] block text-center">Tüm Haberler</Link>
+            }
+          >
+            {latestNews.map(newsItem => (
+              <NewsCard  
+                key={newsItem.id}
+                slug={newsItem.slug || newsItem.id}
+                title={newsItem.title}
+                imageUrl={newsItem.cover_image_url || 'https://via.placeholder.com/400x300.png?text=Görsel+Yok'}
+                views={newsItem.total_views || 0}
+                dailyViews={newsItem.daily_views || 0}
+                minRead={newsItem.min_read || 1}
+                comments={0} // Henüz comments view bağlamadık ama DB script hazırlandı. Şimdilik statik 0 atıyoruz prop'a
+              />
+            ))}
+            {latestNews.length === 0 && (
+              <p className="text-gray-400 font-bold px-8 mt-8 w-full text-center">Henüz yayınlanmış bir haber bulunmuyor.</p>
+            )}
+          </ItemCarousel>
+      </section>
+      
+      {/* Alt Kapak Alanı (Slider) - BOTTOM */}
+      <HeroSliderClient sliders={activeSliders?.filter(s => s.location === 'bottom') || []} />
       
     </div>
   );

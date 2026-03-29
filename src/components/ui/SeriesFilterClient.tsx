@@ -30,11 +30,11 @@ export default function SeriesFilterClient({
         params.set(name, value);
     }
 
-    router.push(`/seriler?${params.toString()}`);
+    router.push(`/seriler?${params.toString()}`, { scroll: false });
   };
 
   const clearFilters = () => {
-    router.push('/seriler');
+    router.push('/seriler', { scroll: false });
   };
 
   const hasFilters = currentCategory !== 'all' || currentSort !== 'newest' || currentSeries !== 'all';

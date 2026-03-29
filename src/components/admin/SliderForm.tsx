@@ -27,9 +27,10 @@ export default function SliderForm({ initialData, isEdit }: SliderFormProps) {
     image_url: initialData?.image_url || '',
     is_active: initialData?.is_active ?? true,
     sort_order: initialData?.sort_order ?? 10,
+    location: initialData?.location || 'top',
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const value = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value;
     setFormData(prev => ({ ...prev, [e.target.name]: value }));
   };
@@ -99,7 +100,7 @@ export default function SliderForm({ initialData, isEdit }: SliderFormProps) {
         if (error) throw error;
         toast.success("Yeni slayt kaydedildi! 🎉");
       }
-      router.push('/admin/sayfalar');
+      router.push('/admin/slaytlar');
     } catch (err: any) {
       toast.error("Kayıt Hatası: " + err.message);
     } finally {
@@ -113,7 +114,7 @@ export default function SliderForm({ initialData, isEdit }: SliderFormProps) {
       <div className="w-full bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="w-full max-w-[1600px] mx-auto px-12 py-6 flex items-center justify-between">
           <div className="flex items-center gap-3 text-[11px] font-black tracking-widest uppercase text-gray-500">
-            <Link href="/admin/sayfalar" className="hover:text-black transition-colors">KAPAKLAR (SLİDER)</Link>
+            <Link href="/admin/slaytlar" className="hover:text-black transition-colors">KAPAKLAR (SLİDER)</Link>
             <ChevronRight size={14} />
             <span className="text-black">{isEdit ? 'SLAYT DÜZENLE' : 'YENİ SLAYT EKLE'}</span>
           </div>
@@ -165,6 +166,18 @@ export default function SliderForm({ initialData, isEdit }: SliderFormProps) {
                 </div>
                 <div className="w-2/3 py-3 pr-4">
                     <textarea name="title" value={formData.title} onChange={handleChange} placeholder="Örn: Renkli dünyamıza hoş geldiniz!" required className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold placeholder:font-medium placeholder:opacity-30 resize-none h-16" />
+                </div>
+              </div>
+
+              <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+                <div className="w-1/3 py-5 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
+                    <label className="text-gray-900 block truncate font-black tracking-wide">Konum (Bölge)</label>
+                </div>
+                <div className="w-2/3 py-3 pr-4">
+                    <select name="location" value={formData.location} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold appearance-none cursor-pointer">
+                        <option value="top">Üst Slayt (Sayfa Başı - Hero)</option>
+                        <option value="bottom">Alt Slayt (Haberler Altı)</option>
+                    </select>
                 </div>
               </div>
 

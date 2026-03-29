@@ -36,9 +36,9 @@ export default function NewsletterBlock() {
   };
 
   return (
-    <section className="bg-[#0A0A0A] text-white w-full rounded-lg overflow-hidden flex flex-col md:flex-row items-center justify-between p-10 md:p-16 gap-10">
+    <section className="bg-black text-white w-full rounded-lg overflow-hidden flex flex-col md:flex-row items-center justify-between p-10 md:p-16 gap-10">
       <div className="w-full md:w-2/3 space-y-8">
-        <h3 className="text-3xl md:text-4xl font-extrabold leading-tight tracking-tight">
+        <h3 className="text-xl md:text-3xl font-extrabold leading-tight tracking-tight">
           Son çıkan mini figürleri ve güncel haberleri yakından takip etmek istiyorsanız e-mail haber grubuna abone olun!
         </h3>
         
@@ -64,7 +64,7 @@ export default function NewsletterBlock() {
       <div className="w-full md:w-1/3 flex justify-center md:justify-end">
         <div className="relative w-64 h-64 md:w-80 md:h-80 mr-4">
           <img 
-            src="/uploads/newsletter_lego.png" 
+            src="/images/newsletter-lego.jpg" 
             alt="Newsletter Lego Banner" 
             className="w-full h-full object-contain drop-shadow-2xl"
           />

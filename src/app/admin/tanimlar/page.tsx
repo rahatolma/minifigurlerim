@@ -96,13 +96,40 @@ export default function DefinitionsPage() {
     }
   }
 
-  const handleDeleteCategory = async (id: string, name: string) => {
-    if(!confirm(`DİKKAT: "${name}" alt tanımını silmek istediğinize emin misiniz?`)) return;
+  const handleDeleteCategory = async (id: string, name: string, type: string) => {
+    // 1. Serilerde Kullanım Kontrolü
+    const { count: seriesCount } = await supabase.from('series')
+      .select('*', { count: 'exact', head: true })
+      .eq('category', name);
+    
+    if (seriesCount && seriesCount > 0) {
+      toast.error(`SİLİNEMEZ! "${name}" isimli bu tanım ${seriesCount} farklı Seri içerisinde aktif olarak kullanılıyor.`);
+      return;
+    }
+
+    // 2. Figürlerde Kullanım Kontrolü (Standart sütunlar ve JSONB)
+    const [t, r, rr, b, c] = await Promise.all([
+      supabase.from('minifigures').select('*', { count: 'exact', head: true }).eq('type', name),
+      supabase.from('minifigures').select('*', { count: 'exact', head: true }).eq('role', name),
+      supabase.from('minifigures').select('*', { count: 'exact', head: true }).eq('rarity', name),
+      supabase.from('minifigures').select('*', { count: 'exact', head: true }).eq('brand', name),
+      supabase.from('minifigures').select('*', { count: 'exact', head: true }).contains('custom_attributes', { [type]: name })
+    ]);
+
+    const totalFigCount = (t.count||0) + (r.count||0) + (rr.count||0) + (b.count||0) + (c.count||0);
+    
+    if (totalFigCount > 0) {
+      toast.error(`SİLİNEMEZ! "${name}" isimli bu tanım ${totalFigCount} farklı Figür içerisinde aktif olarak kullanılıyor.`);
+      return;
+    }
+
+    if(!confirm(`Bütün denetimler temiz. "${name}" alt tanımını silmek istediğinize emin misiniz?`)) return;
+    
     const { error } = await supabase.from('categories').delete().eq('id', id);
     if(error) {
         toast.error("Silme hatası: " + error.message);
     } else {
-        toast.success("Alt Tanım silindi.");
+        toast.success("Alt Tanım başarıyla silindi.");
         fetchData();
     }
   }
@@ -222,7 +249,7 @@ export default function DefinitionsPage() {
                                                 <td className="px-8 py-5 font-black text-gray-900 w-1/2">{c.name}</td>
                                                 <td className="px-8 py-5 text-gray-400 text-[11px] font-medium w-1/3 group-hover:text-gray-500">{c.slug}</td>
                                                 <td className="px-8 py-5 text-right w-1/6">
-                                                    <button onClick={() => handleDeleteCategory(c.id, c.name)} className="p-2 text-gray-300 hover:text-red-600 hover:bg-red-50 rounded-md transition-all opacity-0 group-hover:opacity-100">
+                                                    <button onClick={() => handleDeleteCategory(c.id, c.name, c.type)} className="p-2 text-gray-300 hover:text-red-600 hover:bg-red-50 rounded-md transition-all opacity-0 group-hover:opacity-100">
                                                         <Trash2 size={16} />
                                                     </button>
                                                 </td>

@@ -178,4 +178,41 @@
     display: block;
     height: auto !important; /* Forces stretch inside flex */
   }
+
+  /* --- Quill Zengin Metin Editörü Granüler Font Boyutu Özelleştirmeleri --- */
+  .ql-snow .ql-picker.ql-size .ql-picker-label:not([data-value])::before,
+  .ql-snow .ql-picker.ql-size .ql-picker-item:not([data-value])::before { content: '16px (Normal)' !important; }
+
+  .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="12px"]::before,
+  .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="12px"]::before { content: '12px' !important; }
+  .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="14px"]::before,
+  .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="14px"]::before { content: '14px' !important; }
+  .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="18px"]::before,
+  .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="18px"]::before { content: '18px' !important; }
+  .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="20px"]::before,
+  .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="20px"]::before { content: '20px' !important; }
+  .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="22px"]::before,
+  .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="22px"]::before { content: '22px' !important; }
+  .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="24px"]::before,
+  .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="24px"]::before { content: '24px' !important; }
+  .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="28px"]::before,
+  .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="28px"]::before { content: '28px' !important; }
+  .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="32px"]::before,
+  .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="32px"]::before { content: '32px' !important; }
+  .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="36px"]::before,
+  .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="36px"]::before { content: '36px' !important; }
+  .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="48px"]::before,
+  .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="48px"]::before { content: '48px' !important; }
+
+  /* Ekrana basılırken kullanılacak asıl px değerleri */
+  .ql-size-12px, .prose .ql-size-12px { font-size: 12px !important; }
+  .ql-size-14px, .prose .ql-size-14px { font-size: 14px !important; }
+  .ql-size-18px, .prose .ql-size-18px { font-size: 18px !important; line-height: 1.5 !important; }
+  .ql-size-20px, .prose .ql-size-20px { font-size: 20px !important; line-height: 1.4 !important; }
+  .ql-size-22px, .prose .ql-size-22px { font-size: 22px !important; line-height: 1.4 !important; }
+  .ql-size-24px, .prose .ql-size-24px { font-size: 24px !important; line-height: 1.3 !important; }
+  .ql-size-28px, .prose .ql-size-28px { font-size: 28px !important; line-height: 1.3 !important; }
+  .ql-size-32px, .prose .ql-size-32px { font-size: 32px !important; line-height: 1.2 !important; }
+  .ql-size-36px, .prose .ql-size-36px { font-size: 36px !important; line-height: 1.2 !important; }
+  .ql-size-48px, .prose .ql-size-48px { font-size: 48px !important; line-height: 1.1 !important; }
 }

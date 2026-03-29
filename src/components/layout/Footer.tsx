@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import LegalNoticeButton from '@/components/ui/LegalNoticeButton';
 
 export default function Footer() {
   return (
@@ -44,6 +45,7 @@ export default function Footer() {
         <div>
           <h4 className="font-bold text-lg mb-8">Hakkımızda</h4>
           <ul className="space-y-4 font-semibold text-[15px] text-gray-800">
+            <li><Link href="/lego-hakkinda" className="text-red-600 hover:text-black">LEGO® Hakkında</Link></li>
             <li><Link href="/hakkimizda/kurumsal" className="text-red-600 hover:text-black">Kurumsal</Link></li>
             <li><Link href="/hakkimizda/misyon" className="hover:text-red-600">Misyonumuz</Link></li>
             <li><Link href="/iletisim" className="hover:text-red-600">Bize Ulaşın</Link></li>
@@ -80,9 +82,7 @@ export default function Footer() {
 
       <div className="max-w-7xl mx-auto px-8 mt-20 pt-8 border-t border-gray-300 flex flex-col md:flex-row items-center justify-between font-semibold text-[14px]">
         <p className="opacity-80">© Telif Hakkı 08/2024 - 2026 • Tüm Hakları Saklıdır • <span className="text-red-600 font-bold opacity-100">Minifigürlerim</span> tarafından geliştirilmiştir.</p>
-        <button className="bg-[#D22B2B] text-white font-bold py-3 px-8 rounded-md hover:bg-[#B22222] transition-colors mt-6 md:mt-0 tracking-wide text-sm">
-          Önemli Yasal Bilgilendirme
-        </button>
+        <LegalNoticeButton className="bg-[#D22B2B] text-white font-bold py-3 px-8 rounded-md hover:bg-[#B22222] transition-colors mt-6 md:mt-0 tracking-wide text-sm" />
       </div>
     </footer>
   );
