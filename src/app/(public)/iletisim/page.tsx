@@ -31,7 +31,7 @@ export default async function ContactPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-8 mt-10 mb-24 flex justify-center">
+      <div className="max-w-7xl mx-auto px-8 mt-8 mb-24 flex justify-center">
         <div className="w-full max-w-3xl">
             <div className="text-center mb-10">
                 <h1 className="text-3xl md:text-4xl font-black text-black">Sorunuz Mu Var?</h1>

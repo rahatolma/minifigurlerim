@@ -1,4 +1,4 @@
-import { supabase } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/server';
 import FigureCard from '@/components/ui/FigureCard';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import Link from 'next/link';
@@ -32,13 +32,41 @@ export default async function FiguresPage({
   const selectedRarity = (resolvedParams?.rarity as string) || 'all';
 
   // 1. Verileri SSR Üzerinden Çek
+  const serverClient = await createClient();
+  const { data: { user } } = await serverClient.auth.getUser();
+
   const [fRes, sRes] = await Promise.all([
-    supabase.from('minifigures').select('*'),
-    supabase.from('series').select('id, title').order('created_at', { ascending: false })
+    serverClient.from('minifigures').select('*'),
+    serverClient.from('series').select('id, title').order('created_at', { ascending: false })
   ]);
 
   let allFigures = fRes.data || [];
   const seriesList = sRes.data || [];
+
+  const userStatusMap: Record<string, 'have' | 'want'> = {};
+  const userSeriesProgressMap: Record<string, { percent: number, collected: number, total: number }> = {};
+  
+  if (user) {
+      const [{ data: userCollects }, { data: cachedStats }] = await Promise.all([
+         serverClient.from('user_collections').select('status, minifigure_id').eq('user_id', user.id),
+         serverClient.from('user_series_stats').select('*').eq('user_id', user.id)
+      ]);
+
+      if (userCollects) {
+          userCollects.forEach(c => {
+             if (c.minifigure_id && c.status) userStatusMap[c.minifigure_id] = c.status as 'have'|'want';
+          });
+      }
+      if (cachedStats) {
+          cachedStats.forEach(stat => {
+              userSeriesProgressMap[stat.series_id] = {
+                  percent: Number(stat.completion_percent),
+                  collected: stat.owned_count,
+                  total: stat.total_count
+              };
+          });
+      }
+  }
 
   // Dinamik Filtre Seçeneklerini Oluştur (null veya boş string eyle)
   const roles = Array.from(new Set(allFigures.map(f => f.role).filter(Boolean))) as string[];
@@ -79,7 +107,7 @@ export default async function FiguresPage({
       </div>
 
       {/* MİNİFİGÜR EVRİMİ (HERO TIMELINE) */}
-      <div className="w-full bg-[#fcfcfc] pt-16 pb-12 overflow-hidden relative border-b border-gray-100 z-10">
+      <div className="w-full bg-[#fcfcfc] pt-8 pb-12 overflow-hidden relative border-b border-gray-100 z-10">
          <div className="max-w-7xl mx-auto px-8 mb-12 text-center">
             <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter mb-4">
               Minifigürlerin <span className="text-[#D22B2B]">Evrimi</span>
@@ -117,9 +145,9 @@ export default async function FiguresPage({
       </div>
 
       {/* Filtreleme ve Sonuçların Başına Dönmek İçin Sabit Çıpa */}
-      <div id="filter-section" className="scroll-mt-[128px]"></div>
+      <div id="filter-section" className="scroll-mt-[150px]"></div>
 
-      <div className="sticky bg-[#fcfcfc] py-4 border-b border-gray-100 shadow-sm mb-6" style={{ top: '128px', zIndex: 40 }}>
+      <div className="sticky bg-[#fcfcfc] py-4 border-b border-gray-100 shadow-sm mb-6" style={{ top: '150px', zIndex: 40 }}>
         {/* YATAY FİLTRE BARI (Client-Side Auto Submit) */}
         <div className="max-w-7xl mx-auto px-8">
             <FiguresFilterClient 
@@ -147,14 +175,15 @@ export default async function FiguresPage({
                         {allFigures.map(fig => (
                             <FigureCard 
                                 key={fig.id} 
-                                id={fig.slug || fig.id}
+                                id={fig.id}
+                                slug={fig.slug}
                                 name={fig.name}
-                                seriesName={fig.series_name}
+                                seriesName={fig.series_name || 'Bilinmeyen Seri'}
                                 imageUrl={fig.images && fig.images.length > 0 ? fig.images[0] : 'https://via.placeholder.com/300x400.png?text=Görsel+Yok'}
-                                views={fig.total_views}
-                                dailyViews={fig.daily_views}
-                                minRead={0}
-                                comments={0}
+                                year={fig.release_year}
+                                rarity={fig.rarity}
+                                price={fig.value_usd}
+                                initialStatus={userStatusMap[fig.id] || null}
                             />
                         ))}
                     </div>

@@ -1,5 +1,6 @@
 import FigureCard from '@/components/ui/FigureCard';
 import { supabase } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/server';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import RichTextContent from '@/components/ui/RichTextContent';
@@ -8,6 +9,46 @@ import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import ClientViewTracker from '@/components/ui/ClientViewTracker';
 
 export const revalidate = 0; // Her zaman canlı veri
+
+import { Metadata, ResolvingMetadata } from 'next';
+
+// SEO Metadata Olusturucu
+export async function generateMetadata(
+  { params }: { params: Promise<{ slug: string }> },
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const resolvedParams = await params;
+  const slug = resolvedParams.slug;
+  const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
+  const queryCol = isUUID ? 'id' : 'slug';
+  
+  const { data: series } = await supabase.from('series').select('title, description, cover_image_url').eq(queryCol, slug).single();
+
+  if (!series) {
+    return { title: 'Seri Bulunamadı | Minifigürlerim' };
+  }
+
+  const defaultImage = 'https://minifigurlerim.com/og-image.jpg';
+  const seriesImage = series.cover_image_url || defaultImage;
+  const desc = series.description ? series.description.substring(0, 150) + '...' : `${series.title} serisindeki tüm minifigürler ve fiyat/borsa geçmişleri.`;
+
+  return {
+    title: `${series.title} | LEGO Minifigür Serileri`,
+    description: desc,
+    openGraph: {
+      title: `${series.title} | Komple Seri Rehberi`,
+      description: desc,
+      images: [seriesImage],
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${series.title} | LEGO Serileri`,
+      description: desc,
+      images: [seriesImage],
+    }
+  };
+}
 
 export default async function SeriesDetail({
   params,
@@ -36,6 +77,34 @@ export default async function SeriesDetail({
     .order('created_at', { ascending: false });
     
   const figures = figuresData || [];
+
+  const serverClient = await createClient();
+  const { data: { user } } = await serverClient.auth.getUser();
+
+  const userStatusMap: Record<string, 'have' | 'want'> = {};
+  const userSeriesProgressMap: Record<string, { percent: number, collected: number, total: number }> = {};
+  
+  if (user) {
+      const [{ data: userCollects }, { data: cachedStats }] = await Promise.all([
+         serverClient.from('user_collections').select('status, minifigure_id').eq('user_id', user.id).in('minifigure_id', figures.map(f => f.id)),
+         serverClient.from('user_series_stats').select('*').eq('user_id', user.id).eq('series_id', series.id)
+      ]);
+
+      if (userCollects) {
+          userCollects.forEach(c => {
+             if (c.minifigure_id && c.status) userStatusMap[c.minifigure_id] = c.status as 'have'|'want';
+          });
+      }
+      if (cachedStats) {
+          cachedStats.forEach(stat => {
+              userSeriesProgressMap[stat.series_id] = {
+                  percent: Number(stat.completion_percent),
+                  collected: stat.owned_count,
+                  total: stat.total_count
+              };
+          });
+      }
+  }
 
   return (
     <div className="bg-white min-h-screen pb-20 w-full">
@@ -179,18 +248,19 @@ export default async function SeriesDetail({
                 <h2 className="text-xl font-black text-gray-400 uppercase tracking-widest">Bu seriye henüz bir figür eklenmemiş...</h2>
             </div>
         ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-5">
                 {figures.map((fig: any) => (
                     <FigureCard 
                         key={fig.id} 
-                        id={fig.slug || fig.id}
+                        id={fig.id}
+                        slug={fig.slug}
                         name={fig.name}
                         seriesName={series.title}
                         imageUrl={(fig.images && fig.images.length > 0) ? fig.images[0] : 'https://via.placeholder.com/300x400.png?text=Görsel+Yok'}
-                        views={0}
-                        dailyViews={0}
-                        minRead={0}
-                        comments={0}
+                        year={fig.release_year}
+                        rarity={fig.rarity}
+                        price={fig.value_usd}
+                        initialStatus={userStatusMap[fig.id] || null}
                     />
                 ))}
             </div>

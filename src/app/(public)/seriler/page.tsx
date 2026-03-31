@@ -3,6 +3,9 @@ import SeriesFilterClient from '@/components/ui/SeriesFilterClient';
 import Link from 'next/link';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import { supabase } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/server';
+import ScrollDownHint from '@/components/ui/ScrollDownHint';
+import AuthCTA from '@/components/ui/AuthCTA';
 
 const CMF_HISTORY = [
   { year: '2010', date: 'Mayıs 2010', title: 'Seri 1', desc: 'Sarı kafalar ve 16 figürlük kör paketlerle tüm dünyanın peşinden koşacağı efsane doğdu.' },
@@ -64,6 +67,38 @@ export default async function SeriesPage({
     filteredSeries = [...filteredSeries].sort((a, b) => (b.total_views || 0) - (a.total_views || 0));
   }
 
+  // YENİ: Kullanıcı Progress (Gamification) Tablosunu Çek
+  const serverClient = await createClient();
+  const { data: { user } } = await serverClient.auth.getUser();
+  const userSeriesProgressMap: Record<string, { percent: number, collected: number, total: number }> = {};
+
+  if (user) {
+      const { data: cachedStats } = await serverClient.from('user_series_stats').select('*').eq('user_id', user.id);
+      if (cachedStats) {
+          cachedStats.forEach(stat => {
+              userSeriesProgressMap[stat.series_id] = {
+                  percent: Number(stat.completion_percent),
+                  collected: stat.owned_count,
+                  total: stat.total_count
+              };
+          });
+      }
+  }
+
+  const { data: allFigs } = await serverClient.from('minifigures').select('series_id, name, images').order('created_at', { ascending: false });
+  const seriesFigStats: Record<string, { count: number, latestName: string | null, samples: string[] }> = {};
+  if (allFigs) {
+     allFigs.forEach(f => {
+         if (!seriesFigStats[f.series_id]) {
+             seriesFigStats[f.series_id] = { count: 0, latestName: f.name, samples: [] };
+         }
+         seriesFigStats[f.series_id].count += 1;
+         if (f.images && f.images.length > 0 && seriesFigStats[f.series_id].samples.length < 3) {
+             seriesFigStats[f.series_id].samples.push(f.images[0]);
+         }
+     });
+  }
+
   return (
     <div className="bg-[#fcfcfc] min-h-screen">
       
@@ -79,8 +114,8 @@ export default async function SeriesPage({
       </div>
 
       {/* YATAY EFSANELER ZAMAN ÇİZELGESİ (CMF HISTORY) */}
-      <div className="w-full bg-[#fcfcfc] pt-16 pb-16 overflow-hidden relative border-b border-gray-100">
-         <div className="max-w-7xl mx-auto px-8 mb-16 md:mb-24 text-center">
+      <div className="w-full bg-[#fcfcfc] pt-8 pb-16 overflow-hidden relative border-b border-gray-100">
+         <div className="max-w-7xl mx-auto px-8 mb-8 md:mb-16 text-center">
             <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter mb-4">
               <span className="text-[#D22B2B]">CMF</span> Serüveni
             </h2>
@@ -153,17 +188,10 @@ export default async function SeriesPage({
          </div>
 
          {/* Scroll Down Hint (False Floor Engelleyici) */}
-         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center animate-bounce opacity-70 hover:opacity-100 transition-opacity z-10 pointer-events-none">
-             <span className="text-[10px] uppercase font-black tracking-widest text-gray-400 mb-1">AŞAĞI KAYDIR</span>
-             <div className="w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center border border-gray-100 text-[#D22B2B]">
-                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                 </svg>
-             </div>
-         </div>
+         <ScrollDownHint />
       </div>
 
-      <div className="sticky bg-[#fcfcfc] py-4 border-b border-gray-100 shadow-sm mb-6 z-30" style={{ top: '128px' }}>
+      <div className="sticky bg-[#fcfcfc] py-4 border-b border-gray-100 shadow-sm mb-6 z-30" style={{ top: '150px' }}>
         <div className="max-w-7xl mx-auto px-8">
           <SeriesFilterClient 
             categories={categoryFilters}
@@ -184,10 +212,13 @@ export default async function SeriesPage({
                 id={series.slug || series.id}
                 title={series.title}
                 imageUrl={series.cover_image_url || 'https://via.placeholder.com/400x300.png?text=Görsel+Yok'}
-                views={series.total_views || 0}
-                dailyViews={series.daily_views || 0}
-                minRead={Math.max(1, Math.floor((series.description?.length || 0) / 250))}
-                comments={0}
+                year={series.release_year || (series.created_at ? new Date(series.created_at).getFullYear() : '2010')}
+                category={series.category || 'CMF'}
+                totalFigures={series.figure_count || seriesFigStats[series.id]?.count || 0}
+                rarity={series.rarity || 'Yaygın'}
+                latestFigureName={seriesFigStats[series.id]?.latestName || null}
+                seriesProgress={userSeriesProgressMap[series.id] || null}
+                isLoggedIn={!!user}
             />
           ))}
         </div>
@@ -198,6 +229,13 @@ export default async function SeriesPage({
             <LegoHeadIcon mode="search" className="w-24 h-24 mb-6" color="text-gray-200" />
             <h2 className="text-xl font-black text-gray-800 uppercase tracking-widest mb-2">Bulunamadı</h2>
             <p className="text-sm font-medium text-gray-500 max-w-sm">Mevcut filtrelere uyan bir LEGO serisi bulunmuyor. Diğer seçenekleri deneyebilirsin.</p>
+          </div>
+        )}
+
+        {/* ERIŞİM AÇ CTA BLOĞU (GİRİŞ YAPILMADIYSA) */}
+        {!user && (
+          <div className="mt-20 max-w-4xl mx-auto">
+             <AuthCTA />
           </div>
         )}
       </div>

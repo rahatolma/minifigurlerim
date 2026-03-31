@@ -16,11 +16,13 @@
     "embla-carousel-react": "^8.6.0",
     "lucide-react": "^1.7.0",
     "next": "16.2.1",
+    "oauth-1.0a": "^2.2.6",
     "posthog-js": "^1.364.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-hot-toast": "^2.6.0",
-    "react-quill-new": "^3.8.3"
+    "react-quill-new": "^3.8.3",
+    "recharts": "^3.8.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

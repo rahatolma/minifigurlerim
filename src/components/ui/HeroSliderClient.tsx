@@ -57,20 +57,30 @@ export default function HeroSliderClient({ sliders }: { sliders: any[] }) {
                             .replace(/<[^>]*>?/gm, '')
                             .replace(/\n|\r/g, ' ')
                             .replace('kapılarını aralayın', 'kapılarını <br className="hidden sm:block" /> aralayın')
+                            .replace('Koleksiyon dünyasının', '<br />Koleksiyon dünyasının')
                 }}
               />
             )}
             <div className="flex gap-4 justify-center mt-10">
               {slide.button1_text && (
-                <Link href={slide.button1_link || '#'} className="bg-[#D22B2B] text-white font-bold py-4 px-12 rounded-sm shadow-[0_4px_14px_rgba(210,43,43,0.4)] hover:bg-[#B22222] transition-colors uppercase tracking-widest text-sm inline-block">
+                <Link href={slide.button1_link || '#'} className="bg-[#D22B2B] border-2 border-[#D22B2B] text-white font-bold py-4 px-12 rounded-sm shadow-[0_4px_14px_rgba(210,43,43,0.4)] hover:bg-white hover:text-[#111] hover:border-white transition-colors uppercase tracking-widest text-sm inline-block">
                   {slide.button1_text}
                 </Link>
               )}
               {slide.button2_text && (
-                <Link href={slide.button2_link || '#'} className="bg-transparent border-2 border-white text-white font-bold py-4 px-12 rounded-sm hover:bg-white hover:text-black transition-colors uppercase tracking-widest text-sm inline-block">
+                <Link href={slide.button2_link || '#'} className="bg-transparent border-2 border-white text-white font-bold py-4 px-12 rounded-sm hover:bg-[#D22B2B] hover:border-[#D22B2B] transition-colors uppercase tracking-widest text-sm inline-block">
                   {slide.button2_text}
                 </Link>
               )}
+            </div>
+
+            {/* Alt Mini Güven Satırı (Trust Badge) */}
+            <div className="flex items-center justify-center gap-3 md:gap-4 mt-8 text-[10px] md:text-sm font-bold tracking-widest uppercase text-white/70">
+              <span className="drop-shadow-md">1000+ FİGÜR</span>
+              <span className="text-white/40">•</span>
+              <span className="drop-shadow-md">25+ SERİ</span>
+              <span className="text-white/40 hidden sm:inline-block">•</span>
+              <span className="drop-shadow-md hidden sm:inline-block">SÜREKLİ GÜNCELLENEN İÇERİK</span>
             </div>
           </div>
         </div>

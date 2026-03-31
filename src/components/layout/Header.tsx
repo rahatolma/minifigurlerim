@@ -1,13 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { Search } from 'lucide-react';
 import { usePathname } from 'next/navigation';
+import { logOut } from '@/app/(auth)/login/actions';
 import LegalNoticeButton from '@/components/ui/LegalNoticeButton';
 import LegalNoticeModal from '@/components/ui/LegalNoticeModal';
 
-export default function Header() {
+export default function Header({ user }: { user?: any }) {
   const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // Aktif sayfa link rengini belirlemek için yardımcı fonksiyon.
   const getLinkClass = (href: string) => {
@@ -28,7 +31,7 @@ export default function Header() {
     <>
     <header className="w-full flex-col sticky top-0 z-50 bg-white shadow-sm">
       {/* Top Tier: Logo & Search */}
-      <div className="text-black px-8 flex flex-col md:flex-row items-center mx-auto max-w-7xl md:h-[64px]">
+      <div className="text-black px-8 flex flex-col md:flex-row items-center mx-auto max-w-7xl md:h-[75px]">
         {/* Logo %25 */}
         <div className="w-full md:w-1/4 mb-4 md:mb-0 hidden md:block">
             <Link href="/" className="inline-block flex items-center h-full">
@@ -37,14 +40,43 @@ export default function Header() {
         </div>
         
         {/* Önemli Yasal Bilgilendirme Butonu %75 Sağa Yaslı */}
-        <div className="w-full md:w-3/4 flex justify-end items-center">
+        <div className="w-full md:w-3/4 flex justify-end items-center gap-3">
            <LegalNoticeButton className="bg-[#1D2136] text-white font-black py-2.5 px-6 rounded-sm shadow-md hover:bg-[#131627] transition-colors tracking-widest uppercase text-[10px]" />
+           {user ? (
+             <div className="relative">
+                <button onClick={() => setMenuOpen(!menuOpen)} className="bg-gray-100 text-gray-800 font-black py-2.5 px-6 rounded-sm shadow-sm hover:bg-gray-200 border border-gray-200 transition-colors tracking-widest uppercase text-[10px] flex items-center gap-2">
+                   {user.email?.split('@')[0] || 'Hesabım'} ▼
+                </button>
+                
+                {menuOpen && (
+                  <>
+                    <div className="fixed inset-0 z-50" onClick={() => setMenuOpen(false)}></div>
+                    <div className="absolute right-0 top-full pt-2 z-[60]" style={{ width: '200px' }}>
+                       <div className="bg-white border border-gray-100 shadow-xl rounded-xl flex flex-col py-2">
+                           <Link onClick={() => setMenuOpen(false)} href="/koleksiyonum" className="px-4 py-2 hover:bg-gray-50 text-xs font-bold text-gray-700">Koleksiyonum</Link>
+                           <Link onClick={() => setMenuOpen(false)} href="/koleksiyonum/ayarlar" className="px-4 py-2 hover:bg-gray-50 text-xs font-bold text-gray-700">Ayarlar</Link>
+                           <div className="w-full h-px bg-gray-100 my-1"></div>
+                           <form action={logOut}>
+                              <button type="submit" className="w-full text-left px-4 py-2 hover:bg-red-50 text-xs font-bold text-red-600 cursor-pointer">
+                                 Güvenli Çıkış Yap
+                              </button>
+                           </form>
+                       </div>
+                    </div>
+                  </>
+                )}
+             </div>
+           ) : (
+             <Link href="/login" className="bg-gray-100 text-gray-800 font-black py-2.5 px-6 rounded-sm shadow-sm hover:bg-gray-200 border border-gray-200 transition-colors tracking-widest uppercase text-[10px]">
+                Giriş Yap
+             </Link>
+           )}
         </div>
       </div>
 
       {/* Bottom Tier: Navigation */}
       <div className="bg-[var(--color-brand-red)] w-full shadow-md">
-        <div className="mx-auto max-w-7xl flex flex-col md:flex-row items-center md:h-[64px] relative">
+        <div className="mx-auto max-w-7xl flex flex-col md:flex-row items-center md:h-[75px] relative">
           
           {/* Nav Links */}
           <nav className="w-full h-full flex items-center justify-center px-4 lg:px-8">

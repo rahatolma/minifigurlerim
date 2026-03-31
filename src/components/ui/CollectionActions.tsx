@@ -1,0 +1,179 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { toggleCollectionStatus, saveRating } from '@/app/actions/collection';
+import { useRouter } from 'next/navigation';
+
+export default function CollectionActions({
+  minifigureId,
+  isLoggedIn,
+  initialStatus,
+  initialRating,
+} : {
+  minifigureId: string;
+  isLoggedIn: boolean;
+  initialStatus: string | null;
+  initialRating: number | null;
+}) {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<string | null>(initialStatus);
+  const [rating, setRating] = useState<number | null>(initialRating);
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleToggle = async (type: 'have' | 'want') => {
+    if (!isLoggedIn) {
+       router.push('/login');
+       return;
+    }
+
+    setLoading(true);
+    const result = await toggleCollectionStatus(minifigureId, status, type);
+    
+    if (result?.success) {
+       // Toggle logic in UI
+       setStatus(status === type ? null : type);
+    } else {
+       alert(result?.error || 'Bir hata oluştu.');
+    }
+    setLoading(false);
+  };
+
+  const submitRating = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      if (!isLoggedIn) return router.push('/login');
+      
+      const form = e.currentTarget;
+      const formData = new FormData(form);
+      const starStr = formData.get('rating') as string;
+      const comment = formData.get('comment') as string;
+      const star = parseInt(starStr, 10);
+
+      if (!star) return;
+
+      setLoading(true);
+      const result = await saveRating(minifigureId, star, comment);
+      
+      if (result?.success) {
+         setRating(star);
+         setShowRatingModal(false);
+      } else {
+         alert(result?.error || 'Puanlama yapılamadı.');
+      }
+      setLoading(false);
+  };
+
+  return (
+    <div className="w-full flex flex-col gap-4">
+       {/* 0. BAŞARI ROZETİ (GAMIFICATION) */}
+       {status === 'have' && (
+           <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4 flex items-center justify-between mb-2 shadow-sm animate-in fade-in slide-in-from-bottom-2">
+               <div className="flex items-center gap-3">
+                   <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white shrink-0 shadow-md">
+                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+                   </div>
+                   <div>
+                       <h4 className="text-green-800 font-black text-sm uppercase tracking-wider mb-0.5">Senin Koleksiyonunda</h4>
+                       <p className="text-green-700 font-medium text-[11px]">Bu figür kasana başarıyla eklendi.</p>
+                   </div>
+               </div>
+           </div>
+       )}
+
+       {/* 1. Bende Var / İstiyorum Buton Grubu */}
+       <div className="flex flex-col gap-3 w-full">
+          <button 
+             onClick={() => handleToggle('have')}
+             disabled={loading}
+             className={`w-full flex items-center justify-center gap-3 py-4 px-6 rounded-2xl transition-all border-2 ${status === 'have' ? 'bg-white border-green-500 text-green-600 shadow-sm opacity-50 hover:opacity-100' : 'bg-[#D22B2B] border-[#D22B2B] text-white hover:bg-red-700 hover:border-red-700 shadow-xl hover:-translate-y-1'}`}
+          >
+             {status === 'have' ? (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+             ) : (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"></path></svg>
+             )}
+             <span className="text-[13px] md:text-[14px] uppercase tracking-widest font-black">
+                {status === 'have' ? 'Koleksiyondan Çıkar' : 'Koleksiyonuma Ekle'}
+             </span>
+          </button>
+          
+          <button 
+             onClick={() => handleToggle('want')}
+             disabled={loading}
+             className={`w-full flex items-center justify-center gap-3 py-3.5 px-6 rounded-xl transition-all border-2 ${status === 'want' ? 'bg-red-50 border-red-200 text-[#D22B2B] font-bold shadow-inner' : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100 hover:border-gray-300 font-medium shadow-sm'}`}
+          >
+             {status === 'want' ? (
+                <svg className="w-5 h-5 text-[#D22B2B]" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd"></path></svg>
+             ) : (
+                <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+             )}
+             <span className="text-[11px] md:text-[12px] uppercase tracking-[0.15em]">
+                {status === 'want' ? ' Radarımda (İstek)' : ' Radarıma (İstek) Ekle'}
+             </span>
+          </button>
+       </div>
+
+       {/* 2. Değerlendirme / Puanlama */}
+       <button 
+          onClick={() => {
+             if(!isLoggedIn) return router.push('/login');
+             setShowRatingModal(true);
+          }}
+          className={`w-full py-3 px-4 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.04)] border flex items-center justify-center gap-2 font-bold text-sm transition-all ${rating ? 'bg-yellow-50 border-yellow-200 text-yellow-800' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'}`}
+       >
+          <span className="text-yellow-400 text-lg">★</span> 
+          {rating ? `${rating} Yıldız Puanı Verdin` : 'Figüre Puan Ver'}
+       </button>
+
+       {/* Puanlama Modalı (Portal) */}
+       {mounted && showRatingModal && createPortal(
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+             <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl relative">
+                <button onClick={() => setShowRatingModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-black">
+                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+                <h3 className="text-xl font-black text-center mb-2">Figürü Oyla</h3>
+                <p className="text-xs text-gray-500 font-medium text-center mb-6">Diğer koleksiyonerler için bu figürün kalitesini derecelendir.</p>
+                
+                <form onSubmit={submitRating} className="flex flex-col gap-6">
+                   <div className="flex justify-center gap-2 flex-row-reverse star-rating-group mb-4">
+                      {[5,4,3,2,1].map((val) => (
+                         <div key={val} className="contents">
+                           <input type="radio" id={`star${val}`} name="rating" value={val} className="hidden" defaultChecked={rating === val} required />
+                           <label htmlFor={`star${val}`} className="text-4xl text-gray-200 cursor-pointer transition-colors">★</label>
+                         </div>
+                      ))}
+                   </div>
+                   
+                   <button type="submit" disabled={loading} className="w-full bg-black text-white font-black py-4 rounded-xl hover:bg-gray-900 transition-colors uppercase tracking-widest text-xs">
+                       Puanı Kaydet
+                   </button>
+                </form>
+             </div>
+             
+             {/* Simple CSS for star hover and checked effect mapping over display:contents */}
+             <style dangerouslySetInnerHTML={{__html: `
+                /* Hover state */
+                .star-rating-group .contents:hover ~ .contents label,
+                .star-rating-group .contents:hover label {
+                   color: #FACC15 !important;
+                }
+                
+                /* Checked state */
+                .star-rating-group .contents:has(input:checked) ~ .contents label,
+                .star-rating-group .contents:has(input:checked) label {
+                   color: #FACC15 !important;
+                }
+             `}} />
+          </div>,
+          document.body
+       )}
+    </div>
+  );
+}

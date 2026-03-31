@@ -32,6 +32,7 @@ export default function Sidebar() {
           <div className="mt-8 mb-2">
             <p className="text-[10px] text-gray-400 font-bold px-4 tracking-widest uppercase">Sayfalar</p>
           </div>
+          <Link href="/admin/kullanicilar" className={`block px-4 py-3 rounded-md text-[13px] font-bold transition-colors ${pathname?.startsWith('/admin/kullanicilar') ? 'bg-white text-black shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}>Kullanıcı(Üye) Yönetimi</Link>
           <Link href="/admin/hakkimizda" className={`block px-4 py-3 rounded-md text-[13px] font-bold transition-colors ${pathname === '/admin/hakkimizda' ? 'bg-white text-black shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}>Hakkımızda</Link>
           <Link href="/admin/haberler" className={`block px-4 py-3 rounded-md text-[13px] font-bold transition-colors ${pathname?.startsWith('/admin/haberler') ? 'bg-white text-black shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}>Haberler</Link>
           <Link href="/admin/sss" className={`block px-4 py-3 rounded-md text-[13px] font-bold transition-colors ${pathname?.startsWith('/admin/sss') ? 'bg-white text-black shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}>Sıkça Sorular</Link>
@@ -42,6 +43,7 @@ export default function Sidebar() {
           <Link href="/admin/tanimlar" className={`block px-4 py-3 rounded-md text-[13px] font-bold transition-colors ${pathname?.startsWith('/admin/tanimlar') ? 'bg-white text-black shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}>Özellikler (Tanımlar)</Link>
           <Link href="/admin/seriler" className={`block px-4 py-3 rounded-md text-[13px] font-bold transition-colors ${pathname?.startsWith('/admin/seriler') ? 'bg-white text-black shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}>Seriler</Link>
           <Link href="/admin/figurler" className={`block px-4 py-3 rounded-md text-[13px] font-bold transition-colors ${pathname?.startsWith('/admin/figurler') ? 'bg-white text-black shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}>Figürler</Link>
+          <Link href="/admin/borsa" className={`block px-4 py-3 rounded-md text-[13px] font-black tracking-wide transition-colors ${pathname?.startsWith('/admin/borsa') ? 'bg-green-500 text-white shadow-sm' : 'text-[#5CB85C] hover:text-white hover:bg-[#5CB85C]/10'}`}>Borsa (Piyasa Yapıcı)</Link>
           <Link href="/admin/slaytlar" className={`block px-4 py-3 rounded-md text-[13px] font-bold transition-colors ${pathname?.startsWith('/admin/slaytlar') ? 'bg-white text-black shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}>Slaytlar</Link>
 
           <div className="mt-8 mb-2">
