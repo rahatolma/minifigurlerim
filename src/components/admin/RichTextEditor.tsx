@@ -36,7 +36,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
   }), []);
 
   return (
-    <div className="bg-white rounded-md border border-gray-200" style={{ minHeight: '300px' }}>
+    <div className="bg-white rounded-md flex flex-col" style={{ minHeight: '300px' }}>
       <ReactQuill 
         theme="snow" 
         value={value} 
@@ -48,11 +48,22 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
       <style jsx global>{`
         /* Editör CSS Düzeltmeleri */
         .ql-container {
-          font-size: 14px !important;
+          font-size: 16px !important;
           font-family: inherit !important;
         }
         .ql-editor {
           min-height: 250px;
+          line-height: 1.6 !important;
+        }
+        .ql-editor p {
+          margin-bottom: 1em !important;
+        }
+        /* Toolbar select width fix */
+        .ql-snow .ql-picker.ql-size {
+          width: 140px !important;
+        }
+        .ql-snow .ql-picker.ql-header {
+          width: 100px !important;
         }
         .ql-toolbar {
           border-top-left-radius: 6px;

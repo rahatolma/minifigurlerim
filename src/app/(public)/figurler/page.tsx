@@ -3,19 +3,20 @@ import FigureCard from '@/components/ui/FigureCard';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import Link from 'next/link';
 import FiguresFilterClient from '@/components/ui/FiguresFilterClient';
+import DragScrollContainer from '@/components/ui/DragScrollContainer';
 
 
 const MINIFIGURE_EVOLUTION = [
-  { year: '1978', title: 'Klasik Yüz', desc: 'Legoland Town ile klasik sarı gülümseme doğdu.', icon: 'happy', color: 'text-[#F2CD37]' }, // Bright Yellow
-  { year: '1989', title: 'Korsan Çağı', desc: 'Sakal, bıyık ve göz bantları eklendi.', icon: 'neutral', color: 'text-[#C91A09]' }, // Bright Red
-  { year: '1990', title: 'Uzaylılar', desc: 'Bambaşka ve asimetrik yüzler üretildi.', icon: 'eye', color: 'text-[#237841]' }, // Dark Green
-  { year: '1992', title: 'Çil ve Detay', desc: 'Paradisa temasıyla çiller ve dudak izleri geldi.', icon: 'happy', color: 'text-[#C870A0]' }, // Bright Red Violet
-  { year: '1996', title: 'Alevin Ruhu', desc: 'Kafanın içinden dışarı saçılan efektler tasarlandı.', icon: 'fire', color: 'text-[#FE8A18]' }, // Bright Orange
-  { year: '2001', title: 'Büyüteçli', desc: 'Tasarım teknolojisinin zirvesindeki yüzler.', icon: 'search', color: 'text-[#0055BF]' }, // Bright Blue
-  { year: '2010', title: 'CMF Dönemi', desc: 'Kör paket devrimi ile eşsiz koleksiyon yüzleri.', icon: 'happy', color: 'text-[#E3000B]' }, // Classic Red
-  { year: '2014', title: 'Lisanslı Yüzler', desc: 'Simpsons gibi IP kalıplarına özel yüzler yapıldı.', icon: 'neutral', color: 'text-[#002056]' }, // Earth Blue
-  { year: '2018', title: 'Altın Çağ', desc: '20. yılına özel çok nadide baskılar kullanıldı.', icon: 'fire', color: 'text-[#AA7F2E]' }, // Warm Gold
-  { year: '2024', title: 'Modern Dönem', desc: 'Detay seviyesi film stüdyolarındaki kaliteye ulaştı.', icon: 'search', color: 'text-[#A0A5A9]' }, // Medium Stone Grey
+  { year: '1978', title: 'Klasik Yüz', desc: 'Legoland Town ile klasik sarı gülümseme doğdu.', icon: 'happy', color: 'text-[#F2CD37]' },
+  { year: '1989', title: 'Korsan Çağı', desc: 'Sakal, bıyık ve göz bantları eklendi.', icon: 'neutral', color: 'text-[#F2CD37]' },
+  { year: '1990', title: 'Uzaylılar', desc: 'Bambaşka ve asimetrik yüzler üretildi.', icon: 'eye', color: 'text-[#F2CD37]' },
+  { year: '1992', title: 'Çil ve Detay', desc: 'Paradisa temasıyla çiller ve dudak izleri geldi.', icon: 'happy', color: 'text-[#F2CD37]' },
+  { year: '1996', title: 'Alevin Ruhu', desc: 'Kafanın içinden dışarı saçılan efektler tasarlandı.', icon: 'fire', color: 'text-[#F2CD37]' },
+  { year: '2001', title: 'Büyüteçli', desc: 'Tasarım teknolojisinin zirvesindeki yüzler.', icon: 'search', color: 'text-[#F2CD37]' },
+  { year: '2010', title: 'CMF Dönemi', desc: 'Kör paket devrimi ile eşsiz koleksiyon yüzleri.', icon: 'happy', color: 'text-[#F2CD37]' },
+  { year: '2014', title: 'Lisanslı Yüzler', desc: 'Simpsons gibi IP kalıplarına özel yüzler yapıldı.', icon: 'neutral', color: 'text-[#F2CD37]' },
+  { year: '2018', title: 'Altın Çağ', desc: '20. yılına özel çok nadide baskılar kullanıldı.', icon: 'fire', color: 'text-[#F2CD37]' },
+  { year: '2024', title: 'Modern Dönem', desc: 'Detay seviyesi film stüdyolarındaki kaliteye ulaştı.', icon: 'search', color: 'text-[#F2CD37]' },
 ];
 
 export const revalidate = 0; // Her zaman güncel
@@ -119,14 +120,14 @@ export default async function FiguresPage({
          </div>
 
          {/* Animasyonlu Kaydırma Alanı */}
-         <div className="w-full overflow-x-auto pb-10 pt-4 snap-x snap-mandatory px-4 md:px-12 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style={{ scrollBehavior: 'smooth' }}>
-            <div className="flex items-center gap-12 sm:gap-16 w-max mx-auto relative px-8">
+         <DragScrollContainer className="w-full pb-10 pt-4 snap-x snap-mandatory px-4 md:px-12">
+            <div className="flex items-center gap-12 sm:gap-16 w-max md:min-w-full md:justify-center relative px-8 pointer-events-auto">
                {/* Arka plan bağlayıcı çizgisi */}
                <div className="absolute top-[48px] sm:top-[56px] left-0 right-0 h-0.5 bg-gray-200 -z-10"></div>
             
                {MINIFIGURE_EVOLUTION.map((item, index) => (
-                  <div key={index} className="flex flex-col items-center justify-start snap-center shrink-0 w-[140px] group transition-all duration-300">
-                      <div className="relative w-24 h-24 sm:w-28 sm:h-28 bg-white rounded-full shadow-md border-2 border-transparent group-hover:border-[#D22B2B]/20 flex items-center justify-center mb-6 transform transition-transform duration-500 group-hover:-translate-y-2 group-hover:shadow-[0_15px_30px_rgba(210,43,43,0.15)] group-hover:scale-105 z-10">
+                  <div key={index} className="flex flex-col items-center justify-start snap-center shrink-0 w-[140px] group transition-all duration-300 pointer-events-none">
+                      <div className="relative w-24 h-24 sm:w-28 sm:h-28 bg-white rounded-full shadow-md border-2 border-transparent group-hover:border-[#D22B2B]/20 flex items-center justify-center mb-6 transform transition-transform duration-500 group-hover:-translate-y-2 group-hover:shadow-[0_15px_30px_rgba(210,43,43,0.15)] group-hover:scale-105 z-10 pointer-events-auto cursor-pointer">
                           <LegoHeadIcon mode={item.icon as any} color={item.color} className="w-14 h-14 sm:w-16 sm:h-16 transition-transform duration-300" />
                           
                           {/* Yıl Rozeti */}
@@ -141,7 +142,7 @@ export default async function FiguresPage({
                   </div>
                ))}
             </div>
-         </div>
+         </DragScrollContainer>
          
       </div>
 

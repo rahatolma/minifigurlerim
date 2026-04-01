@@ -9,6 +9,7 @@ import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import ClientViewTracker from '@/components/ui/ClientViewTracker';
 import AuthCTA from '@/components/ui/AuthCTA';
 import BlockRenderer from '@/components/blocks/BlockRenderer';
+import FloatingSeriesNav from '@/components/ui/FloatingSeriesNav';
 
 export const revalidate = 0; // Her zaman canlı veri
 
@@ -107,9 +108,39 @@ export default async function SeriesDetail({
           });
       }
   }
+  
+  const currentSeriesStats = userSeriesProgressMap[series.id] || {
+    percent: 0,
+    collected: 0,
+    total: series.figure_count || figures.length
+  };
+
+  // ÖNCEKİ / SONRAKİ SERİ YÖNLENDİRMESİ İÇİN (Floating Nav)
+  const { data: allSeries } = await supabase
+    .from('series')
+    .select('id, title, slug, release_year')
+    .order('release_year', { ascending: true })
+    .order('created_at', { ascending: true }); // Aynı yıla sahipse eklendikçe sırala
+
+  let prevSeries = null;
+  let nextSeries = null;
+
+  if (allSeries && allSeries.length > 0) {
+    const currentIndex = allSeries.findIndex(s => s.id === series.id);
+    if (currentIndex > 0) {
+      const p = allSeries[currentIndex - 1];
+      prevSeries = { slug: p.slug || p.id.toString(), title: p.title };
+    }
+    if (currentIndex < allSeries.length - 1) {
+      const n = allSeries[currentIndex + 1];
+      nextSeries = { slug: n.slug || n.id.toString(), title: n.title };
+    }
+  }
 
   return (
     <div className="bg-white min-h-screen pb-20 w-full">
+      <FloatingSeriesNav prev={prevSeries} next={nextSeries} />
+
       <ClientViewTracker table="series" id={series.id} />
       {/* ŞABLON BREADCRUMB */}
       <div className="border-b border-gray-200 bg-white relative z-20">
@@ -122,92 +153,92 @@ export default async function SeriesDetail({
         </div>
       </div>
 
-      {/* Devasa Kapak Görseli ve Başlık */}
-      <section className="relative w-full h-[400px] md:h-[600px] flex items-end justify-center pb-12 overflow-hidden bg-black">
-         {/* Arkaplan Hero Image */}
+      {/* Devasa Kapak Görseli (Sticky değil, sayfa akışında kalıp yok olacak) */}
+      <section className="relative w-full h-[300px] md:h-[450px] flex items-end justify-center overflow-hidden bg-black">
         <div 
-          className="absolute inset-0 bg-cover bg-center" 
+          className="absolute inset-0 bg-cover bg-center bg-fixed transition-all duration-700" 
           style={{ backgroundImage: `url(${series.hero_image_url || 'https://via.placeholder.com/1920x600.png?text=Hero+Görseli+Yok'})` }}
         />
-        {/* Sadece yazının okunabilmesi için alt kısma hafif gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-        
-        <h1 className="relative z-10 text-3xl md:text-[50px] text-white font-black pb-4 text-center max-w-7xl px-4 drop-shadow-xl leading-tight">
-          {series.title}
-        </h1>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
       </section>
 
-      {/* Info Bar (Marka / Kategori / Adet / Tarih) */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-20 -mt-6">
-        <div className="bg-[#f8f8f8] rounded-md shadow-md grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-200 border border-gray-200">
-          <div className="p-4 md:p-6 lg:pl-10 flex items-center justify-start gap-4">
-            <div className="bg-[#D22B2B] text-white p-2 rounded text-xs font-black shrink-0">LEGO®</div>
+      {/* STICKY HEADER GURUBU (Başlık + Info Bar) */}
+      <div className="sticky top-[130px] md:top-[150px] z-40 w-full flex flex-col items-center shadow-2xl">
+         
+         {/* Sticky Arka Plan (Sadece bu alana etki eden Parallax Background) */}
+         <div 
+           className="absolute inset-0 bg-cover bg-center bg-fixed shadow-2xl overflow-hidden" 
+           style={{ backgroundImage: `url(${series.hero_image_url || 'https://via.placeholder.com/1920x600.png?text=Hero+Görseli+Yok'})` }}
+         >
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
+         </div>
+
+         {/* Başlık (Hero Text) */}
+         <h1 className="relative z-10 text-3xl md:text-[45px] text-white font-black pt-6 md:pt-8 pb-6 text-center max-w-7xl px-4 drop-shadow-xl leading-tight w-full">
+           {series.title}
+         </h1>
+
+         {/* Info Bar (Marka / Kategori / Adet / Tarih) */}
+         <div className="max-w-7xl w-full mx-auto px-4 md:px-8 relative z-20 pb-4">
+           <div className="bg-[#fcfcfc] rounded-xl shadow-xl grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-100 border border-gray-100 overflow-hidden backdrop-blur-xl bg-white/90">
+          <div className="p-4 md:p-6 lg:pl-10 flex items-center justify-start gap-4 hover:bg-white transition-colors">
+            <div className="bg-[#D22B2B] text-white px-2 py-1.5 rounded-md text-[10px] font-black shrink-0 tracking-wider">LEGO®</div>
             <div>
-              <p className="text-xs md:text-sm font-bold opacity-80 uppercase tracking-widest text-[#D22B2B]">Marka</p>
-              <p className="font-black text-lg text-gray-900">LEGO</p>
+              <p className="text-[10px] md:text-[11px] font-black opacity-50 uppercase tracking-[0.2em] text-[#D22B2B]">Marka</p>
+              <p className="font-black text-sm md:text-base text-gray-900 mt-0.5">LEGO</p>
             </div>
           </div>
-          <div className="p-4 md:p-6 lg:pl-10 flex items-center justify-start gap-4">
+          <div className="p-4 md:p-6 lg:pl-10 flex items-center justify-start gap-4 hover:bg-white transition-colors">
             <div className="text-gray-300 shrink-0">
-              <Package size={32} strokeWidth={1.5} />
+              <Package size={28} strokeWidth={1.5} />
             </div>
             <div>
-              <p className="text-xs md:text-sm font-bold opacity-80 uppercase tracking-widest text-[#D22B2B]">Kategori</p>
-              <p className="font-black text-[15px] text-gray-900 leading-tight pr-2">{series.category || '-'}</p>
-            </div>
-          </div>
-          <div className="p-4 md:p-6 lg:pl-10 flex items-center justify-start gap-4">
-             <div className="text-gray-300 shrink-0">
-               <Grid3X3 size={32} strokeWidth={1.5} />
-             </div>
-            <div>
-              <p className="text-xs md:text-sm font-bold opacity-80 uppercase tracking-widest text-[#D22B2B]">Ebat</p>
-              <p className="font-black text-lg text-gray-900">{series.figure_count ? `${series.figure_count} Figür` : '-'}</p>
+              <p className="text-[10px] md:text-[11px] font-black opacity-50 uppercase tracking-[0.2em] text-[#D22B2B]">Kategori</p>
+              <p className="font-black text-sm md:text-[15px] text-gray-900 leading-tight pr-2 mt-0.5">{series.category || '-'}</p>
             </div>
           </div>
-          <div className="p-4 md:p-6 lg:pl-10 flex items-center justify-start gap-4">
+          <div className="p-4 md:p-6 lg:pl-10 flex items-center justify-start gap-4 hover:bg-white transition-colors">
              <div className="text-gray-300 shrink-0">
-               <CalendarDays size={32} strokeWidth={1.5} />
+               <Grid3X3 size={28} strokeWidth={1.5} />
              </div>
             <div>
-              <p className="text-xs md:text-sm font-bold opacity-80 uppercase tracking-widest text-[#D22B2B]">Çıkış</p>
-              <p className="font-black text-[15px] text-gray-900 leading-tight pr-2">{series.release_month} {series.release_year}</p>
+              <p className="text-[10px] md:text-[11px] font-black opacity-50 uppercase tracking-[0.2em] text-[#D22B2B]">Ebat</p>
+              <p className="font-black text-sm md:text-[15px] text-gray-900 mt-0.5">{series.figure_count ? `${series.figure_count} Figür` : '-'}</p>
+            </div>
+          </div>
+          <div className="p-4 md:p-6 lg:pl-10 flex items-center justify-start gap-4 hover:bg-white transition-colors">
+             <div className="text-gray-300 shrink-0">
+               <CalendarDays size={28} strokeWidth={1.5} />
+             </div>
+            <div>
+              <p className="text-[10px] md:text-[11px] font-black opacity-50 uppercase tracking-[0.2em] text-[#D22B2B]">Çıkış</p>
+              <p className="font-black text-sm md:text-[15px] text-gray-900 leading-tight pr-2 mt-0.5">{series.release_month} {series.release_year}</p>
             </div>
           </div>
         </div>
       </div>
+    </div>
 
       {/* Dinamik Bölüm: MODÜLER İÇERİK BLOKLARI */}
       {series.content_blocks && Array.isArray(series.content_blocks) && series.content_blocks.length > 0 && (
-        <div className="w-full mt-24">
-           <BlockRenderer blocks={series.content_blocks} />
+        <div className="w-full mt-8 md:mt-12">
+           <BlockRenderer 
+             blocks={series.content_blocks} 
+             collectionStats={currentSeriesStats}
+             isLoggedIn={!!user}
+           />
         </div>
       )}
 
-      {/* Görüntülenme Metrikleri */}
-      <div className="max-w-7xl mx-auto px-8 mt-24 border-t border-gray-200 pt-24 grid grid-cols-2 text-center">
-        <div className="border-r border-gray-200">
-          <div className="text-black text-6xl md:text-[80px] font-black mb-2 opacity-10">0</div>
-          <p className="font-bold text-gray-400 tracking-widest uppercase text-sm">Toplam Görüntülenme</p>
-        </div>
-        <div>
-           <div className="text-black text-6xl md:text-[80px] font-black mb-2 opacity-10">0</div>
-          <p className="font-bold text-gray-400 tracking-widest uppercase text-sm">Günlük Görüntülenme</p>
-        </div>
-      </div>
-
       {/* Serideki Figürler Bölümü */}
-      <div className="max-w-7xl mx-auto px-8 mt-32 border-t border-gray-200 pt-24">
-        <h3 className="text-sm font-black mb-2 text-gray-300 tracking-[0.2em]">SERİYİ KEŞFET</h3>
-        <h2 className="text-black font-black text-4xl mb-12 uppercase">{series.title} Figürleri</h2>
+      <div id="figures-list" className="max-w-7xl mx-auto px-8 mt-8 md:mt-12 pt-8 scroll-mt-24 bg-white relative z-20">
+        <h3 className="text-sm font-black mb-2 text-gray-300 tracking-[0.2em] uppercase">SERİYİ KEŞFET</h3>
+        <h2 className="text-3xl md:text-5xl font-black text-gray-900 mb-8 tracking-tighter">
+          {series.title} Figürleri
+        </h2>
         
-        {figures.length === 0 ? (
-            <div className="flex flex-col items-center justify-center p-24 border-2 border-dashed border-gray-200 rounded-2xl bg-gray-50 text-center w-full shadow-sm mt-4">
-                <LegoHeadIcon mode="search" className="w-24 h-24 mb-6" color="text-gray-200" />
-                <h2 className="text-xl font-black text-gray-400 uppercase tracking-widest">Bu seriye henüz bir figür eklenmemiş...</h2>
-            </div>
-        ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-5">
+        {figures && figures.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                 {figures.map((fig: any) => (
                     <FigureCard 
                         key={fig.id} 
@@ -224,12 +255,12 @@ export default async function SeriesDetail({
                     />
                 ))}
             </div>
+        ) : (
+            <div className="flex flex-col items-center justify-center p-24 border-2 border-dashed border-gray-200 rounded-2xl bg-gray-50 text-center w-full shadow-sm mt-4">
+                <h2 className="text-xl font-black text-gray-400 uppercase tracking-widest">Bu seriye henüz bir figür eklenmemiş...</h2>
+            </div>
         )}
 
-        {/* PORTFÖY / ERIŞİM AÇ CTA BLOĞU */}
-        <div className="mt-16 mb-4 max-w-4xl mx-auto">
-           <AuthCTA isLoggedIn={!!user} />
-        </div>
       </div>
 
     </div>

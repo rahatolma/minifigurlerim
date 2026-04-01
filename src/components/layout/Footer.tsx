@@ -4,7 +4,7 @@ import FooterNewsletterForm from '@/components/ui/FooterNewsletterForm';
 
 export default function Footer() {
   return (
-    <footer className="bg-white text-black w-full pt-24 pb-12 mt-auto relative">
+    <footer className="bg-[#F8F9FA] text-black w-full pt-24 pb-12 mt-auto relative border-t border-gray-100">
       <div className="max-w-[1300px] mx-auto px-6 md:px-8">
         
         {/* UPPER FOOTER GRID */}
@@ -77,7 +77,7 @@ export default function Footer() {
           <p className="text-[#a0a0a0] text-center md:text-left text-[14px] font-semibold tracking-wide">
             © 2024 - 2026 • Tüm hakları saklıdır. <br className="md:hidden"/> <span className="text-gray-900 font-black">Minifigürlerim</span> bir koleksiyoner platformudur.
           </p>
-          <LegalNoticeButton className="bg-[#fdfdfd] text-gray-700 border border-gray-200 font-extrabold py-3.5 px-8 rounded-lg shadow-sm hover:bg-gray-100 hover:text-black hover:border-gray-300 transition-all tracking-[0.2em] uppercase text-[11px]" />
+          <LegalNoticeButton className="bg-[#F2CD37] text-black border border-[#d4b32c] font-black py-4 px-8 rounded-xl shadow-[0_8px_20px_rgba(242,205,55,0.3)] hover:bg-[#e0bd31] hover:scale-105 hover:shadow-[0_12px_25px_rgba(242,205,55,0.4)] transition-all tracking-[0.2em] uppercase text-[11px]" />
         </div>
 
       </div>

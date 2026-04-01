@@ -5,19 +5,21 @@ interface Props {
   data: FullTextBlockData;
 }
 
+import RichTextContent from '@/components/ui/RichTextContent';
+
 export default function FullTextBlock({ data }: Props) {
   return (
-    <div className="w-full py-16 md:py-24 bg-[#FCFCFC]">
-      <div className="max-w-[800px] mx-auto px-6 md:px-8">
+    <div className="w-full py-8 md:py-12 bg-white flex flex-col items-center">
+      <div className="w-full max-w-7xl mx-auto px-6 md:px-8">
         {data.title && (
-          <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter text-center mb-8">
+          <h2 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight leading-[1.1] mb-8">
             {data.title}
           </h2>
         )}
         {data.content && (
-          <div 
-            className="prose prose-lg max-w-none text-gray-700 font-medium leading-[1.8] text-center"
-            dangerouslySetInnerHTML={{ __html: data.content }}
+          <RichTextContent 
+            html={data.content}
+            className="w-full prose-lg leading-[1.8] overflow-hidden [&_p]:!ml-0 [&_span]:!ml-0 text-gray-800 max-w-none"
           />
         )}
       </div>

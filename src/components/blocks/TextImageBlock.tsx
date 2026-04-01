@@ -1,5 +1,6 @@
 import React from 'react';
 import { TextImageBlockData } from '@/types/content-blocks';
+import RichTextContent from '../ui/RichTextContent';
 
 interface Props {
   data: TextImageBlockData;
@@ -9,20 +10,21 @@ export default function TextImageBlock({ data }: Props) {
   const isImageRight = data.imageAlign === 'right';
 
   return (
-    <div className="w-full py-12 md:py-20 bg-white">
-      <div className="max-w-[1300px] mx-auto px-6 md:px-8">
-        <div className={`flex flex-col gap-10 lg:gap-16 items-center ${isImageRight ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
-          {/* Text Column */}
-          <div className="flex-1 w-full space-y-6">
+    <div className="w-full py-16 md:py-24 bg-white">
+      <div className="max-w-[1200px] mx-auto px-6 md:px-8">
+        <div className={`flex flex-col md:flex-row gap-12 lg:gap-20 items-center ${isImageRight ? 'md:flex-row-reverse' : ''}`}>
+          
+          {/* Metin Sütunu */}
+          <div className="w-full md:w-1/2 flex flex-col justify-center">
             {data.title && (
-              <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter leading-tight">
+              <h3 className="text-2xl md:text-4xl font-black text-gray-900 tracking-tight leading-tight">
                 {data.title}
-              </h2>
+              </h3>
             )}
             {data.content && (
-              <div 
-                className="prose prose-lg max-w-none text-gray-700 font-medium leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: data.content }}
+              <RichTextContent 
+                 html={data.content}
+                 className="prose-sm md:prose-base leading-relaxed font-medium mt-4 md:mt-6 overflow-hidden [&_p]:!ml-0 [&_span]:!ml-0"
               />
             )}
           </div>

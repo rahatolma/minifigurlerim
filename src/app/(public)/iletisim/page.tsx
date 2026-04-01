@@ -23,7 +23,7 @@ export default async function ContactPage() {
   return (
     <div className="bg-[#fcfcfc] min-h-screen pb-32">
       {/* 🧱 ÜST BLOĞU: Şablon Breadcrumb (İz Yolu) */}
-      <div className="border-b border-gray-200 bg-white">
+      <div className="border-b border-gray-100 bg-white relative z-20">
         <div className="max-w-7xl mx-auto px-8 flex items-center text-[10px] sm:text-[11px] font-black text-gray-400 tracking-[0.2em] uppercase" style={{ minHeight: '70px' }}>
              <a href="/" className="hover:text-black transition-colors">Ana Sayfa</a> 
              <span className="mx-3 text-gray-200">/</span> 
@@ -31,43 +31,43 @@ export default async function ContactPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-8 mt-8 mb-24 flex justify-center">
-        <div className="w-full max-w-3xl">
-            <div className="text-center mb-10">
-                <h1 className="text-3xl md:text-4xl font-black text-black">Sorunuz Mu Var?</h1>
-                <p className="text-gray-700 mt-4 text-[15px] font-medium leading-relaxed">Her türlü soru, görüş ve öneri için bize aşağıdaki iletişim formundan ulaşabilirsiniz:</p>
+      <div className="max-w-4xl mx-auto px-6 md:px-8 mt-8 mb-24 flex flex-col gap-16">
+         
+         <div className="w-full">
+            <div className="bg-white border border-gray-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.06)] rounded-[32px] p-8 md:p-12">
+                <div className="text-center mb-10">
+                    <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight mb-4">Sorunuz Mu Var?</h1>
+                    <p className="text-gray-600 text-[15px] font-medium leading-relaxed max-w-2xl mx-auto">Her türlü soru, görüş ve öneri için bize aşağıdaki iletişim formundan ulaşabilirsiniz. En kısa sürede dönüş yapacağız.</p>
+                </div>
+                <ContactForm />
             </div>
+         </div>
 
-            <ContactForm />
-        </div>
+         <div className="w-full">
+            {activeFaqs.length > 0 ? (
+               <div className="bg-white border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] rounded-[32px] p-8 md:p-12 border-t-4 border-t-[#D22B2B]">
+                  <h2 className="text-3xl font-black text-center text-gray-900 mb-10 tracking-tight">Sıkça Sorulan Sorular</h2>
+                  <div className="space-y-3">
+                      {activeFaqs.map((faq, idx) => (
+                          <details key={faq.id} className="group border border-gray-100 rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden">
+                              <summary className="w-full text-left py-5 px-6 font-bold text-[15px] text-gray-900 flex justify-between items-center hover:bg-gray-50 transition-colors cursor-pointer select-none">
+                                  <span className="flex gap-4 items-center">
+                                     <span className="text-[12px] font-black text-gray-400">{(idx + 1).toString().padStart(2, '0')}</span>
+                                     <span className="leading-snug pr-4">{faq.question}</span>
+                                  </span>
+                                  <span className="text-2xl text-gray-300 font-light group-open:rotate-45 group-hover:text-[#D22B2B] transition-all duration-300 shrink-0 flex justify-end">+</span>
+                              </summary>
+                              <div className="py-5 bg-gray-50/50 text-gray-600 font-medium text-[14px] leading-relaxed px-6 border-t border-gray-100">
+                                  {faq.answer}
+                              </div>
+                          </details>
+                      ))}
+                  </div>
+               </div>
+            ) : null}
+         </div>
+
       </div>
-
-      {/* SIKÇA SORULAN SORULAR */}
-      {activeFaqs.length > 0 && (
-          <div className="max-w-7xl mx-auto px-8 mt-32 flex justify-center">
-            <div className="w-full max-w-3xl">
-                <div className="text-center mb-12">
-                    <h2 className="text-3xl md:text-4xl font-black text-black">Sıkça Sorulan Sorular</h2>
-                </div>
-                
-                {/* Gerçek Akordiyon Yapısı - HTML5 details / summary logicle state gerektirmez */}
-                <div className="space-y-4">
-                    {activeFaqs.map((faq) => (
-                        <details key={faq.id} className="group border border-gray-200 bg-white rounded-sm overflow-hidden [&_summary::-webkit-details-marker]:hidden">
-                            <summary className="w-full text-left px-6 py-5 font-bold text-[15px] text-gray-900 flex justify-between items-center hover:bg-gray-50 transition-colors cursor-pointer select-none">
-                                {faq.question}
-                                <span className="text-2xl text-gray-300 font-light group-open:rotate-45 transition-transform duration-300">+</span>
-                            </summary>
-                            <div className="px-6 py-4 pt-0 text-gray-600 font-medium text-[14px] leading-relaxed border-t border-gray-100 bg-gray-50/50">
-                                {faq.answer}
-                            </div>
-                        </details>
-                    ))}
-                </div>
-            </div>
-          </div>
-      )}
-
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { QuoteBlockData } from '@/types/content-blocks';
+import RichTextContent from '@/components/ui/RichTextContent';
 
 interface Props {
   data: QuoteBlockData;
@@ -7,31 +8,33 @@ interface Props {
 
 export default function QuoteBlock({ data }: Props) {
   return (
-    <div className="w-full relative my-16 md:my-24 py-16 overflow-hidden">
-      {/* Background Graphic */}
-      <div className="absolute inset-0 bg-[#F8F9FA] skew-y-3 scale-110 z-0"></div>
-      
-      <div className="max-w-[1000px] mx-auto px-6 md:px-12 relative z-10 flex flex-col items-center justify-center text-center">
-        {/* Quote Icon */}
-        <div className="mb-8 opacity-20 text-[#D22B2B]">
-          <svg className="w-20 h-20" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
-          </svg>
-        </div>
-        
-        {data.title && (
-          <span className="text-sm font-black text-gray-400 tracking-widest uppercase mb-4 block">
-            {data.title}
-          </span>
-        )}
-        
-        {data.content && (
-          <div 
-            className="text-2xl md:text-4xl text-gray-900 font-bold leading-tight md:leading-snug inline-block font-sans"
-            dangerouslySetInnerHTML={{ __html: data.content }}
-          />
-        )}
-      </div>
+    <div className="w-full max-w-7xl mx-auto px-6 md:px-8 mt-10 mb-16 md:mt-12 md:mb-24 text-center">
+       <div className="flex flex-col items-center gap-6 md:gap-8 bg-[#F2CD37] rounded-[32px] p-8 md:p-12 shadow-[0_15px_40px_-10px_rgba(242,205,55,0.4)] relative overflow-hidden">
+         
+         {/* Dekoratif Arka Plan Işıkları */}
+         <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-20 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+         <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#111] opacity-[0.04] rounded-full blur-3xl -translate-x-1/2 translate-y-1/2 pointer-events-none"></div>
+
+         {/* Büyük Başlık ve Altı Çizgisi */}
+         {data.title && (
+           <div className="flex flex-col items-center gap-5 relative z-10 w-full">
+             <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-[#1a1c29] tracking-tight leading-[1.2] text-balance">
+               {data.title}
+             </h2>
+             <div className="w-16 h-1.5 rounded-full bg-[#D22B2B]"></div>
+           </div>
+         )}
+         
+         {/* Merkezi İçerik / Alt Başlık */}
+         {data.content && (
+           <div className="w-full relative z-10">
+             <RichTextContent 
+               html={data.content}
+               className="text-[18px] md:text-[20px] lg:text-[22px] text-gray-900 font-bold leading-[1.8] [&_p]:!my-0 [&_span]:!bg-transparent text-balance selection:bg-[#1a1c29] selection:text-[#F2CD37]"
+             />
+           </div>
+         )}
+       </div>
     </div>
   );
 }

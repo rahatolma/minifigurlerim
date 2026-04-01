@@ -6,6 +6,7 @@ import { supabase } from '@/utils/supabase/client';
 import { createClient } from '@/utils/supabase/server';
 import ScrollDownHint from '@/components/ui/ScrollDownHint';
 import AuthCTA from '@/components/ui/AuthCTA';
+import DragScrollContainer from '@/components/ui/DragScrollContainer';
 
 const CMF_HISTORY = [
   { year: '2010', date: 'Mayıs 2010', title: 'Seri 1', desc: 'Sarı kafalar ve 16 figürlük kör paketlerle tüm dünyanın peşinden koşacağı efsane doğdu.' },
@@ -125,10 +126,10 @@ export default async function SeriesPage({
          </div>
 
          {/* Hide Scrollbar via Tailwind classes (working broadly on modern browsers) */}
-         <div className="w-full overflow-x-auto pb-24 pt-12 snap-x snap-mandatory px-4 md:px-12 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style={{ scrollBehavior: 'smooth' }}>
+         <DragScrollContainer className="w-full pb-24 pt-12 snap-x snap-mandatory px-4 md:px-12 pointer-events-auto">
             
             {/* Tam ortadan yatay akan dekoratif kırmızı hat (Container) */}
-            <div className="flex items-center w-max relative min-h-[380px] md:min-h-[420px] pb-10">
+            <div className="flex items-center w-max relative min-h-[380px] md:min-h-[420px] pb-10 pointer-events-none">
                
                {/* Asıl parlayan şerit */}
                <div className="absolute top-1/2 left-0 right-0 h-1.5 bg-gradient-to-r from-[#111333] via-[#20214a] to-[#111333] -translate-y-1/2 rounded-full opacity-30 shadow-[0_0_15px_rgba(32,33,74,0.8)] z-0"></div>
@@ -140,7 +141,7 @@ export default async function SeriesPage({
                   const isTop = index % 2 === 0;
 
                   return (
-                    <div key={index} className="relative w-[320px] shrink-0 snap-center flex flex-col justify-center items-center group px-4">
+                    <div key={index} className="relative w-[320px] shrink-0 snap-center flex flex-col justify-center items-center group px-4 pointer-events-auto">
                         
                         {/* İçerik Kutusu (Üstteyse üstte, alttaysa altta konumlanacak) */}
                         <div className={`absolute w-[280px] transition-all duration-500 ${isTop ? 'bottom-1/2 mb-[50px] group-hover:-translate-y-2' : 'top-1/2 mt-[50px] group-hover:translate-y-2'}`}>
@@ -182,14 +183,16 @@ export default async function SeriesPage({
                })}
 
                {/* Listenin sonunda boşluk bırakmak için ekstra bir div */}
-               <div className="w-[10vw] shrink-0"></div>
+               <div className="w-[10vw] shrink-0 pointer-events-none"></div>
 
             </div>
-         </div>
+         </DragScrollContainer>
 
          {/* Scroll Down Hint (False Floor Engelleyici) */}
          <ScrollDownHint />
       </div>
+
+      <div id="filter-section" className="scroll-mt-[150px]"></div>
 
       <div className="sticky bg-[#fcfcfc] py-4 border-b border-gray-100 shadow-sm mb-6 z-30" style={{ top: '150px' }}>
         <div className="max-w-7xl mx-auto px-8">

@@ -8,6 +8,7 @@ import CollectionActions from '@/components/ui/CollectionActions';
 import FigureComments from './components/FigureComments';
 import PriceChart from '@/components/ui/PriceChart';
 import MultiMarketButton from '@/components/ui/MultiMarketButton';
+import FloatingFigureNav from '@/components/ui/FloatingFigureNav';
 
 import { slugify } from '@/utils/helpers';
 
@@ -130,8 +131,39 @@ export default async function FigureDetail({
   // Ana Görseller (JSON array)
   const images = (figure.images && Array.isArray(figure.images) && figure.images.length > 0) ? figure.images : [];
   
+  // ÖNCEKİ VE SONRAKİ FİGÜR MANTIĞI (AYNI SERİ İÇİNDE)
+  let prevFigure = null;
+  let nextFigure = null;
+
+  if (figure.series_id || figure.series_name) {
+     const seriesFilterCol = figure.series_id ? 'series_id' : 'series_name';
+     const seriesFilterVal = figure.series_id || figure.series_name;
+
+     const { data: seriesFigures } = await supabase
+       .from('minifigures')
+       .select('id, name, slug, figure_no')
+       .eq(seriesFilterCol, seriesFilterVal)
+       .order('figure_no', { ascending: true }) // İlk tercih olarak figure numarasına göre
+       .order('created_at', { ascending: true });
+
+     if (seriesFigures && seriesFigures.length > 0) {
+        // Find current figure index
+        const currentIndex = seriesFigures.findIndex((f) => f.id === figure.id);
+        
+        if (currentIndex > 0) {
+           const p = seriesFigures[currentIndex - 1];
+           prevFigure = { slug: p.slug || p.id.toString(), name: p.name };
+        }
+        if (currentIndex < seriesFigures.length - 1) {
+           const n = seriesFigures[currentIndex + 1];
+           nextFigure = { slug: n.slug || n.id.toString(), name: n.name };
+        }
+     }
+  }
+
   return (
     <div className="bg-[#fcfcfc] min-h-screen w-full pb-32">
+      <FloatingFigureNav prev={prevFigure} next={nextFigure} />
       <ClientViewTracker table="minifigures" id={figure.id} />
       {/* 🧱 ÜST BLOĞU: Şablon Breadcrumb (İz Yolu) */}
       <div className="border-b border-gray-200 bg-white">

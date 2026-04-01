@@ -129,6 +129,18 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
       toast.error("Lütfen Seri Adı alanını doldurun.");
       return;
     }
+    if (!formData.brand) {
+      toast.error("Lütfen Marka alanını doldurun.");
+      return;
+    }
+    if (!formData.series_no) {
+      toast.error("Lütfen Seri No alanını doldurun.");
+      return;
+    }
+    if (!formData.category) {
+      toast.error("Lütfen Kategori seçin.");
+      return;
+    }
     
     setIsSubmitting(true);
     const generatedSlug = slugify(`${formData.title} ${formData.category}`);
@@ -180,8 +192,8 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
   };
 
   const imageUploadBoxes = [
-    { id: 'cover_image_url', title: '1. Kart (Kapak) Görseli', desc: 'Ana Sayfadaki listeleme kapak fotoğrafı.' },
-    { id: 'hero_image_url', title: '2. Hero (Slide) Görseli', desc: 'Detay sayfasının en üstündeki devasa arkaplan görseli.' }
+    { id: 'cover_image_url', title: 'KAPAK GÖRSELİ', desc: 'Liste ve arama sonuçlarında görünecek kare görsel.' },
+    { id: 'hero_image_url', title: 'HERO (SLIDE) GÖRSELİ', desc: 'Detay sayfasının devasa arkaplan görseli.' }
   ];
 
   if (loading) {
@@ -260,7 +272,7 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
                     <label className="text-gray-900 block truncate font-black tracking-wide">Seri Adı (Title) <span className="text-[#D22B2B]">*</span></label>
                 </div>
                 <div className="w-2/3 py-3">
-                    <input name="title" type="text" value={formData.title} onChange={handleChange} placeholder="Örn: LEGO® Minifigürler Serisi 27" required className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold placeholder:font-medium placeholder:opacity-30" />
+                    <input name="title" type="text" value={formData.title} onChange={handleChange} placeholder="Örn: LEGO® Minifigürler Serisi 27" className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold placeholder:font-medium placeholder:opacity-30" />
                 </div>
               </div>
 
@@ -269,7 +281,7 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
                     <label className="text-gray-900 block truncate font-black tracking-wide">Marka <span className="text-[#D22B2B]">*</span></label>
                 </div>
                 <div className="w-2/3 py-3">
-                    <input name="brand" type="text" value={formData.brand} onChange={handleChange} placeholder="Örn: LEGO®" required className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold placeholder:font-medium placeholder:opacity-30" />
+                    <input name="brand" type="text" value={formData.brand} onChange={handleChange} placeholder="Örn: LEGO®" className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold placeholder:font-medium placeholder:opacity-30" />
                 </div>
               </div>
               
@@ -278,7 +290,7 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
                     <label className="text-gray-900 block truncate font-black tracking-wide">Seri No <span className="text-[#D22B2B]">*</span></label>
                 </div>
                 <div className="w-2/3 py-3">
-                    <input name="series_no" type="text" value={formData.series_no} onChange={handleChange} placeholder="Örn: 71050" required className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold placeholder:font-medium placeholder:opacity-30" />
+                    <input name="series_no" type="text" value={formData.series_no} onChange={handleChange} placeholder="Örn: 71050" className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold placeholder:font-medium placeholder:opacity-30" />
                 </div>
               </div>
 

@@ -31,10 +31,27 @@ export default function SeriesFilterClient({
     }
 
     router.push(`/seriler?${params.toString()}`, { scroll: false });
+
+    // Sayfa zaten çok aşağıdaysa (örneğin eski sonuçlarda), yeni filtre sonrası tekrar filtre alanına hizala (snap)
+    setTimeout(() => {
+        const filterSection = document.getElementById('filter-section');
+        if (filterSection) {
+            const box = filterSection.getBoundingClientRect();
+            if (box.top < 130 || box.top > 160) { // Sticky bar is at top-[150px]
+                 filterSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    }, 50);
   };
 
   const clearFilters = () => {
     router.push('/seriler', { scroll: false });
+    setTimeout(() => {
+        const filterSection = document.getElementById('filter-section');
+        if (filterSection) {
+             filterSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, 50);
   };
 
   const hasFilters = currentCategory !== 'all' || currentSort !== 'newest' || currentSeries !== 'all';
