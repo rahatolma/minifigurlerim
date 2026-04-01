@@ -1,88 +1,85 @@
 import Link from 'next/link';
 import LegalNoticeButton from '@/components/ui/LegalNoticeButton';
+import FooterNewsletterForm from '@/components/ui/FooterNewsletterForm';
 
 export default function Footer() {
   return (
-    <footer className="bg-[#f4f4f4] text-black w-full pt-20 pb-10 font-sans border-t border-gray-200">
-      <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-4 gap-12">
-        {/* Col 1 */}
-        <div className="space-y-4">
-          <div className="mb-6">
-            <Link href="/" className="inline-block">
+    <footer className="bg-white text-black w-full pt-24 pb-12 mt-auto relative">
+      <div className="max-w-[1300px] mx-auto px-6 md:px-8">
+        
+        {/* UPPER FOOTER GRID */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-x-8 gap-y-12 mb-12 relative">
+          
+          {/* BLOK 1: Logo & Haber Bülteni */}
+          <div className="flex flex-col items-start md:col-span-5 lg:col-span-4">
+            <Link href="/" className="inline-block transform hover:scale-105 transition-transform mb-8">
               <img src="/uploads/media__1774631571720.png" alt="Minifigürlerim Logo" className="h-[36px] w-auto" />
             </Link>
+            <p className="text-[14px] text-gray-700 font-bold leading-relaxed pr-4">
+              Son çıkan minifigürleri ve güncel haberleri yakından takip etmek istiyorsanız e-posta haber grubuna abone olun.
+            </p>
+            <FooterNewsletterForm />
           </div>
-          <p className="text-sm font-semibold leading-relaxed">
-            Son çıkan mini figürleri ve güncel haberleri yakından takip etmek istiyorsanız e-mail haber grubuna abone olun!
-          </p>
-          <form className="flex flex-col gap-3 mt-6">
-            <input 
-              type="email" 
-              placeholder="Lütfen e-posta adresinizi giriniz... *" 
-              className="bg-white border border-gray-200 px-5 py-4 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500 font-medium placeholder:font-normal text-sm"
-              required
-            />
-            <button type="submit" className="bg-[#D22B2B] text-white font-bold py-4 rounded-md hover:bg-[#B22222] transition-colors uppercase">
-              ABONE OLUN!
-            </button>
-          </form>
-        </div>
 
-        {/* Col 2 */}
-        <div>
-          <h4 className="font-bold text-lg mb-8">Koleksiyon</h4>
-          <ul className="space-y-4 font-semibold text-[15px] text-gray-800">
-            <li><Link href="/seriler?cat=karakter-paketleri" className="text-red-600 hover:text-black">Karakter Paketleri</Link></li>
-            <li><Link href="/seriler?cat=ozel-seriler" className="hover:text-red-600">Özel Seri Teklifleri</Link></li>
-            <li><Link href="/haberler" className="hover:text-red-600">Haberler & İncelemeler</Link></li>
-            <li><Link href="/iletisim" className="hover:text-red-600">İletişim</Link></li>
-            <li><Link href="/iade" className="hover:text-red-600">İade Politikası</Link></li>
-            <li><Link href="/kargo" className="hover:text-red-600">Teslimat Bilgileri</Link></li>
-          </ul>
-        </div>
+          {/* BLOK 2: Keşfet */}
+          <div className="flex flex-col gap-6 md:col-span-3 lg:col-span-3 lg:pl-4">
+            <h4 className="text-[14px] font-black tracking-widest text-[#D22B2B]">Keşfet</h4>
+            <ul className="flex flex-col gap-3.5 font-bold text-[15px] text-gray-700 w-full whitespace-nowrap">
+              <li><Link href="/seriler" className="hover:text-black hover:underline transition-all">LEGO® Minifigür Serileri</Link></li>
+              <li><Link href="/figurler" className="hover:text-black hover:underline transition-all">LEGO® Minifigürleri</Link></li>
+              <li><Link href="/lego-hakkinda" className="hover:text-black hover:underline transition-all">LEGO® Hakkında</Link></li>
+              <li><Link href="/hakkimizda" className="hover:text-black hover:underline transition-all">Hakkımızda</Link></li>
+              <li><Link href="/haberler" className="hover:text-black hover:underline transition-all">Blog</Link></li>
+              <li><Link href="/iletisim" className="hover:text-black hover:underline transition-all">İletişim</Link></li>
+            </ul>
+          </div>
 
-        {/* Col 3 */}
-        <div>
-          <h4 className="font-bold text-lg mb-8">Hakkımızda</h4>
-          <ul className="space-y-4 font-semibold text-[15px] text-gray-800">
-            <li><Link href="/lego-hakkinda" className="text-red-600 hover:text-black">LEGO® Hakkında</Link></li>
-            <li><Link href="/hakkimizda/kurumsal" className="text-red-600 hover:text-black">Kurumsal</Link></li>
-            <li><Link href="/hakkimizda/misyon" className="hover:text-red-600">Misyonumuz</Link></li>
-            <li><Link href="/iletisim" className="hover:text-red-600">Bize Ulaşın</Link></li>
-            <li><Link href="/sss" className="hover:text-red-600">S.S.S</Link></li>
-            <li><Link href="/gizlilik" className="hover:text-red-600">Gizlilik Sözleşmesi</Link></li>
-            <li><Link href="/kullanim-kosullari" className="hover:text-red-600">Kullanım Koşulları</Link></li>
-          </ul>
-        </div>
-
-        {/* Col 4 */}
-        <div>
-          <h4 className="font-bold text-lg mb-8">Bize Ulaşın</h4>
-          <div className="space-y-4 text-[15px] font-semibold">
-            <p>Telefon</p>
-            <p className="text-red-600 font-bold text-2xl tracking-tight mt-1">0090 533 399 62 21</p>
-            <a href="mailto:destek@minifigurlerim.com" className="text-green-700 underline block mt-6">
-              destek@minifigurlerim.com
-            </a>
+          {/* BLOK 3: Destek & Sosyal */}
+          <div className="flex flex-col gap-6 md:col-span-4 lg:col-span-3 lg:pl-2">
+            <h4 className="text-[14px] font-black tracking-widest text-[#D22B2B]">Destek</h4>
+            <ul className="flex flex-col gap-3.5 font-bold text-[15px] text-gray-700 mb-2 w-full whitespace-nowrap">
+              <li><Link href="/gizlilik" className="hover:text-black hover:underline transition-all">Gizlilik Politikası</Link></li>
+              <li><Link href="/kullanim-kosullari" className="hover:text-black hover:underline transition-all">Kullanım Koşulları</Link></li>
+              <li><Link href="/uyelik-sozlesmesi" className="hover:text-black hover:underline transition-all">Üyelik Sözleşmesi</Link></li>
+              <li><Link href="/sss" className="hover:text-black hover:underline transition-all">Sıkça Sorulan Sorular</Link></li>
+            </ul>
             
-            <div className="flex gap-4 mt-8">
-              <a href="#" className="w-11 h-11 bg-white rounded-full flex items-center justify-center text-red-600 shadow-sm hover:scale-110 transition-transform">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
-              </a>
-              <a href="#" className="w-11 h-11 bg-white rounded-full flex items-center justify-center text-red-600 shadow-sm hover:scale-110 transition-transform">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
-              </a>
-              <a href="#" className="w-11 h-11 bg-white rounded-full flex items-center justify-center text-red-600 shadow-sm hover:scale-110 transition-transform">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-              </a>
+            <div className="flex gap-4 mt-2">
+               {/* Instagram */}
+               <a href="https://instagram.com/minifigurlerim" target="_blank" rel="noreferrer" className="w-[42px] h-[42px] bg-[#fcfcfc] rounded-2xl flex items-center justify-center text-gray-900 border border-gray-200 hover:bg-[#D22B2B] hover:text-white hover:border-[#D22B2B] transition-all shadow-sm">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+               </a>
+               {/* Youtube */}
+               <a href="https://youtube.com/@minifigurlerim" target="_blank" rel="noreferrer" className="w-[42px] h-[42px] bg-[#fcfcfc] rounded-2xl flex items-center justify-center text-gray-900 border border-gray-200 hover:bg-[#D22B2B] hover:text-white hover:border-[#D22B2B] transition-all shadow-sm">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
+               </a>
+               {/* İletişim (Mail Icon) */}
+               <Link href="/iletisim" className="w-[42px] h-[42px] bg-[#D22B2B] rounded-2xl flex items-center justify-center text-white shadow-md hover:bg-[#B22222] transition-all border border-[#cc2424]">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+               </Link>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-8 mt-20 pt-8 border-t border-gray-300 flex flex-col md:flex-row items-center justify-between font-semibold text-[14px]">
-        <p className="opacity-80">© Telif Hakkı 08/2024 - 2026 • Tüm Hakları Saklıdır • <span className="text-red-600 font-bold opacity-100">Minifigürlerim</span> tarafından geliştirilmiştir.</p>
-        <LegalNoticeButton className="bg-[#D22B2B] text-white font-bold py-3 px-8 rounded-md hover:bg-[#B22222] transition-colors mt-6 md:mt-0 tracking-wide text-sm" />
+          {/* BLOK 4: Image - Only visible on lg+ screens for precise layout */}
+          <div className="hidden lg:flex flex-col items-center justify-end lg:col-span-2 relative h-full">
+            <img 
+              src="/uploads/footer-lego-guy.png" 
+              alt="LEGO Contact Minifigure" 
+              className="absolute bottom-[-16px] right-0 w-[240px] max-w-none object-contain drop-shadow-[0_15px_15px_rgba(0,0,0,0.15)] z-10"
+              style={{ pointerEvents: "none" }}
+            />
+          </div>
+
+        </div>
+
+        {/* BOTTOM FOOTER GRID */}
+        <div className="relative z-20 border-t border-gray-200 flex flex-col md:flex-row items-center justify-between pt-10 pb-4 gap-6">
+          <p className="text-[#a0a0a0] text-center md:text-left text-[14px] font-semibold tracking-wide">
+            © 2024 - 2026 • Tüm hakları saklıdır. <br className="md:hidden"/> <span className="text-gray-900 font-black">Minifigürlerim</span> bir koleksiyoner platformudur.
+          </p>
+          <LegalNoticeButton className="bg-[#fdfdfd] text-gray-700 border border-gray-200 font-extrabold py-3.5 px-8 rounded-lg shadow-sm hover:bg-gray-100 hover:text-black hover:border-gray-300 transition-all tracking-[0.2em] uppercase text-[11px]" />
+        </div>
+
       </div>
     </footer>
   );

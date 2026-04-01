@@ -112,6 +112,8 @@ export default async function KoleksiyonumPage({
       percent: Number(stat.completion_percent)
   })).sort((a, b) => b.percent - a.percent);
 
+  const completedSeriesCount = activeSeriesProgress.filter(sp => sp.haveCount >= sp.maxCount && sp.maxCount > 0).length;
+
   // Filtrelenmiş "Bende Olanlar"ın Toplam Değeri
   const portfolioValue = haveItems.reduce((acc: number, curr: any) => {
       const val = (curr.minifigures as any)?.value_usd || 0;
@@ -147,8 +149,10 @@ export default async function KoleksiyonumPage({
   const realGrowthStr = (calculatedGain > 0 ? '+' : '') + '$' + calculatedGain.toFixed(2);
   const percentGrowth = oldPortfolioValue > 0 ? ((calculatedGain / oldPortfolioValue) * 100).toFixed(1) : '0.0';
 
+  const lastAddedFigure = haveItems.length > 0 ? haveItems[0].minifigures : null;
+
   return (
-    <div className="bg-[#fcfcfc] min-h-screen pb-32">
+    <div className="bg-[#fcfcfc] min-h-screen pb-32 lg:pb-72">
         {/* ŞABLON BREADCRUMB */}
         <div className="border-b border-gray-200 bg-white relative z-20">
            <div className="max-w-7xl mx-auto px-8 flex items-center text-[10px] sm:text-[11px] font-black text-gray-400 tracking-[0.2em] uppercase" style={{ height: '70px' }}>
@@ -166,20 +170,25 @@ export default async function KoleksiyonumPage({
                   <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter mb-2">
                     Koleksiyonunun <span className="text-[#D22B2B]">Özeti</span>
                   </h1>
-                  <p className="text-gray-500 font-bold max-w-2xl text-[13px] md:text-sm">
-                    Hey <span className="text-gray-900">{displayName}</span>, işte efsanevi minifigür kasan. Şu an dünya çapındaki toplam <strong className="text-gray-900">{totalFiguresInWorld}</strong> figürün <strong className="text-[#D22B2B]">{totalHave}</strong> tanesine sahipsin (<span className="text-green-600">%{(globalPercent)} Tamamlama Oranı</span>).
-                  </p>
+                  <div className="mb-2 md:mb-0 max-w-2xl mt-4">
+                      <p className="text-gray-900 font-black text-[15px] md:text-[18px] leading-relaxed tracking-tight">
+                          Koleksiyonun büyüyor. Şu anda <span className="text-[#D22B2B]">{totalHave}</span> figürün var ve <span className="text-[#D22B2B]">{activeSeriesProgress.length}</span> seriye başladın.
+                      </p>
+                  </div>
                 </div>
-                
-                <form action={logOut}>
-                    <button type="submit" className="bg-white border border-gray-200 text-gray-700 font-bold py-2.5 px-6 rounded-xl hover:bg-gray-50 transition-colors shadow-[0_2px_10px_rgba(0,0,0,0.02)] text-xs tracking-wide">
-                       Güvenli Çıkış Yap
-                    </button>
-                </form>
+                <div className="flex flex-col md:items-end bg-white border border-gray-100 px-6 py-5 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.03)] group transition-all hover:border-[#D22B2B]/20 min-w-[200px]">
+                    <div className="flex items-center gap-1">
+                        <span className="text-4xl md:text-5xl font-black text-[#D22B2B] tracking-tighter">%{parseFloat(globalPercent.toString()).toFixed(0)}</span>
+                        <svg className="w-6 h-6 text-[#D22B2B] opacity-20 transform -translate-y-2 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+                    </div>
+                    <span className="text-[10px] md:text-[11px] font-black text-gray-400 uppercase tracking-widest mt-1.5 group-hover:text-gray-600 transition-colors">
+                        TAMAMLADIN. DEVAM ET
+                    </span>
+                </div>
             </div>
 
-            {/* Borsa (KPI) 3'lü Kart Alanı */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            {/* Borsa (KPI) 4'lü Kart Alanı */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                {/* Portföy Değeri */}
                <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.03)] relative overflow-hidden">
                   <div className="absolute -right-12 -bottom-12 opacity-[0.03]">
@@ -223,6 +232,22 @@ export default async function KoleksiyonumPage({
                   <p className="text-3xl font-black text-gray-900 z-10 relative">{haveItems.length} <span className="text-lg text-gray-300 font-medium">Adet</span></p>
                </div>
                
+               {/* Tamamlanan Seriler */}
+               <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.03)] relative overflow-hidden">
+                  <div className="absolute -right-12 -bottom-12 opacity-[0.03]">
+                      <svg className="w-48 h-48" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                  </div>
+                  <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mb-6 z-10 relative">
+                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                  </div>
+                  <h3 className="font-bold text-gray-400 text-[11px] uppercase tracking-widest mb-1 z-10 relative">Tamamlanan Seriler</h3>
+                  {completedSeriesCount > 0 ? (
+                      <p className="text-3xl font-black text-gray-900 z-10 relative">{completedSeriesCount} <span className="text-lg text-gray-300 font-medium">Seri</span></p>
+                  ) : (
+                      <p className="text-[14px] font-black text-gray-300 z-10 relative tracking-widest uppercase mt-2">Henüz tamamlanmadı</p>
+                  )}
+               </div>
+
                {/* Aradıklarım */}
                <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.03)] relative overflow-hidden">
                   <div className="absolute -right-12 -bottom-12 opacity-[0.03]">
@@ -231,45 +256,115 @@ export default async function KoleksiyonumPage({
                   <div className="w-12 h-12 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mb-6 z-10 relative">
                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                   </div>
-                  <h3 className="font-bold text-gray-400 text-[11px] uppercase tracking-widest mb-1 z-10 relative">Radara Aldıklarım (İstek)</h3>
+                  <h3 className="font-bold text-gray-400 text-[11px] uppercase tracking-widest mb-1 z-10 relative">Takip Ettiklerim (İstek)</h3>
                   <p className="text-3xl font-black text-gray-900 z-10 relative">{wantItems.length} <span className="text-lg text-gray-300 font-medium">Adet</span></p>
                </div>
             </div>
 
+
+
             {/* YENİ: Seri İlerleme (Progress) Barları */}
             {activeSeriesProgress.length > 0 && (
-                <div className="mb-12 bg-white rounded-3xl p-8 border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.02)]">
-                   <div className="flex items-center justify-between pointer-events-none mb-6">
-                       <h2 className="text-xl font-black text-gray-900 tracking-tight flex items-center gap-2">
-                           <svg className="w-5 h-5 text-[#D22B2B]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                           Seri İlerleme Durumu
+                <div className="mb-12 bg-white rounded-3xl p-8 border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.02)] relative overflow-hidden">
+                   <div className="flex items-center justify-between pointer-events-none mb-8">
+                       <h2 className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-3">
+                           <svg className="w-6 h-6 text-[#D22B2B]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                           En Çok İlerlediğin Seri
                        </h2>
-                       <span className="text-xs font-bold bg-gray-100 text-gray-500 px-3 py-1 rounded-full">{activeSeriesProgress.length} Katıldığın Seri</span>
                    </div>
                    
-                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                       {activeSeriesProgress.map((sp, idx) => (
-                           <div key={idx} className="bg-gray-50 rounded-xl p-5 border border-gray-100 hover:border-[#D22B2B]/30 transition-colors group">
-                               <div className="flex justify-between items-end mb-2">
-                                   <Link href={`/seriler/${sp.seriesId}`} className="text-[13px] font-bold text-gray-900 group-hover:text-[#D22B2B] transition-colors truncate pr-2 block">
-                                       {sp.seriesTitle}
-                                   </Link>
-                                   <span className="text-[11px] font-black text-[#D22B2B] shrink-0">
-                                      {sp.haveCount} / {sp.maxCount}
-                                   </span>
+                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                       {[...activeSeriesProgress].sort((a, b) => b.percent - a.percent).slice(0, 2).map((sp, idx) => {
+                           const remaining = sp.maxCount - sp.haveCount;
+                           return (
+                               <div key={idx} className="bg-gray-50 rounded-2xl p-6 md:p-8 border border-gray-100 hover:border-[#D22B2B]/30 hover:shadow-lg hover:shadow-red-500/5 transition-all group relative overflow-hidden">
+                                   <div className="absolute top-0 left-0 w-1.5 h-full bg-[#D22B2B] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                   <div className="flex justify-between items-start mb-4">
+                                       <Link href={`/seriler/${sp.seriesId}`} className="text-lg font-black text-gray-900 group-hover:text-[#D22B2B] transition-colors truncate pr-4 block">
+                                           {sp.seriesTitle}
+                                       </Link>
+                                       <span className="text-sm font-black text-[#D22B2B] shrink-0 bg-white px-3 py-1 rounded-lg border border-gray-200 shadow-sm">
+                                          {sp.haveCount} / {sp.maxCount}
+                                       </span>
+                                   </div>
+                                   <div className="w-full bg-gray-200 rounded-full h-3.5 overflow-hidden mb-4">
+                                       <div className={`h-3.5 rounded-full ${sp.percent === 100 ? 'bg-green-500' : 'bg-[#D22B2B]'}`} style={{ width: `${sp.percent}%` }}></div>
+                                   </div>
+                                   
+                                   <div className="flex justify-between items-center text-[11px] uppercase font-bold tracking-widest mt-2 mb-4">
+                                       <span className="text-gray-400">{sp.percent === 100 ? 'TAMAMLANDI 🏆' : 'Koleksiyon İlerlemesi'}</span>
+                                       <span className={sp.percent === 100 ? 'text-green-600' : 'text-gray-900'}>%{sp.percent.toFixed(0)}</span>
+                                   </div>
+
+                                   {/* Hedef Mekaniği (Bağımlılık Yaratan Kısım) */}
+                                   <div className="mt-4 pt-4 border-t border-gray-200/60">
+                                       {remaining > 0 ? (
+                                           <p className="text-[13px] font-bold text-gray-500 flex items-center gap-2">
+                                              <svg className="w-4 h-4 text-[#D22B2B]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                              Bu seriyi tamamlamana sadece <span className="text-gray-900 font-black">{remaining} figür</span> kaldı.
+                                           </p>
+                                       ) : (
+                                           <p className="text-[13px] font-black text-green-600 uppercase tracking-widest flex items-center gap-2">
+                                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                              Tebrikler, seriyi tamamladın!
+                                           </p>
+                                       )}
+                                   </div>
                                </div>
-                               <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
-                                   <div className={`h-2.5 rounded-full ${sp.percent === 100 ? 'bg-green-500' : 'bg-[#D22B2B]'}`} style={{ width: `${sp.percent}%` }}></div>
-                               </div>
-                               <div className="mt-2 flex justify-between items-center text-[10px] uppercase font-bold text-gray-400 tracking-wider">
-                                   <span>{sp.percent === 100 ? 'TAMAMLANDI 🏆' : 'İLERLEME'}</span>
-                                   <span className={sp.percent === 100 ? 'text-green-600' : ''}>%{sp.percent.toFixed(0)}</span>
-                               </div>
-                           </div>
-                       ))}
+                           );
+                       })}
                    </div>
                 </div>
             )}
+
+            {/* SON AKTİVİTE */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                {/* Son Eklenen */}
+                <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-[0_10px_40px_rgba(0,0,0,0.02)] flex items-center gap-6 group hover:border-gray-200 hover:shadow-md transition-all h-[132px] relative z-20">
+                   <div className="relative w-[84px] h-[84px] min-w-[84px] min-h-[84px] bg-gray-50 rounded-2xl border border-gray-100 p-2 shrink-0 overflow-hidden flex items-center justify-center group-hover:bg-red-50 transition-colors">
+                      {lastAddedFigure ? (
+                         <img src={(lastAddedFigure as any)?.images?.[0] || 'https://via.placeholder.com/84'} alt="Son Eklenen" className="absolute inset-0 m-auto max-w-[68px] max-h-[68px] w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
+                      ) : (
+                         <LegoHeadIcon mode="neutral" className="w-8 h-8 text-gray-300" />
+                      )}
+                   </div>
+                   <div className="flex flex-col flex-1 min-w-0">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-[#D22B2B] mb-1.5 flex items-center gap-1.5">
+                         <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"></path></svg>
+                         <span className="truncate">Son Eklediğin Figür</span>
+                      </span>
+                      {lastAddedFigure ? (
+                         <>
+                            <Link href={`/figurler/${(lastAddedFigure as any).slug || (lastAddedFigure as any).id}`} className="text-[16px] font-black text-gray-900 group-hover:text-[#D22B2B] transition-colors line-clamp-1 flex-1">
+                               {(lastAddedFigure as any).name}
+                            </Link>
+                            <span className="text-[13px] font-bold text-gray-400 mt-0.5 truncate flex-shrink-0">{(lastAddedFigure as any).series_name || 'Bilinmeyen Seri'}</span>
+                            <span className="text-[10px] font-black text-[#5CB85C] uppercase tracking-widest mt-1.5 flex items-center gap-1 opacity-90">
+                               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+                               Koleksiyonuna Eklendi
+                            </span>
+                         </>
+                      ) : (
+                         <span className="text-[14px] font-bold text-gray-500">Kasam Henüz Boş</span>
+                      )}
+                   </div>
+                </div>
+
+                {/* Son İncelenen (Geçmiş - Placeholder) */}
+                <Link href="/figurler" className="bg-white border border-gray-100 rounded-3xl p-6 shadow-[0_10px_40px_rgba(0,0,0,0.02)] flex items-center gap-6 group hover:border-gray-200 hover:shadow-md transition-all h-[132px] relative z-20 cursor-pointer">
+                   <div className="relative w-[84px] h-[84px] min-w-[84px] min-h-[84px] bg-gray-50 rounded-2xl border border-gray-100 p-2 shrink-0 overflow-hidden flex items-center justify-center group-hover:bg-blue-50 transition-colors">
+                      <svg className="w-8 h-8 text-gray-300 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                   </div>
+                   <div className="flex flex-col flex-1 min-w-0">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-blue-500 mb-1.5 flex items-center gap-1.5">
+                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                         Son İncelediğin Figür
+                      </span>
+                      <span className="text-[16px] font-black text-gray-900 group-hover:text-blue-600 transition-colors">Henüz inceleme yapılmadı</span>
+                      <span className="text-[13px] font-bold text-gray-400 mt-0.5 group-hover:text-gray-500 transition-colors flex items-center gap-1">Figürleri keşfetmeye başla <span className="transform group-hover:translate-x-1 transition-transform">→</span></span>
+                   </div>
+                </Link>
+            </div>
 
         </div>
 
@@ -316,10 +411,6 @@ export default async function KoleksiyonumPage({
                               name={fig.name}
                               seriesName={fig.series_name}
                               imageUrl={image}
-                              views={0}
-                              dailyViews={0}
-                              minRead={0}
-                              comments={0}
                               statusBadge={item.status}
                               price={fig.value_usd}
                           />

@@ -252,13 +252,15 @@ export default async function FigureDetail({
       {/* 🧱 ORTA BLOK: Finans ve Piyasa Yönetimi */}
       <div className="max-w-7xl mx-auto px-4 sm:px-8 w-full mt-12">
           <div className="bg-white p-6 sm:p-10 rounded-3xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
-              <div className="flex flex-col gap-2 mb-10 text-center items-center justify-center">
-                  <h3 className="text-2xl sm:text-3xl font-black text-[#111] tracking-tight">Finans ve Piyasa Radarı</h3>
-                  <p className="text-gray-500 text-sm max-w-xl">Figürün küresel BrickLink borsasındaki geçmiş fiyat hareketlerini inceleyin ve yerel pazaryerlerinde anlık stok aratarak portföyünüze ucuza katın.</p>
-              </div>
-              
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
-                  {/* Borsa Kutusu */}
+              <div className="relative group/blur">
+                  <div className={`transition-all duration-300 ${!user ? 'pointer-events-none select-none' : ''}`}>
+                      <div className="flex flex-col gap-2 mb-10 text-center items-center justify-center">
+                          <h3 className="text-2xl sm:text-3xl font-black text-[#111] tracking-tight">Finans ve Piyasa Radarı</h3>
+                          <p className="text-gray-500 text-sm max-w-xl">Figürün küresel BrickLink borsasındaki geçmiş fiyat hareketlerini inceleyin ve yerel pazaryerlerinde anlık stok aratarak portföyünüze ucuza katın.</p>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start mt-4">
+                          {/* Borsa Kutusu */}
                   <div className="flex flex-col gap-4">
                       <div className="flex items-center gap-2 mb-2 pb-3 border-b border-gray-100">
                           <svg className="w-5 h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
@@ -282,7 +284,18 @@ export default async function FigureDetail({
                          />
                          <p className="mt-4 text-center text-[10px] text-gray-400 font-semibold uppercase tracking-widest">Komisyon linkleri geliştiriciye destek olmak içindir.</p>
                       </div>
+                      </div>
+                      </div>
                   </div>
+
+                  {/* Blur Overlay - EXACTLY like cards */}
+                  {!user && (
+                      <Link href="/login" className="absolute inset-[-20px] bg-white/40 backdrop-blur-[3px] z-10 flex flex-col items-center justify-center transition-all duration-300 hover:bg-white/20 hover:backdrop-blur-[2px] rounded-3xl overflow-hidden cursor-pointer group/overlay border border-gray-100/30">
+                          <span className="text-[11px] font-black tracking-widest text-[#D22B2B] drop-shadow-[0_1px_1px_rgba(255,255,255,1)] text-center px-4 transition-all duration-300 opacity-0 translate-y-2 group-hover/overlay:opacity-100 group-hover/overlay:translate-y-0 absolute uppercase z-20">
+                              Detayları görmek<br/>için erişim aç
+                          </span>
+                      </Link>
+                  )}
               </div>
           </div>
       </div>

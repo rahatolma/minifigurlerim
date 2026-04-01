@@ -71,7 +71,7 @@ export default function VaultFilterClient({
       >
         <option value="all">Koleksiyon Filtresi</option>
         <option value="have">Kasamda Olanlar</option>
-        <option value="want">Radarımdakiler</option>
+        <option value="want">Takip Ettiklerim</option>
       </select>
       
       <select 

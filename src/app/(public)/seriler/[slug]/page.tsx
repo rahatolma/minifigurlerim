@@ -7,6 +7,7 @@ import RichTextContent from '@/components/ui/RichTextContent';
 import { Package, Grid3X3, CalendarDays } from 'lucide-react';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import ClientViewTracker from '@/components/ui/ClientViewTracker';
+import AuthCTA from '@/components/ui/AuthCTA';
 
 export const revalidate = 0; // Her zaman canlı veri
 
@@ -261,10 +262,16 @@ export default async function SeriesDetail({
                         rarity={fig.rarity}
                         price={fig.value_usd}
                         initialStatus={userStatusMap[fig.id] || null}
+                        isLoggedIn={!!user}
                     />
                 ))}
             </div>
         )}
+
+        {/* PORTFÖY / ERIŞİM AÇ CTA BLOĞU */}
+        <div className="mt-16 mb-4 max-w-4xl mx-auto">
+           <AuthCTA isLoggedIn={!!user} />
+        </div>
       </div>
 
     </div>

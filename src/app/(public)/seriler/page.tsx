@@ -232,12 +232,10 @@ export default async function SeriesPage({
           </div>
         )}
 
-        {/* ERIŞİM AÇ CTA BLOĞU (GİRİŞ YAPILMADIYSA) */}
-        {!user && (
-          <div className="mt-20 max-w-4xl mx-auto">
-             <AuthCTA />
-          </div>
-        )}
+        {/* PORTFÖY / ERIŞİM AÇ CTA BLOĞU */}
+        <div className="mt-20 max-w-4xl mx-auto">
+           <AuthCTA isLoggedIn={!!user} />
+        </div>
       </div>
     </div>
   );

@@ -2,7 +2,6 @@ import SeriesCard from '@/components/ui/SeriesCard';
 import FigureCard from '@/components/ui/FigureCard';
 import HeroSliderClient from '@/components/ui/HeroSliderClient';
 import ItemCarousel from '@/components/ui/ItemCarousel';
-import NewsletterBlock from '@/components/ui/NewsletterBlock';
 import BeforeAfterSlider from '@/components/ui/BeforeAfterSlider';
 import InstagramBlock from '@/components/ui/InstagramBlock';
 import NewsCard from '@/components/ui/NewsCard';
@@ -10,7 +9,6 @@ import { supabase } from '@/utils/supabase/client';
 import Link from 'next/link';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import { LayoutGrid, Package, TrendingUp } from 'lucide-react';
-import WelcomeBlock from '@/components/blocks/WelcomeBlock';
 import AuthCTA from '@/components/ui/AuthCTA';
 import { createClient } from '@/utils/supabase/server';
 
@@ -38,13 +36,6 @@ export default async function Home() {
     .order('created_at', { ascending: false })
     .limit(12);
 
-  // Popüler 12 Figür (Carousel için - total_views kullanılarak)
-  const { data: popularFiguresData } = await supabase
-    .from('minifigures')
-    .select('*, series(title)')
-    .order('total_views', { ascending: false, nullsFirst: false })
-    .limit(12);
-
   // En son yayınlanan 12 Haber (Carousel için)
   const { data: latestNewsData } = await supabase
     .from('news')
@@ -55,7 +46,6 @@ export default async function Home() {
 
   const latestSeries = latestSeriesData || [];
   const latestFigures = latestFiguresData || [];
-  const popularFigures = popularFiguresData || [];
   const latestNews = latestNewsData || [];
 
   // Giriş Yapmış Kullanıcı Hook'u (Gamification) ve Status Data Aktarımı
@@ -106,10 +96,10 @@ export default async function Home() {
 
   return (
     <div className="w-full flex-col">
-      {/* Hero / Kapak Alanı (Slider) - ÜST */}
+      {/* 1. Hero / Kapak Alanı (Slider) - ÜST */}
       <HeroSliderClient sliders={activeSliders?.filter(s => s.location !== 'bottom') || []} />
 
-      {/* 3'lü Sistem Anlatan Değer Önerisi (Features) Alanı */}
+      {/* 2. 3'lü Sistem Anlatan Değer Önerisi (Features) Alanı */}
       <section className="relative z-20 max-w-7xl mx-auto px-4 md:px-8 -mt-10 mb-12">
         <div className="bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 py-6 flex flex-col md:flex-row items-stretch justify-between divide-y md:divide-y-0 md:divide-x divide-gray-100">
             {/* Alan 1 (Tüm CMF Serileri) */}
@@ -118,7 +108,7 @@ export default async function Home() {
                     <LayoutGrid className="w-7 h-7" strokeWidth={2.5} />
                 </div>
                 <div className="flex flex-col text-left w-full">
-                    <h3 className="text-gray-900 text-[17px] font-black leading-snug">Tüm CMF Serileri</h3>
+                    <h3 className="text-gray-900 text-[17px] font-black leading-snug">Tüm Serileri Keşfet</h3>
                     <p className="text-gray-500 font-medium text-[13px] mt-1 leading-snug">2010’dan günümüze çıkan tüm Collectible Minifigür serilerini kronolojik olarak keşfedin.</p>
                 </div>
             </Link>
@@ -129,7 +119,7 @@ export default async function Home() {
                     <Package className="w-7 h-7" strokeWidth={2.5} />
                 </div>
                 <div className="flex flex-col text-left w-full">
-                    <h3 className="text-gray-900 text-[17px] font-black leading-snug">Figür Detayları</h3>
+                    <h3 className="text-gray-900 text-[17px] font-black leading-snug">Her Figürü Yakından Tanı</h3>
                     <p className="text-gray-500 font-medium text-[13px] mt-1 leading-snug">Her figürün parçaları, nadirliği ve koleksiyon değerine dair bilgileri inceleyin.</p>
                 </div>
             </Link>
@@ -140,19 +130,14 @@ export default async function Home() {
                     <TrendingUp className="w-7 h-7" strokeWidth={2.5} />
                 </div>
                 <div className="flex flex-col text-left w-full">
-                    <h3 className="text-gray-900 text-[17px] font-black leading-snug">Koleksiyon Rehberi</h3>
+                    <h3 className="text-gray-900 text-[17px] font-black leading-snug">Koleksiyonunu Bilinçli Büyüt</h3>
                     <p className="text-gray-500 font-medium text-[13px] mt-1 leading-snug">Hangi figür değerli? Hangi seriler öne çıkıyor? Koleksiyon dünyasını öğrenin.</p>
                 </div>
             </Link>
         </div>
       </section>
 
-      {/* Hakkımızda / Merhaba Alanı (Kayıtlı Bloktan Çağrıldı) */}
-      <WelcomeBlock />
-
-
-
-      {/* Yeni Seriler Section (Artık Merhaba bloksuz 2. adım) */}
+      {/* 3. Yeni Seriler Section */}
       <section className="bg-transparent py-[64px] border-t border-gray-100">
           <ItemCarousel
             titleBlock={
@@ -188,7 +173,7 @@ export default async function Home() {
           </ItemCarousel>
       </section>
 
-      {/* Yeni Figürler Section */}
+      {/* 4. Yeni Figürler Section */}
       <section className="py-[64px] bg-transparent border-t border-gray-200">
           <ItemCarousel
             titleBlock={
@@ -222,69 +207,15 @@ export default async function Home() {
               <p className="text-gray-400 font-bold px-8 mt-8 w-full text-center">Henüz sistemde hiç figür yok.</p>
             )}
           </ItemCarousel>
-
-          {!user && (
-            <div className="max-w-4xl mx-auto px-8 mt-16 mb-4">
-               <AuthCTA />
-            </div>
-          )}
       </section>
 
-      {/* Abone Ol / Newsletter Section */}
-      <section className="bg-transparent py-[64px] border-t border-gray-100">
-        <div className="max-w-7xl mx-auto px-8">
-           <NewsletterBlock />
-        </div>
-      </section>
+      {/* 5. Erişime Aç / Koleksiyon Yönetimi (Full Width / Site Width) */}
+      <div className="w-full relative bg-gray-900 mt-0">
+         <AuthCTA fullWidth={true} isLoggedIn={!!user} />
+      </div>
 
-      {/* Popüler Figürler Section (En Çok Okunanlar/Ziyaret Edilenler) */}
-      <section className="py-[64px] bg-[#f9fafb] border-t border-gray-200">
-          <ItemCarousel
-            titleBlock={
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-[#D22B2B] rounded-full flex items-center justify-center shadow-md border-4 border-red-100 text-white">
-                    <LegoHeadIcon mode="fire" className="w-[28px] h-[28px]" color="text-white" />
-                </div>
-                <div className="flex flex-col">
-                  <h2 className="text-4xl font-black text-gray-900">Popüler Figürler</h2>
-                  <span className="text-xs font-bold uppercase tracking-widest text-[#D22B2B] mt-1">EN ÇOK İNCELENENLER</span>
-                </div>
-              </div>
-            }
-            actionButton={
-              <Link href="/figurler?sort=popular" className="bg-[#D22B2B] text-white font-bold py-3 px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[11px] block text-center">Tüm Figürler</Link>
-            }
-          >
-            {popularFigures.map(fig => (
-              <FigureCard  
-                key={fig.id}
-                id={fig.id}
-                slug={fig.slug}
-                name={fig.name}
-                seriesName={(fig as any).series?.title || 'Bilinmeyen Seri'}
-                imageUrl={(fig.images && fig.images.length > 0) ? fig.images[0] : 'https://via.placeholder.com/300x400.png?text=Görsel+Yok'}
-                year={fig.release_year}
-                rarity={fig.rarity}
-                price={fig.value_usd}
-                initialStatus={userStatusMap[fig.id] || null}
-                isLoggedIn={!!user}
-              />
-            ))}
-            {popularFigures.length === 0 && (
-              <p className="text-gray-400 font-bold px-8 mt-8 w-full text-center">Henüz sistemde hiç figür yok.</p>
-            )}
-          </ItemCarousel>
-      </section>
-
-      {/* Instagram Bloğu Section */}
-      <section className="bg-transparent py-[64px] border-t border-gray-100">
-        <div className="max-w-7xl mx-auto px-8">
-           <InstagramBlock />
-        </div>
-      </section>
-
-      {/* Güncel Haberler / Blog Section */}
-      <section className="bg-transparent py-[64px] border-t border-gray-100">
+      {/* 8. Güncel Haberler / Blog Section */}
+      <section className="bg-white py-[64px] border-t border-gray-100">
           <ItemCarousel
             titleBlock={
               <div className="flex items-center gap-4">
@@ -319,9 +250,13 @@ export default async function Home() {
             )}
           </ItemCarousel>
       </section>
-      
-      {/* Alt Kapak Alanı (Slider) - BOTTOM */}
-      <HeroSliderClient sliders={activeSliders?.filter(s => s.location === 'bottom') || []} />
+
+      {/* 9. Instagram Bloğu Section */}
+      <section className="bg-transparent py-[64px]">
+        <div className="max-w-7xl mx-auto px-8">
+           <InstagramBlock />
+        </div>
+      </section>
       
     </div>
   );

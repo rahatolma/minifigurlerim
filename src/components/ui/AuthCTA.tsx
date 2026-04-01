@@ -1,30 +1,46 @@
 import Link from 'next/link';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 
-export default function AuthCTA() {
+export interface AuthCTAProps {
+  fullWidth?: boolean;
+  isLoggedIn?: boolean;
+}
+
+export default function AuthCTA({ fullWidth = false, isLoggedIn = false }: AuthCTAProps) {
+  const containerStyle = fullWidth
+    ? "w-full relative overflow-hidden bg-gray-900 py-16 md:py-20 px-4 md:px-8 shadow-xl flex flex-col items-center justify-center text-center group border-y border-gray-800"
+    : "w-full relative overflow-hidden bg-gray-900 rounded-3xl p-8 md:p-12 shadow-[0_15px_40px_rgba(0,0,0,0.15)] flex flex-col items-center justify-center text-center group border border-gray-800";
+
   return (
-    <div className="w-full relative overflow-hidden bg-gray-900 rounded-3xl p-8 md:p-12 shadow-[0_15px_40px_rgba(0,0,0,0.15)] flex flex-col items-center justify-center text-center group border border-gray-800">
+    <div className={containerStyle}>
       {/* Background glow effects */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-[#D22B2B]/20 blur-[60px] rounded-full pointer-events-none transition-all duration-700 group-hover:bg-[#D22B2B]/30"></div>
       <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-red-600/10 blur-[50px] rounded-full pointer-events-none"></div>
 
       {/* Icon */}
       <div className="relative z-10 w-16 h-16 bg-white/5 backdrop-blur-md rounded-2xl flex items-center justify-center mb-6 border border-white/10 shadow-lg transform transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
-        <LegoHeadIcon mode="happy" className="w-10 h-10" color="text-yellow-400" />
+        <LegoHeadIcon mode={isLoggedIn ? "neutral" : "happy"} className="w-10 h-10" color={isLoggedIn ? "text-green-400" : "text-yellow-400"} />
       </div>
 
       {/* Main Copy */}
-      <h2 className="relative z-10 text-3xl md:text-5xl font-black text-white tracking-tight mb-4 drop-shadow-sm">
-        Koleksiyonunu oluştur. İlerlemeni takip et.
-      </h2>
+      <div className="relative z-10 flex flex-col items-center mb-6">
+        <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight drop-shadow-sm">
+          {isLoggedIn ? 'Portföyünü Genişlet. Piyasa Değerini Gör.' : 'Kendi koleksiyonunu oluşturmaya başla.'}
+        </h2>
+        {!isLoggedIn && (
+          <p className="text-[16px] md:text-[18px] font-bold text-gray-300 mt-4 max-w-xl mx-auto drop-shadow-sm">
+            Sahip olduğun figürleri ekle, ilerlemeni takip et.
+          </p>
+        )}
+      </div>
 
       {/* CTA Button */}
       <div className="relative z-10 mt-6 mb-8 w-full md:w-auto">
         <Link 
-          href="/login"
-          className="relative overflow-hidden inline-flex items-center justify-center bg-[#D22B2B] text-white font-black text-[13px] tracking-[0.15em] uppercase py-4 px-12 rounded-xl hover:bg-red-600 transition-all duration-300 shadow-[0_0_20px_rgba(210,43,43,0.4)] hover:shadow-[0_0_30px_rgba(210,43,43,0.6)] group/btn w-full md:w-auto transform hover:-translate-y-1"
+          href={isLoggedIn ? "/koleksiyonum" : "/login"}
+          className={`relative overflow-hidden inline-flex items-center justify-center font-black text-[13px] tracking-[0.15em] uppercase py-4 px-12 rounded-xl transition-all duration-300 shadow-[0_0_20px_rgba(210,43,43,0.4)] group/btn w-full md:w-auto transform hover:-translate-y-1 ${isLoggedIn ? 'bg-green-600 text-white hover:bg-green-500 hover:shadow-[0_0_30px_rgba(22,163,74,0.6)]' : 'bg-[#D22B2B] text-white hover:bg-red-600 hover:shadow-[0_0_30px_rgba(210,43,43,0.6)]'}`}
         >
-          <span className="relative z-10">Erişim Aç</span>
+          <span className="relative z-10">{isLoggedIn ? 'Koleksiyonuma Git' : 'Erişim Aç'}</span>
           {/* Button shine effect */}
           <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover/btn:animate-[shimmer_1.5s_infinite]"></div>
         </Link>

@@ -3,6 +3,7 @@ import FigureCard from '@/components/ui/FigureCard';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import Link from 'next/link';
 import FiguresFilterClient from '@/components/ui/FiguresFilterClient';
+import AuthCTA from '@/components/ui/AuthCTA';
 
 const MINIFIGURE_EVOLUTION = [
   { year: '1978', title: 'Klasik Yüz', desc: 'Legoland Town ile klasik sarı gülümseme doğdu.', icon: 'happy', color: 'text-[#F2CD37]' }, // Bright Yellow
@@ -184,11 +185,17 @@ export default async function FiguresPage({
                                 rarity={fig.rarity}
                                 price={fig.value_usd}
                                 initialStatus={userStatusMap[fig.id] || null}
+                                isLoggedIn={!!user}
                             />
                         ))}
                     </div>
                 </>
             )}
+
+            {/* PORTFÖY / ERIŞİM AÇ CTA BLOĞU */}
+            <div className="mt-20 max-w-4xl mx-auto">
+               <AuthCTA isLoggedIn={!!user} />
+            </div>
       </div>
     </div>
   );

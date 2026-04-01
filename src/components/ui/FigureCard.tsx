@@ -56,12 +56,33 @@ export default function FigureCard({
        
        <Link href={`/figurler/${slug || id}`} className="relative w-full aspect-square bg-[#fff] flex items-center justify-center p-8 border-b border-gray-50 flex-none group-hover:bg-[#fcfcfc] transition-colors">
           {(status === 'have') && (
-             <div className="absolute top-4 left-4 z-10 bg-[#5CB85C] text-white text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded shadow-sm">Koleksiyonda</div>
+             <div className="absolute top-4 left-4 z-10 bg-[#5CB85C] text-white text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded shadow-sm flex items-center gap-1">
+                <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+                Koleksiyonda
+             </div>
           )}
           {(status === 'want') && (
-             <div className="absolute top-4 left-4 z-10 bg-[#D22B2B] text-white text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded shadow-sm">Radarımda</div>
+             <div className="absolute top-4 left-4 z-10 bg-[#D22B2B] text-white text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded shadow-sm flex items-center gap-1">
+                <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                Takipte
+             </div>
           )}
           <Image src={imageUrl} alt={name} fill className="object-contain p-6 mix-blend-multiply group-hover:scale-110 transition-transform duration-500" />
+          
+          {/* PREMIUM HOVER BADGE */}
+          <div className="absolute bottom-4 left-0 w-full flex justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-20 translate-y-2 group-hover:translate-y-0 pointer-events-none">
+             {status === 'have' ? (
+                <span className="bg-[#5CB85C]/95 backdrop-blur-sm shadow-lg text-white text-[9px] uppercase font-black tracking-widest px-3.5 py-1.5 rounded-full flex items-center gap-1.5">
+                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.5" d="M5 13l4 4L19 7"></path></svg>
+                   Koleksiyonunda Mevcut
+                </span>
+             ) : (
+                <span className="bg-gray-900/95 backdrop-blur-sm shadow-lg text-white text-[9px] uppercase font-black tracking-widest px-3.5 py-1.5 rounded-full flex items-center gap-1.5">
+                   <svg className="w-3.5 h-3.5 text-[#D22B2B]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                   Henüz Sende Yok
+                </span>
+             )}
+          </div>
        </Link>
 
        <div className="px-6 pt-5 pb-6 flex flex-col flex-1 bg-white">
@@ -118,18 +139,13 @@ export default function FigureCard({
                     ) : (
                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                     )}
-                    <span>Radar'a Ekle</span>
+                    <span>Takip Et</span>
                  </button>
               </div>
           ) : (
               <div className="flex w-full gap-2 mb-4 relative group/blur">
                   {/* Blur Overlay - Covers everything below */}
                   <div className="absolute -inset-x-0 -bottom-0 top-0 bg-white/40 backdrop-blur-[3px] z-10 flex flex-col items-center justify-center transition-all duration-300 hover:bg-white/20 hover:backdrop-blur-[2px] rounded-b-xl overflow-hidden cursor-default group/overlay">
-                      {/* Default Text */}
-                      <span className="text-[12px] font-black tracking-wide text-gray-800 drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)] text-center px-4 transition-all duration-300 group-hover/overlay:opacity-0 group-hover/overlay:-translate-y-2 absolute z-20">
-                          Koleksiyonunu başlatmak<br/>için erişim aç
-                      </span>
-                      
                       {/* Hover Text */}
                       <span className="text-[11px] font-black tracking-widest text-[#D22B2B] drop-shadow-[0_1px_1px_rgba(255,255,255,1)] text-center px-4 transition-all duration-300 opacity-0 translate-y-2 group-hover/overlay:opacity-100 group-hover/overlay:translate-y-0 absolute uppercase z-20">
                           Detayları görmek<br/>için erişim aç
@@ -148,7 +164,7 @@ export default function FigureCard({
 
                        <button className="flex-1 flex items-center justify-center gap-1.5 py-3 px-1.5 sm:px-2 rounded-xl border border-red-50 bg-red-50/30 text-red-600 font-bold text-[11px] sm:text-[12px]">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
-                          <span>Radar'a Ekle</span>
+                          <span>Takip Et</span>
                        </button>
                   </div>
               </div>

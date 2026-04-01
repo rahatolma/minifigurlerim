@@ -69,6 +69,42 @@ export default function CollectionActions({
       setLoading(false);
   };
 
+  // EĞER GİRİŞ YAPILMAMIŞSA, KARTLARDAKİ PREMIUM BLUR MANTIĞINI UYGULA
+  if (!isLoggedIn) {
+     return (
+        <div className="w-full relative group/blur mt-2">
+           {/* Static Fake Buttons */}
+           <div className="flex flex-col gap-3 w-full pointer-events-none select-none opacity-40">
+              <div className="w-full flex items-center justify-center gap-3 py-4 px-6 rounded-2xl border-2 bg-[#D22B2B] border-[#D22B2B] text-white shadow-sm">
+                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"></path></svg>
+                 <span className="text-[13px] md:text-[14px] uppercase tracking-widest font-black">
+                    Koleksiyonuma Ekle
+                 </span>
+              </div>
+              <div className="w-full flex items-center justify-center gap-3 py-3.5 px-6 rounded-xl border-2 bg-gray-50 border-gray-200 text-gray-700">
+                  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                  <span className="text-[11px] md:text-[12px] uppercase tracking-[0.15em]">
+                    Takip Et (İstek)
+                  </span>
+              </div>
+              <div className="w-full py-3 px-4 rounded-xl border border-gray-200 bg-white text-gray-700 flex items-center justify-center gap-2 font-bold text-sm">
+                  <span className="text-yellow-400 text-lg">★</span> Figüre Puan Ver
+              </div>
+           </div>
+
+           {/* Blur Overlay - EXACTLY like cards */}
+           <div 
+             onClick={() => router.push('/login')}
+             className="absolute inset-[0] bg-white/40 backdrop-blur-[3px] z-10 flex flex-col items-center justify-center transition-all duration-300 hover:bg-white/20 hover:backdrop-blur-[2px] rounded-2xl overflow-hidden cursor-pointer group/overlay mt-[-4px] mb-[-4px]"
+           >
+              <span className="text-[11px] font-black tracking-widest text-[#D22B2B] drop-shadow-[0_1px_1px_rgba(255,255,255,1)] text-center px-4 transition-all duration-300 opacity-0 translate-y-2 group-hover/overlay:opacity-100 group-hover/overlay:translate-y-0 absolute uppercase z-20">
+                  Detayları görmek<br/>için erişim aç
+              </span>
+           </div>
+        </div>
+     );
+  }
+
   return (
     <div className="w-full flex flex-col gap-4">
        {/* 0. BAŞARI ROZETİ (GAMIFICATION) */}
@@ -114,7 +150,7 @@ export default function CollectionActions({
                 <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
              )}
              <span className="text-[11px] md:text-[12px] uppercase tracking-[0.15em]">
-                {status === 'want' ? ' Radarımda (İstek)' : ' Radarıma (İstek) Ekle'}
+                {status === 'want' ? ' Takipte (İstek)' : ' Takip Et (İstek)'}
              </span>
           </button>
        </div>
@@ -122,7 +158,6 @@ export default function CollectionActions({
        {/* 2. Değerlendirme / Puanlama */}
        <button 
           onClick={() => {
-             if(!isLoggedIn) return router.push('/login');
              setShowRatingModal(true);
           }}
           className={`w-full py-3 px-4 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.04)] border flex items-center justify-center gap-2 font-bold text-sm transition-all ${rating ? 'bg-yellow-50 border-yellow-200 text-yellow-800' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'}`}
