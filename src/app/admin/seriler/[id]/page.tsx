@@ -8,6 +8,8 @@ import RichTextEditor from '@/components/admin/RichTextEditor';
 import { supabase } from '@/utils/supabase/client';
 import toast from 'react-hot-toast';
 import { slugify } from '@/utils/helpers';
+import BlockEditor from '@/components/admin/blocks/BlockEditor';
+import { AnyContentBlock } from '@/types/content-blocks';
 
 export default function EditSeriesPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -22,15 +24,10 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
   const [imageUrls, setImageUrls] = useState({
     cover_image_url: null as string | null,
     hero_image_url: null as string | null,
-    box_image_url: null as string | null,
-    collector_image_url: null as string | null,
-    general_image_url: null as string | null,
   });
   
   const [formData, setFormData] = useState({
     title: '',
-    description: '',
-    description_2: '',
     category: '',
     series_no: '',
     brand: 'LEGO®',
@@ -38,7 +35,7 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
     release_month: '',
     release_year: '',
     rarity: '',
-    collector_note: ''
+    content_blocks: [] as AnyContentBlock[]
   });
 
   useEffect(() => {
@@ -54,8 +51,6 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
              if (data) {
                setFormData({
                  title: data.title || '',
-                 description: data.description || '',
-                 description_2: data.description_2 || '',
                  category: data.category || (catData?.length ? catData[0].name : 'Karakter Paketleri'),
                  series_no: data.series_no || '',
                  brand: data.brand || 'LEGO®',
@@ -63,14 +58,11 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
                  release_month: data.release_month || '',
                  release_year: data.release_year || '',
                  rarity: data.rarity || '',
-                 collector_note: data.collector_note || ''
+                 content_blocks: Array.isArray(data.content_blocks) ? data.content_blocks : []
                });
                setImageUrls({
                  cover_image_url: data.cover_image_url || null,
                  hero_image_url: data.hero_image_url || null,
-                 box_image_url: data.box_image_url || null,
-                 collector_image_url: data.collector_image_url || null,
-                 general_image_url: data.general_image_url || null,
                });
              }
            } catch (err: any) {
@@ -147,8 +139,6 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
         .update({
           slug: generatedSlug,
           title: formData.title,
-          description: formData.description,
-          description_2: formData.description_2,
           category: formData.category,
           series_no: formData.series_no,
           brand: formData.brand,
@@ -156,12 +146,9 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
           release_month: formData.release_month,
           release_year: formData.release_year,
           rarity: formData.rarity,
-          collector_note: formData.collector_note,
           cover_image_url: imageUrls.cover_image_url,
           hero_image_url: imageUrls.hero_image_url,
-          box_image_url: imageUrls.box_image_url,
-          collector_image_url: imageUrls.collector_image_url,
-          general_image_url: imageUrls.general_image_url
+          content_blocks: formData.content_blocks
         })
         .eq('id', id);
 
@@ -194,10 +181,7 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
 
   const imageUploadBoxes = [
     { id: 'cover_image_url', title: '1. Kart (Kapak) Görseli', desc: 'Ana Sayfadaki listeleme kapak fotoğrafı.' },
-    { id: 'hero_image_url', title: '2. Hero (Slide) Görseli', desc: 'Detay sayfasının en üstündeki devasa arkaplan görseli.' },
-    { id: 'box_image_url', title: '3. Kutu / Paket Görseli', desc: 'Ana metnin solunda duran paket veya kutu fotoğrafı.' },
-    { id: 'collector_image_url', title: '4. Koleksiyoner Görseli', desc: 'Alt kısımdaki yorumun yanında duran kare görsel.' },
-    { id: 'general_image_url', title: '5. Genel Görsel', desc: 'Kutu görseli ve Hikaye Alanı 1 in hemen altında duran tam boy detay fotoğrafı.' }
+    { id: 'hero_image_url', title: '2. Hero (Slide) Görseli', desc: 'Detay sayfasının en üstündeki devasa arkaplan görseli.' }
   ];
 
   if (loading) {
@@ -360,49 +344,17 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
               </div>
             </div>
             
-            <div className="bg-white border border-gray-200 rounded-md shadow-sm mb-8 overflow-hidden">
-              {/* Hikaye 1 */}
-              <div className="flex border-b border-gray-100 items-start hover:bg-gray-50 transition-colors group">
-                <div className="w-1/3 pt-6 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
-                  <label className="text-gray-900 block font-black tracking-wide">Hikaye Alanı 1</label>
-                </div>
-                <div className="w-2/3 py-4">
-                  <RichTextEditor
-                    value={formData.description}
-                    onChange={(val) => setFormData(prev => ({ ...prev, description: val }))}
-                    placeholder="Serinin ana hikayesi (Üst kısım)..."
-                  />
-                </div>
-              </div>
-
-               {/* Hikaye 2 */}
-               <div className="flex border-b border-gray-100 items-start hover:bg-gray-50 transition-colors group">
-                <div className="w-1/3 pt-6 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
-                  <label className="text-gray-900 block font-black tracking-wide">Hikaye Alanı 2</label>
-                </div>
-                <div className="w-2/3 py-4">
-                  <RichTextEditor
-                    value={formData.description_2}
-                    onChange={(val) => setFormData(prev => ({ ...prev, description_2: val }))}
-                    placeholder="Serinin devam hikayesi (Alt kısım)..."
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-start hover:bg-gray-50 transition-colors group">
-                <div className="w-1/3 pt-6 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
-                  <label className="text-gray-900 block font-black tracking-wide">
-                    Koleksiyoner Yorumu
-                  </label>
-                </div>
-                <div className="w-2/3 py-4 pr-1">
-                  <RichTextEditor
-                    value={formData.collector_note}
-                    onChange={(val) => setFormData(prev => ({ ...prev, collector_note: val }))}
-                    placeholder="Bizim için bu seri... Kısacası Spider-Man Serisi inovatif tasarımlarıyla efsaneleşmiştir."
-                  />
-                </div>
-              </div>
+            {/* Modüler İçerik Blokları Editörü */}
+            <div className="bg-transparent border-t border-gray-200 pt-8 mt-8">
+               <div className="mb-6 flex flex-col">
+                  <h3 className="text-xl font-black text-gray-900 uppercase tracking-widest">İçerik Blokları Yöneticisi</h3>
+                  <p className="text-xs text-gray-500 font-semibold mt-1">Serinin detay sayfasında sergilenecek içerikleri modüler bloklar kullanarak oluşturun.</p>
+               </div>
+               
+               <BlockEditor 
+                  blocks={formData.content_blocks} 
+                  onChange={(newBlocks) => setFormData(prev => ({ ...prev, content_blocks: newBlocks }))} 
+               />
             </div>
 
             <div className="mt-12 flex justify-end">

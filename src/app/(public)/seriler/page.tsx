@@ -117,7 +117,7 @@ export default async function SeriesPage({
       <div className="w-full bg-[#fcfcfc] pt-8 pb-16 overflow-hidden relative border-b border-gray-100">
          <div className="max-w-7xl mx-auto px-8 mb-8 md:mb-16 text-center">
             <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter mb-4">
-              <span className="text-[#D22B2B]">CMF</span> Serüveni
+              <span className="text-[#20214a]">CMF</span> Serüveni
             </h2>
             <p className="text-gray-500 font-bold max-w-2xl mx-auto text-sm md:text-base">
               Kör paketli sarı kafalardan, kare kodlu kutulara uzanan devasa bir koleksiyon tarihi. Sağa kaydırarak zaman yolculuğuna başla!
@@ -131,9 +131,9 @@ export default async function SeriesPage({
             <div className="flex items-center w-max relative min-h-[380px] md:min-h-[420px] pb-10">
                
                {/* Asıl parlayan şerit */}
-               <div className="absolute top-1/2 left-0 right-0 h-1.5 bg-gradient-to-r from-red-600 via-[#D22B2B] to-red-600 -translate-y-1/2 rounded-full opacity-30 shadow-[0_0_15px_rgba(210,43,43,0.8)] z-0"></div>
+               <div className="absolute top-1/2 left-0 right-0 h-1.5 bg-gradient-to-r from-[#111333] via-[#20214a] to-[#111333] -translate-y-1/2 rounded-full opacity-30 shadow-[0_0_15px_rgba(32,33,74,0.8)] z-0"></div>
                {/* Kesik çizgili efekt */}
-               <div className="absolute top-1/2 left-0 right-0 h-0 border-t-[3px] border-dashed border-[#D22B2B] -translate-y-[1.5px] opacity-80 z-0"></div>
+               <div className="absolute top-1/2 left-0 right-0 h-0 border-t-[3px] border-dashed border-[#20214a] -translate-y-[1.5px] opacity-80 z-0"></div>
 
                {/* Timeline Kutu Üyeleri */}
                {CMF_HISTORY.map((item, index) => {
@@ -146,14 +146,14 @@ export default async function SeriesPage({
                         <div className={`absolute w-[280px] transition-all duration-500 ${isTop ? 'bottom-1/2 mb-[50px] group-hover:-translate-y-2' : 'top-1/2 mt-[50px] group-hover:translate-y-2'}`}>
                            
                            {/* Nokta ve çizgi bağlantısı */}
-                           <div className={`absolute left-1/2 -translate-x-1/2 w-[2px] h-[30px] bg-[#D22B2B]/30 ${isTop ? '-bottom-[30px]' : '-top-[30px]'}`}></div>
+                           <div className={`absolute left-1/2 -translate-x-1/2 w-[2px] h-[30px] bg-[#20214a]/30 ${isTop ? '-bottom-[30px]' : '-top-[30px]'}`}></div>
                            
                            {/* Kart Gövdesi */}
                            <div className="bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:shadow-[0_15px_30px_rgba(210,43,43,0.1)] border border-gray-100/50 rounded-2xl relative">
                                {/* Kart Üst Çizgisi */}
-                               <div className={`absolute ${isTop ? 'bottom-0' : 'top-0'} left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-[#D22B2B]/60 to-transparent`}></div>
+                               <div className={`absolute ${isTop ? 'bottom-0' : 'top-0'} left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-[#20214a]/60 to-transparent`}></div>
                                
-                               <div className="text-[11px] font-black tracking-[0.2em] text-[#D22B2B] uppercase mb-1">{item.date}</div>
+                               <div className="text-[11px] font-black tracking-[0.2em] text-[#20214a] uppercase mb-1">{item.date}</div>
                                <h3 className="text-xl font-bold text-gray-900 mb-2 tracking-tight">{item.title}</h3>
                                <p className="text-[13px] text-gray-500 font-bold leading-relaxed">{item.desc}</p>
                            </div>
@@ -172,7 +172,7 @@ export default async function SeriesPage({
                            </div>
                            
                            {/* Başın Altında Yazan Kritik Yıl */}
-                           <div className="absolute -bottom-8 bg-[#D22B2B] text-white text-[11px] font-black px-3 py-1 rounded-full shadow-lg opacity-80 group-hover:opacity-100 transition-opacity tracking-widest uppercase border border-red-500">
+                           <div className="absolute -bottom-8 bg-[#20214a] text-white text-[11px] font-black px-3 py-1 rounded-full shadow-lg opacity-80 group-hover:opacity-100 transition-opacity tracking-widest uppercase border border-[#111333]">
                                {item.year}
                            </div>
                         </div>
@@ -204,9 +204,9 @@ export default async function SeriesPage({
       {/* 
         BLOK 3: Şablon Izgara Sistemi (Grid) 
       */}
-      <div className="max-w-7xl mx-auto px-8 pb-32">
+      <div className={`max-w-7xl mx-auto px-8 ${filteredSeries.length > 21 ? 'pb-16' : 'pb-24'}`}>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-5">
-           {filteredSeries.map(series => (
+           {filteredSeries.slice(0, 21).map(series => (
             <SeriesCard 
                 key={series.id} 
                 id={series.slug || series.id}
@@ -231,12 +231,43 @@ export default async function SeriesPage({
             <p className="text-sm font-medium text-gray-500 max-w-sm">Mevcut filtrelere uyan bir LEGO serisi bulunmuyor. Diğer seçenekleri deneyebilirsin.</p>
           </div>
         )}
-
-        {/* PORTFÖY / ERIŞİM AÇ CTA BLOĞU */}
-        <div className="mt-20 max-w-4xl mx-auto">
-           <AuthCTA isLoggedIn={!!user} />
-        </div>
       </div>
+
+      {/* ARA CTA: (Sadece eğer 21'den fazla seri varsa) */}
+      {filteredSeries.length > 21 && (
+         <div className="w-full relative mb-16">
+            <AuthCTA fullWidth={true} isLoggedIn={!!user} />
+         </div>
+      )}
+
+      {/* 21. Ürün Sonrası Geri Kalan Listeleme */}
+      {filteredSeries.length > 21 && (
+          <div className="max-w-7xl mx-auto px-8 pb-24">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-5">
+               {filteredSeries.slice(21).map(series => (
+                <SeriesCard 
+                    key={series.id} 
+                    id={series.slug || series.id}
+                    title={series.title}
+                    imageUrl={series.cover_image_url || 'https://via.placeholder.com/400x300.png?text=Görsel+Yok'}
+                    year={series.release_year || (series.created_at ? new Date(series.created_at).getFullYear() : '2010')}
+                    category={series.category || 'CMF'}
+                    totalFigures={series.figure_count || seriesFigStats[series.id]?.count || 0}
+                    rarity={series.rarity || 'Yaygın'}
+                    latestFigureName={seriesFigStats[series.id]?.latestName || null}
+                    seriesProgress={userSeriesProgressMap[series.id] || null}
+                    isLoggedIn={!!user}
+                />
+              ))}
+            </div>
+          </div>
+      )}
+
+      {/* PORTFÖY / ERIŞİM AÇ CTA BLOĞU - EN ALT (Ana sayfadaki gibi full width) */}
+      <div className="w-full relative">
+         <AuthCTA fullWidth={true} isLoggedIn={!!user} />
+      </div>
+
     </div>
   );
 }
