@@ -30,18 +30,19 @@ export default function Footer() {
               <li><Link href="/lego-hakkinda" className="hover:text-black hover:underline transition-all">LEGO® Hakkında</Link></li>
               <li><Link href="/hakkimizda" className="hover:text-black hover:underline transition-all">Hakkımızda</Link></li>
               <li><Link href="/haberler" className="hover:text-black hover:underline transition-all">Blog</Link></li>
+              <li><Link href="/sss" className="hover:text-black hover:underline transition-all">Sıkça Sorulan Sorular</Link></li>
               <li><Link href="/iletisim" className="hover:text-black hover:underline transition-all">İletişim</Link></li>
             </ul>
           </div>
 
           {/* BLOK 3: Destek & Sosyal */}
           <div className="flex flex-col gap-6 md:col-span-4 lg:col-span-3 lg:pl-2">
-            <h4 className="text-[14px] font-black tracking-widest text-[#D22B2B]">Destek</h4>
+            <h4 className="text-[14px] font-black tracking-widest text-[#D22B2B]">Yasal</h4>
             <ul className="flex flex-col gap-3.5 font-bold text-[15px] text-gray-700 mb-2 w-full whitespace-nowrap">
               <li><Link href="/gizlilik" className="hover:text-black hover:underline transition-all">Gizlilik Politikası</Link></li>
               <li><Link href="/kullanim-kosullari" className="hover:text-black hover:underline transition-all">Kullanım Koşulları</Link></li>
               <li><Link href="/uyelik-sozlesmesi" className="hover:text-black hover:underline transition-all">Üyelik Sözleşmesi</Link></li>
-              <li><Link href="/sss" className="hover:text-black hover:underline transition-all">Sıkça Sorulan Sorular</Link></li>
+              <li><Link href="/hak-ihlali" className="hover:text-black hover:underline transition-all">Hak İhlali Bildirimi</Link></li>
             </ul>
             
             <div className="flex gap-4 mt-2">

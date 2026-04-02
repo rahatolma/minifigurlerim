@@ -25,7 +25,7 @@ export default async function LoginPage({
       {/* Misafir Olarak Dön Butonu */}
       <Link href="/" className="absolute top-8 left-8 flex items-center gap-2 text-gray-500 hover:text-black transition-colors text-sm font-bold z-10 group bg-white/50 backdrop-blur-md px-4 py-2 rounded-full shadow-sm border border-gray-200">
          <svg className="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-         Vazgeç, Siteye Dön
+         Siteye Dön
       </Link>
 
       <div className="w-full max-w-5xl flex flex-col items-center z-10 gap-6">
@@ -45,12 +45,12 @@ export default async function LoginPage({
         <div className="w-full md:w-1/2 p-10 sm:p-14 border-b md:border-b-0 md:border-r border-gray-100 flex flex-col justify-center">
           <div className="mb-8">
             <h1 className="text-3xl font-black tracking-tighter text-gray-900 mb-2">
-              {isRegister ? 'Koleksiyona Katıl' : 'Sisteme Giriş Yap'}
+              {isRegister ? 'Koleksiyonunu Oluştur' : 'Koleksiyonuna Geri Dön'}
             </h1>
-            <p className="text-gray-500 text-sm font-medium">
+            <p className="text-gray-500 text-[15px] font-medium leading-relaxed">
               {isRegister 
-                ? 'Minifigür portföyünüzü oluşturun ve değerleri global çapta takip edin. Geleneksel e-posta ile hemen başlayın.' 
-                : 'Minifigür borsanıza dönün. Klasik yöntemle e-posta üzerinden güvenli giriş yapın.'}
+                ? 'Minifigürlerini ekle, ilerlemeni takip et, favorilerini kaydet.' 
+                : 'Koleksiyonuna erişmek için giriş yap.'}
             </p>
           </div>
 
@@ -82,37 +82,64 @@ export default async function LoginPage({
             <div>
               <div className="flex items-center justify-between mb-1.5">
                   <label className="block text-[11px] font-black text-gray-700 uppercase tracking-widest" htmlFor="password">Şifre</label>
-                  {!isRegister && (
-                      <Link href="#" className="text-[10px] font-bold text-gray-400 hover:text-[#D22B2B] transition-colors">Şifremi Unuttum</Link>
-                  )}
               </div>
               <input
                 id="password"
                 type="password"
                 name="password"
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-medium outline-none focus:border-[#D22B2B] focus:ring-1 focus:ring-[#D22B2B] transition-all text-black placeholder:text-gray-400"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-medium outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all text-black placeholder:text-gray-400"
                 placeholder="••••••••"
                 required
               />
+              {!isRegister && (
+                  <div className="text-right mt-2">
+                       <Link href="#" className="text-[11px] font-bold text-gray-500 hover:text-black transition-colors">Şifremi Unuttum</Link>
+                  </div>
+              )}
             </div>
+
+            {isRegister ? (
+              <div className="flex flex-col gap-1.5 mt-2 mb-4">
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <input type="checkbox" name="terms" required className="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#D22B2B] focus:ring-[#D22B2B] transition-colors cursor-pointer" />
+                  <span className="text-[12px] text-gray-600 font-medium leading-snug">
+                    <Link href="/kullanim-kosullari" className="text-[#D22B2B] font-bold hover:underline" target="_blank">Kullanım Koşulları</Link>, <Link href="/gizlilik" className="text-[#D22B2B] font-bold hover:underline" target="_blank">Gizlilik Politikası</Link> ve <Link href="/cerez-politikasi" className="text-[#D22B2B] font-bold hover:underline" target="_blank">Çerez Politikası</Link>'nı okudum, kabul ediyorum.
+                  </span>
+                </label>
+                <p className="text-[10px] text-gray-400 font-bold tracking-wide pl-7">
+                  Üyeliğin ücretsizdir. Hesabını istediğin zaman silebilirsin.
+                </p>
+              </div>
+            ) : null}
 
             <button
               type="submit"
-              className="w-full bg-[#1A2035] text-white font-black hover:bg-[#111526] py-3.5 rounded-xl transition-all shadow-[0_5px_20px_rgba(26,32,53,0.15)] mt-4 flex items-center justify-center gap-2 tracking-wide"
+              className="w-full bg-[#1A2035] text-white font-black hover:bg-[#111526] py-3.5 rounded-xl transition-all shadow-[0_5px_20px_rgba(26,32,53,0.15)] mt-6 flex items-center justify-center gap-2 tracking-wide"
             >
-              {isRegister ? 'Ücretsiz Hesap Oluştur' : 'Güvenli Giriş Yap'}
+              {isRegister ? 'Ücretsiz Hesap Oluştur' : 'Koleksiyonuma Git'}
             </button>
+            
           </form>
 
-          <div className="mt-8 text-center pt-2">
-            <p className="text-sm font-medium text-gray-500 inline-block">
-              {isRegister ? 'Zaten bir hesabınız var mı?' : 'Henüz portföyünüz yok mu?'}
+          {!isRegister ? (
+            <div className="mt-6 flex justify-center w-full">
+              <p className="text-[11px] text-center text-gray-400 font-bold flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                Verilerin güvende tutulur ve üçüncü kişilerle paylaşılmaz.
+              </p>
+            </div>
+          ) : null}
+
+          <div className="mt-8 text-center pt-8 border-t border-gray-100 flex flex-col gap-3 items-center">
+            <p className="text-[13px] font-bold text-gray-500">
+              {isRegister ? 'Zaten bir hesabınız var mı?' : 'Henüz koleksiyonun yok mu?'}
             </p>
             <Link 
               href={isRegister ? '/login' : '/login?type=register'} 
-              className="inline-block ml-2 text-[#D22B2B] font-black hover:underline"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gray-50 hover:bg-gray-100 text-[#D22B2B] text-sm font-black rounded-xl transition-all shadow-sm border border-gray-200"
             >
               {isRegister ? 'Giriş Yap' : 'Kayıt Ol'}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
             </Link>
           </div>
         </div>
@@ -129,7 +156,7 @@ export default async function LoginPage({
             <div className="w-full max-w-sm">
                 <h3 className="text-center text-[10px] font-black text-gray-400 tracking-[0.2em] uppercase mb-8 flex items-center gap-4">
                     <div className="h-px flex-1 bg-gray-200"></div>
-                    VEYA ŞUNLARLA DEVAM ET
+                    HIZLI GİRİŞ
                     <div className="h-px flex-1 bg-gray-200"></div>
                 </h3>
                 
@@ -155,43 +182,34 @@ export default async function LoginPage({
                        Apple ile Devam Et
                    </button>
                    
-                   {/* X (Twitter) */}
-                   <button className="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-800 font-bold py-3.5 px-6 rounded-xl transition-all shadow-sm">
-                       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                           <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                       </svg>
-                       X (Twitter) ile Devam Et
-                   </button>
                 </div>
                 
-                <div className="mt-8 bg-blue-50/30 p-5 rounded-xl border border-blue-100 text-center shadow-sm">
-                    <p className="text-[12px] font-bold text-gray-800 mb-3 tracking-wide uppercase">Neden Topluluğa Katılmalıyım?</p>
-                    <ul className="text-[11px] text-gray-600 font-medium space-y-2 mt-2 text-left px-2">
-                        <li className="flex items-start gap-2">
-                            <span className="text-[#D22B2B] font-bold mt-0.5">•</span> Özel Minifigür piyasa değerlerini incele.
-                        </li>
-                        <li className="flex items-start gap-2">
-                            <span className="text-[#D22B2B] font-bold mt-0.5">•</span> Bende Var / İstiyorum listeleri ile takasa hazırlan.
-                        </li>
-                        <li className="flex items-start gap-2">
-                            <span className="text-[#D22B2B] font-bold mt-0.5">•</span> Koleksiyonuna kendi şık fotoğraflarını yükle.
-                        </li>
-                        <li className="flex items-start gap-2">
-                            <span className="text-[#D22B2B] font-bold mt-0.5">•</span> Diğer üyelerin koleksiyonlarını gez ve yorumla.
-                        </li>
-                    </ul>
-                </div>
+                
+                {isRegister && (
+                  <div className="mt-10 bg-blue-50/30 p-6 rounded-2xl border border-blue-100 text-center shadow-sm w-full">
+                      <p className="text-[12px] font-black text-gray-800 mb-4 tracking-wide uppercase text-left pl-2">Seni Neler Bekliyor?</p>
+                      <ul className="text-[12.5px] text-gray-700 font-bold space-y-3 mt-2 text-left px-2 leading-relaxed">
+                          <li className="flex items-start gap-2.5">
+                              <span className="text-emerald-500 font-black mt-0.5">✓</span> Koleksiyonundaki figürleri kaydet
+                          </li>
+                          <li className="flex items-start gap-2.5">
+                              <span className="text-emerald-500 font-black mt-0.5">✓</span> Eksik figürlerini takip et
+                          </li>
+                          <li className="flex items-start gap-2.5">
+                              <span className="text-emerald-500 font-black mt-0.5">✓</span> Serilerde ilerleme durumunu gör
+                          </li>
+                          <li className="flex items-start gap-2.5">
+                              <span className="text-emerald-500 font-black mt-0.5">✓</span> Favori figürlerini ve radar listeni oluştur
+                          </li>
+                      </ul>
+                  </div>
+                )}
             </div>
         </div>
         </div>
       </div>
       
-      {/* GİZLİLİK VE ŞARTLAR */}
-      <div className="absolute bottom-8 left-0 right-0 text-center z-10 px-4">
-         <p className="text-xs text-gray-400 font-medium max-w-md mx-auto">
-            Hesap oluşturarak <Link href="/sartlar" className="font-bold underline hover:text-gray-600 transition-colors">Hizmet Şartlarımız</Link> ve <Link href="/gizlilik" className="font-bold underline hover:text-gray-600 transition-colors">Gizlilik ve Çerez Bildirimimizi</Link> kabul etmiş olursunuz.
-         </p>
-      </div>
+
       
     </div>
   );

@@ -28,14 +28,25 @@ export async function signup(formData: FormData) {
 
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
+  const terms = formData.get('terms');
+
+  if (!terms) {
+    return redirect('/login?error=Kullanım koşullarını ve gizlilik politikasını kabul etmeniz gerekmektedir.&type=register');
+  }
 
   const { error } = await supabase.auth.signUp({
     email,
     password,
+    options: {
+      data: {
+        terms_accepted: true,
+        terms_accepted_at: new Date().toISOString(),
+      }
+    }
   });
 
   if (error) {
-    return redirect('/login?error=Kayıt sırasında bir hata oluştu: ' + error.message);
+    return redirect('/login?error=Kayıt sırasında bir hata oluştu: ' + error.message + '&type=register');
   }
 
   // Supabase'den mail onayı gerekiyorsa:
