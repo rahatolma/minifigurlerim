@@ -1,15 +1,17 @@
 'use client';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { Link, usePathname } from '@/i18n/routing';
 
 export default function LegalBreadcrumb() {
   const pathname = usePathname() || '';
 
-  let currentPageName = 'YASAL SAYFALAR';
-  if (pathname.includes('/gizlilik')) currentPageName = 'GİZLİLİK POLİTİKASI';
-  else if (pathname.includes('/kullanim-kosullari')) currentPageName = 'KULLANIM KOŞULLARI';
-  else if (pathname.includes('/uyelik-sozlesmesi')) currentPageName = 'ÜYELİK SÖZLEŞMESİ';
-  else if (pathname.includes('/hak-ihlali')) currentPageName = 'HAK İHLALİ BİLDİRİMİ';
+  const breadcrumbs: Record<string, string> = {
+    '/yasal/gizlilik-politikasi': 'Gizlilik Politikası',
+    '/yasal/kullanim-kosullari': 'Kullanım Koşulları',
+    '/yasal/uyelik-sozlesmesi': 'Üyelik Sözleşmesi',
+    '/yasal/hak-ihlali': 'Hak İhlali Bildirimi',
+  };
+
+  const currentPageName = breadcrumbs[pathname] || 'YASAL SAYFALAR';
 
   return (
     <div className="border-b border-gray-100 bg-white relative z-20 w-full">

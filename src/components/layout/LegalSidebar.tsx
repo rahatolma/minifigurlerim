@@ -1,16 +1,15 @@
 'use client';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { Link, usePathname } from '@/i18n/routing';
 
 export default function LegalSidebar() {
   const pathname = usePathname();
 
   const links = [
-    { title: 'Gizlilik Politikası', href: '/gizlilik' },
-    { title: 'Kullanım Koşulları', href: '/kullanim-kosullari' },
-    { title: 'Üyelik Sözleşmesi', href: '/uyelik-sozlesmesi' },
-    { title: 'Hak İhlali Bildirimi', href: '/hak-ihlali' },
-  ];
+    { title: 'Gizlilik Politikası', href: '/yasal/gizlilik-politikasi' },
+    { title: 'Kullanım Koşulları', href: '/yasal/kullanim-kosullari' },
+    { title: 'Üyelik Sözleşmesi', href: '/yasal/uyelik-sozlesmesi' },
+    { title: 'Hak İhlali Bildirimi', href: '/yasal/hak-ihlali' },
+  ] as const;
 
   return (
     <div className="bg-white rounded-[24px] shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 p-6 hidden lg:block">

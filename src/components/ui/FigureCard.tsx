@@ -1,16 +1,18 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toggleCollectionStatus } from '@/app/actions/collection';
+import { slugify } from '@/utils/helpers';
 
 interface FigureCardProps {
   id: string; // Veritabanı UUID
   slug?: string; // URL Navigasyonu için
   name: string;
   seriesName: string;
+  seriesSlug?: string;
   imageUrl: string;
   year?: string | number | null;
   rarity?: string | null;
@@ -22,12 +24,15 @@ interface FigureCardProps {
 }
 
 export default function FigureCard({ 
-  id, slug, name, seriesName, imageUrl, year, rarity, price, initialStatus, statusBadge, isLoggedIn = true
+  id, slug, name, seriesName, seriesSlug, imageUrl, year, rarity, price, initialStatus, statusBadge, isLoggedIn = true
 }: FigureCardProps) {
   
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<'have' | 'want' | null>(initialStatus || statusBadge || null);
+
+  const safeSeriesSlug = seriesSlug || (seriesName ? slugify(seriesName) : 'gizemli-seri');
+  const targetHref = `/figurler/${safeSeriesSlug}/${slug || id}` as any;
 
   const handleToggle = async (e: React.MouseEvent, type: 'have' | 'want') => {
       e.preventDefault(); 
@@ -54,7 +59,7 @@ export default function FigureCard({
   return (
     <div className="flex flex-col h-full bg-white rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 hover:shadow-2xl hover:border-gray-200 hover:-translate-y-1 transition-all duration-300 relative group">
        
-       <Link href={`/figurler/${slug || id}`} className="relative w-full aspect-square bg-[#fff] flex items-center justify-center p-8 border-b border-gray-50 flex-none group-hover:bg-[#fcfcfc] transition-colors">
+       <Link href={targetHref} className="relative w-full aspect-square bg-[#fff] flex items-center justify-center p-8 border-b border-gray-50 flex-none group-hover:bg-[#fcfcfc] transition-colors">
           {(status === 'have') && (
              <div className="absolute top-4 left-4 z-10 bg-[#5CB85C] text-white text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded shadow-sm flex items-center gap-1">
                 <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
@@ -86,7 +91,7 @@ export default function FigureCard({
        </Link>
 
        <div className="px-6 pt-5 pb-6 flex flex-col flex-1 bg-white">
-          <Link href={`/figurler/${slug || id}`} className="flex flex-col flex-1 cursor-pointer items-center text-center">
+          <Link href={targetHref} className="flex flex-col flex-1 cursor-pointer items-center text-center">
               <h3 className="font-black text-[22px] text-[#D22B2B] leading-tight tracking-tight hover:underline mb-1 w-full">{name}</h3>
               <p className="font-semibold text-[13px] text-gray-500 mb-4 w-full">{seriesName || 'LEGO® Minifigürler'}</p>
           </Link>

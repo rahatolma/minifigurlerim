@@ -13,8 +13,8 @@ export async function GET() {
     if (seriesError) throw new Error("Seriler çekilemedi: " + seriesError.message);
 
     for (const s of seriesList || []) {
-      // Slug mantığı: Baslik-Kategori
-      let generatedSlug = slugify(`${s.title} ${s.category || ''}`);
+      // Slug mantığı: Sadece Başlık
+      let generatedSlug = slugify(s.title);
       if (!generatedSlug) generatedSlug = `series-${s.id.substring(0, 6)}`;
 
       const { error } = await supabase.from('series').update({ slug: generatedSlug }).eq('id', s.id);
@@ -35,8 +35,8 @@ export async function GET() {
     if (figuresError) throw new Error("Figürler çekilemedi: " + figuresError.message);
 
     for (const f of figuresList || []) {
-      // Slug mantığı: FigurAdi-SeriAdi-Kod (Varsa)
-      let generatedSlug = slugify(`${f.name} ${f.series_name || ''} ${f.code || ''}`);
+      // Slug mantığı: FigurAdi-Kod (Varsa)
+      let generatedSlug = slugify(`${f.name} ${f.code || ''}`);
       if (!generatedSlug) generatedSlug = `figure-${f.id.substring(0, 6)}`;
 
       const { error } = await supabase.from('minifigures').update({ slug: generatedSlug }).eq('id', f.id);

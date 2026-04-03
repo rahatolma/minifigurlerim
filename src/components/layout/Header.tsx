@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
+import { Link, usePathname } from '@/i18n/routing';
 import { Search } from 'lucide-react';
-import { usePathname } from 'next/navigation';
-import { logOut } from '@/app/(auth)/login/actions';
+import { logOut } from '@/app/[locale]/(auth)/login/actions';
 import LegalNoticeButton from '@/components/ui/LegalNoticeButton';
 import LegalNoticeModal from '@/components/ui/LegalNoticeModal';
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 
 export default function Header({ user }: { user?: any }) {
   const pathname = usePathname();
@@ -40,7 +40,8 @@ export default function Header({ user }: { user?: any }) {
         </div>
         
         {/* Önemli Yasal Bilgilendirme Butonu %75 Sağa Yaslı */}
-        <div className="w-full md:w-3/4 flex justify-end items-center gap-3">
+        <div className="w-full md:w-3/4 flex justify-end items-center gap-4">
+           <LanguageSwitcher />
            <LegalNoticeButton className="bg-[#1D2136] text-white font-black py-2.5 px-6 rounded-sm shadow-md hover:bg-[#131627] transition-colors tracking-widest uppercase text-[10px]" />
            {user ? (
              <div className="relative">

@@ -1,5 +1,8 @@
 import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
+import createNextIntlPlugin from 'next-intl/plugin';
+
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 const nextConfig: NextConfig = {
   images: {
@@ -21,7 +24,7 @@ const nextConfig: NextConfig = {
 };
 
 export default withSentryConfig(
-  nextConfig,
+  withNextIntl(nextConfig),
   {
     org: "rahatolma",
     project: "minifigurlerim",

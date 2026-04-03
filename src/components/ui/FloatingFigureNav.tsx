@@ -1,12 +1,13 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface FigureLight {
   slug: string;
   name: string;
+  seriesSlug?: string;
 }
 
 interface Props {
@@ -21,7 +22,7 @@ export default function FloatingFigureNav({ prev, next }: Props) {
       {prev && (
         <div className="fixed left-0 top-1/2 -translate-y-1/2 z-[90] hidden md:flex">
           <Link 
-            href={`/figurler/${prev.slug}`}
+            href={`/figurler/${prev.seriesSlug || 'genel'}/${prev.slug}` as any}
             className="group flex items-center bg-white/90 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.1)] py-4 px-2 rounded-r-2xl border border-l-0 border-gray-200 transition-all hover:pr-6 hover:bg-white"
           >
             <ChevronLeft size={24} className="text-gray-400 group-hover:text-[#D22B2B] shrink-0" strokeWidth={2.5} />
@@ -37,7 +38,7 @@ export default function FloatingFigureNav({ prev, next }: Props) {
       {next && (
         <div className="fixed right-0 top-1/2 -translate-y-1/2 z-[90] hidden md:flex">
           <Link 
-            href={`/figurler/${next.slug}`}
+            href={`/figurler/${next.seriesSlug || 'genel'}/${next.slug}` as any}
             className="group flex items-center flex-row-reverse bg-white/90 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.1)] py-4 px-2 rounded-l-2xl border border-r-0 border-gray-200 transition-all hover:pl-6 hover:bg-white"
           >
             <ChevronRight size={24} className="text-gray-400 group-hover:text-[#D22B2B] shrink-0" strokeWidth={2.5} />

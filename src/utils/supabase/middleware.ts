@@ -1,10 +1,19 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import createIntlMiddleware from 'next-intl/middleware'
+import { routing } from '@/i18n/routing'
+
+const handleI18nRouting = createIntlMiddleware(routing)
 
 export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  })
+  const isAdminOrApi = 
+    request.nextUrl.pathname.startsWith('/admin') || 
+    request.nextUrl.pathname.startsWith('/api') || 
+    request.nextUrl.pathname.startsWith('/uploads')
+
+  let supabaseResponse = isAdminOrApi 
+    ? NextResponse.next({ request }) 
+    : handleI18nRouting(request)
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -16,9 +25,9 @@ export async function updateSession(request: NextRequest) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({
-            request,
-          })
+          if (isAdminOrApi) {
+             supabaseResponse = NextResponse.next({ request })
+          }
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
           )
