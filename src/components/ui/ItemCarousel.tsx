@@ -53,7 +53,7 @@ export default function ItemCarousel({ titleBlock, actionButton, children }: Ite
         <div className="flex items-center gap-2 md:gap-4 ml-auto">
           {actionButton}
 
-          <div className="flex items-center gap-2 relative z-10">
+          <div className="hidden md:flex items-center gap-2 relative z-10">
             <button
               onClick={scrollPrev}
               disabled={prevBtnDisabled}
