@@ -140,18 +140,18 @@ export default async function Home() {
       </section>
 
       {/* 3. Yeni Seriler Section */}
-      <section className="bg-transparent py-[64px] border-t border-gray-100">
+      <section className="bg-transparent py-[40px] md:py-[64px] border-t border-gray-100">
           <ItemCarousel
             titleBlock={
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-[#D22B2B] rounded-full flex items-center justify-center text-white shadow-md border-4 border-red-100">
-                    <LegoHeadIcon mode="search" className="w-[28px] h-[28px]" color="text-white" />
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="w-10 h-10 md:w-14 md:h-14 bg-[#D22B2B] rounded-full flex items-center justify-center text-white shadow-md border-2 md:border-4 border-red-100 shrink-0">
+                    <LegoHeadIcon mode="search" className="w-[18px] h-[18px] md:w-[28px] md:h-[28px]" color="text-white" />
                 </div>
-                <h2 className="text-4xl font-black text-gray-900">En Yeni CMF Serileri</h2>
+                <h2 className="text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Yeni CMF Serileri</h2>
               </div>
             }
             actionButton={
-              <Link href="/seriler" className="bg-[#D22B2B] text-white font-bold py-3 px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[11px] block text-center">Tüm Seriler</Link>
+              <Link href="/seriler" className="bg-[#D22B2B] text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">Tüm Seriler</Link>
             }
           >
             {latestSeries.map(series => (
@@ -176,18 +176,18 @@ export default async function Home() {
       </section>
 
       {/* 4. Yeni Figürler Section */}
-      <section className="py-[64px] bg-transparent border-t border-gray-200">
+      <section className="py-[40px] md:py-[64px] bg-transparent border-t border-gray-200">
           <ItemCarousel
             titleBlock={
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-white border-2 border-[#D22B2B] text-[#D22B2B] rounded-full flex items-center justify-center shadow-sm">
-                    <LegoHeadIcon mode="happy" className="w-[32px] h-[32px]" color="text-[#D22B2B]" />
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="w-10 h-10 md:w-14 md:h-14 bg-white border-2 border-[#D22B2B] text-[#D22B2B] rounded-full flex items-center justify-center shadow-sm shrink-0">
+                    <LegoHeadIcon mode="happy" className="w-[20px] h-[20px] md:w-[32px] md:h-[32px]" color="text-[#D22B2B]" />
                 </div>
-                <h2 className="text-4xl font-black text-gray-900">En Yeni Minifigürler</h2>
+                <h2 className="text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Yeni Minifigürler</h2>
               </div>
             }
             actionButton={
-              <Link href="/figurler" className="bg-[#D22B2B] text-white font-bold py-3 px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[11px] block text-center">Tüm Figürler</Link>
+              <Link href="/figurler" className="bg-[#D22B2B] text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">Tüm Figürler</Link>
             }
           >
             {latestFigures.map(fig => (
@@ -217,22 +217,21 @@ export default async function Home() {
       </div>
 
       {/* 8. Güncel Haberler / Blog Section */}
-      <section className="bg-white py-[64px] border-t border-gray-100">
+      <section className="bg-white py-[40px] md:py-[64px] border-t border-gray-100">
           <ItemCarousel
             titleBlock={
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-black rounded-full flex items-center justify-center text-[#D22B2B] shadow-sm">
-                    {/* Basit bir gazete / haber ikonu niyetine LegoHead (search mode) kullanalım şimdilik */}
-                    <LegoHeadIcon mode="search" className="w-[28px] h-[28px]" color="text-white" />
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="w-10 h-10 md:w-14 md:h-14 bg-black rounded-full flex items-center justify-center text-[#D22B2B] shadow-sm shrink-0">
+                    <LegoHeadIcon mode="search" className="w-[18px] h-[18px] md:w-[28px] md:h-[28px]" color="text-white" />
                 </div>
                 <div className="flex flex-col">
-                  <h2 className="text-4xl font-black text-gray-900">Haberler</h2>
-                  <span className="text-xs font-bold uppercase tracking-widest text-[#D22B2B] mt-1">GÜNCEL BLOG</span>
+                  <h2 className="text-2xl md:text-4xl font-black text-gray-900 leading-tight">Haberler</h2>
+                  <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-[#D22B2B] mt-1">GÜNCEL BLOG</span>
                 </div>
               </div>
             }
             actionButton={
-              <Link href="/haberler" className="bg-[#D22B2B] text-white font-bold py-3 px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[11px] block text-center">Tüm Haberler</Link>
+              <Link href="/haberler" className="bg-[#D22B2B] text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">Tüm Haberler</Link>
             }
           >
             {latestNews.map(newsItem => (

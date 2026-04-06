@@ -48,9 +48,9 @@ export default function ItemCarousel({ titleBlock, actionButton, children }: Ite
 
   return (
     <div className="w-full relative overflow-hidden">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4 px-8 max-w-7xl mx-auto">
+      <div className="flex flex-row flex-wrap items-center justify-between mb-6 md:mb-10 gap-x-2 gap-y-4 px-4 md:px-8 max-w-7xl mx-auto">
         {titleBlock}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4 ml-auto">
           {actionButton}
 
           <div className="flex items-center gap-2 relative z-10">
