@@ -4,7 +4,7 @@ import FooterNewsletterForm from '@/components/ui/FooterNewsletterForm';
 
 export default function Footer() {
   return (
-    <footer className="bg-[#F8F9FA] text-black w-full pt-24 pb-12 mt-auto relative border-t border-gray-100">
+    <footer className="hidden md:block bg-[#F8F9FA] text-black w-full pt-24 pb-12 mt-auto relative border-t border-gray-100">
       <div className="max-w-[1300px] mx-auto px-6 md:px-8">
         
         {/* UPPER FOOTER GRID */}

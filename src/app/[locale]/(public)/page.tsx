@@ -97,12 +97,12 @@ export default async function Home() {
   return (
     <div className="w-full flex-col overflow-hidden">
       {/* 1. Hero / Kapak Alanı (Slider) - ÜST */}
-      <div className="snap-start snap-always">
+      <div className="snap-start snap-always hidden md:block">
         <HeroSliderClient sliders={activeSliders?.filter(s => s.location !== 'bottom') || []} />
       </div>
 
       {/* 2. 3'lü Sistem Anlatan Değer Önerisi (Features) Alanı */}
-      <section className="snap-center snap-always relative z-20 max-w-7xl mx-auto px-4 md:px-8 -mt-10 mb-12">
+      <section className="hidden md:block snap-center snap-always relative z-20 max-w-7xl mx-auto px-4 md:px-8 mt-6 md:-mt-10 mb-12">
         <div className="bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 py-6 flex flex-col md:flex-row items-stretch justify-between divide-y md:divide-y-0 md:divide-x divide-gray-100">
             {/* Alan 1 (Tüm CMF Serileri) */}
             <Link href="/seriler" className="group flex items-start justify-start gap-5 px-6 lg:px-10 lg:w-1/3 w-full py-4 md:py-2 cursor-pointer">
@@ -212,7 +212,7 @@ export default async function Home() {
       </section>
 
       {/* 5. Erişime Aç / Koleksiyon Yönetimi (Full Width / Site Width) */}
-      <div className="snap-center snap-always w-full relative bg-gray-900 mt-0">
+      <div className="hidden md:block snap-center snap-always w-full relative bg-gray-900 mt-0">
          <AuthCTA fullWidth={true} isLoggedIn={!!user} />
       </div>
 
@@ -254,7 +254,7 @@ export default async function Home() {
       </section>
 
       {/* 9. Instagram Bloğu Section */}
-      <section className="snap-end snap-always bg-transparent py-[64px]">
+      <section className="hidden md:block snap-end snap-always bg-transparent py-[64px]">
         <div className="max-w-7xl mx-auto px-8">
            <InstagramBlock />
         </div>

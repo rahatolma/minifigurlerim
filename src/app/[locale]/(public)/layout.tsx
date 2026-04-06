@@ -1,5 +1,6 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import MobileTabBar from "@/components/layout/MobileTabBar";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import AntiDevTools from "@/components/ui/AntiDevTools";
 import { createClient } from "@/utils/supabase/server";
@@ -16,9 +17,10 @@ export default async function PublicLayout({
     <>
       <AntiDevTools />
       <Header user={user} />
-      <main className="flex-1 w-full bg-[#fcfcfc]">
+      <main className="flex-1 w-full bg-[#fcfcfc] pb-[70px] md:pb-0">
         {children}
       </main>
+      <MobileTabBar user={user} />
       <Footer />
       <ScrollToTop />
     </>

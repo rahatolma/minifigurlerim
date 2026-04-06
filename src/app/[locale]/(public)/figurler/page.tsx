@@ -109,7 +109,7 @@ export default async function FiguresPage({
       </div>
 
       {/* MİNİFİGÜR EVRİMİ (HERO TIMELINE) */}
-      <div className="w-full bg-[#fcfcfc] pt-8 pb-12 overflow-hidden relative border-b border-gray-100 z-10">
+      <div className="hidden md:block w-full bg-[#fcfcfc] pt-8 pb-12 overflow-hidden relative border-b border-gray-100 z-10">
          <div className="max-w-7xl mx-auto px-8 mb-12 text-center">
             <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter mb-4">
               Minifigürlerin <span className="text-[#D22B2B]">Evrimi</span>
@@ -149,7 +149,7 @@ export default async function FiguresPage({
       {/* Filtreleme ve Sonuçların Başına Dönmek İçin Sabit Çıpa */}
       <div id="filter-section" className="scroll-mt-[150px]"></div>
 
-      <div className="sticky bg-[#fcfcfc] py-4 border-b border-gray-100 shadow-sm mb-6" style={{ top: '150px', zIndex: 40 }}>
+      <div className="sticky bg-[#fcfcfc] py-4 border-b border-gray-100 shadow-sm mb-6 top-[60px] md:top-[150px]" style={{ zIndex: 40 }}>
         {/* YATAY FİLTRE BARI (Client-Side Auto Submit) */}
         <div className="max-w-7xl mx-auto px-8">
             <FiguresFilterClient 
@@ -173,21 +173,22 @@ export default async function FiguresPage({
             ) : (
                 <>
                     {/* Görsel 1'deki gibi 3'lü kolon (lg:grid-cols-3), 20px gap (gap-5) */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-5">
+                    <div className="flex flex-row snap-x snap-mandatory overflow-x-auto pb-8 -mx-8 px-8 gap-4 md:grid md:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 md:gap-5 md:overflow-visible md:snap-none md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                         {allFigures.map(fig => (
-                            <FigureCard 
-                                key={fig.id} 
-                                id={fig.id}
-                                slug={fig.slug}
-                                name={fig.name}
-                                seriesName={fig.series_name || 'Bilinmeyen Seri'}
-                                imageUrl={fig.images && fig.images.length > 0 ? fig.images[0] : 'https://via.placeholder.com/300x400.png?text=Görsel+Yok'}
-                                year={fig.release_year}
-                                rarity={fig.rarity}
-                                price={fig.value_usd}
-                                initialStatus={userStatusMap[fig.id] || null}
-                                isLoggedIn={!!user}
-                            />
+                           <div key={fig.id} className="snap-center snap-always shrink-0 w-[85%] md:w-auto flex flex-col justify-stretch">
+                                <FigureCard 
+                                    id={fig.id}
+                                    slug={fig.slug}
+                                    name={fig.name}
+                                    seriesName={fig.series_name || 'Bilinmeyen Seri'}
+                                    imageUrl={fig.images && fig.images.length > 0 ? fig.images[0] : 'https://via.placeholder.com/300x400.png?text=Görsel+Yok'}
+                                    year={fig.release_year}
+                                    rarity={fig.rarity}
+                                    price={fig.value_usd}
+                                    initialStatus={userStatusMap[fig.id] || null}
+                                    isLoggedIn={!!user}
+                                />
+                           </div>
                         ))}
                     </div>
                 </>

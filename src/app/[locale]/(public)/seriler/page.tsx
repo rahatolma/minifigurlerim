@@ -114,8 +114,8 @@ export default async function SeriesPage({
         </div>
       </div>
 
-      {/* YATAY EFSANELER ZAMAN ÇİZELGESİ (CMF HISTORY) */}
-      <div className="w-full bg-[#fcfcfc] pt-8 pb-16 overflow-hidden relative border-b border-gray-100">
+      {/* YATAY EFSANELER ZAMAN ÇİZELGESİ (CMF HISTORY) - SADECE MASAÜSTÜ */}
+      <div className="hidden md:block w-full bg-[#fcfcfc] pt-8 pb-16 overflow-hidden relative border-b border-gray-100">
          <div className="max-w-7xl mx-auto px-8 mb-8 md:mb-16 text-center">
             <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter mb-4">
               <span className="text-[#20214a]">CMF</span> Serüveni
@@ -194,7 +194,7 @@ export default async function SeriesPage({
 
       <div id="filter-section" className="scroll-mt-[150px]"></div>
 
-      <div className="sticky bg-[#fcfcfc] py-4 border-b border-gray-100 shadow-sm mb-6 z-30" style={{ top: '150px' }}>
+      <div className="sticky bg-[#fcfcfc] py-4 border-b border-gray-100 shadow-sm mb-6 z-30 top-[60px] md:top-[150px]">
         <div className="max-w-7xl mx-auto px-8">
           <SeriesFilterClient 
             categories={categoryFilters}
@@ -208,21 +208,22 @@ export default async function SeriesPage({
         BLOK 3: Şablon Izgara Sistemi (Grid) 
       */}
       <div className={`max-w-7xl mx-auto px-8 ${filteredSeries.length > 21 ? 'pb-16' : 'pb-24'}`}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-5">
+        <div className="flex flex-row snap-x snap-mandatory overflow-x-auto pb-8 -mx-8 px-8 gap-4 md:grid md:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 md:gap-5 md:overflow-visible md:snap-none md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
            {filteredSeries.slice(0, 21).map(series => (
-            <SeriesCard 
-                key={series.id} 
-                id={series.slug || series.id}
-                title={series.title}
-                imageUrl={series.cover_image_url || 'https://via.placeholder.com/400x300.png?text=Görsel+Yok'}
-                year={series.release_year || (series.created_at ? new Date(series.created_at).getFullYear() : '2010')}
-                category={series.category || 'CMF'}
-                totalFigures={series.figure_count || seriesFigStats[series.id]?.count || 0}
-                rarity={series.rarity || 'Yaygın'}
-                latestFigureName={seriesFigStats[series.id]?.latestName || null}
-                seriesProgress={userSeriesProgressMap[series.id] || null}
-                isLoggedIn={!!user}
-            />
+            <div key={series.id} className="snap-center snap-always shrink-0 w-[85%] md:w-auto flex flex-col justify-stretch">
+              <SeriesCard 
+                  id={series.slug || series.id}
+                  title={series.title}
+                  imageUrl={series.cover_image_url || 'https://via.placeholder.com/400x300.png?text=Görsel+Yok'}
+                  year={series.release_year || (series.created_at ? new Date(series.created_at).getFullYear() : '2010')}
+                  category={series.category || 'CMF'}
+                  totalFigures={series.figure_count || seriesFigStats[series.id]?.count || 0}
+                  rarity={series.rarity || 'Yaygın'}
+                  latestFigureName={seriesFigStats[series.id]?.latestName || null}
+                  seriesProgress={userSeriesProgressMap[series.id] || null}
+                  isLoggedIn={!!user}
+              />
+            </div>
           ))}
         </div>
         
@@ -246,28 +247,29 @@ export default async function SeriesPage({
       {/* 21. Ürün Sonrası Geri Kalan Listeleme */}
       {filteredSeries.length > 21 && (
           <div className="max-w-7xl mx-auto px-8 pb-24">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-5">
+            <div className="flex flex-row snap-x snap-mandatory overflow-x-auto pb-8 -mx-8 px-8 gap-4 md:grid md:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 md:gap-5 md:overflow-visible md:snap-none md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                {filteredSeries.slice(21).map(series => (
-                <SeriesCard 
-                    key={series.id} 
-                    id={series.slug || series.id}
-                    title={series.title}
-                    imageUrl={series.cover_image_url || 'https://via.placeholder.com/400x300.png?text=Görsel+Yok'}
-                    year={series.release_year || (series.created_at ? new Date(series.created_at).getFullYear() : '2010')}
-                    category={series.category || 'CMF'}
-                    totalFigures={series.figure_count || seriesFigStats[series.id]?.count || 0}
-                    rarity={series.rarity || 'Yaygın'}
-                    latestFigureName={seriesFigStats[series.id]?.latestName || null}
-                    seriesProgress={userSeriesProgressMap[series.id] || null}
-                    isLoggedIn={!!user}
-                />
+                <div key={series.id} className="snap-center snap-always shrink-0 w-[85%] md:w-auto flex flex-col justify-stretch">
+                  <SeriesCard 
+                      id={series.slug || series.id}
+                      title={series.title}
+                      imageUrl={series.cover_image_url || 'https://via.placeholder.com/400x300.png?text=Görsel+Yok'}
+                      year={series.release_year || (series.created_at ? new Date(series.created_at).getFullYear() : '2010')}
+                      category={series.category || 'CMF'}
+                      totalFigures={series.figure_count || seriesFigStats[series.id]?.count || 0}
+                      rarity={series.rarity || 'Yaygın'}
+                      latestFigureName={seriesFigStats[series.id]?.latestName || null}
+                      seriesProgress={userSeriesProgressMap[series.id] || null}
+                      isLoggedIn={!!user}
+                  />
+                </div>
               ))}
             </div>
           </div>
       )}
 
       {/* PORTFÖY / ERIŞİM AÇ CTA BLOĞU - EN ALT (Ana sayfadaki gibi full width) */}
-      <div className="w-full relative">
+      <div className="hidden md:block w-full relative">
          <AuthCTA fullWidth={true} isLoggedIn={!!user} />
       </div>
 
