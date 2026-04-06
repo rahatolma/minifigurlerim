@@ -26,7 +26,6 @@
     color: var(--foreground);
     /* Gürültü/Noise Dokusu İçin Pseudo-element */
     position: relative;
-    overflow-x: hidden;
   }
 
   body::after {

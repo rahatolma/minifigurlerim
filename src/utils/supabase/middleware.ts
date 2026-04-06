@@ -16,14 +16,16 @@ export async function updateSession(request: NextRequest) {
     : handleI18nRouting(request)
 
   try {
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
+    
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !supabaseKey) {
       console.error('Middleware Error: NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY is missing.')
       return supabaseResponse;
     }
 
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      supabaseKey,
       {
         cookies: {
           getAll() {
@@ -77,3 +79,4 @@ export async function updateSession(request: NextRequest) {
     return supabaseResponse
   }
 }
+

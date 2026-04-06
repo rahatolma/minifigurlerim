@@ -47,19 +47,7 @@ export default function LegalNoticeModal() {
 
                 {/* Başlık ve İkon */}
                 <div className="bg-[#D22B2B] px-8 sm:px-12 py-10 flex flex-col sm:flex-row items-center sm:items-start gap-8 relative overflow-hidden shrink-0">
-                    <div className="z-10 flex-shrink-0 w-32 h-32 sm:w-40 sm:h-40 rounded-xl overflow-hidden shadow-2xl border-4 border-[#D22B2B]">
-                        {/* Kullanıcının yüklediği logo için */}
-                        <img 
-                            src="/uploads/lego-logo.svg" 
-                            alt="LEGO Logo" 
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                                // Fallback for debugging if image is missing
-                                e.currentTarget.style.display = 'none';
-                                e.currentTarget.parentElement!.innerHTML = '<div class="w-full h-full bg-white flex items-center justify-center"><span class="text-[#D22B2B] font-black tracking-tighter text-3xl">LEGO</span></div>';
-                            }}
-                        />
-                    </div>
+
                     <h2 className="text-2xl sm:text-4xl lg:text-[40px] font-black text-white tracking-widest uppercase z-10 text-center sm:text-left leading-[1.2] mt-2">
                         TELİF HAKKI,<br />
                         MARKA VE DİJİTAL<br />
