@@ -209,15 +209,15 @@ export default function BlockEditor({ blocks, onChange }: Props) {
                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border rounded bg-white items-start">
                     <div>
                         <input type="text" value={block.data.box1Title || ''} onChange={e => updateBlockData(block.id, { box1Title: e.target.value })} placeholder="1. Kutu Başlığı (Öne Çıkanlar)" className="w-full font-bold border-b pb-2 outline-none mb-2 text-xs" />
-                        <textarea rows={4} value={block.data.box1Content || ''} onChange={e => updateBlockData(block.id, { box1Content: e.target.value })} placeholder="Kutu İçeriği..." className="w-full text-xs outline-none resize-none text-gray-600 bg-transparent" />
+                        <textarea rows={12} value={block.data.box1Content || ''} onChange={e => updateBlockData(block.id, { box1Content: e.target.value })} placeholder="Kutu İçeriği..." className="w-full text-xs outline-none resize-vertical text-gray-600 bg-transparent min-h-[150px]" />
                     </div>
                     <div>
                         <input type="text" value={block.data.box2Title || ''} onChange={e => updateBlockData(block.id, { box2Title: e.target.value })} placeholder="2. Kutu Başlığı (Bizim İçin Bu Seri)" className="w-full font-bold border-b pb-2 outline-none mb-2 text-xs" />
-                        <textarea rows={4} value={block.data.box2Content || ''} onChange={e => updateBlockData(block.id, { box2Content: e.target.value })} placeholder="Kutu İçeriği..." className="w-full text-xs outline-none resize-none text-gray-600 bg-transparent" />
+                        <textarea rows={12} value={block.data.box2Content || ''} onChange={e => updateBlockData(block.id, { box2Content: e.target.value })} placeholder="Kutu İçeriği..." className="w-full text-xs outline-none resize-vertical text-gray-600 bg-transparent min-h-[150px]" />
                     </div>
                     <div>
                         <input type="text" value={block.data.box3Title || ''} onChange={e => updateBlockData(block.id, { box3Title: e.target.value })} placeholder="3. Kutu Başlığı (Kısacası)" className="w-full font-bold border-b pb-2 outline-none mb-2 text-xs" />
-                        <textarea rows={4} value={block.data.box3Content || ''} onChange={e => updateBlockData(block.id, { box3Content: e.target.value })} placeholder="Kutu İçeriği..." className="w-full text-xs outline-none resize-none text-gray-600 bg-transparent" />
+                        <textarea rows={12} value={block.data.box3Content || ''} onChange={e => updateBlockData(block.id, { box3Content: e.target.value })} placeholder="Kutu İçeriği..." className="w-full text-xs outline-none resize-vertical text-gray-600 bg-transparent min-h-[150px]" />
                     </div>
                  </div>
                </div>

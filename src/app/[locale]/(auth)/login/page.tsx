@@ -45,7 +45,7 @@ export default async function LoginPage({
         <div className="w-full md:w-1/2 p-10 sm:p-14 border-b md:border-b-0 md:border-r border-gray-100 flex flex-col justify-center">
           <div className="mb-8">
             <h1 className="text-3xl font-black tracking-tighter text-gray-900 mb-2">
-              {isRegister ? 'Koleksiyonunu Oluştur' : 'Koleksiyonuna Geri Dön'}
+              {isRegister ? 'Koleksiyonunu Oluştur' : 'Hesabına Giriş Yap'}
             </h1>
             <p className="text-gray-500 text-[15px] font-medium leading-relaxed">
               {isRegister 
@@ -116,7 +116,7 @@ export default async function LoginPage({
               type="submit"
               className="w-full bg-[#1A2035] text-white font-black hover:bg-[#111526] py-3.5 rounded-xl transition-all shadow-[0_5px_20px_rgba(26,32,53,0.15)] mt-6 flex items-center justify-center gap-2 tracking-wide"
             >
-              {isRegister ? 'Ücretsiz Hesap Oluştur' : 'Koleksiyonuma Git'}
+              {isRegister ? 'Ücretsiz Hesap Oluştur' : 'Giriş Yap'}
             </button>
             
           </form>
@@ -185,7 +185,6 @@ export default async function LoginPage({
                 </div>
                 
                 
-                {isRegister && (
                   <div className="mt-10 bg-blue-50/30 p-6 rounded-2xl border border-blue-100 text-center shadow-sm w-full">
                       <p className="text-[12px] font-black text-gray-800 mb-4 tracking-wide uppercase text-left pl-2">Seni Neler Bekliyor?</p>
                       <ul className="text-[12.5px] text-gray-700 font-bold space-y-3 mt-2 text-left px-2 leading-relaxed">
@@ -203,7 +202,6 @@ export default async function LoginPage({
                           </li>
                       </ul>
                   </div>
-                )}
             </div>
         </div>
         </div>

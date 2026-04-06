@@ -31,12 +31,7 @@ export default function NewSeriesPage() {
     release_month: '',
     release_year: '',
     rarity: 'Yaygın',
-    content_blocks: [
-      { id: Math.random().toString(36).substring(2, 11), type: 'TEXT_IMAGE', order: 0, data: { title: 'Hikaye Alanı', content: '', imageUrl: '', imageAlign: 'left' } },
-      { id: Math.random().toString(36).substring(2, 11), type: 'FULL_TEXT', order: 1, data: { title: '', content: '' } },
-      { id: Math.random().toString(36).substring(2, 11), type: 'QUOTE', order: 2, data: { title: 'Koleksiyoner Yorumu', content: '' } },
-      { id: Math.random().toString(36).substring(2, 11), type: 'IMAGE_BANNER', order: 3, data: { imageUrl: '', caption: '' } }
-    ] as AnyContentBlock[]
+    content_blocks: [] as AnyContentBlock[]
   });
 
   useEffect(() => {

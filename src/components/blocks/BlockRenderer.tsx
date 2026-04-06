@@ -1,5 +1,6 @@
 import React from 'react';
 import { AnyContentBlock } from '@/types/content-blocks';
+import { formatBrandText } from '@/utils/textFormatting';
 import TextImageBlock from './TextImageBlock';
 import FullTextBlock from './FullTextBlock';
 import ImageBannerBlock from './ImageBannerBlock';
@@ -23,20 +24,35 @@ export default function BlockRenderer({ blocks, collectionStats, isLoggedIn }: P
     return a.order - b.order;
   });
 
+function formatBlockDataStrings<T>(data: T): T {
+  if (!data || typeof data !== 'object') return data;
+  
+  const newData: any = Array.isArray(data) ? [...data] : { ...data };
+  for (const key in newData) {
+    if (typeof newData[key] === 'string') {
+      newData[key] = formatBrandText(newData[key] as string);
+    } else if (typeof newData[key] === 'object' && newData[key] !== null) {
+      newData[key] = formatBlockDataStrings(newData[key]);
+    }
+  }
+  return newData as T;
+}
+
   const renderBlock = (block: AnyContentBlock) => {
+    const formattedData = formatBlockDataStrings(block.data);
     switch (block.type) {
       case 'TEXT_IMAGE':
-        return <TextImageBlock key={block.id} data={block.data as any} />;
+        return <TextImageBlock key={block.id} data={formattedData as any} />;
       case 'FULL_TEXT':
-        return <FullTextBlock key={block.id} data={block.data as any} />;
+        return <FullTextBlock key={block.id} data={formattedData as any} />;
       case 'IMAGE_BANNER':
-        return <ImageBannerBlock key={block.id} data={block.data as any} />;
+        return <ImageBannerBlock key={block.id} data={formattedData as any} />;
       case 'QUOTE':
-        return <QuoteBlock key={block.id} data={block.data as any} />;
+        return <QuoteBlock key={block.id} data={formattedData as any} />;
       case 'CTA':
-        return <CTABlock key={block.id} data={block.data as any} />;
+        return <CTABlock key={block.id} data={formattedData as any} />;
       case 'SERIES_SHOWCASE':
-        return <SeriesShowcaseBlock key={block.id} data={block.data as any} collectionStats={collectionStats} isLoggedIn={isLoggedIn} />;
+        return <SeriesShowcaseBlock key={block.id} data={formattedData as any} collectionStats={collectionStats} isLoggedIn={isLoggedIn} />;
       default:
         return null;
     }

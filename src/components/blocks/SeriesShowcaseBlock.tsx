@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { SeriesShowcaseBlockData } from '@/types/content-blocks';
 import RichTextContent from '@/components/ui/RichTextContent';
 import { Flag, Presentation, Star, Lightbulb, Zap } from 'lucide-react';
@@ -12,8 +13,13 @@ interface Props {
 }
 
 export default function SeriesShowcaseBlock({ data, collectionStats, isLoggedIn }: Props) {
-  
+  const router = useRouter();
+
   const handleCollect = () => {
+    if (!isLoggedIn) {
+      router.push('/login');
+      return;
+    }
     const listElement = document.getElementById('figures-list');
     if (listElement) {
       listElement.scrollIntoView({ behavior: 'smooth' });
