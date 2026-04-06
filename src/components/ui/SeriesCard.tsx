@@ -29,8 +29,8 @@ export default function SeriesCard({
 }: SeriesCardProps) {
   return (
     <div className="flex flex-col h-full bg-white rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 hover:shadow-2xl hover:border-gray-200 hover:-translate-y-1 transition-all duration-300 relative group">
-       <Link href={`/seriler/${id}`} className="relative w-full aspect-square bg-[#fff] flex items-center justify-center p-8 border-b border-gray-50 flex-none group-hover:bg-[#fcfcfc] transition-colors">
-          <Image src={imageUrl} alt={title} fill className="object-contain p-6 mix-blend-multiply group-hover:scale-110 transition-transform duration-500" />
+       <Link href={`/seriler/${id}`} className="relative w-full aspect-[4/3] bg-[#fff] flex items-center justify-center border-b border-gray-50 flex-none group-hover:bg-[#fcfcfc] transition-colors">
+          <Image src={imageUrl} alt={title} fill className="object-contain px-6 py-4 mix-blend-multiply group-hover:scale-110 transition-transform duration-500" />
        </Link>
 
        <div className="px-6 pt-5 pb-6 flex flex-col flex-1 bg-white">

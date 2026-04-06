@@ -23,9 +23,6 @@ export default async function AdminDashboard() {
         <h1 className="text-4xl md:text-5xl font-black text-[#111] tracking-tight mb-2">
           Sistem <span className="text-[#D22B2B]">Özeti</span>
         </h1>
-        <p className="text-base font-semibold text-gray-500 uppercase tracking-widest mt-3">
-          MINIFIG OS. ENTERPRISE SYSTEM
-        </p>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -84,24 +81,7 @@ export default async function AdminDashboard() {
 
       </div>
       
-      {/* QUICK ACTIONS */}
-      <div className="mt-12">
-        <h2 className="text-xl font-black text-gray-900 mb-6">Hızlı İşlemler</h2>
-        <div className="flex flex-wrap gap-4">
-           <Link href="/admin/seriler/yeni" className="flex items-center gap-3 bg-[#111] hover:bg-[#D22B2B] text-white px-6 py-4 rounded-xl transition-all font-bold text-sm">
-             <Database className="w-5 h-5" />
-             Yeni Seri Tanımla
-           </Link>
-           <Link href="/admin/figurler/yeni" className="flex items-center gap-3 bg-white border border-gray-200 hover:border-gray-400 text-[#111] px-6 py-4 rounded-xl transition-all font-bold text-sm">
-             <Package className="w-5 h-5" />
-             Yeni Figür Ekle
-           </Link>
-           <Link href="/" target="_blank" className="flex items-center gap-3 bg-white border border-gray-200 hover:border-gray-400 text-[#111] px-6 py-4 rounded-xl transition-all font-bold text-sm ml-auto">
-             <PlayCircle className="w-5 h-5" />
-             Canlı Siteye Git
-           </Link>
-        </div>
-      </div>
+
       
     </div>
   );

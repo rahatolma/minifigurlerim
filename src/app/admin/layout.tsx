@@ -34,10 +34,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F8F9FA] font-sans antialiased text-black">
+    <div className="flex min-h-screen bg-[#F8F9FA] antialiased text-black w-full" style={{ fontFamily: 'var(--font-sen), sans-serif', paddingLeft: '280px' }}>
       <Sidebar />
       {/* Main Container */}
-      <main className="flex-1 flex flex-col min-w-0 ml-64 min-h-screen relative">
+      <main className="flex-1 flex flex-col min-w-0 min-h-screen relative">
         {children}
       </main>
     </div>
