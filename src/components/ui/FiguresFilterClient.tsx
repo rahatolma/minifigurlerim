@@ -76,7 +76,7 @@ export default function FiguresFilterClient({
 
   return (
     <>
-      <div className="flex flex-wrap items-center gap-3 w-full">
+      <div className="flex flex-nowrap md:flex-wrap items-center gap-2 md:gap-3 w-full">
         {/* MOBIL: Filtre Açma Butonu */}
         <button 
           onClick={() => setDrawerOpen(true)}
@@ -90,58 +90,56 @@ export default function FiguresFilterClient({
         </button>
 
         {/* MASAÜSTÜ: Tümünü Göster (Desktop) */}
-        <div className="hidden md:flex items-center gap-3 flex-wrap flex-1">
-          <select 
-            name="sort" 
-            value={currentSort} 
-            onChange={handleChange}
-            className="border border-gray-200 rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-48 flex-1 bg-white cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
-          >
-            <option value="newest">En Yeniler</option>
-            <option value="oldest">En Eskiler</option>
-            <option value="popular">En Popüler</option>
-          </select>
-          
-          <select 
-            name="series" 
-            value={currentSeries} 
-            onChange={handleChange}
-            className="border border-gray-200 rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-48 flex-1 bg-white cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
-          >
-            <option value="all">Seriler</option>
-            {seriesList.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
-          </select>
-          
-          <select 
-            name="role" 
-            value={currentRole} 
-            onChange={handleChange}
-            className="border border-gray-200 rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-40 flex-1 bg-white cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
-          >
-            <option value="all">Figür Rolü</option>
-            {roles.map(r => <option key={r} value={r}>{r}</option>)}
-          </select>
-          
-          <select 
-            name="type" 
-            value={currentType} 
-            onChange={handleChange}
-            className="border border-gray-200 rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-40 flex-1 bg-white cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
-          >
-            <option value="all">Figür Tipi</option>
-            {types.map(t => <option key={t} value={t}>{t}</option>)}
-          </select>
+        <select 
+          name="sort" 
+          value={currentSort} 
+          onChange={handleChange}
+          className="hidden md:block border border-gray-200 rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-48 flex-1 bg-white cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
+        >
+          <option value="newest">En Yeniler</option>
+          <option value="oldest">En Eskiler</option>
+          <option value="popular">En Popüler</option>
+        </select>
+        
+        <select 
+          name="series" 
+          value={currentSeries} 
+          onChange={handleChange}
+          className="hidden md:block border border-gray-200 rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-48 flex-1 bg-white cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
+        >
+          <option value="all">Seriler</option>
+          {seriesList.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
+        </select>
+        
+        <select 
+          name="role" 
+          value={currentRole} 
+          onChange={handleChange}
+          className="hidden md:block border border-gray-200 rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-40 flex-1 bg-white cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
+        >
+          <option value="all">Figür Rolü</option>
+          {roles.map(r => <option key={r} value={r}>{r}</option>)}
+        </select>
+        
+        <select 
+          name="type" 
+          value={currentType} 
+          onChange={handleChange}
+          className="hidden md:block border border-gray-200 rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-40 flex-1 bg-white cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
+        >
+          <option value="all">Figür Tipi</option>
+          {types.map(t => <option key={t} value={t}>{t}</option>)}
+        </select>
 
-          <select 
-            name="rarity" 
-            value={currentRarity} 
-            onChange={handleChange}
-            className="border border-gray-200 rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-40 flex-1 bg-white cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
-          >
-            <option value="all">Nadirlik</option>
-            {rarities.map(r => <option key={r} value={r}>{r}</option>)}
-          </select>
-        </div>
+        <select 
+          name="rarity" 
+          value={currentRarity} 
+          onChange={handleChange}
+          className="hidden md:block border border-gray-200 rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-40 flex-1 bg-white cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
+        >
+          <option value="all">Nadirlik</option>
+          {rarities.map(r => <option key={r} value={r}>{r}</option>)}
+        </select>
 
         {/* ORTAK: Rozet ve Temizle Butonu */}
         <div className="border border-gray-200 bg-gray-50 rounded-xl px-4 py-3 flex items-center justify-center flex-1 shrink-0 md:min-w-max">

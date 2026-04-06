@@ -32,7 +32,7 @@ export default function NewsFilterClient({
   const hasFilters = currentSort !== 'newest';
 
   return (
-    <div className="flex flex-wrap items-center gap-3 w-full">
+    <div className="flex flex-nowrap md:flex-wrap items-center gap-2 md:gap-3 w-full">
       <select 
         name="sort" 
         value={currentSort} 

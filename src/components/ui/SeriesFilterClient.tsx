@@ -61,8 +61,7 @@ export default function SeriesFilterClient({
 
   return (
     <>
-      {/* DESKTOP & MOBILE FILTER BAR */}
-      <div className="flex flex-wrap items-center gap-3 w-full">
+      <div className="flex flex-nowrap md:flex-wrap items-center gap-2 md:gap-3 w-full">
         
         {/* MOBIL: Filtre Açma Butonu */}
         <button 
@@ -77,38 +76,36 @@ export default function SeriesFilterClient({
         </button>
 
         {/* MASAÜSTÜ: Doğrudan Açılır Kutular */}
-        <div className="hidden md:flex items-center gap-3 flex-1 flex-wrap">
-          <select 
-            name="sort" 
-            value={currentSort} 
-            onChange={handleChange}
-            className="border border-gray-200 bg-white shadow-sm rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-48 flex-1 cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
-          >
-            <option value="newest">En Yeniler</option>
-            <option value="oldest">En Eskiler</option>
-            <option value="popular">En Popüler</option>
-          </select>
+        <select 
+          name="sort" 
+          value={currentSort} 
+          onChange={handleChange}
+          className="hidden md:block border border-gray-200 bg-white shadow-sm rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-48 flex-1 cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
+        >
+          <option value="newest">En Yeniler</option>
+          <option value="oldest">En Eskiler</option>
+          <option value="popular">En Popüler</option>
+        </select>
 
-          <select 
-            name="series" 
-            value={currentSeries} 
-            onChange={handleChange}
-            className="border border-gray-200 bg-white shadow-sm rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-48 flex-1 cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
-          >
-            <option value="all">Seriler</option>
-            {seriesList.map(s => <option key={s.slug} value={s.slug}>{s.title}</option>)}
-          </select>
-          
-          <select 
-            name="category" 
-            value={currentCategory} 
-            onChange={handleChange}
-            className="border border-gray-200 bg-white shadow-sm rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-48 flex-1 cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
-          >
-            <option value="all">Kategori</option>
-            {categories.map(c => <option key={c.slug} value={c.slug}>{c.name}</option>)}
-          </select>
-        </div>
+        <select 
+          name="series" 
+          value={currentSeries} 
+          onChange={handleChange}
+          className="hidden md:block border border-gray-200 bg-white shadow-sm rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-48 flex-1 cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
+        >
+          <option value="all">Seriler</option>
+          {seriesList.map(s => <option key={s.slug} value={s.slug}>{s.title}</option>)}
+        </select>
+        
+        <select 
+          name="category" 
+          value={currentCategory} 
+          onChange={handleChange}
+          className="hidden md:block border border-gray-200 bg-white shadow-sm rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-48 flex-1 cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
+        >
+          <option value="all">Kategori</option>
+          {categories.map(c => <option key={c.slug} value={c.slug}>{c.name}</option>)}
+        </select>
         
         {/* ORTAK: Rozet ve Temizle Butonu (Görseldeki gibi eşit aralıklı ve ince X) */}
         <div className="border border-gray-200 bg-gray-50 rounded-xl px-4 py-3 flex items-center justify-center flex-1 shrink-0 md:min-w-[200px]">

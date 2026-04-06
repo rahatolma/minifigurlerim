@@ -31,7 +31,7 @@ export default async function NewsPage({
     <div className="bg-[#fcfcfc] min-h-screen">
       
       {/* ŞABLON BREADCRUMB */}
-      <div className="border-b border-gray-200 bg-white">
+      <div className="hidden md:block border-b border-gray-200 bg-white">
         <div className="max-w-7xl mx-auto px-8 flex items-center justify-between text-[10px] sm:text-[11px] font-black text-gray-400 tracking-[0.2em] uppercase" style={{ height: '70px' }}>
              <div className="flex items-center">
                  <a href="/" className="hover:text-black transition-colors">Ana Sayfa</a> 
