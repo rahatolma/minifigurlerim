@@ -2,6 +2,26 @@
   "Navigation": {
     "Home": "Ana Sayfa",
     "Series": "LEGO® Minifigür Serileri",
-    "Figures": "LEGO® Minifigürleri"
+    "Figures": "LEGO® Minifigürleri",
+    "AboutLego": "LEGO® Hakkında",
+    "AboutUs": "Hakkımızda",
+    "Blog": "Blog",
+    "Contact": "İletişim",
+    "MyAccount": "Hesabım",
+    "MyCollection": "Koleksiyonum",
+    "Settings": "Ayarlar",
+    "SafeLogout": "Güvenli Çıkış Yap",
+    "Login": "Giriş Yap"
+  },
+  "Footer": {
+    "NewsletterText": "Son çıkan minifigürleri ve güncel haberleri yakından takip etmek istiyorsanız e-posta haber grubuna abone olun.",
+    "NavigationHeading": "Keşfet",
+    "LegalHeading": "Yasal",
+    "PrivacyPolicy": "Gizlilik Politikası",
+    "TermsOfUse": "Kullanım Koşulları",
+    "MembershipAgreement": "Üyelik Sözleşmesi",
+    "CopyrightViolation": "Hak İhlali Bildirimi",
+    "CopyrightText": "© 2024 - 2026 • Tüm hakları saklıdır.",
+    "BrandText": "bir koleksiyoner platformudur."
   }
 }

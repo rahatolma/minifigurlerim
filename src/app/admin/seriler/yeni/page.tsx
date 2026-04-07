@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ChevronRight, ImagePlus, Loader2, Save } from 'lucide-react';
+import { ChevronRight, ImagePlus, Loader2, Save, Wand2 } from 'lucide-react';
 import RichTextEditor from '@/components/admin/RichTextEditor';
 import { supabase } from '@/utils/supabase/client';
 import { slugify } from '@/utils/helpers';
@@ -14,6 +14,7 @@ import toast from 'react-hot-toast';
 export default function NewSeriesPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
   const [uploadingField, setUploadingField] = useState<string | null>(null);
   const [categories, setCategories] = useState<any[]>([]);
   
@@ -31,7 +32,9 @@ export default function NewSeriesPage() {
     release_month: '',
     release_year: '',
     rarity: 'Yaygın',
-    content_blocks: [] as AnyContentBlock[]
+    content_blocks: [] as AnyContentBlock[],
+    title_en: '',
+    content_blocks_en: [] as AnyContentBlock[]
   });
 
   useEffect(() => {
@@ -132,7 +135,9 @@ export default function NewSeriesPage() {
             rarity: formData.rarity,
             cover_image_url: imageUrls.cover_image_url,
             hero_image_url: imageUrls.hero_image_url,
-            content_blocks: formData.content_blocks
+            content_blocks: formData.content_blocks,
+            title_en: formData.title_en,
+            description_blocks_en: formData.content_blocks_en
           }
         ]);
 
@@ -144,6 +149,58 @@ export default function NewSeriesPage() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleAITranslate = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!formData.title && formData.content_blocks.length === 0) {
+      toast.error("Önce çevrilecek içerik giriniz (Türkçe)!");
+      return;
+    }
+    
+    setIsTranslating(true);
+    const translationPromise = fetch('/api/translate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        texts: [
+          formData.title,
+          JSON.stringify(formData.content_blocks)
+        ], 
+        targetLang: 'en' 
+      })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.error && !data.simulated) throw new Error(data.error);
+      
+      const newTitleEn = data.translations[0];
+      let newBlocksEn = [];
+      try {
+        newBlocksEn = JSON.parse(data.translations[1] || '[]');
+      } catch (err) {
+        console.warn("Could not parse translated JSON content", err);
+      }
+      
+      setFormData(prev => ({ 
+        ...prev, 
+        title_en: newTitleEn, 
+        content_blocks_en: newBlocksEn 
+      }));
+      
+      return data;
+    });
+
+    toast.promise(
+      translationPromise,
+      {
+        loading: 'LEGO Uzmanımız Çeviriyor...',
+        success: (data) => data.simulated ? 'SİMÜLASYON: Başarıyla çevrildi!' : '🤖 Çeviri başarıyla tamamlandı!',
+        error: (err) => `Çeviri Hatası: ${err.message}`
+      }
+    );
+
+    translationPromise.finally(() => setIsTranslating(false));
   };
 
   const imageUploadBoxes = [
@@ -320,8 +377,22 @@ export default function NewSeriesPage() {
                />
             </div>
 
-            {/* Save Button */}
-            <div className="mt-12 flex justify-end">
+            {/* Translate Button & Save Button */}
+            <div className="mt-12 flex items-center justify-end gap-4">
+              
+              <button 
+                type="button" 
+                onClick={handleAITranslate}
+                disabled={isTranslating}
+                className="bg-[#FFE5B4] text-[#D22B2B] border border-[#ffdb99] hover:bg-[#ffdb99] disabled:opacity-50 transition-colors px-10 py-5 text-[11px] font-black tracking-widest uppercase rounded-sm flex items-center gap-3 w-full md:w-auto justify-center shadow-sm duration-300"
+              >
+                {isTranslating ? (
+                  <><Loader2 size={16} className="animate-spin" /> ÇEVRİLİYOR...</>
+                ) : (
+                  <><Wand2 size={16} /> 🤖 OTOMATİK ÇEVİR (EN)</>
+                )}
+              </button>
+
               <button 
                 type="submit" 
                 disabled={isSubmitting}

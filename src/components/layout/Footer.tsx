@@ -1,8 +1,12 @@
 import { Link } from '@/i18n/routing';
 import LegalNoticeButton from '@/components/ui/LegalNoticeButton';
 import FooterNewsletterForm from '@/components/ui/FooterNewsletterForm';
+import { useTranslations } from 'next-intl';
 
 export default function Footer() {
+  const tNav = useTranslations('Navigation');
+  const tFooter = useTranslations('Footer');
+  
   return (
     <footer className="hidden md:block bg-[#F8F9FA] text-black w-full pt-24 pb-12 mt-auto relative border-t border-gray-100">
       <div className="max-w-[1300px] mx-auto px-6 md:px-8">
@@ -16,32 +20,32 @@ export default function Footer() {
               <img src="/uploads/media__1774631571720.png" alt="Minifigürlerim Logo" className="h-[36px] w-auto" />
             </Link>
             <p className="text-[14px] text-gray-700 font-bold leading-relaxed pr-4">
-              Son çıkan minifigürleri ve güncel haberleri yakından takip etmek istiyorsanız e-posta haber grubuna abone olun.
+              {tFooter('NewsletterText')}
             </p>
             <FooterNewsletterForm />
           </div>
 
           {/* BLOK 2: Keşfet */}
           <div className="flex flex-col gap-6 md:col-span-3 lg:col-span-3 lg:pl-4">
-            <h4 className="text-[14px] font-black tracking-widest text-[#D22B2B]">Keşfet</h4>
+            <h4 className="text-[14px] font-black tracking-widest text-[#D22B2B]">{tFooter('NavigationHeading')}</h4>
             <ul className="flex flex-col gap-3.5 font-bold text-[15px] text-gray-700 w-full whitespace-nowrap">
-              <li><Link href="/seriler" className="hover:text-black hover:underline transition-all">LEGO® Minifigür Serileri</Link></li>
-              <li><Link href="/figurler" className="hover:text-black hover:underline transition-all">LEGO® Minifigürleri</Link></li>
-              <li><Link href="/lego-hakkinda" className="hover:text-black hover:underline transition-all">LEGO® Hakkında</Link></li>
-              <li><Link href="/hakkimizda" className="hover:text-black hover:underline transition-all">Hakkımızda</Link></li>
-              <li><Link href="/haberler" className="hover:text-black hover:underline transition-all">Blog</Link></li>
-              <li><Link href="/iletisim" className="hover:text-black hover:underline transition-all">İletişim</Link></li>
+              <li><Link href="/seriler" className="hover:text-black hover:underline transition-all">{tNav('Series')}</Link></li>
+              <li><Link href="/figurler" className="hover:text-black hover:underline transition-all">{tNav('Figures')}</Link></li>
+              <li><Link href="/lego-hakkinda" className="hover:text-black hover:underline transition-all">{tNav('AboutLego')}</Link></li>
+              <li><Link href="/hakkimizda" className="hover:text-black hover:underline transition-all">{tNav('AboutUs')}</Link></li>
+              <li><Link href="/haberler" className="hover:text-black hover:underline transition-all">{tNav('Blog')}</Link></li>
+              <li><Link href="/iletisim" className="hover:text-black hover:underline transition-all">{tNav('Contact')}</Link></li>
             </ul>
           </div>
 
           {/* BLOK 3: Destek & Sosyal */}
           <div className="flex flex-col gap-6 md:col-span-4 lg:col-span-3 lg:pl-2">
-            <h4 className="text-[14px] font-black tracking-widest text-[#D22B2B]">Yasal</h4>
+            <h4 className="text-[14px] font-black tracking-widest text-[#D22B2B]">{tFooter('LegalHeading')}</h4>
             <ul className="flex flex-col gap-3.5 font-bold text-[15px] text-gray-700 mb-2 w-full whitespace-nowrap">
-              <li><Link href="/yasal/gizlilik-politikasi" className="hover:text-black hover:underline transition-all">Gizlilik Politikası</Link></li>
-              <li><Link href="/yasal/kullanim-kosullari" className="hover:text-black hover:underline transition-all">Kullanım Koşulları</Link></li>
-              <li><Link href="/yasal/uyelik-sozlesmesi" className="hover:text-black hover:underline transition-all">Üyelik Sözleşmesi</Link></li>
-              <li><Link href="/yasal/hak-ihlali" className="hover:text-black hover:underline transition-all">Hak İhlali Bildirimi</Link></li>
+              <li><Link href="/yasal/gizlilik-politikasi" className="hover:text-black hover:underline transition-all">{tFooter('PrivacyPolicy')}</Link></li>
+              <li><Link href="/yasal/kullanim-kosullari" className="hover:text-black hover:underline transition-all">{tFooter('TermsOfUse')}</Link></li>
+              <li><Link href="/yasal/uyelik-sozlesmesi" className="hover:text-black hover:underline transition-all">{tFooter('MembershipAgreement')}</Link></li>
+              <li><Link href="/yasal/hak-ihlali" className="hover:text-black hover:underline transition-all">{tFooter('CopyrightViolation')}</Link></li>
             </ul>
             
             <div className="flex gap-4 mt-2">
@@ -75,7 +79,7 @@ export default function Footer() {
         {/* BOTTOM FOOTER GRID */}
         <div className="relative z-20 border-t border-gray-200 flex flex-col md:flex-row items-center justify-between pt-10 pb-4 gap-6">
           <p className="text-[#a0a0a0] text-center md:text-left text-[14px] font-semibold tracking-wide">
-            © 2024 - 2026 • Tüm hakları saklıdır. <br className="md:hidden"/> <span className="text-gray-900 font-black">Minifigürlerim</span> bir koleksiyoner platformudur.
+            {tFooter('CopyrightText')} <br className="md:hidden"/> <span className="text-gray-900 font-black">Minifigürlerim</span> {tFooter('BrandText')}
           </p>
           <LegalNoticeButton className="bg-[#F2CD37] text-black border border-[#d4b32c] font-black py-4 px-8 rounded-xl shadow-[0_8px_20px_rgba(242,205,55,0.3)] hover:bg-[#e0bd31] hover:scale-105 hover:shadow-[0_12px_25px_rgba(242,205,55,0.4)] transition-all tracking-[0.2em] uppercase text-[11px]" />
         </div>

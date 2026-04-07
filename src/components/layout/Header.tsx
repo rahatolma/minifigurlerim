@@ -7,8 +7,10 @@ import { logOut } from '@/app/[locale]/(auth)/login/actions';
 import LegalNoticeButton from '@/components/ui/LegalNoticeButton';
 import LegalNoticeModal from '@/components/ui/LegalNoticeModal';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
+import { useTranslations } from 'next-intl';
 
 export default function Header({ user }: { user?: any }) {
+  const t = useTranslations('Navigation');
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -58,12 +60,12 @@ export default function Header({ user }: { user?: any }) {
                        <div className="fixed inset-0 z-50" onClick={() => setMenuOpen(false)}></div>
                        <div className="absolute right-0 top-full pt-2 z-[60]" style={{ width: '200px' }}>
                           <div className="bg-white border border-gray-100 shadow-xl rounded-xl flex flex-col py-2">
-                              <Link onClick={() => setMenuOpen(false)} href="/koleksiyonum" className="px-4 py-2 hover:bg-gray-50 text-xs font-bold text-gray-700">Koleksiyonum</Link>
-                              <Link onClick={() => setMenuOpen(false)} href="/koleksiyonum/ayarlar" className="px-4 py-2 hover:bg-gray-50 text-xs font-bold text-gray-700">Ayarlar</Link>
+                              <Link onClick={() => setMenuOpen(false)} href="/koleksiyonum" className="px-4 py-2 hover:bg-gray-50 text-xs font-bold text-gray-700">{t('MyCollection')}</Link>
+                              <Link onClick={() => setMenuOpen(false)} href="/koleksiyonum/ayarlar" className="px-4 py-2 hover:bg-gray-50 text-xs font-bold text-gray-700">{t('Settings')}</Link>
                               <div className="w-full h-px bg-gray-100 my-1"></div>
                               <form action={logOut}>
                                  <button type="submit" className="w-full text-left px-4 py-2 hover:bg-red-50 text-xs font-bold text-red-600 cursor-pointer">
-                                    Güvenli Çıkış Yap
+                                    {t('SafeLogout')}
                                  </button>
                               </form>
                           </div>
@@ -73,7 +75,7 @@ export default function Header({ user }: { user?: any }) {
                 </div>
               ) : (
                 <Link href="/login" className="bg-gray-100 text-gray-800 font-black py-2.5 px-6 rounded-sm shadow-sm hover:bg-gray-200 border border-gray-200 transition-colors tracking-widest uppercase text-[10px]">
-                   Giriş Yap
+                   {t('Login')}
                 </Link>
               )}
            </div>
@@ -86,17 +88,17 @@ export default function Header({ user }: { user?: any }) {
           {/* Nav Links */}
           <nav className="w-full h-full flex items-center justify-center px-8">
             <ul className="flex items-center justify-between w-full text-[15px] font-bold tracking-wide h-full">
-              <li><Link href="/" className={`block ${getLinkClass('/')}`}>Ana Sayfa</Link></li>
-              <li><Link href="/seriler" className={`block ${getLinkClass('/seriler')}`}>LEGO® Minifigür Serileri</Link></li>
-              <li><Link href="/figurler" className={`block ${getLinkClass('/figurler')}`}>LEGO® Minifigürleri</Link></li>
-              <li><Link href="/lego-hakkinda" className={`block ${getLinkClass('/lego-hakkinda')}`}>LEGO® Hakkında</Link></li>
+              <li><Link href="/" className={`block ${getLinkClass('/')}`}>{t('Home')}</Link></li>
+              <li><Link href="/seriler" className={`block ${getLinkClass('/seriler')}`}>{t('Series')}</Link></li>
+              <li><Link href="/figurler" className={`block ${getLinkClass('/figurler')}`}>{t('Figures')}</Link></li>
+              <li><Link href="/lego-hakkinda" className={`block ${getLinkClass('/lego-hakkinda')}`}>{t('AboutLego')}</Link></li>
               <li className="group relative">
                 <Link href="/hakkimizda" className={`flex items-center gap-1 ${getLinkClass('/hakkimizda')}`}>
-                  Hakkımızda
+                  {t('AboutUs')}
                 </Link>
               </li>
-              <li><Link href="/haberler" className={`block ${getLinkClass('/haberler')}`}>Blog</Link></li>
-              <li><Link href="/iletisim" className={`block ${getLinkClass('/iletisim')}`}>İletişim</Link></li>
+              <li><Link href="/haberler" className={`block ${getLinkClass('/haberler')}`}>{t('Blog')}</Link></li>
+              <li><Link href="/iletisim" className={`block ${getLinkClass('/iletisim')}`}>{t('Contact')}</Link></li>
             </ul>
           </nav>
         </div>

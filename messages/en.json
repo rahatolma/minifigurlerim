@@ -2,6 +2,26 @@
   "Navigation": {
     "Home": "Home",
     "Series": "LEGO® Minifigure Series",
-    "Figures": "LEGO® Minifigures"
+    "Figures": "LEGO® Minifigures",
+    "AboutLego": "About LEGO®",
+    "AboutUs": "About Us",
+    "Blog": "Blog",
+    "Contact": "Contact",
+    "MyAccount": "My Account",
+    "MyCollection": "My Collection",
+    "Settings": "Settings",
+    "SafeLogout": "Secure Logout",
+    "Login": "Log In"
+  },
+  "Footer": {
+    "NewsletterText": "Subscribe to our newsletter to stay updated on the latest minifigures and news.",
+    "NavigationHeading": "Explore",
+    "LegalHeading": "Legal",
+    "PrivacyPolicy": "Privacy Policy",
+    "TermsOfUse": "Terms of Use",
+    "MembershipAgreement": "Membership Agreement",
+    "CopyrightViolation": "Notice of Infringement",
+    "CopyrightText": "© 2024 - 2026 • All rights reserved.",
+    "BrandText": "is a collector platform."
   }
 }
