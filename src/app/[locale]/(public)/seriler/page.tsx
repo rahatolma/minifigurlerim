@@ -7,6 +7,7 @@ import { createClient } from '@/utils/supabase/server';
 import ScrollDownHint from '@/components/ui/ScrollDownHint';
 import AuthCTA from '@/components/ui/AuthCTA';
 import DragScrollContainer from '@/components/ui/DragScrollContainer';
+import { getTranslations, getLocale } from 'next-intl/server';
 
 const CMF_HISTORY = [
   { year: '2010', date: 'Mayıs 2010', title: 'Seri 1', desc: 'Sarı kafalar ve 16 figürlük kör paketlerle tüm dünyanın peşinden koşacağı efsane doğdu.' },
@@ -28,6 +29,9 @@ export default async function SeriesPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
+  const locale = await getLocale();
+  const t = await getTranslations('SeriesPage');
+  
   const resolvedParams = await searchParams;
   const categoryParam = (resolvedParams?.category as string) || 'all';
   const sortParam = (resolvedParams?.sort as string) || 'newest';
@@ -40,11 +44,11 @@ export default async function SeriesPage({
 
   // 1. Kategorileri Çek
   const { data: catData } = await supabase.from('categories').select('*').eq('type', targetType).order('created_at', { ascending: true });
-  const categoryFilters = (catData || []).map(c => ({ slug: c.slug, name: c.name }));
+  const categoryFilters = (catData || []).map(c => ({ slug: c.slug, name: locale === 'en' && c.name_en ? c.name_en : c.name }));
 
   // 2. Tüm Serileri Çek (Dropdown için)
   const { data: allSeries } = await supabase.from('series').select('*').order('created_at', { ascending: false });
-  const seriesListFilters = (allSeries || []).map(s => ({ slug: s.slug || s.id.toString(), title: s.title }));
+  const seriesListFilters = (allSeries || []).map(s => ({ slug: locale === 'en' && s.slug_en ? s.slug_en : (s.slug || s.id.toString()), title: locale === 'en' && s.title_en ? s.title_en : s.title }));
 
   // 3. Filtrelenmiş Serileri belirle
   let filteredSeries = allSeries || [];
@@ -57,7 +61,10 @@ export default async function SeriesPage({
   }
 
   if (seriesParam !== 'all') {
-    filteredSeries = filteredSeries.filter(s => (s.slug || s.id.toString()) === seriesParam);
+    filteredSeries = filteredSeries.filter(s => {
+       const s_slug = locale === 'en' && s.slug_en ? s.slug_en : (s.slug || s.id.toString());
+       return s_slug === seriesParam;
+    });
   }
 
   if (sortParam === 'newest') {
@@ -107,9 +114,9 @@ export default async function SeriesPage({
       <div className="hidden md:block border-b border-gray-200 bg-white relative z-20">
         <div className="max-w-7xl mx-auto px-8 flex items-center justify-between text-[10px] sm:text-[11px] font-black text-gray-400 tracking-[0.2em] uppercase" style={{ minHeight: '70px' }}>
              <div className="flex items-center">
-                 <a href="/" className="hover:text-black transition-colors">Ana Sayfa</a> 
+                 <Link href="/" className="hover:text-black transition-colors">{t('BreadcrumbHome')}</Link> 
                  <span className="mx-3 text-gray-200">/</span> 
-                 <span className="text-gray-900">Seriler</span>
+                 <span className="text-gray-900">{t('BreadcrumbSeries')}</span>
              </div>
         </div>
       </div>
@@ -118,10 +125,10 @@ export default async function SeriesPage({
       <div className="hidden md:block w-full bg-[#fcfcfc] pt-8 pb-16 overflow-hidden relative border-b border-gray-100">
          <div className="max-w-7xl mx-auto px-8 mb-8 md:mb-16 text-center">
             <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter mb-4">
-              <span className="text-[#20214a]">CMF</span> Serüveni
+              <span className="text-[#20214a]">{t('TitleFirst')}</span>{t('TitleSecond')}
             </h2>
             <p className="text-gray-500 font-bold max-w-2xl mx-auto text-sm md:text-base">
-              Kör paketli sarı kafalardan, kare kodlu kutulara uzanan devasa bir koleksiyon tarihi. Sağa kaydırarak zaman yolculuğuna başla!
+              {t('Subtitle')}
             </p>
          </div>
 
@@ -212,8 +219,8 @@ export default async function SeriesPage({
            {filteredSeries.slice(0, 21).map(series => (
             <div key={series.id} className="snap-center snap-always shrink-0 w-[90vw] md:w-auto flex flex-col justify-stretch">
               <SeriesCard 
-                  id={series.slug || series.id}
-                  title={series.title}
+                  id={locale === 'en' && series.slug_en ? series.slug_en : (series.slug || series.id)}
+                  title={locale === 'en' && series.title_en ? series.title_en : series.title}
                   imageUrl={series.cover_image_url || 'https://via.placeholder.com/400x300.png?text=Görsel+Yok'}
                   year={series.release_year || (series.created_at ? new Date(series.created_at).getFullYear() : '2010')}
                   category={series.category || 'CMF'}
@@ -231,8 +238,8 @@ export default async function SeriesPage({
         {filteredSeries.length === 0 && (
           <div className="flex flex-col items-center justify-center p-24 border-2 border-dashed border-gray-200 rounded-2xl bg-white text-center w-full shadow-sm mt-4">
             <LegoHeadIcon mode="search" className="w-24 h-24 mb-6" color="text-gray-200" />
-            <h2 className="text-xl font-black text-gray-800 uppercase tracking-widest mb-2">Bulunamadı</h2>
-            <p className="text-sm font-medium text-gray-500 max-w-sm">Mevcut filtrelere uyan bir LEGO serisi bulunmuyor. Diğer seçenekleri deneyebilirsin.</p>
+            <h2 className="text-xl font-black text-gray-800 uppercase tracking-widest mb-2">{t('EmptyStateTitle')}</h2>
+            <p className="text-sm font-medium text-gray-500 max-w-sm">{t('EmptyStateDesc')}</p>
           </div>
         )}
       </div>
@@ -251,8 +258,8 @@ export default async function SeriesPage({
                {filteredSeries.slice(21).map(series => (
                 <div key={series.id} className="snap-center snap-always shrink-0 w-[85%] md:w-auto flex flex-col justify-stretch">
                   <SeriesCard 
-                      id={series.slug || series.id}
-                      title={series.title}
+                      id={locale === 'en' && series.slug_en ? series.slug_en : (series.slug || series.id)}
+                      title={locale === 'en' && series.title_en ? series.title_en : series.title}
                       imageUrl={series.cover_image_url || 'https://via.placeholder.com/400x300.png?text=Görsel+Yok'}
                       year={series.release_year || (series.created_at ? new Date(series.created_at).getFullYear() : '2010')}
                       category={series.category || 'CMF'}

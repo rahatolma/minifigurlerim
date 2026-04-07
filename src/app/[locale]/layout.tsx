@@ -13,6 +13,14 @@ const sen = Sen({
 export const metadata: Metadata = {
   title: "Minifigürlerim",
   description: "Türkiye'nin En Büyük LEGO Minifigür Koleksiyonerleri Platformu",
+  metadataBase: new URL('https://minifigurlerim.com'),
+  alternates: {
+    languages: {
+      'tr': '/tr',
+      'en': '/en',
+      'x-default': '/tr'
+    },
+  },
 };
 
 import { getLocale, getMessages } from 'next-intl/server';

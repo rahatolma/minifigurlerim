@@ -10,7 +10,9 @@ ADD COLUMN IF NOT EXISTS series_name_en TEXT,
 ADD COLUMN IF NOT EXISTS role_en TEXT,
 ADD COLUMN IF NOT EXISTS description_en TEXT;
 
--- Add localization to categories (if applicable, although usually handled differently)
--- Assuming we stick to dynamic data for series & figures first.
+-- Add English localization columns to news
+ALTER TABLE public.news
+ADD COLUMN IF NOT EXISTS title_en TEXT,
+ADD COLUMN IF NOT EXISTS content_blocks_en JSONB;
 
 -- You can run this file directly in the Supabase SQL Editor.

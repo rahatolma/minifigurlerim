@@ -31,7 +31,7 @@ export default function Sidebar() {
           <Link href="/admin" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-bold transition-colors ${pathname === '/admin' ? 'bg-[#111] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-gray-50'}`}>Dashboard</Link>
           
           <div className="mt-6 mb-1">
-            <p className="text-[10px] text-gray-400 font-bold px-4 tracking-widest uppercase">Sayfalar</p>
+            <p className="text-[10px] text-gray-400 font-bold px-4 tracking-widest uppercase">Kullanıcılar</p>
           </div>
           <Link href="/admin/kullanicilar" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-bold transition-colors ${pathname?.startsWith('/admin/kullanicilar') ? 'bg-[#111] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-gray-50'}`}>Kullanıcı Yönetimi</Link>
           <Link href="/admin/hakkimizda" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-bold transition-colors ${pathname === '/admin/hakkimizda' ? 'bg-[#111] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-gray-50'}`}>Hakkımızda</Link>

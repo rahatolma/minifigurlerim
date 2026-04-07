@@ -12,6 +12,9 @@ import toast from 'react-hot-toast';
 export default function NewNewsPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+  const [qualityReport, setQualityReport] = useState<{score: number, feedback: string} | null>(null);
+  const [activeTab, setActiveTab] = useState<'tr'|'en'>('tr');
   const [uploadingField, setUploadingField] = useState<string | null>(null);
   
   const [imageUrls, setImageUrls] = useState({
@@ -24,7 +27,13 @@ export default function NewNewsPage() {
     summary: '',
     content: '',
     status: 'published',
-    min_read: '1'
+    min_read: '1',
+    title_en: '',
+    summary_en: '',
+    content_en: '',
+    slug_en: '',
+    meta_title_en: '',
+    meta_description_en: ''
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -97,6 +106,12 @@ export default function NewNewsPage() {
             min_read: formData.min_read ? parseInt(formData.min_read) : 1,
             cover_image_url: imageUrls.cover_image_url,
             cover_image_vertical_url: imageUrls.cover_image_vertical_url,
+            title_en: formData.title_en,
+            summary_en: formData.summary_en,
+            content_en: formData.content_en,
+            slug_en: formData.slug_en,
+            meta_title_en: formData.meta_title_en,
+            meta_description_en: formData.meta_description_en
           }
         ]);
 
@@ -107,6 +122,52 @@ export default function NewNewsPage() {
       toast.error('Kayıt Hatası: ' + err.message);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleAIGenerate = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!formData.title || !formData.content) return toast.error("Taslak için TR Başlık ve İçerik girilmesi şarttır.");
+
+    setIsGeneratingAI(true);
+    const toastId = toast.loading('Yapay Zeka Haber Taslağını Hazırlıyor...', { duration: 15000 });
+    
+    try {
+      const textsToTranslate = [
+        formData.title,
+        formData.summary,
+        formData.content
+      ];
+      
+      const seoData = { title: formData.title };
+
+      const res = await fetch('/api/admin/translate-draft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ textsToTranslate, seoData })
+      });
+
+      if (!res.ok) throw new Error('API yanıt vermedi.');
+      const data = await res.json();
+      
+      const [translatedTitle, translatedSummary, translatedContent, metaTitleEn, metaDescEn, slugEn] = data.translatedChunks;
+      setQualityReport(data.qualityReport);
+
+      setFormData(prev => ({
+        ...prev,
+        title_en: translatedTitle || prev.title_en,
+        summary_en: translatedSummary || prev.summary_en,
+        content_en: translatedContent || prev.content_en,
+        meta_title_en: metaTitleEn || prev.meta_title_en,
+        meta_description_en: metaDescEn || prev.meta_description_en,
+        slug_en: slugEn ? slugify(slugEn) : prev.slug_en
+      }));
+
+      toast.success('İngilizce Haber Taslağı Başarıyla Oluşturuldu!', { id: toastId });
+    } catch (err: any) {
+      toast.error('Yapay Zeka Hatası: ' + err.message, { id: toastId });
+    } finally {
+      setIsGeneratingAI(false);
     }
   };
 
@@ -210,15 +271,10 @@ export default function NewNewsPage() {
           <form onSubmit={handleSave} className="space-y-0 w-full text-[13px] font-bold">
              
             <div className="bg-white border border-gray-200 rounded-md shadow-sm mb-8 overflow-hidden">
-              <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
-                <div className="w-1/3 py-5 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
-                    <label className="text-gray-900 block truncate font-black tracking-wide">Haber Başlığı <span className="text-[#D22B2B]">*</span></label>
-                </div>
-                <div className="w-2/3 py-3">
-                    <input name="title" type="text" value={formData.title} onChange={handleChange} placeholder="Örn: LEGO Collectible Minifigures Series 26 Geliyor!" required className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold placeholder:font-medium placeholder:opacity-30" />
-                </div>
+               {/* Evrensel Alanlar (Tüm diller için ortak) */}
+              <div className="bg-gray-100 px-6 py-3 border-b border-gray-200">
+                <span className="text-[10px] font-black tracking-widest text-gray-500 uppercase">EVRENSEL ALANLAR (ORTAK)</span>
               </div>
-
               <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
                 <div className="w-1/3 py-5 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
                     <label className="text-gray-900 block truncate font-black tracking-wide">Durum</label>
@@ -240,39 +296,160 @@ export default function NewNewsPage() {
                 </div>
               </div>
             </div>
-            
-            <div className="bg-white border border-gray-200 rounded-md shadow-sm mb-8 overflow-hidden">
-              {/* Özet */}
-              <div className="flex border-b border-gray-100 items-start hover:bg-gray-50 transition-colors group">
-                <div className="w-1/3 pt-6 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
-                  <label className="text-gray-900 block font-black tracking-wide">Kart Özeti (Kısa Metin)</label>
-                </div>
-                <div className="w-2/3 py-4">
-                  <textarea 
-                    name="summary"
-                    value={formData.summary}
-                    onChange={handleChange}
-                    placeholder="Ana sayfadaki listede haberin altında görünecek 1-2 cümlelik vuruş metni..."
-                    className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold placeholder:font-medium placeholder:opacity-30 min-h-[80px] resize-y" 
-                  />
-                </div>
-              </div>
 
-               {/* İçerik */}
-               <div className="flex border-b border-gray-100 items-start hover:bg-gray-50 transition-colors group">
-                <div className="w-1/3 pt-6 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
-                  <label className="text-gray-900 block font-black tracking-wide">Haberin Tam Metni (HTML)</label>
-                  <p className="text-[10px] text-gray-400 font-medium mt-2 leading-tight">Bu alana detaylı paragraf veya HTML formatında kalın/italik metinler ekleyebilirsiniz.</p>
+            {/* DİL BAZLI İÇERİKLER */}
+            <div className="mb-4 flex gap-2 border-b border-gray-200">
+              <button 
+                type="button" 
+                onClick={() => setActiveTab('tr')} 
+                className={`px-6 py-3 font-black text-xs uppercase tracking-widest transition-colors border-b-2 ${activeTab === 'tr' ? 'border-black text-black' : 'border-transparent text-gray-400 hover:text-black'}`}>
+                🇹🇷 TÜRKÇE İÇERİK (KAYNAK)
+              </button>
+              <button 
+                type="button" 
+                onClick={() => setActiveTab('en')} 
+                className={`px-6 py-3 font-black text-xs uppercase tracking-widest transition-colors border-b-2 ${activeTab === 'en' ? 'border-[#3B82F6] text-[#3B82F6]' : 'border-transparent text-gray-400 hover:text-black'}`}>
+                🇺🇸 İNGİLİZCE İÇERİK (ÇEVİRİ)
+              </button>
+            </div>
+
+            {activeTab === 'tr' && (
+              <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <div className="bg-white border border-gray-200 rounded-md shadow-sm mb-8 overflow-hidden">
+                  <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+                    <div className="w-1/3 py-5 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
+                        <label className="text-gray-900 block truncate font-black tracking-wide">Haber Başlığı (TR) <span className="text-[#D22B2B]">*</span></label>
+                    </div>
+                    <div className="w-2/3 py-3">
+                        <input name="title" type="text" value={formData.title} onChange={handleChange} placeholder="Örn: LEGO Collectible Minifigures Series 26 Geliyor!" required className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold placeholder:font-medium placeholder:opacity-30" />
+                    </div>
+                  </div>
+                  <div className="flex border-b border-gray-100 items-start hover:bg-gray-50 transition-colors group">
+                    <div className="w-1/3 pt-6 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
+                      <label className="text-gray-900 block font-black tracking-wide">Kart Özeti (TR)</label>
+                    </div>
+                    <div className="w-2/3 py-4">
+                        <textarea name="summary" value={formData.summary} onChange={handleChange} rows={3} placeholder="Örn: Bu seride bizi Space, Castle ve Town temalarından yepyeni figürler bekliyor..." className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold placeholder:font-medium placeholder:opacity-30 resize-none"></textarea>
+                    </div>
+                  </div>
                 </div>
-                <div className="w-2/3 py-4">
-                  <RichTextEditor
-                    value={formData.content}
-                    onChange={(val) => setFormData(prev => ({ ...prev, content: val }))}
-                    placeholder="Haber metni buraya yazılacak..."
-                  />
+                
+                <div className="bg-white rounded-md shadow-sm mb-8 border border-gray-200">
+                   <div className="p-6 border-b border-gray-100 bg-gray-50 flex items-center justify-between rounded-t-md">
+                      <div>
+                        <h3 className="font-black tracking-wider uppercase text-black text-xs md:text-sm">Haber Ana Metni (TR)</h3>
+                        <p className="text-[10px] md:text-[11px] font-medium text-gray-500 mt-1">Haberin detayında okunacak olan zenginleştirilmiş içerik</p>
+                      </div>
+                   </div>
+                   <div className="p-0 rounded-b-md">
+                      <RichTextEditor value={formData.content} onChange={(html) => setFormData(p => ({...p, content: html}))} />
+                   </div>
                 </div>
               </div>
-            </div>
+            )}
+
+            {activeTab === 'en' && (
+              <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <div className="bg-blue-50 border border-blue-100 p-6 rounded-md shadow-sm mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                   <div>
+                     <div className="flex items-center gap-3 mb-1">
+                       <h3 className="font-bold text-sm text-blue-900">Otomatik İngilizce Taslak & Kalite Kontrol</h3>
+                       {qualityReport && (
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-black tracking-wider ${qualityReport.score >= 90 ? 'bg-green-100 text-green-700' : qualityReport.score >= 70 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>
+                            SKOR: {qualityReport.score}/100
+                          </span>
+                       )}
+                     </div>
+                     
+                     {!qualityReport ? (
+                        <p className="text-[11px] font-medium text-blue-700">TÜRKÇE içeriği "Collector Tone" kurallarıyla optimize ederek profesyonel İngilizceye çevirin.</p>
+                     ) : (
+                        <p className="text-[11px] font-medium text-blue-700 max-w-2xl">
+                          <span className="font-bold text-blue-900">AI Kalite Denetçisi:</span> {qualityReport.feedback}
+                        </p>
+                     )}
+                   </div>
+                   <button 
+                     type="button" 
+                     onClick={handleAIGenerate}
+                     disabled={isGeneratingAI}
+                     className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-6 py-3 rounded-md text-[11px] font-black tracking-widest uppercase transition-colors flex items-center gap-2 shadow-sm whitespace-nowrap"
+                   >
+                     {isGeneratingAI ? <><Loader2 size={16} className="animate-spin" /> ÜRETİLİYOR...</> : "✨ REWRITE & TASLAK ÜRET"}
+                   </button>
+                </div>
+
+                <div className="bg-white border border-gray-200 rounded-md shadow-sm mb-8 overflow-hidden">
+                  <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+                    <div className="w-1/3 py-5 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
+                        <label className="text-gray-900 block truncate font-black tracking-wide">Haber Başlığı (EN)</label>
+                    </div>
+                    <div className="w-2/3 py-3">
+                        <input name="title_en" type="text" value={formData.title_en} onChange={handleChange} placeholder="Orn: LEGO Collectible Minifigures Series 26 is Coming!" className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold placeholder:font-medium placeholder:opacity-30" />
+                    </div>
+                  </div>
+                  <div className="flex border-b border-gray-100 items-start hover:bg-gray-50 transition-colors group">
+                    <div className="w-1/3 pt-6 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
+                      <label className="text-gray-900 block font-black tracking-wide">Kart Özeti (EN)</label>
+                    </div>
+                    <div className="w-2/3 py-4">
+                        <textarea name="summary_en" value={formData.summary_en} onChange={handleChange} rows={3} placeholder="..." className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold placeholder:font-medium placeholder:opacity-30 resize-none"></textarea>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-white rounded-md shadow-sm mb-8 border border-gray-200">
+                   <div className="p-6 border-b border-gray-100 bg-gray-50 flex items-center justify-between rounded-t-md">
+                      <div>
+                        <h3 className="font-black tracking-wider uppercase text-black text-xs md:text-sm">Haber Ana Metni (EN)</h3>
+                        <p className="text-[10px] md:text-[11px] font-medium text-gray-500 mt-1">Yapay zekanın hazırladığı çeviriyi kontrol edin ve düzeltin</p>
+                      </div>
+                   </div>
+                   <div className="p-0 rounded-b-md">
+                      <RichTextEditor value={formData.content_en} onChange={(html) => setFormData(p => ({...p, content_en: html}))} />
+                   </div>
+                </div>
+                
+                {/* SEO BÖLÜMÜ */}
+                <div className="bg-white border border-gray-200 rounded-md shadow-sm mt-8 overflow-hidden">
+                   <div className="bg-[#111] px-6 py-4 flex items-center justify-between">
+                     <h3 className="font-black text-white text-xs tracking-widest uppercase">Global SEO Yöneticisi</h3>
+                     <span className="text-[10px] text-gray-400">Yapay Zeka Destekli</span>
+                   </div>
+                   
+                   <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+                     <div className="w-1/3 py-5 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
+                         <label className="text-gray-900 block truncate font-black tracking-wide">SEO Slug (URL Ucu)</label>
+                         <p className="text-[10px] text-gray-500 mt-1">/en/news/... kısmı</p>
+                     </div>
+                     <div className="w-2/3 py-3">
+                         <input name="slug_en" type="text" value={formData.slug_en} onChange={handleChange} placeholder="Örn: lego-minifigures-series-27" className="w-full bg-transparent px-3 py-2 text-black font-semibold text-[13px] border-b border-gray-200 focus:border-black transition-colors focus:outline-none" />
+                     </div>
+                   </div>
+
+                   <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+                     <div className="w-1/3 py-5 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
+                         <label className="text-gray-900 block truncate font-black tracking-wide">SEO Meta Title</label>
+                         <p className="text-[10px] text-gray-500 mt-1">Maks. 60 Karakter</p>
+                     </div>
+                     <div className="w-2/3 py-3">
+                         <input name="meta_title_en" type="text" value={formData.meta_title_en} onChange={handleChange} placeholder="Örn: LEGO Series 27 | Minifigürlerim" className="w-full bg-transparent px-3 py-2 text-black font-semibold text-[13px] border-b border-gray-200 focus:border-black transition-colors focus:outline-none" />
+                     </div>
+                   </div>
+
+                   <div className="flex border-b border-gray-100 items-start hover:bg-gray-50 transition-colors group">
+                     <div className="w-1/3 pt-6 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
+                         <label className="text-gray-900 block truncate font-black tracking-wide">SEO Meta Description</label>
+                         <p className="text-[10px] text-gray-500 mt-1">Google aramalarında gözüken 160 karakterlik özet.</p>
+                     </div>
+                     <div className="w-2/3 py-4">
+                         <textarea name="meta_description_en" value={formData.meta_description_en} onChange={handleChange} rows={3} placeholder="Discover the highly anticipated LEGO Minifigures Series 27." className="w-full bg-transparent px-3 py-2 text-black font-semibold text-[13px] border border-gray-200 focus:border-black transition-colors focus:outline-none rounded-sm resize-none"></textarea>
+                     </div>
+                   </div>
+                </div>
+
+              </div>
+            )}
 
             {/* Save Button */}
             <div className="mt-12 flex justify-end">
@@ -288,7 +465,6 @@ export default function NewNewsPage() {
                 )}
               </button>
             </div>
-            
           </form>
         </div>
 

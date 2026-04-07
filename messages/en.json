@@ -23,5 +23,133 @@
     "CopyrightViolation": "Notice of Infringement",
     "CopyrightText": "© 2024 - 2026 • All rights reserved.",
     "BrandText": "is a collector platform."
+  },
+  "Test": {
+    "DenemeKey": "This is a test line. The artificial intelligence was translating this.",
+    "Uyari": "If you see this text on the screen, know that our bot is working like a charm."
+  },
+  "LegoAbout": {
+    "HeroLabel": "90 YEAR ADVENTURE",
+    "HeroTitleFirst": "The History",
+    "HeroTitleSecond": "Bricks",
+    "HeroDesc": "From a humble carpenter's workshop in Billund to the world's most iconic creativity empire extending to screens everywhere.",
+    "Events": {
+      "1932": {
+        "title": "From Wooden Toys to Legend",
+        "desc": "Ole Kirk Kristiansen began a journey that would one day lead to the world's largest toy brand by producing wooden yo-yos and toys in a modest workshop in the town of Billund, Denmark."
+      },
+      "1934": {
+        "title": "Leg Godt\" (Play Well)",
+        "desc": "The company took its name \"LEGO\" from the Danish phrase \"leg godt,\" meaning \"play well.\" Little did anyone know it would one day become an empire."
+      },
+      "1947": {
+        "title": "First Encounter with Plastic",
+        "desc": "LEGO purchased Denmark's first plastic injection molding machine. This risky and bold move was the first spark that would transform the company's fate from wood to modern technology."
+      },
+      "1949": {
+        "title": "Automatic Binding Bricks",
+        "desc": "The first prototype of the legendary LEGO brick, \"Automatic Binding Bricks,\" was launched."
+      },
+      "1954": {
+        "title": "The Philosophy of the \"Play System",
+        "desc": "Godtfred Kirk Christiansen believed that toys should not be disposable. He realized the idea of a \"Systematic Play\" where all sets worked together harmoniously, fostering infinite creativity."
+      },
+      "1958": {
+        "title": "The Perfect Connection Code: Patent",
+        "desc": "The patent for the modern LEGO® brick, featuring studs on top and tubes on the bottom, was granted in Denmark at precisely 13:58. The perfect clutch power changed the world."
+      },
+      "1968": {
+        "title": "The First LEGOLAND® Opens",
+        "desc": "The first LEGOLAND theme park that opened in Billund exceeded expectations. While 3,000 visitors were anticipated in its inaugural season, it astonishingly hosted 625,000 guests."
+      },
+      "1978": {
+        "title": "The Birth of the Minifigure (History in the Making)",
+        "desc": "The first LEGO Minifigure, characterized by iconic facial expressions, moving arms, and legs, was launched, marking the reason for our platform's existence. The brick world now had its inhabitants!"
+      },
+      "1999": {
+        "title": "First Licensed Theme: Star Wars",
+        "desc": "LEGO ventured beyond its own themes by partnering with Lucasfilm to produce the first Star Wars™ sets. This move became a modern milestone for the company."
+      },
+      "2010": {
+        "title": "The Collectible Minifigures (CMF) Craze",
+        "desc": "The first Collectible Minifigure (CMF) Series 1, consisting of bodies, legs, heads, and accessories sold in closed, surprise bags, hit the shelves."
+      },
+      "2024": {
+        "title": "A Continuing Legacy",
+        "desc": "Today, trillions of bricks have been produced. The minifigure population has already surpassed the human population. And you are part of this magnificent world of collections..."
+      }
+    }
+  },
+  "SeriesPage": {
+    "TitleFirst": "The CMF",
+    "TitleSecond": " Journey",
+    "Subtitle": "From blind bags and yellow heads to data matrix boxes—a massive collecting history. Scroll right to begin your time travel!",
+    "BreadcrumbHome": "Home",
+    "BreadcrumbSeries": "Series",
+    "FilterTitle": "Filter Series",
+    "SortTitle": "Sort By",
+    "SortNewest": "Newest First",
+    "SortOldest": "Oldest First",
+    "SortPopular": "Most Viewed",
+    "EmptyStateTitle": "No Series Found",
+    "EmptyStateDesc": "We couldn't find any series matching your filters. Please adjust them and try again.",
+    "ClearFilters": "Clear Filters"
+  },
+  "SeriesDetail": {
+    "BreadcrumbHome": "Home",
+    "BreadcrumbSeries": "Series",
+    "Brand": "Brand",
+    "Category": "Category",
+    "Size": "Size",
+    "Sort": "Sort Options",
+    "Release": "Release",
+    "FiguresPrefix": "",
+    "FiguresSuffix": " Figures",
+    "DiscoverSeries": "DISCOVER THE SERIES",
+    "EmptyFigures": "No figures have been added to this series yet...",
+    "FigureCountUnit": "Figures",
+    "NotFoundTitle": "Series Not Found | Minifigürlerim",
+    "NotFoundDesc": "mini-figures in this series along with pricing history.",
+    "MetaTitleSuffix": " | LEGO Minifigure Series",
+    "MetaGraphSuffix": " | Complete Series Guide",
+    "MetaTwitterSuffix": " | LEGO Series"
+  },
+  "NewsPage": {
+    "BreadcrumbHome": "Home",
+    "BreadcrumbNews": "Latest News",
+    "EmptyTitle": "No News Yet",
+    "EmptyDesc": "There are currently no published announcements or news."
+  },
+  "NewsDetail": {
+    "BreadcrumbHome": "Home",
+    "BreadcrumbNews": "News",
+    "ReadTime": " MIN READ",
+    "Views": " VIEWS",
+    "NoImage": "No Image",
+    "NotFoundTitle": "News Not Found | Minifigürlerim",
+    "NotFoundDesc": "No published news found in the Minifigürlerim news archive.",
+    "MetaTitleSuffix": " | Minifigürlerim News",
+    "MetaGraphSuffix": " | Latest Announcement"
+  },
+  "SeriesCard": {
+    "CategoryDefault": "LEGO® Minifigure Series",
+    "Figure": "Figure",
+    "CommonRarity": "Common",
+    "Completion": "Series Completion",
+    "LatestAdded": "Latest Added",
+    "NoneYet": "None Yet",
+    "CompleteSeries": "Complete Series",
+    "LoginRequired1": "Unlock access to",
+    "LoginRequired2": "see details",
+    "DefaultFigureText": "Figures in this Series"
+  },
+  "NewsCard": {
+    "TotalViews": "Total Views",
+    "DailyViews": "Daily Views",
+    "MinRead": "Min Read",
+    "Comments": "Comments"
+  },
+  "Fallback": {
+    "BadgeText": "This content is currently available in Turkish."
   }
 }

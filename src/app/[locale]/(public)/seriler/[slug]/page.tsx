@@ -17,39 +17,53 @@ import FloatingSeriesNav from '@/components/ui/FloatingSeriesNav';
 export const revalidate = 0; // Her zaman canlı veri
 
 import { Metadata, ResolvingMetadata } from 'next';
+import { getTranslations, getLocale } from 'next-intl/server';
+import { permanentRedirect } from 'next/navigation';
 
 // SEO Metadata Olusturucu
 export async function generateMetadata(
   { params }: { params: Promise<{ slug: string }> },
   parent: ResolvingMetadata
 ): Promise<Metadata> {
+  const locale = await getLocale();
+  const t = await getTranslations('SeriesDetail');
   const resolvedParams = await params;
   const slug = resolvedParams.slug;
   const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
   const queryCol = isUUID ? 'id' : 'slug';
   
-  const { data: series } = await supabase.from('series').select('title, description, cover_image_url').eq(queryCol, slug).single();
+  const { data: series } = await supabase.from('series').select('*').or(`slug.eq.${slug},id.eq.${slug},slug_en.eq.${slug}`).single();
 
   if (!series) {
-    return { title: 'Seri Bulunamadı | Minifigürlerim' };
+    return { title: t('NotFoundTitle') };
   }
+
+  const title = locale === 'en' && series.title_en ? series.title_en : series.title;
+  const descriptionText = locale === 'en' && series.meta_description_en ? series.meta_description_en : (series.description || '');
 
   const defaultImage = 'https://minifigurlerim.com/og-image.jpg';
   const seriesImage = series.cover_image_url || defaultImage;
-  const desc = series.description ? series.description.substring(0, 150) + '...' : `${series.title} serisindeki tüm minifigürler ve fiyat/borsa geçmişleri.`;
+  const desc = descriptionText ? descriptionText.substring(0, 150) + '...' : `${title} ${t('NotFoundDesc')}`;
 
   return {
-    title: `${series.title} | LEGO Minifigür Serileri`,
+    title: `${title}${t('MetaTitleSuffix')}`,
     description: desc,
+    alternates: {
+      canonical: locale === 'en' && series.slug_en ? `/en/series/${series.slug_en}` : `/tr/seriler/${series.slug}`,
+      languages: {
+        'tr-TR': `/tr/seriler/${series.slug}`,
+        'en-US': series.slug_en ? `/en/series/${series.slug_en}` : `/en/series/${series.slug}`
+      }
+    },
     openGraph: {
-      title: `${series.title} | Komple Seri Rehberi`,
+      title: `${title}${t('MetaGraphSuffix')}`,
       description: desc,
       images: [seriesImage],
       type: 'article',
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${series.title} | LEGO Serileri`,
+      title: `${title}${t('MetaTwitterSuffix')}`,
       description: desc,
       images: [seriesImage],
     }
@@ -63,18 +77,29 @@ export default async function SeriesDetail({
 }) {
   const resolvedParams = await params;
   const { slug } = resolvedParams;
+  const locale = await getLocale();
+  const t = await getTranslations('SeriesDetail');
 
-  // UUID kontrolü yapıyoruz. Eski (ID bazlı) linkle mi gelindi yoksa yeni jenerasyon SEO Slug ile mi?
-  const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
-  const queryCol = isUUID ? 'id' : 'slug';
-
-  // Seri verisini çek
-  const { data: series, error } = await supabase.from('series').select('*').eq(queryCol, slug).single();
+  // Series verisini (or ile) çek
+  const { data: series, error } = await supabase.from('series').select('*').or(`slug.eq.${slug},id.eq.${slug},slug_en.eq.${slug}`).single();
 
   if (error || !series) {
     return notFound();
   }
 
+  // Canonical Mismatch Redirect (Bi-directional)
+  if (locale === 'en' && series.slug_en && slug !== series.slug_en && !slug.includes(series.id)) {
+    permanentRedirect(`/en/series/${series.slug_en}`);
+  } else if (locale === 'tr' && series.slug && slug !== series.slug && !slug.includes(series.id)) {
+    permanentRedirect(`/tr/seriler/${series.slug}`);
+  }
+
+  const title = locale === 'en' && series.title_en ? series.title_en : series.title;
+  const content_blocks = locale === 'en' && series.content_blocks_en ? series.content_blocks_en : series.content_blocks;
+  
+  const isFallback = locale === 'en' && !series.title_en && !series.content_blocks_en;
+  const fallbackT = await getTranslations('Fallback');
+  
   // Bu seriye ait figürleri çek
   const { data: figuresData } = await supabase
     .from('minifigures')
@@ -121,7 +146,7 @@ export default async function SeriesDetail({
   // ÖNCEKİ / SONRAKİ SERİ YÖNLENDİRMESİ İÇİN (Floating Nav)
   const { data: allSeries } = await supabase
     .from('series')
-    .select('id, title, slug, release_year')
+    .select('id, title, title_en, slug, slug_en, release_year')
     .order('release_year', { ascending: true })
     .order('created_at', { ascending: true }); // Aynı yıla sahipse eklendikçe sırala
 
@@ -132,11 +157,11 @@ export default async function SeriesDetail({
     const currentIndex = allSeries.findIndex(s => s.id === series.id);
     if (currentIndex > 0) {
       const p = allSeries[currentIndex - 1];
-      prevSeries = { slug: p.slug || p.id.toString(), title: p.title };
+      prevSeries = { slug: locale === 'en' && p.slug_en ? p.slug_en : (p.slug || p.id.toString()), title: locale === 'en' && p.title_en ? p.title_en : p.title };
     }
     if (currentIndex < allSeries.length - 1) {
       const n = allSeries[currentIndex + 1];
-      nextSeries = { slug: n.slug || n.id.toString(), title: n.title };
+      nextSeries = { slug: locale === 'en' && n.slug_en ? n.slug_en : (n.slug || n.id.toString()), title: locale === 'en' && n.title_en ? n.title_en : n.title };
     }
   }
 
@@ -148,11 +173,11 @@ export default async function SeriesDetail({
       {/* ŞABLON BREADCRUMB */}
       <div className="border-b border-gray-200 bg-white relative z-20">
         <div className="max-w-7xl mx-auto px-8 flex flex-wrap items-center text-[10px] sm:text-[11px] font-black text-gray-400 tracking-[0.2em] uppercase" style={{ minHeight: '70px' }}>
-             <Link href="/" className="hover:text-black transition-colors">Ana Sayfa</Link> 
+             <Link href="/" className="hover:text-black transition-colors">{t('BreadcrumbHome')}</Link> 
              <span className="mx-3 text-gray-200">/</span> 
-             <Link href="/seriler" className="hover:text-black transition-colors">Seriler</Link>
+             <Link href="/seriler" className="hover:text-black transition-colors">{t('BreadcrumbSeries')}</Link>
              <span className="mx-3 text-gray-200">/</span> 
-             <span className="text-gray-900">{formatBrandText(series.title)}</span>
+             <span className="text-gray-900">{formatBrandText(title)}</span>
         </div>
       </div>
 
@@ -175,17 +200,25 @@ export default async function SeriesDetail({
       <div className="sticky top-[130px] md:top-[150px] z-40 w-full flex flex-col items-center shadow-[0_20px_40px_-15px_rgba(0,0,0,0.03)] bg-[#fcfcfc]/90 backdrop-blur-2xl">
          
          {/* Başlık (Hero Text) */}
-         <h1 className="relative z-10 text-3xl md:text-[45px] text-[#111] font-black pt-8 md:pt-10 pb-6 text-center max-w-7xl px-4 leading-tight w-full tracking-tight">
-           {formatBrandText(series.title)}
-         </h1>
+         <div className="relative z-10 pt-8 md:pt-10 pb-6 flex flex-col items-center max-w-7xl px-4 w-full">
+           <h1 className="text-3xl md:text-[45px] text-[#111] font-black text-center leading-tight tracking-tight mb-4">
+             {formatBrandText(title)}
+           </h1>
+           {isFallback && (
+             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-orange-50 border border-orange-100 rounded-md text-[11px] font-bold text-orange-700 tracking-wide shadow-sm">
+               <svg className="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+               {fallbackT('BadgeText')}
+             </div>
+           )}
+         </div>
 
-         {/* Info Bar (Marka / Kategori / Adet / Tarih) */}
+         {/* Info Bar */}
          <div className="max-w-7xl w-full mx-auto px-4 md:px-8 relative z-20 pb-4">
            <div className="bg-[#fcfcfc] rounded-xl shadow-xl grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-100 border border-gray-100 overflow-hidden backdrop-blur-xl bg-white/90">
           <div className="p-4 md:p-6 lg:pl-10 flex items-center justify-start gap-4 hover:bg-white transition-colors">
             <div className="bg-[#D22B2B] text-white px-2 py-1.5 rounded-md text-[10px] font-black shrink-0 tracking-wider">LEGO®</div>
             <div>
-              <p className="text-[10px] md:text-[11px] font-black opacity-50 uppercase tracking-[0.2em] text-[#D22B2B]">Marka</p>
+              <p className="text-[10px] md:text-[11px] font-black opacity-50 uppercase tracking-[0.2em] text-[#D22B2B]">{t('Brand')}</p>
               <p className="font-black text-sm md:text-base text-gray-900 mt-0.5">LEGO</p>
             </div>
           </div>
@@ -194,7 +227,7 @@ export default async function SeriesDetail({
               <Package size={28} strokeWidth={1.5} />
             </div>
             <div>
-              <p className="text-[10px] md:text-[11px] font-black opacity-50 uppercase tracking-[0.2em] text-[#D22B2B]">Kategori</p>
+              <p className="text-[10px] md:text-[11px] font-black opacity-50 uppercase tracking-[0.2em] text-[#D22B2B]">{t('Category')}</p>
               <p className="font-black text-sm md:text-[15px] text-gray-900 leading-tight pr-2 mt-0.5">{series.category || '-'}</p>
             </div>
           </div>
@@ -203,8 +236,8 @@ export default async function SeriesDetail({
                <Grid3X3 size={28} strokeWidth={1.5} />
              </div>
             <div>
-              <p className="text-[10px] md:text-[11px] font-black opacity-50 uppercase tracking-[0.2em] text-[#D22B2B]">Ebat</p>
-              <p className="font-black text-sm md:text-[15px] text-gray-900 mt-0.5">{series.figure_count ? `${series.figure_count} Figür` : '-'}</p>
+              <p className="text-[10px] md:text-[11px] font-black opacity-50 uppercase tracking-[0.2em] text-[#D22B2B]">{t('Size')}</p>
+              <p className="font-black text-sm md:text-[15px] text-gray-900 mt-0.5">{series.figure_count ? `${series.figure_count} ${t('FigureCountUnit')}` : '-'}</p>
             </div>
           </div>
           <div className="p-4 md:p-6 lg:pl-10 flex items-center justify-start gap-4 hover:bg-white transition-colors">
@@ -212,7 +245,7 @@ export default async function SeriesDetail({
                <CalendarDays size={28} strokeWidth={1.5} />
              </div>
             <div>
-              <p className="text-[10px] md:text-[11px] font-black opacity-50 uppercase tracking-[0.2em] text-[#D22B2B]">Çıkış</p>
+              <p className="text-[10px] md:text-[11px] font-black opacity-50 uppercase tracking-[0.2em] text-[#D22B2B]">{t('Release')}</p>
               <p className="font-black text-sm md:text-[15px] text-gray-900 leading-tight pr-2 mt-0.5">{series.release_month} {series.release_year}</p>
             </div>
           </div>
@@ -221,10 +254,10 @@ export default async function SeriesDetail({
     </div>
 
       {/* Dinamik Bölüm: MODÜLER İÇERİK BLOKLARI */}
-      {series.content_blocks && Array.isArray(series.content_blocks) && series.content_blocks.length > 0 && (
+      {content_blocks && Array.isArray(content_blocks) && content_blocks.length > 0 && (
         <div className="w-full mt-8 md:mt-12">
            <BlockRenderer 
-             blocks={series.content_blocks} 
+             blocks={content_blocks} 
              collectionStats={currentSeriesStats}
              isLoggedIn={!!user}
            />
@@ -233,9 +266,9 @@ export default async function SeriesDetail({
 
       {/* Serideki Figürler Bölümü */}
       <div id="figures-list" className="max-w-7xl mx-auto px-8 mt-8 md:mt-12 pt-8 scroll-mt-24 bg-white relative z-20">
-        <h3 className="text-sm font-black mb-2 text-gray-300 tracking-[0.2em] uppercase">SERİYİ KEŞFET</h3>
+        <h3 className="text-sm font-black mb-2 text-gray-300 tracking-[0.2em] uppercase">{t('DiscoverSeries')}</h3>
         <h2 className="text-3xl md:text-5xl font-black text-gray-900 mb-8 tracking-tighter">
-          {formatBrandText(series.title)} Figürleri
+          {t('FiguresPrefix')}{formatBrandText(title)}{t('FiguresSuffix')}
         </h2>
         
         {figures && figures.length > 0 ? (
@@ -246,8 +279,8 @@ export default async function SeriesDetail({
                         id={fig.id}
                         slug={fig.slug}
                         name={fig.name}
-                        seriesName={series.title}
-                        seriesSlug={series.slug}
+                        seriesName={title}
+                        seriesSlug={locale === 'en' && series.slug_en ? series.slug_en : series.slug}
                         imageUrl={(fig.images && fig.images.length > 0) ? fig.images[0] : 'https://via.placeholder.com/300x400.png?text=Görsel+Yok'}
                         year={fig.release_year}
                         rarity={fig.rarity}
@@ -259,7 +292,7 @@ export default async function SeriesDetail({
             </div>
         ) : (
             <div className="flex flex-col items-center justify-center p-24 border-2 border-dashed border-gray-200 rounded-2xl bg-gray-50 text-center w-full shadow-sm mt-4">
-                <h2 className="text-xl font-black text-gray-400 uppercase tracking-widest">Bu seriye henüz bir figür eklenmemiş...</h2>
+                <h2 className="text-xl font-black text-gray-400 uppercase tracking-widest">{t('EmptyFigures')}</h2>
             </div>
         )}
 

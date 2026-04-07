@@ -23,5 +23,133 @@
     "CopyrightViolation": "Hak İhlali Bildirimi",
     "CopyrightText": "© 2024 - 2026 • Tüm hakları saklıdır.",
     "BrandText": "bir koleksiyoner platformudur."
+  },
+  "Test": {
+    "DenemeKey": "Bu bir deneme satırıdır. Yapay zeka bunu çeviriyordu.",
+    "Uyari": "Eğer bu metni ekranda görüyorsan bil ki botumuz canavar gibi çalışıyor."
+  },
+  "LegoAbout": {
+    "HeroLabel": "90 YILLIK SERÜVEN",
+    "HeroTitleFirst": "Tarihin ",
+    "HeroTitleSecond": "Tuğlaları",
+    "HeroDesc": "Billund'daki mütevazı bir marangoz atölyesinden ekranlara uzanan dünyanın en ikonik yaratıcılık imparatorluğu.",
+    "Events": {
+      "1932": {
+        "title": "Ahşap Oyuncaklardan Efsaneye",
+        "desc": "Ole Kirk Kristiansen, Danimarka'nın Billund kasabasında mütevazı bir atölyede tahta yo-yolar ve oyuncaklar üreterek gelecekte dünyanın en büyük oyuncak markası olacak serüveni başlattı."
+      },
+      "1934": {
+        "title": "\"Leg Godt\" (İyi Oyna)",
+        "desc": "Şirket, Danca \"iyi oyna\" anlamına gelen \"leg godt\" kelimelerinin birleşiminden doğan \"LEGO\" adını aldı. Gelecekte bir imparatorluğa dönüşeceğinden henüz kimsenin haberi yoktu."
+      },
+      "1947": {
+        "title": "Plastikle İlk Tanışma",
+        "desc": "LEGO, Danimarka'nın ilk plastik enjeksiyon makinesini satın aldı. Bu riskli ve cesur hamle, şirketin kaderini ahşaptan modern teknolojiye taşıyan ilk kıvılcım oldu."
+      },
+      "1949": {
+        "title": "Otomatik Bağlanan Tuğlalar",
+        "desc": "Bugün efsaneleşen LEGO tuğlasının ilk prototipi olan \"Automatic Binding Bricks\" (Otomatik Bağlanan Tuğlalar) piyasaya sürüldü."
+      },
+      "1954": {
+        "title": "\"Oyun Sistemi\" Felsefesi",
+        "desc": "Godtfred Kirk Christiansen, oyuncakların tek kullanımlık olmaması gerektiğine inandı. Tüm setlerin birbiriyle uyumlu çalıştığı ve yaratıcılığı sonsuz kılan \"Sistematik Oyun\" fikrini hayata geçirdi."
+      },
+      "1958": {
+        "title": "Kusursuz Bağlantı Şifresi: Patent",
+        "desc": "Üstte tırnakları (studs) ve altta tüpleri (tubes) olan modern LEGO® tuğlasının patenti, tam 13:58'de Danimarka'da alındı. Mükemmel kilitlenme gücü (Clutch Power) dünyayı değiştirdi."
+      },
+      "1968": {
+        "title": "İlk LEGOLAND® Açılıyor",
+        "desc": "Billund'da açılan ilk LEGOLAND tema parkı beklentileri altüst etti. İlk sezonunda 3.000 ziyaretçi beklenirken inanılmaz bir şekilde 625.000 kişiyi ağırladı."
+      },
+      "1978": {
+        "title": "Minifigürün Doğuşu (Tarih Yazılıyor)",
+        "desc": "Bugün platformumuzun varoluş sebebi olan ikonik yüz ifadeli, hareketli kollara ve bacaklara sahip ilk LEGO Minifigürü piyasaya sürüldü. Artık tuğla dünyasının sakinleri vardı!"
+      },
+      "1999": {
+        "title": "İlk Lisanslı Tema: Star Wars",
+        "desc": "LEGO, kendi temalarının dışına çıkarak Lucasfilm ile anlaştı ve ilk Star Wars™ setlerini üretti. Bu hamle şirketin modern dönüm noktası oldu."
+      },
+      "2010": {
+        "title": "Collectible Minifigures (CMF) Çılgınlığı",
+        "desc": "Gövde, bacak, baş ve aksesuarlardan oluşan, kapalı ve sürpriz poşetlerde satılan ilk Koleksiyonluk Minifigür (CMF) Seri 1 raflardaki yerini aldı."
+      },
+      "2024": {
+        "title": "Devam Eden Bir Miras",
+        "desc": "Bugün trilyonlarca tuğla üretildi. Minifigür nüfusu insan nüfusunu çoktan geçti. Ve sen, bu muazzam koleksiyon dünyasının bir parçasısın..."
+      }
+    }
+  },
+  "SeriesPage": {
+    "TitleFirst": "CMF",
+    "TitleSecond": " Serüveni",
+    "Subtitle": "Kör paketli sarı kafalardan, kare kodlu kutulara uzanan devasa bir koleksiyon tarihi. Sağa kaydırarak zaman yolculuğuna başla!",
+    "BreadcrumbHome": "Ana Sayfa",
+    "BreadcrumbSeries": "Seriler",
+    "FilterTitle": "Serileri Filtrele",
+    "SortTitle": "Sırala",
+    "SortNewest": "En Yeniler",
+    "SortOldest": "En Eskiler",
+    "SortPopular": "En Çok Tıklananlar",
+    "EmptyStateTitle": "Eşleşen Seri Bulunamadı",
+    "EmptyStateDesc": "Seçtiğiniz filtrelere uygun bir seri bulunamadı. Lütfen filtreleri temizleyerek tekrar deneyin.",
+    "ClearFilters": "Filtreleri Temizle"
+  },
+  "SeriesDetail": {
+    "BreadcrumbHome": "Ana Sayfa",
+    "BreadcrumbSeries": "Seriler",
+    "Brand": "Marka",
+    "Category": "Kategori",
+    "Size": "Ebat",
+    "Sort": "Sıralama Seçimi",
+    "Release": "Çıkış",
+    "FiguresPrefix": "",
+    "FiguresSuffix": " Figürleri",
+    "DiscoverSeries": "SERİYİ KEŞFET",
+    "EmptyFigures": "Bu seriye henüz bir figür eklenmemiş...",
+    "FigureCountUnit": "Figür",
+    "NotFoundTitle": "Seri Bulunamadı | Minifigürlerim",
+    "NotFoundDesc": "serisindeki tüm minifigürler ve fiyat/borsa geçmişleri.",
+    "MetaTitleSuffix": " | LEGO Minifigür Serileri",
+    "MetaGraphSuffix": " | Komple Seri Rehberi",
+    "MetaTwitterSuffix": " | LEGO Serileri"
+  },
+  "NewsPage": {
+    "BreadcrumbHome": "Ana Sayfa",
+    "BreadcrumbNews": "Güncel Haberler",
+    "EmptyTitle": "Henüz Haber Yok",
+    "EmptyDesc": "Şu an için yayınlanmış herhangi bir duyuru veya haber bulunmuyor."
+  },
+  "NewsDetail": {
+    "BreadcrumbHome": "Ana Sayfa",
+    "BreadcrumbNews": "Haberler",
+    "ReadTime": " DK OKUMA",
+    "Views": " OKUNMA",
+    "NoImage": "Görsel Yok",
+    "NotFoundTitle": "Haber Bulunamadı | Minifigürlerim",
+    "NotFoundDesc": "Minifigürlerim haber arşivinde yayınlanmış haber bulunamadı.",
+    "MetaTitleSuffix": " | Minifigürlerim Haberler",
+    "MetaGraphSuffix": " | Güncel Duyuru"
+  },
+  "SeriesCard": {
+    "CategoryDefault": "LEGO® Minifigür Serisi",
+    "Figure": "Figür",
+    "CommonRarity": "Yaygın",
+    "Completion": "Seriyi Tamamlama",
+    "LatestAdded": "Son Eklenen",
+    "NoneYet": "Henüz Yok",
+    "CompleteSeries": "Seriyi Tamamla",
+    "LoginRequired1": "Detayları görmek",
+    "LoginRequired2": "için erişim aç",
+    "DefaultFigureText": "Bu Serideki Figürler"
+  },
+  "NewsCard": {
+    "TotalViews": "Toplam Görüntüleme",
+    "DailyViews": "Günlük Görüntüleme",
+    "MinRead": "Dk Okuma",
+    "Comments": "Yorum"
+  },
+  "Fallback": {
+    "BadgeText": "Bu içerik orijinal Türkçe diliyle görüntülenmektedir."
   }
 }

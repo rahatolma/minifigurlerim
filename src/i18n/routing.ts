@@ -17,14 +17,38 @@ export const routing = defineRouting({
     '/koleksiyonum': '/koleksiyonum',
     '/koleksiyonum/ayarlar': '/koleksiyonum/ayarlar',
     '/login': '/login',
-    '/lego-hakkinda': '/lego-hakkinda',
-    '/hakkimizda': '/hakkimizda',
-    '/haberler': '/haberler',
-    '/iletisim': '/iletisim',
-    '/yasal/gizlilik-politikasi': '/yasal/gizlilik-politikasi',
-    '/yasal/kullanim-kosullari': '/yasal/kullanim-kosullari',
-    '/yasal/uyelik-sozlesmesi': '/yasal/uyelik-sozlesmesi',
-    '/yasal/hak-ihlali': '/yasal/hak-ihlali'
+    '/lego-hakkinda': {
+      tr: '/lego-hakkinda',
+      en: '/about-lego'
+    },
+    '/hakkimizda': {
+      tr: '/hakkimizda',
+      en: '/about-us'
+    },
+    '/haberler': {
+      tr: '/haberler',
+      en: '/news'
+    },
+    '/iletisim': {
+      tr: '/iletisim',
+      en: '/contact'
+    },
+    '/yasal/gizlilik-politikasi': {
+      tr: '/yasal/gizlilik-politikasi',
+      en: '/legal/privacy-policy'
+    },
+    '/yasal/kullanim-kosullari': {
+      tr: '/yasal/kullanim-kosullari',
+      en: '/legal/terms-of-use'
+    },
+    '/yasal/uyelik-sozlesmesi': {
+      tr: '/yasal/uyelik-sozlesmesi',
+      en: '/legal/membership-agreement'
+    },
+    '/yasal/hak-ihlali': {
+      tr: '/yasal/hak-ihlali',
+      en: '/legal/copyright-notice'
+    }
   }
 });
 

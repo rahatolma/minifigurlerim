@@ -6,11 +6,16 @@ import { supabase } from '@/utils/supabase/client';
 
 export const revalidate = 0; // Her zaman canlı veriyi çek
 
+import { getTranslations, getLocale } from 'next-intl/server';
+
 export default async function NewsPage({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
+  const locale = await getLocale();
+  const t = await getTranslations('NewsPage');
+  
   const resolvedParams = await searchParams;
   const sortParam = (resolvedParams?.sort as string) || 'newest';
   
@@ -34,9 +39,9 @@ export default async function NewsPage({
       <div className="hidden md:block border-b border-gray-200 bg-white">
         <div className="max-w-7xl mx-auto px-8 flex items-center justify-between text-[10px] sm:text-[11px] font-black text-gray-400 tracking-[0.2em] uppercase" style={{ height: '70px' }}>
              <div className="flex items-center">
-                 <a href="/" className="hover:text-black transition-colors">Ana Sayfa</a> 
+                 <Link href="/" className="hover:text-black transition-colors">{t('BreadcrumbHome')}</Link> 
                  <span className="mx-3 text-gray-200">/</span> 
-                 <span className="text-gray-900">Güncel Haberler</span>
+                 <span className="text-gray-900">{t('BreadcrumbNews')}</span>
              </div>
         </div>
       </div>
@@ -55,8 +60,8 @@ export default async function NewsPage({
            {newsList.map(news => (
             <NewsCard 
                 key={news.id} 
-                slug={news.slug || news.id}
-                title={news.title}
+                slug={locale === 'en' && news.slug_en ? news.slug_en : (news.slug || news.id)}
+                title={locale === 'en' && news.title_en ? news.title_en : news.title}
                 imageUrl={news.cover_image_url || 'https://via.placeholder.com/400x300.png?text=Görsel+Yok'}
                 views={news.total_views || 0}
                 dailyViews={news.daily_views || 0}
@@ -70,8 +75,8 @@ export default async function NewsPage({
         {newsList.length === 0 && (
           <div className="flex flex-col items-center justify-center p-24 border-2 border-dashed border-gray-200 rounded-2xl bg-white text-center w-full shadow-sm mt-4">
             <LegoHeadIcon mode="search" className="w-24 h-24 mb-6" color="text-gray-200" />
-            <h2 className="text-xl font-black text-gray-800 uppercase tracking-widest mb-2">Henüz Haber Yok</h2>
-            <p className="text-sm font-medium text-gray-500 max-w-sm">Şu an için yayınlanmış herhangi bir duyuru veya haber bulunmuyor.</p>
+            <h2 className="text-xl font-black text-gray-800 uppercase tracking-widest mb-2">{t('EmptyTitle')}</h2>
+            <p className="text-sm font-medium text-gray-500 max-w-sm">{t('EmptyDesc')}</p>
           </div>
         )}
       </div>

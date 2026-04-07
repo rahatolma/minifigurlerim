@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 export default function SeriesFilterClient({
   categories,
@@ -14,6 +15,7 @@ export default function SeriesFilterClient({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations('SeriesPage');
 
   const currentSort = searchParams.get('sort') || 'newest';
   const currentCategory = searchParams.get('category') || 'all';
@@ -70,9 +72,9 @@ export default function SeriesFilterClient({
           onChange={handleChange}
           className="hidden md:block border border-gray-200 bg-white shadow-sm rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-48 flex-1 cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
         >
-          <option value="newest">En Yeniler</option>
-          <option value="oldest">En Eskiler</option>
-          <option value="popular">En Popüler</option>
+          <option value="newest">{t('SortNewest')}</option>
+          <option value="oldest">{t('SortOldest')}</option>
+          <option value="popular">{t('SortPopular')}</option>
         </select>
 
         <select 
@@ -81,7 +83,7 @@ export default function SeriesFilterClient({
           onChange={handleChange}
           className="hidden md:block border border-gray-200 bg-white shadow-sm rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-48 flex-1 cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
         >
-          <option value="all">Seriler</option>
+          <option value="all">{t('BreadcrumbSeries')}</option>
           {seriesList.map(s => <option key={s.slug} value={s.slug}>{s.title}</option>)}
         </select>
         
@@ -91,7 +93,7 @@ export default function SeriesFilterClient({
           onChange={handleChange}
           className="hidden md:block border border-gray-200 bg-white shadow-sm rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-48 flex-1 cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
         >
-          <option value="all">Kategori</option>
+          <option value="all">{t('FilterTitle').split(' ')[0]}</option>
           {categories.map(c => <option key={c.slug} value={c.slug}>{c.name}</option>)}
         </select>
         
@@ -140,7 +142,7 @@ export default function SeriesFilterClient({
           <div className="flex flex-col gap-1">
               <h2 className="text-xl font-black text-gray-900 tracking-tighter flex items-center gap-2">
                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-                 Filtreler
+                 {t('FilterTitle').split(' ')[0]}
               </h2>
               <span className="text-[11px] font-bold text-[#D22B2B] whitespace-nowrap">{totalCount} Kayıt Listeleniyor</span>
           </div>
@@ -151,28 +153,28 @@ export default function SeriesFilterClient({
 
         <div className="flex flex-col gap-5 mb-8">
             <div className="flex flex-col gap-2">
-                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">Sıralama Seçimi</label>
+                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">{t('SortTitle')}</label>
                 <select 
                   name="sort" 
                   value={currentSort} 
                   onChange={handleChange}
                   className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
                 >
-                  <option value="newest">En Yeniler</option>
-                  <option value="oldest">En Eskiler</option>
-                  <option value="popular">En Popüler</option>
+                  <option value="newest">{t('SortNewest')}</option>
+                  <option value="oldest">{t('SortOldest')}</option>
+                  <option value="popular">{t('SortPopular')}</option>
                 </select>
             </div>
 
             <div className="flex flex-col gap-2">
-                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">Seri Seçimi</label>
+                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">{t('BreadcrumbSeries')}</label>
                 <select 
                   name="series" 
                   value={currentSeries} 
                   onChange={handleChange}
                   className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
                 >
-                  <option value="all">Tüm Seriler</option>
+                  <option value="all">{t('BreadcrumbSeries')}</option>
                   {seriesList.map(s => <option key={s.slug} value={s.slug}>{s.title}</option>)}
                 </select>
             </div>
