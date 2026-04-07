@@ -78,7 +78,7 @@ export default function ItemCarousel({ titleBlock, actionButton, children }: Ite
             {React.Children.toArray(children).map((child, index) => (
               <div
                 key={index}
-                className="shrink-0 grow-0 min-w-0 w-[85%] sm:w-1/2 lg:w-1/3"
+                className="shrink-0 grow-0 min-w-0 w-full sm:w-1/2 lg:w-1/3"
               >
                 <div className="w-full h-full pl-4 md:pl-8">
                   {child}
