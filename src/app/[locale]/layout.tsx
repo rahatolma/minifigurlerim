@@ -3,7 +3,7 @@ import { Sen } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import { PostHogProvider } from "@/components/providers/PostHogProvider";
 import AntiCopyShield from "@/components/utils/AntiCopyShield";
-import "./globals.css";
+import "../globals.css";
 
 const sen = Sen({
   variable: "--font-sen",

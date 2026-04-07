@@ -7,7 +7,7 @@ const handleI18nRouting = createIntlMiddleware(routing)
 
 export async function updateSession(request: NextRequest) {
   const isAdminOrApi = 
-    request.nextUrl.pathname.startsWith('/admin') || 
+    request.nextUrl.pathname.startsWith('/admin') ||
     request.nextUrl.pathname.startsWith('/api') || 
     request.nextUrl.pathname.startsWith('/uploads')
 
@@ -61,13 +61,13 @@ export async function updateSession(request: NextRequest) {
 
     if (
       !user &&
-      request.nextUrl.pathname.startsWith('/admin') &&
-      !request.nextUrl.pathname.startsWith('/admin/login')
+      request.nextUrl.pathname.match(/^\/(tr|en)\/admin/) &&
+      !request.nextUrl.pathname.match(/^\/(tr|en)\/admin\/login/)
     ) {
       // no user, potentially respond by redirecting the user to the login page
       // GEÇİCİ İPTAL: Kullanıcının yerelde geliştirme yapabilmesi için şifre duvarı (middleware redirect) kapatıldı.
       // const url = request.nextUrl.clone()
-      // url.pathname = '/admin/login'
+      // url.pathname = `/${request.nextUrl.pathname.split('/')[1]}/admin/login`
       // return NextResponse.redirect(url)
     }
 
