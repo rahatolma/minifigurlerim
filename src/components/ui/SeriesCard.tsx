@@ -87,7 +87,7 @@ export default function SeriesCard({
           ) : (
             <div className="w-full pt-4 mt-auto border-t border-gray-100 relative group/blur">
                 {/* Blur Overlay - Covers everything below */}
-                <div className="absolute -inset-x-0 -bottom-0 top-0 bg-white/40 backdrop-blur-[3px] z-10 flex flex-col items-center justify-center transition-all duration-300 hover:bg-white/20 hover:backdrop-blur-[2px] rounded-b-xl overflow-hidden cursor-default group/overlay">
+                <Link href="/login" className="absolute -inset-x-0 -bottom-0 top-0 bg-white/40 backdrop-blur-[3px] z-10 flex flex-col items-center justify-center transition-all duration-300 hover:bg-white/20 hover:backdrop-blur-[2px] rounded-b-xl overflow-hidden cursor-pointer group/overlay">
                     {/* Hover Text (Mobilde Sürekli Açık) */}
                     <span className="text-[11px] font-black tracking-widest text-[#D22B2B] drop-shadow-[0_1px_1px_rgba(255,255,255,1)] text-center px-4 transition-all duration-300 opacity-100 translate-y-0 md:opacity-0 md:translate-y-2 md:group-hover/overlay:opacity-100 md:group-hover/overlay:translate-y-0 absolute uppercase z-20">
                         Detayları görmek<br/>için erişim aç
@@ -95,7 +95,7 @@ export default function SeriesCard({
                     
                     {/* Slight gradient to make text readable */}
                     <div className="absolute inset-0 bg-gradient-to-t from-white/60 via-white/20 to-transparent z-10"></div>
-                </div>
+                </Link>
 
                 {/* Sahte/Flu İçerik */}
                 <div className="flex flex-col opacity-30 select-none pointer-events-none">

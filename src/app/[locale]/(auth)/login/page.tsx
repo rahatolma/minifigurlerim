@@ -31,7 +31,7 @@ export default async function LoginPage({
          Siteye Dön
       </Link>
 
-      <div className="w-full max-w-5xl flex flex-col items-center z-10 gap-5 sm:gap-6 mt-14 sm:mt-0">
+      <div className="w-full max-w-5xl flex flex-col items-center z-10 gap-5 sm:gap-6 mt-2 sm:mt-0">
         
         {/* LOGO ALANI */}
         <Link href="/" className="inline-block hover:opacity-90 transition-opacity">
@@ -106,7 +106,7 @@ export default async function LoginPage({
                 <label className="flex items-start gap-3 cursor-pointer group">
                   <input type="checkbox" name="terms" required className="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#D22B2B] focus:ring-[#D22B2B] transition-colors cursor-pointer" />
                   <span className="text-[12px] text-gray-600 font-medium leading-snug">
-                    <Link href="/kullanim-kosullari" className="text-[#D22B2B] font-bold hover:underline" target="_blank">Kullanım Koşulları</Link>, <Link href="/gizlilik" className="text-[#D22B2B] font-bold hover:underline" target="_blank">Gizlilik Politikası</Link> ve <Link href="/cerez-politikasi" className="text-[#D22B2B] font-bold hover:underline" target="_blank">Çerez Politikası</Link>'nı okudum, kabul ediyorum.
+                    <Link href="/yasal/kullanim-kosullari" className="text-[#D22B2B] font-bold hover:underline" target="_blank">Kullanım Koşulları</Link>, <Link href="/yasal/gizlilik-politikasi" className="text-[#D22B2B] font-bold hover:underline" target="_blank">Gizlilik Politikası</Link> ve <Link href="/yasal/uyelik-sozlesmesi" className="text-[#D22B2B] font-bold hover:underline" target="_blank">Üyelik Sözleşmesi</Link>'ni okudum, kabul ediyorum.
                   </span>
                 </label>
                 <p className="text-[10px] text-gray-400 font-bold tracking-wide pl-7">
@@ -209,37 +209,37 @@ export default async function LoginPage({
         </div>
         </div>
       {/* MOBİL: Alt Menü (Tab Bar) - Sadece Auth Sayfasına Özel */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] z-50 flex items-center justify-between pb-safe">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] z-50 flex items-center justify-between pb-safe px-1">
           <Link 
             href="/" 
-            className="flex flex-col items-center justify-center gap-1.5 p-3 w-1/4 transition-colors text-gray-400 hover:text-gray-600"
+            className="flex flex-col items-center justify-center gap-1.5 p-2 py-3 w-1/4 transition-colors text-gray-400 hover:text-gray-600"
           >
              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
-             <span className="text-[10px] font-black uppercase tracking-widest mt-0.5">Ana Sayfa</span>
+             <span className="text-[9px] font-black uppercase tracking-wider mt-0.5 whitespace-nowrap">Ana Sayfa</span>
           </Link>
 
           <Link 
             href="/login" 
-            className={`flex flex-col items-center justify-center gap-1.5 p-3 w-1/4 transition-colors ${currentView === 'login' ? 'text-[#D22B2B]' : 'text-gray-400 hover:text-gray-600'}`}
+            className={`flex flex-col items-center justify-center gap-1.5 p-2 py-3 w-1/4 transition-colors ${currentView === 'login' ? 'text-[#D22B2B]' : 'text-gray-400 hover:text-gray-600'}`}
           >
              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
-             <span className="text-[10px] font-black uppercase tracking-widest mt-0.5">Giriş Yap</span>
+             <span className="text-[9px] font-black uppercase tracking-wider mt-0.5 whitespace-nowrap">Giriş Yap</span>
           </Link>
 
           <Link 
             href="/login?type=register" 
-            className={`flex flex-col items-center justify-center gap-1.5 p-3 w-1/4 transition-colors ${currentView === 'register' ? 'text-[#D22B2B]' : 'text-gray-400 hover:text-gray-600'}`}
+            className={`flex flex-col items-center justify-center gap-1.5 p-2 py-3 w-1/4 transition-colors ${currentView === 'register' ? 'text-[#D22B2B]' : 'text-gray-400 hover:text-gray-600'}`}
           >
              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
-             <span className="text-[10px] font-black uppercase tracking-widest mt-0.5">Kayıt Ol</span>
+             <span className="text-[9px] font-black uppercase tracking-wider mt-0.5 whitespace-nowrap">Kayıt Ol</span>
           </Link>
 
           <Link 
              href="/login?type=social" 
-             className={`flex flex-col items-center justify-center gap-1.5 p-3 w-1/4 transition-colors ${currentView === 'social' ? 'text-[#D22B2B]' : 'text-gray-400 hover:text-gray-600'}`}
+             className={`flex flex-col items-center justify-center gap-1.5 p-2 py-3 w-1/4 transition-colors ${currentView === 'social' ? 'text-[#D22B2B]' : 'text-gray-400 hover:text-gray-600'}`}
           >
              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-             <span className="text-[10px] font-black uppercase tracking-widest mt-0.5">Hızlı Giriş</span>
+             <span className="text-[9px] font-black uppercase tracking-wider mt-0.5 whitespace-nowrap">Hızlı Giriş</span>
           </Link>
       </div>
       
