@@ -14,21 +14,24 @@ export default async function LoginPage({
   const resolvedParams = await searchParams;
   const errorMsg = resolvedParams?.error;
   const successMsg = resolvedParams?.message;
+  
   const isRegister = resolvedParams?.type === 'register';
+  const isSocial = resolvedParams?.type === 'social';
+  const currentView = isSocial ? 'social' : (isRegister ? 'register' : 'login');
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] flex items-center justify-center p-4 sm:p-8 relative overflow-hidden">
+    <div className="min-h-screen bg-[#F5F7FA] flex items-center justify-center p-4 sm:p-8 relative overflow-hidden pb-32 md:pb-8">
       
       {/* İnce bir arka plan deseni */}
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03] pointer-events-none"></div>
 
       {/* Misafir Olarak Dön Butonu */}
-      <Link href="/" className="absolute top-8 left-8 flex items-center gap-2 text-gray-500 hover:text-black transition-colors text-sm font-bold z-10 group bg-white/50 backdrop-blur-md px-4 py-2 rounded-full shadow-sm border border-gray-200">
+      <Link href="/" className="hidden md:flex absolute top-8 left-8 items-center gap-2 text-gray-500 hover:text-black transition-colors text-sm font-bold z-10 group bg-white/50 backdrop-blur-md px-4 py-2 rounded-full shadow-sm border border-gray-200">
          <svg className="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
          Siteye Dön
       </Link>
 
-      <div className="w-full max-w-5xl flex flex-col items-center z-10 gap-6">
+      <div className="w-full max-w-5xl flex flex-col items-center z-10 gap-5 sm:gap-6 mt-14 sm:mt-0">
         
         {/* LOGO ALANI */}
         <Link href="/" className="inline-block hover:opacity-90 transition-opacity">
@@ -39,12 +42,12 @@ export default async function LoginPage({
         <div className="w-full bg-white rounded-[2rem] shadow-[0_20px_80px_rgba(0,0,0,0.08)] border border-gray-100 overflow-hidden relative flex flex-col md:flex-row">
         
         {/* Dekoratif Çizgi (Üst) */}
-        <div className="absolute top-0 left-0 right-0 h-2 w-full bg-gradient-to-r from-[#D22B2B] via-yellow-400 to-[#1D2136]"></div>
+        <div className="absolute top-0 left-0 right-0 h-1.5 sm:h-2 w-full bg-gradient-to-r from-[#D22B2B] via-yellow-400 to-[#1D2136]"></div>
         
         {/* SOL TARAF: Geleneksel Giriş / Kayıt */}
-        <div className="w-full md:w-1/2 p-10 sm:p-14 border-b md:border-b-0 md:border-r border-gray-100 flex flex-col justify-center">
-          <div className="mb-8">
-            <h1 className="text-3xl font-black tracking-tighter text-gray-900 mb-2">
+        <div className={`w-full md:w-1/2 p-6 sm:p-14 border-b-0 md:border-r border-gray-100 flex-col justify-center ${currentView === 'social' ? 'hidden md:flex' : 'flex'}`}>
+          <div className="mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tighter text-gray-900 mb-1.5 sm:mb-2">
               {isRegister ? 'Koleksiyonunu Oluştur' : 'Hesabına Giriş Yap'}
             </h1>
             <p className="text-gray-500 text-[15px] font-medium leading-relaxed">
@@ -130,7 +133,7 @@ export default async function LoginPage({
             </div>
           ) : null}
 
-          <div className="mt-8 text-center pt-8 border-t border-gray-100 flex flex-col gap-3 items-center">
+          <div className="hidden md:flex mt-8 text-center pt-8 border-t border-gray-100 flex-col gap-3 items-center">
             <p className="text-[13px] font-bold text-gray-500">
               {isRegister ? 'Zaten bir hesabınız var mı?' : 'Henüz koleksiyonun yok mu?'}
             </p>
@@ -145,7 +148,7 @@ export default async function LoginPage({
         </div>
         
         {/* SAĞ TARAF: Sosyal Girişler ve Özellikler */}
-        <div className="w-full md:w-1/2 bg-gray-50/50 p-10 sm:p-14 flex flex-col justify-center items-center relative overflow-hidden">
+        <div className={`w-full md:w-1/2 bg-gray-50/50 p-6 sm:p-14 flex-col justify-center items-center relative overflow-hidden ${currentView === 'social' ? 'flex' : 'hidden md:flex'}`}>
             {/* Arka plan süslemeleri */}
             <div className="absolute -right-20 -bottom-20 opacity-5 pointer-events-none">
                 <svg width="300" height="300" viewBox="0 0 100 100" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -185,7 +188,7 @@ export default async function LoginPage({
                 </div>
                 
                 
-                  <div className="mt-10 bg-blue-50/30 p-6 rounded-2xl border border-blue-100 text-center shadow-sm w-full">
+                  <div className="hidden sm:block mt-10 bg-blue-50/30 p-6 rounded-2xl border border-blue-100 text-center shadow-sm w-full">
                       <p className="text-[12px] font-black text-gray-800 mb-4 tracking-wide uppercase text-left pl-2">Seni Neler Bekliyor?</p>
                       <ul className="text-[12.5px] text-gray-700 font-bold space-y-3 mt-2 text-left px-2 leading-relaxed">
                           <li className="flex items-start gap-2.5">
@@ -205,9 +208,42 @@ export default async function LoginPage({
             </div>
         </div>
         </div>
+      {/* MOBİL: Alt Menü (Tab Bar) - Sadece Auth Sayfasına Özel */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] z-50 flex items-center justify-between pb-safe">
+          <Link 
+            href="/" 
+            className="flex flex-col items-center justify-center gap-1.5 p-3 w-1/4 transition-colors text-gray-400 hover:text-gray-600"
+          >
+             <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+             <span className="text-[10px] font-black uppercase tracking-widest mt-0.5">Ana Sayfa</span>
+          </Link>
+
+          <Link 
+            href="/login" 
+            className={`flex flex-col items-center justify-center gap-1.5 p-3 w-1/4 transition-colors ${currentView === 'login' ? 'text-[#D22B2B]' : 'text-gray-400 hover:text-gray-600'}`}
+          >
+             <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
+             <span className="text-[10px] font-black uppercase tracking-widest mt-0.5">Giriş Yap</span>
+          </Link>
+
+          <Link 
+            href="/login?type=register" 
+            className={`flex flex-col items-center justify-center gap-1.5 p-3 w-1/4 transition-colors ${currentView === 'register' ? 'text-[#D22B2B]' : 'text-gray-400 hover:text-gray-600'}`}
+          >
+             <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
+             <span className="text-[10px] font-black uppercase tracking-widest mt-0.5">Kayıt Ol</span>
+          </Link>
+
+          <Link 
+             href="/login?type=social" 
+             className={`flex flex-col items-center justify-center gap-1.5 p-3 w-1/4 transition-colors ${currentView === 'social' ? 'text-[#D22B2B]' : 'text-gray-400 hover:text-gray-600'}`}
+          >
+             <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+             <span className="text-[10px] font-black uppercase tracking-widest mt-0.5">Hızlı Giriş</span>
+          </Link>
       </div>
       
-
+      </div>
       
     </div>
   );

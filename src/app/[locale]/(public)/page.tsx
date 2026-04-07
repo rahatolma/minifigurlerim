@@ -143,11 +143,11 @@ export default async function Home() {
       <section className="bg-transparent py-[40px] md:py-[64px] border-t border-gray-100">
           <ItemCarousel
             titleBlock={
-              <div className="flex items-center gap-3 md:gap-4">
-                <div className="w-10 h-10 md:w-14 md:h-14 bg-[#D22B2B] rounded-full flex items-center justify-center text-white shadow-md border-2 md:border-4 border-red-100 shrink-0">
-                    <LegoHeadIcon mode="search" className="w-[18px] h-[18px] md:w-[28px] md:h-[28px]" color="text-white" />
+              <div className="flex items-center gap-2 md:gap-4">
+                <div className="w-8 h-8 md:w-14 md:h-14 bg-[#D22B2B] rounded-full flex items-center justify-center text-white shadow-md border-2 md:border-4 border-red-100 shrink-0">
+                    <LegoHeadIcon mode="search" className="w-[16px] h-[16px] md:w-[28px] md:h-[28px]" color="text-white" />
                 </div>
-                <h2 className="text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Yeni CMF Serileri</h2>
+                <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Yeni CMF Serileri</h2>
               </div>
             }
             actionButton={
@@ -179,11 +179,11 @@ export default async function Home() {
       <section className="py-[40px] md:py-[64px] bg-transparent border-t border-gray-200">
           <ItemCarousel
             titleBlock={
-              <div className="flex items-center gap-3 md:gap-4">
-                <div className="w-10 h-10 md:w-14 md:h-14 bg-white border-2 border-[#D22B2B] text-[#D22B2B] rounded-full flex items-center justify-center shadow-sm shrink-0">
-                    <LegoHeadIcon mode="happy" className="w-[20px] h-[20px] md:w-[32px] md:h-[32px]" color="text-[#D22B2B]" />
+              <div className="flex items-center gap-2 md:gap-4">
+                <div className="w-8 h-8 md:w-14 md:h-14 bg-white border-2 border-[#D22B2B] text-[#D22B2B] rounded-full flex items-center justify-center shadow-sm shrink-0">
+                    <LegoHeadIcon mode="happy" className="w-[16px] h-[16px] md:w-[32px] md:h-[32px]" color="text-[#D22B2B]" />
                 </div>
-                <h2 className="text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Yeni Minifigürler</h2>
+                <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Yeni Minifigürler</h2>
               </div>
             }
             actionButton={
@@ -220,13 +220,13 @@ export default async function Home() {
       <section className="bg-white py-[40px] md:py-[64px] border-t border-gray-100">
           <ItemCarousel
             titleBlock={
-              <div className="flex items-center gap-3 md:gap-4">
-                <div className="w-10 h-10 md:w-14 md:h-14 bg-black rounded-full flex items-center justify-center text-[#D22B2B] shadow-sm shrink-0">
-                    <LegoHeadIcon mode="search" className="w-[18px] h-[18px] md:w-[28px] md:h-[28px]" color="text-white" />
+              <div className="flex items-center gap-2 md:gap-4">
+                <div className="w-8 h-8 md:w-14 md:h-14 bg-black rounded-full flex items-center justify-center text-[#D22B2B] shadow-sm shrink-0">
+                    <LegoHeadIcon mode="search" className="w-[16px] h-[16px] md:w-[28px] md:h-[28px]" color="text-white" />
                 </div>
                 <div className="flex flex-col">
-                  <h2 className="text-2xl md:text-4xl font-black text-gray-900 leading-tight">Haberler</h2>
-                  <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-[#D22B2B] mt-1">GÜNCEL BLOG</span>
+                  <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">Haberler</h2>
+                  <span className="text-[9px] md:text-xs font-bold uppercase tracking-widest text-[#D22B2B] mt-0.5 md:mt-1">GÜNCEL BLOG</span>
                 </div>
               </div>
             }

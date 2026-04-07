@@ -194,8 +194,8 @@ export default async function SeriesPage({
 
       <div id="filter-section" className="scroll-mt-[150px]"></div>
 
-      <div className="sticky bg-[#fcfcfc] py-4 border-b border-gray-100 shadow-sm mb-6 z-30 top-[60px] md:top-[150px]">
-        <div className="max-w-7xl mx-auto px-8">
+      <div className="md:sticky md:bg-[#fcfcfc] md:py-4 md:border-b md:border-gray-100 md:shadow-sm md:mb-6 z-40 md:z-30 top-[60px] md:top-[150px]">
+        <div className="max-w-7xl mx-auto px-0 md:px-8">
           <SeriesFilterClient 
             categories={categoryFilters}
             seriesList={seriesListFilters}
@@ -207,10 +207,10 @@ export default async function SeriesPage({
       {/* 
         BLOK 3: Şablon Izgara Sistemi (Grid) 
       */}
-      <div className={`max-w-7xl mx-auto px-8 ${filteredSeries.length > 21 ? 'pb-16' : 'pb-24'}`}>
+      <div className={`max-w-7xl mx-auto px-8 pt-6 md:pt-0 ${filteredSeries.length > 21 ? 'pb-16' : 'pb-24'}`}>
         <div className="flex flex-row snap-x snap-mandatory overflow-x-auto pb-8 -mx-8 px-8 gap-4 md:grid md:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 md:gap-5 md:overflow-visible md:snap-none md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
            {filteredSeries.slice(0, 21).map(series => (
-            <div key={series.id} className="snap-center snap-always shrink-0 w-[85%] md:w-auto flex flex-col justify-stretch">
+            <div key={series.id} className="snap-center snap-always shrink-0 w-[90vw] md:w-auto flex flex-col justify-stretch">
               <SeriesCard 
                   id={series.slug || series.id}
                   title={series.title}

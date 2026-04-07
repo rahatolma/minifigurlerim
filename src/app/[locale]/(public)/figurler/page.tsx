@@ -149,9 +149,9 @@ export default async function FiguresPage({
       {/* Filtreleme ve Sonuçların Başına Dönmek İçin Sabit Çıpa */}
       <div id="filter-section" className="scroll-mt-[150px]"></div>
 
-      <div className="sticky bg-[#fcfcfc] py-4 border-b border-gray-100 shadow-sm mb-6 top-[60px] md:top-[150px]" style={{ zIndex: 40 }}>
+      <div className="md:sticky md:bg-[#fcfcfc] md:py-4 md:border-b md:border-gray-100 md:shadow-sm md:mb-6 z-40 md:z-40 top-[60px] md:top-[150px]">
         {/* YATAY FİLTRE BARI (Client-Side Auto Submit) */}
-        <div className="max-w-7xl mx-auto px-8">
+        <div className="max-w-7xl mx-auto px-0 md:px-8">
             <FiguresFilterClient 
               seriesList={seriesList} 
               roles={roles} 
@@ -163,7 +163,7 @@ export default async function FiguresPage({
       </div>
 
       {/* LİSTELEME KISMI */}
-      <div className="max-w-7xl mx-auto px-8 pb-32">
+      <div className="max-w-7xl mx-auto px-8 pb-32 pt-6 md:pt-0">
             {allFigures.length === 0 ? (
                 <div className="flex flex-col items-center justify-center p-24 border-2 border-dashed border-gray-200 rounded-2xl bg-white text-center w-full shadow-sm mt-4">
                     <LegoHeadIcon mode="search" className="w-24 h-24 mb-6" color="text-gray-200" />
@@ -175,7 +175,7 @@ export default async function FiguresPage({
                     {/* Görsel 1'deki gibi 3'lü kolon (lg:grid-cols-3), 20px gap (gap-5) */}
                     <div className="flex flex-row snap-x snap-mandatory overflow-x-auto pb-8 -mx-8 px-8 gap-4 md:grid md:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 md:gap-5 md:overflow-visible md:snap-none md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                         {allFigures.map(fig => (
-                           <div key={fig.id} className="snap-center snap-always shrink-0 w-[85%] md:w-auto flex flex-col justify-stretch">
+                           <div key={fig.id} className="snap-center snap-always shrink-0 w-[90vw] md:w-auto flex flex-col justify-stretch">
                                 <FigureCard 
                                     id={fig.id}
                                     slug={fig.slug}
