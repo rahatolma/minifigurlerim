@@ -5,23 +5,40 @@ import { createPortal } from 'react-dom';
 import { toggleCollectionStatus, saveRating } from '@/app/actions/collection';
 import { useRouter } from 'next/navigation';
 
-export default function CollectionActions({
-  minifigureId,
-  isLoggedIn,
-  initialStatus,
-  initialRating,
-} : {
-  minifigureId: string;
-  isLoggedIn: boolean;
-  initialStatus: string | null;
-  initialRating: number | null;
-}) {
+import { useAuth } from '@/components/providers/AuthProvider';
+import { useGamification } from '@/components/providers/GamificationProvider';
+
+export default function CollectionActions({ minifigureId }: { minifigureId: string }) {
   const router = useRouter();
+  const { user } = useAuth();
+  const { userStatusMap, updateStatus: setGlobalStatus } = useGamification();
+  const isLoggedIn = !!user;
+
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState<string | null>(initialStatus);
-  const [rating, setRating] = useState<number | null>(initialRating);
+  
+  // Local state for instant feedback, syncs with global
+  const [status, setStatus] = useState<string | null>(null);
+  const [rating, setRating] = useState<number | null>(null);
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  // Sync with global gamification context
+  useEffect(() => {
+    setStatus(userStatusMap[minifigureId] || null);
+  }, [userStatusMap, minifigureId]);
+
+  // Fetch initial rating from server just for this figure
+  useEffect(() => {
+    if (isLoggedIn && mounted) {
+        // Fetch rating dynamically via standard client side fetch
+        fetch(`/api/track-view?action=get_rating&minifigure_id=${minifigureId}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.rating) setRating(data.rating);
+            })
+            .catch(err => console.error(err));
+    }
+  }, [isLoggedIn, mounted, minifigureId]);
 
   useEffect(() => {
     setMounted(true);
@@ -37,8 +54,9 @@ export default function CollectionActions({
     const result = await toggleCollectionStatus(minifigureId, status, type);
     
     if (result?.success) {
-       // Toggle logic in UI
-       setStatus(status === type ? null : type);
+       const newStatus = status === type ? null : type;
+       setStatus(newStatus);
+       setGlobalStatus(minifigureId, newStatus);
     } else {
        alert(result?.error || 'Bir hata oluştu.');
     }

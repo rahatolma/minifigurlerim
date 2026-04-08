@@ -1,5 +1,6 @@
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
+import { getUserProfile, getUserCollectionsWithDetails, getAllSeries, getTotalMinifiguresCount, getUserSeriesStats, getMinifigurePriceHistoryBatch } from '@/services/dal';
 import { logOut } from '@/app/[locale]/(auth)/login/actions';
 import Link from 'next/link';
 import FigureCard from '@/components/ui/FigureCard';
@@ -32,35 +33,15 @@ export default async function KoleksiyonumPage({
   }
 
   // 1. Kullanıcı Profili (Gösterim için)
-  const { data: profile } = await supabase.from('profiles').select('username').eq('id', user.id).single();
+  const profile = await getUserProfile(user.id);
   const displayName = profile?.username || user.email?.split('@')[0] || 'Koleksiyoner';
 
   // 2. Kullanıcının Koleksiyonlarını (figür detaylarıyla) çek
-  const { data: collectionsData } = await supabase
-    .from('user_collections')
-    .select(`
-      status,
-      created_at,
-      minifigures (
-        id,
-        slug,
-        name,
-        images,
-        series_name,
-        series_id,
-        value_usd,
-        role,
-        type,
-        rarity
-      )
-    `)
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false });
-
+  const collectionsData = await getUserCollectionsWithDetails(user.id);
   const rawCollections = collectionsData || [];
 
   // 3. Dropdown için seriler (Orijinal veritabanından, eksik seri çıkmasın diye)
-  const { data: sRes } = await supabase.from('series').select('id, title').order('created_at', { ascending: false });
+  const sRes = await getAllSeries();
   const seriesList = sRes || [];
 
   // Dinamik Olarak Kasadaki Filtre Seçeneklerini Oluştur (Sadece kullanıcının sahip olduğu/istediği şeylerin kategorileri)
@@ -90,7 +71,7 @@ export default async function KoleksiyonumPage({
   const wantItems = filteredCollections.filter((c: any) => c.status === 'want');
 
   // YENİ MİMARİ: Hızlı Toplam (Count) Çekimi
-  const { count: totalFiguresInWorldRaw } = await supabase.from('minifigures').select('*', { count: 'exact', head: true });
+  const totalFiguresInWorldRaw = await getTotalMinifiguresCount();
   const totalFiguresInWorld = totalFiguresInWorldRaw || 1;
 
   const totalHave = rawCollections.filter((c: any) => c.status === 'have').length;
@@ -99,9 +80,7 @@ export default async function KoleksiyonumPage({
   // ----------------------------------------
   // SERİ İLERLEME (PROGRESS) BARI HESAPLAMALARI (CACHE'DEN OKUMA)
   // ----------------------------------------
-  const { data: cachedStats } = await supabase.from('user_series_stats')
-      .select('*')
-      .eq('user_id', user.id);
+  const cachedStats = await getUserSeriesStats(user.id);
 
   // Geliştirilmiş Progress datası: En üste en dolu olanlar gelir
   const activeSeriesProgress = (cachedStats || []).map(stat => ({
@@ -124,13 +103,9 @@ export default async function KoleksiyonumPage({
   let oldPortfolioValue = portfolioValue;
   if (haveItems.length > 0) {
       const figureIds = haveItems.map((i: any) => (i.minifigures as any)?.id).filter(Boolean);
-      const { data: historyData, error: hError } = await supabase
-         .from('minifigure_price_history')
-         .select('minifigure_id, value_usd')
-         .in('minifigure_id', figureIds)
-         .order('recorded_at', { ascending: true }); 
+      const historyData = await getMinifigurePriceHistoryBatch(figureIds);
          
-      if (!hError && historyData && historyData.length > 0) {
+      if (historyData && historyData.length > 0) {
          const oldPricesLookup: Record<string, number> = {};
          historyData.forEach(hd => {
              if (!oldPricesLookup[hd.minifigure_id]) {
@@ -411,7 +386,6 @@ export default async function KoleksiyonumPage({
                               name={fig.name}
                               seriesName={fig.series_name}
                               imageUrl={image}
-                              statusBadge={item.status}
                               price={fig.value_usd}
                           />
                          </div>

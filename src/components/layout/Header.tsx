@@ -8,8 +8,10 @@ import LegalNoticeButton from '@/components/ui/LegalNoticeButton';
 import LegalNoticeModal from '@/components/ui/LegalNoticeModal';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import { useTranslations } from 'next-intl';
+import { useAuth } from '@/components/providers/AuthProvider';
 
-export default function Header({ user }: { user?: any }) {
+export default function Header() {
+  const { user, loading } = useAuth();
   const t = useTranslations('Navigation');
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -49,7 +51,10 @@ export default function Header({ user }: { user?: any }) {
            {/* Masaüstüne özel butonlar */}
            <div className="hidden md:flex items-center gap-4">
               <LegalNoticeButton className="bg-[#1D2136] text-white font-black py-2.5 px-6 rounded-sm shadow-md hover:bg-[#131627] transition-colors tracking-widest uppercase text-[10px]" />
-              {user ? (
+              
+              {loading ? (
+                <div className="w-[100px] h-[36px] bg-gray-200 animate-pulse rounded-sm"></div>
+              ) : user ? (
                 <div className="relative">
                    <button onClick={() => setMenuOpen(!menuOpen)} className="bg-gray-100 text-gray-800 font-black py-2.5 px-6 rounded-sm shadow-sm hover:bg-gray-200 border border-gray-200 transition-colors tracking-widest uppercase text-[10px] flex items-center gap-2">
                       {user.email?.split('@')[0] || 'Hesabım'} ▼

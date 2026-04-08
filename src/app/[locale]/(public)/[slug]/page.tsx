@@ -1,22 +1,15 @@
-import { createClient } from '@/utils/supabase/server';
+import { getPageBySlug } from '@/services/dal';
 import { notFound } from 'next/navigation';
 import BlockRenderer from '@/components/blocks/BlockRenderer';
 
-export const revalidate = 0; // Her zaman canlı veri
+export const revalidate = 86400; // Her zaman canlı veri
 
 export default async function DynamicCMSPage({ params }: { params: Promise<{ slug: string, locale: string }> }) {
   const { slug, locale } = await params;
   
-  const supabase = await createClient();
-  
-  // Try to find the page by slug
-  const { data: page, error } = await supabase
-    .from('pages')
-    .select('*')
-    .eq('slug', slug)
-    .single();
+  const page = await getPageBySlug(slug);
 
-  if (error || !page) {
+  if (!page) {
      return notFound();
   }
 

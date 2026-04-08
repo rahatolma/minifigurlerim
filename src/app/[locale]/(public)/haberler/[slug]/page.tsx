@@ -1,4 +1,4 @@
-import { supabase } from '@/utils/supabase/client';
+import { getNewsBySlug } from '@/services/dal';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import RichTextContent from '@/components/ui/RichTextContent';
@@ -22,8 +22,7 @@ export async function generateMetadata(
   const locale = await getLocale();
   const t = await getTranslations('NewsDetail');
 
-  const { data: news } = await supabase.from('news').select('*').or(`slug.eq.${slug},id.eq.${slug},slug_en.eq.${slug}`).single();
-
+  const news = await getNewsBySlug(slug);
   if (!news) {
     return { title: t('NotFoundTitle') };
   }
@@ -70,13 +69,9 @@ export default async function NewsDetailPage({
   const locale = await getLocale();
   const t = await getTranslations('NewsDetail');
 
-  const { data: news, error } = await supabase
-    .from('news')
-    .select('*')
-    .or(`slug.eq.${slug},id.eq.${slug},slug_en.eq.${slug}`)
-    .single();
+  const news = await getNewsBySlug(slug);
 
-  if (error || !news) {
+  if (!news) {
     notFound();
   }
 

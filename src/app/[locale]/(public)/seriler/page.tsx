@@ -2,8 +2,7 @@ import SeriesCard from '@/components/ui/SeriesCard';
 import SeriesFilterClient from '@/components/ui/SeriesFilterClient';
 import Link from 'next/link';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
-import { supabase } from '@/utils/supabase/client';
-import { createClient } from '@/utils/supabase/server';
+import { getDefinitions, getCategoriesByType, getAllSeries, getPreviewFiguresForSeries } from '@/services/dal';
 import ScrollDownHint from '@/components/ui/ScrollDownHint';
 import AuthCTA from '@/components/ui/AuthCTA';
 import DragScrollContainer from '@/components/ui/DragScrollContainer';
@@ -22,7 +21,7 @@ const CMF_HISTORY = [
   { year: 'Bugün', date: 'Gelecek', title: 'Minifigürlerim Platformu', desc: 'Türkiye merkezli bu premium koleksiyon takip platformuyla AFOL kültürünü yaşatmak için harika bir sayfa açıldı!', color: 'bg-[#D22B2B]' }
 ];
 
-export const revalidate = 0; // Her zaman canlı veriyi çek (SSR)
+export const revalidate = 3600; // Her zaman canlı veriyi çek (SSR)
 
 export default async function SeriesPage({
   searchParams,
@@ -38,16 +37,16 @@ export default async function SeriesPage({
   const seriesParam = (resolvedParams?.series as string) || 'all';
   
   // Öncelikle Seri Kategorileri grubunu bul
-  const { data: groups } = await supabase.from('definition_groups').select('*');
+  const groups = await getDefinitions();
   const seriesGroup = groups?.find(g => g.name.toLowerCase().includes('seri') && g.name.toLowerCase().includes('kategori'));
   const targetType = seriesGroup ? seriesGroup.slug : 'seri-kategorileri';
 
   // 1. Kategorileri Çek
-  const { data: catData } = await supabase.from('categories').select('*').eq('type', targetType).order('created_at', { ascending: true });
+  const catData = await getCategoriesByType(targetType);
   const categoryFilters = (catData || []).map(c => ({ slug: c.slug, name: locale === 'en' && c.name_en ? c.name_en : c.name }));
 
   // 2. Tüm Serileri Çek (Dropdown için)
-  const { data: allSeries } = await supabase.from('series').select('*').order('created_at', { ascending: false });
+  const allSeries = await getAllSeries();
   const seriesListFilters = (allSeries || []).map(s => ({ slug: locale === 'en' && s.slug_en ? s.slug_en : (s.slug || s.id.toString()), title: locale === 'en' && s.title_en ? s.title_en : s.title }));
 
   // 3. Filtrelenmiş Serileri belirle
@@ -75,25 +74,10 @@ export default async function SeriesPage({
     filteredSeries = [...filteredSeries].sort((a, b) => (b.total_views || 0) - (a.total_views || 0));
   }
 
-  // YENİ: Kullanıcı Progress (Gamification) Tablosunu Çek
-  const serverClient = await createClient();
-  const { data: { user } } = await serverClient.auth.getUser();
-  const userSeriesProgressMap: Record<string, { percent: number, collected: number, total: number }> = {};
+  // YENİ: Gamification artık Client Component Hook'larına (Dynamic Island) taşındı.
+  // Bu kod blogu tamamen Statik ve Tam Caching (SSG/ISR) yapısına uygun bırakıldı.
 
-  if (user) {
-      const { data: cachedStats } = await serverClient.from('user_series_stats').select('*').eq('user_id', user.id);
-      if (cachedStats) {
-          cachedStats.forEach(stat => {
-              userSeriesProgressMap[stat.series_id] = {
-                  percent: Number(stat.completion_percent),
-                  collected: stat.owned_count,
-                  total: stat.total_count
-              };
-          });
-      }
-  }
-
-  const { data: allFigs } = await serverClient.from('minifigures').select('series_id, name, images').order('created_at', { ascending: false });
+  const allFigs = await getPreviewFiguresForSeries();
   const seriesFigStats: Record<string, { count: number, latestName: string | null, samples: string[] }> = {};
   if (allFigs) {
      allFigs.forEach(f => {
@@ -227,8 +211,6 @@ export default async function SeriesPage({
                   totalFigures={series.figure_count || seriesFigStats[series.id]?.count || 0}
                   rarity={series.rarity || 'Yaygın'}
                   latestFigureName={seriesFigStats[series.id]?.latestName || null}
-                  seriesProgress={userSeriesProgressMap[series.id] || null}
-                  isLoggedIn={!!user}
               />
             </div>
           ))}
@@ -247,7 +229,7 @@ export default async function SeriesPage({
       {/* ARA CTA: (Sadece eğer 21'den fazla seri varsa) */}
       {filteredSeries.length > 21 && (
          <div className="w-full relative mb-16">
-            <AuthCTA fullWidth={true} isLoggedIn={!!user} />
+            <AuthCTA fullWidth={true} />
          </div>
       )}
 
@@ -266,8 +248,6 @@ export default async function SeriesPage({
                       totalFigures={series.figure_count || seriesFigStats[series.id]?.count || 0}
                       rarity={series.rarity || 'Yaygın'}
                       latestFigureName={seriesFigStats[series.id]?.latestName || null}
-                      seriesProgress={userSeriesProgressMap[series.id] || null}
-                      isLoggedIn={!!user}
                   />
                 </div>
               ))}
@@ -277,7 +257,7 @@ export default async function SeriesPage({
 
       {/* PORTFÖY / ERIŞİM AÇ CTA BLOĞU - EN ALT (Ana sayfadaki gibi full width) */}
       <div className="hidden md:block w-full relative">
-         <AuthCTA fullWidth={true} isLoggedIn={!!user} />
+         <AuthCTA fullWidth={true} />
       </div>
 
     </div>

@@ -1,6 +1,9 @@
+'use client';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
+import { useAuth } from '@/components/providers/AuthProvider';
+import { useGamification } from '@/components/providers/GamificationProvider';
 
 interface SeriesCardProps {
   id: string;
@@ -11,25 +14,25 @@ interface SeriesCardProps {
   latestFigureName?: string | null;
   category?: string | null;
   rarity?: string | null;
-  seriesProgress?: {
-      percent: number;
-      collected: number;
-      total: number;
-  } | null;
+  // Progress and Auth are no longer passed as props, they are read from client-side contexts
+  // to preserve full server side static generation of lists
   
   // Eski metrics opsiyonel bırakılıyor
   views?: number;
   dailyViews?: number;
   minRead?: number;
   comments?: number;
-  isLoggedIn?: boolean;
 }
 
 export default function SeriesCard({ 
-  id, title, imageUrl, year, category, rarity, totalFigures, latestFigureName, seriesProgress, isLoggedIn = true
+  id, title, imageUrl, year, category, rarity, totalFigures, latestFigureName
 }: SeriesCardProps) {
   const t = useTranslations('SeriesCard');
   const locale = useLocale();
+  const { user } = useAuth();
+  const { userSeriesProgressMap, loading } = useGamification();
+  const isLoggedIn = !!user;
+  const seriesProgress = userSeriesProgressMap[id] || null;
 
   return (
     <div className="flex flex-col h-full bg-white rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 hover:shadow-2xl hover:border-gray-200 hover:-translate-y-1 transition-all duration-300 relative group">

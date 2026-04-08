@@ -10,11 +10,10 @@ import SeriesShowcaseBlock from './SeriesShowcaseBlock';
 
 interface Props {
   blocks: AnyContentBlock[];
-  collectionStats?: { percent: number; collected: number; total: number };
-  isLoggedIn?: boolean;
+  seriesId?: string;
 }
 
-export default function BlockRenderer({ blocks, collectionStats, isLoggedIn }: Props) {
+export default function BlockRenderer({ blocks, seriesId }: Props) {
   if (!blocks || !Array.isArray(blocks) || blocks.length === 0) return null;
 
   // Sıralamaya göre diz, ama SERIES_SHOWCASE her zaman en üstte (0. sırada) olsun
@@ -52,7 +51,7 @@ function formatBlockDataStrings<T>(data: T): T {
       case 'CTA':
         return <CTABlock key={block.id} data={formattedData as any} />;
       case 'SERIES_SHOWCASE':
-        return <SeriesShowcaseBlock key={block.id} data={formattedData as any} collectionStats={collectionStats} isLoggedIn={isLoggedIn} />;
+        return <SeriesShowcaseBlock key={block.id} data={formattedData as any} seriesId={seriesId} />;
       default:
         return null;
     }

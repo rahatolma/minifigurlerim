@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server';
+import { getAllMinifigures, getAllSeries } from '@/services/dal';
 import FigureCard from '@/components/ui/FigureCard';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import Link from 'next/link';
@@ -19,7 +19,7 @@ const MINIFIGURE_EVOLUTION = [
   { year: '2024', title: 'Modern Dönem', desc: 'Detay seviyesi film stüdyolarındaki kaliteye ulaştı.', icon: 'search', color: 'text-[#F2CD37]' },
 ];
 
-export const revalidate = 0; // Her zaman güncel
+export const revalidate = 3600; // Her zaman güncel
 
 export default async function FiguresPage({
   searchParams,
@@ -33,42 +33,11 @@ export default async function FiguresPage({
   const selectedType = (resolvedParams?.type as string) || 'all';
   const selectedRarity = (resolvedParams?.rarity as string) || 'all';
 
-  // 1. Verileri SSR Üzerinden Çek
-  const serverClient = await createClient();
-  const { data: { user } } = await serverClient.auth.getUser();
-
-  const [fRes, sRes] = await Promise.all([
-    serverClient.from('minifigures').select('*'),
-    serverClient.from('series').select('id, title').order('created_at', { ascending: false })
-  ]);
-
-  let allFigures = fRes.data || [];
-  const seriesList = sRes.data || [];
-
-  const userStatusMap: Record<string, 'have' | 'want'> = {};
-  const userSeriesProgressMap: Record<string, { percent: number, collected: number, total: number }> = {};
+  // 1. Verileri DAL Üzerinden Çek
+  const allFiguresData = await getAllMinifigures();
+  const seriesList = await getAllSeries();
   
-  if (user) {
-      const [{ data: userCollects }, { data: cachedStats }] = await Promise.all([
-         serverClient.from('user_collections').select('status, minifigure_id').eq('user_id', user.id),
-         serverClient.from('user_series_stats').select('*').eq('user_id', user.id)
-      ]);
-
-      if (userCollects) {
-          userCollects.forEach(c => {
-             if (c.minifigure_id && c.status) userStatusMap[c.minifigure_id] = c.status as 'have'|'want';
-          });
-      }
-      if (cachedStats) {
-          cachedStats.forEach(stat => {
-              userSeriesProgressMap[stat.series_id] = {
-                  percent: Number(stat.completion_percent),
-                  collected: stat.owned_count,
-                  total: stat.total_count
-              };
-          });
-      }
-  }
+  let allFigures = allFiguresData || [];
 
   // Dinamik Filtre Seçeneklerini Oluştur (null veya boş string eyle)
   const roles = Array.from(new Set(allFigures.map(f => f.role).filter(Boolean))) as string[];
@@ -185,8 +154,6 @@ export default async function FiguresPage({
                                     year={fig.release_year}
                                     rarity={fig.rarity}
                                     price={fig.value_usd}
-                                    initialStatus={userStatusMap[fig.id] || null}
-                                    isLoggedIn={!!user}
                                 />
                            </div>
                         ))}

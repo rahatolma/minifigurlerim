@@ -3,9 +3,11 @@
 import Image from 'next/image';
 import { Link } from '@/i18n/routing';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toggleCollectionStatus } from '@/app/actions/collection';
 import { slugify } from '@/utils/helpers';
+import { useAuth } from '@/components/providers/AuthProvider';
+import { useGamification } from '@/components/providers/GamificationProvider';
 
 interface FigureCardProps {
   id: string; // Veritabanı UUID
@@ -17,19 +19,28 @@ interface FigureCardProps {
   year?: string | number | null;
   rarity?: string | null;
   price?: number | null;
-  initialStatus?: 'have' | 'want' | null;
-  statusBadge?: 'have' | 'want' | null; 
-  hideStats?: boolean;
-  isLoggedIn?: boolean;
+  // isLoggedIn ve initialStatus gibi property'ler Server'ı dinamik yapmamak için kaldırıldı,
+  // Context üzerinden Client-Side olarak izole halde (Dynamic Island) okunuyor.
 }
 
 export default function FigureCard({ 
-  id, slug, name, seriesName, seriesSlug, imageUrl, year, rarity, price, initialStatus, statusBadge, isLoggedIn = true
+  id, slug, name, seriesName, seriesSlug, imageUrl, year, rarity, price
 }: FigureCardProps) {
   
   const router = useRouter();
+  const { user } = useAuth();
+  const { userStatusMap, updateStatus: setGlobalStatus } = useGamification();
+  
+  const initialStatus = userStatusMap[id] || null;
+  const isLoggedIn = !!user;
+
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState<'have' | 'want' | null>(initialStatus || statusBadge || null);
+  const [status, setStatus] = useState<'have' | 'want' | null>(null);
+
+  // Sync with global state changes efficiently
+  useEffect(() => {
+    setStatus(userStatusMap[id] || null);
+  }, [userStatusMap, id]);
 
   const safeSeriesSlug = seriesSlug || (seriesName ? slugify(seriesName) : 'gizemli-seri');
   const targetHref = `/figurler/${safeSeriesSlug}/${slug || id}` as any;
@@ -42,7 +53,9 @@ export default function FigureCard({
       const result = await toggleCollectionStatus(id, status, type);
       
       if (result?.success) {
-          setStatus(status === type ? null : type);
+          const newStatus = status === type ? null : type;
+          setStatus(newStatus);
+          setGlobalStatus(id, newStatus);
       } else {
           if (result?.error?.toLowerCase().includes('giriş') || result?.error?.toLowerCase().includes('oturum') || result?.error?.includes('yetki')) {
               router.push('/login');

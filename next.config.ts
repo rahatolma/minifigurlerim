@@ -23,20 +23,25 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withSentryConfig(
-  withNextIntl(nextConfig),
-  {
-    org: "rahatolma",
-    project: "minifigurlerim",
-    silent: !process.env.CI,
-    widenClientFileUpload: true,
-    reactComponentAnnotation: {
-      enabled: true,
-    },
-    tunnelRoute: "/monitoring",
-    sourcemaps: {
-      disable: true,
-    },
-    disableLogger: true,
-  }
-);
+const isDev = process.env.NODE_ENV !== 'production';
+
+// Sentry, dev ortamında Turbopack CPU spike'larına sebep olduğu için kapatıldı. Sadece Production'da çalışır.
+export default isDev 
+  ? withNextIntl(nextConfig)
+  : withSentryConfig(
+      withNextIntl(nextConfig),
+      {
+        org: "rahatolma",
+        project: "minifigurlerim",
+        silent: !process.env.CI,
+        widenClientFileUpload: true,
+        reactComponentAnnotation: {
+          enabled: true,
+        },
+        tunnelRoute: "/monitoring",
+        sourcemaps: {
+          disable: true,
+        },
+        disableLogger: true,
+      }
+    );

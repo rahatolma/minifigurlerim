@@ -2,25 +2,39 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function HeroSliderClient({ sliders }: { sliders: any[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loadedIndices, setLoadedIndices] = useState<number[]>([0]); // Sadece ilk slayt baştan yüklü
 
   useEffect(() => {
     if (sliders.length <= 1) return;
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % sliders.length);
+      setCurrentIndex((prev) => {
+        const next = (prev + 1) % sliders.length;
+        if (!loadedIndices.includes(next)) setLoadedIndices([...loadedIndices, next]);
+        return next;
+      });
     }, 5000); // 5 saniyede bir değiş
     return () => clearInterval(interval);
-  }, [sliders]);
+  }, [sliders, loadedIndices]);
 
   const prevSlide = () => {
-    setCurrentIndex((prev) => (prev === 0 ? sliders.length - 1 : prev - 1));
+    setCurrentIndex((prev) => {
+      const next = prev === 0 ? sliders.length - 1 : prev - 1;
+      if (!loadedIndices.includes(next)) setLoadedIndices([...loadedIndices, next]);
+      return next;
+    });
   };
 
   const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % sliders.length);
+    setCurrentIndex((prev) => {
+      const next = (prev + 1) % sliders.length;
+      if (!loadedIndices.includes(next)) setLoadedIndices([...loadedIndices, next]);
+      return next;
+    });
   };
 
   // Veri yoksa placeholder gösterme, direkt gizle
@@ -35,13 +49,18 @@ export default function HeroSliderClient({ sliders }: { sliders: any[] }) {
           key={slide.id} 
           className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
         >
-          {/* Arkaplan Görseli Düzenlemesi: background-image iptal edildi, daha stabil olan <img> kullanıldı */}
+          {/* Arkaplan Görseli Düzenlemesi: background-image iptal edildi, optimize next/Image kullanıldı */}
           <div className="absolute inset-0 bg-black">
-            <img 
-              src={slide.image_url || 'https://via.placeholder.com/1920x800.png?text=Gorsel+Yok'} 
-              alt={slide.title}
-              className="w-full h-full object-cover opacity-50 block"
-            />
+            {loadedIndices.includes(index) && (
+              <Image 
+                src={slide.image_url || 'https://via.placeholder.com/1920x800.png?text=Gorsel+Yok'} 
+                alt={slide.title || 'Hero Slider'}
+                fill
+                priority={index === 0} // İlk resim pre-load edilecek
+                sizes="100vw"
+                className="object-cover opacity-50 select-none"
+              />
+            )}
           </div>
           
           {/* İçerik */}

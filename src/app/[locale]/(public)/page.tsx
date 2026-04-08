@@ -10,80 +10,18 @@ import Link from 'next/link';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import { LayoutGrid, Package, TrendingUp } from 'lucide-react';
 import AuthCTA from '@/components/ui/AuthCTA';
-import { createClient } from '@/utils/supabase/server';
+import { getHomeSliders, getLatestSeries, getLatestFigures, getLatestNews, getPreviewFiguresForSeries } from '@/services/dal';
 
-export const revalidate = 0; // Dinamik sayfa
+export const revalidate = 86400; // Dinamik sayfa
 
 export default async function Home() {
-  // Aktif Slaytlar
-  const { data: activeSliders } = await supabase
-    .from('home_sliders')
-    .select('*')
-    .eq('is_active', true)
-    .order('sort_order', { ascending: true });
+  const activeSliders = await getHomeSliders();
+  const latestSeries = await getLatestSeries() || [];
+  const latestFigures = await getLatestFigures() || [];
+  const latestNews = await getLatestNews() || [];
 
-  // En son eklenen 12 Seri (Carousel için)
-  const { data: latestSeriesData } = await supabase
-    .from('series')
-    .select('*')
-    .order('created_at', { ascending: false })
-    .limit(12);
-
-  // En son eklenen 12 Figür (Carousel için)
-  const { data: latestFiguresData } = await supabase
-    .from('minifigures')
-    .select('*, series(title)')
-    .order('created_at', { ascending: false })
-    .limit(12);
-
-  // En son yayınlanan 12 Haber (Carousel için)
-  const { data: latestNewsData } = await supabase
-    .from('news')
-    .select('*')
-    .eq('status', 'published')
-    .order('created_at', { ascending: false })
-    .limit(12);
-
-  const latestSeries = latestSeriesData || [];
-  const latestFigures = latestFiguresData || [];
-  const latestNews = latestNewsData || [];
-
-  // Giriş Yapmış Kullanıcı Hook'u (Gamification) ve Status Data Aktarımı
-  const serverSupabase = await createClient();
-  const { data: { user } } = await serverSupabase.auth.getUser();
-  const userStatusMap: Record<string, 'have' | 'want'> = {};
-  const userSeriesProgressMap: Record<string, { percent: number, collected: number, total: number }> = {};
-  
-  if (user) {
-      // 1. Kullanıcının kartlarda göstereceğimiz "Bende Var/ İstiyorum" durumları (O(1) look-up)
-      const { data: userCollects } = await serverSupabase.from('user_collections').select('status, minifigure_id').eq('user_id', user.id);
-      if (userCollects) {
-          userCollects.forEach(c => {
-             if (c.minifigure_id && c.status) {
-                 userStatusMap[c.minifigure_id] = c.status as 'have' | 'want';
-             }
-          });
-      }
-
-      // 2. YENİ MİMARİ: CACHE TABLOSUNDAN PROGRESLERİ ÇEK (Çok Uzun Süren Döngü Yerine Tek Sorgu)
-      const { data: cachedStats } = await serverSupabase.from('user_series_stats')
-          .select('*')
-          .eq('user_id', user.id);
-          
-      if (cachedStats) {
-          cachedStats.forEach(stat => {
-              // Kartlara paslamak için progress objesini hazırla
-              userSeriesProgressMap[stat.series_id] = {
-                  percent: Number(stat.completion_percent),
-                  collected: stat.owned_count,
-                  total: stat.total_count
-              };
-
-          });
-      }
-  }
-
-  const { data: allFigs } = await serverSupabase.from('minifigures').select('series_id, name').order('created_at', { ascending: false });
+  // Series fig stats to display the counts correctly in the Series Carousel
+  const allFigs = await getPreviewFiguresForSeries();
   const seriesFigStats: Record<string, { count: number, latestName: string | null }> = {};
   if (allFigs) {
      allFigs.forEach((f: any) => {
@@ -165,8 +103,6 @@ export default async function Home() {
                 totalFigures={series.figure_count || seriesFigStats[series.id]?.count || 0}
                 rarity={series.rarity || 'Yaygın'}
                 latestFigureName={seriesFigStats[series.id]?.latestName || null}
-                seriesProgress={userSeriesProgressMap[series.id] || null}
-                isLoggedIn={!!user}
               />
             ))}
             {latestSeries.length === 0 && (
@@ -201,8 +137,6 @@ export default async function Home() {
                 year={fig.release_year}
                 rarity={fig.rarity}
                 price={fig.value_usd}
-                initialStatus={userStatusMap[fig.id] || null}
-                isLoggedIn={!!user}
               />
             ))}
             {latestFigures.length === 0 && (
@@ -213,7 +147,7 @@ export default async function Home() {
 
       {/* 5. Erişime Aç / Koleksiyon Yönetimi (Full Width / Site Width) */}
       <div className="hidden md:block snap-center snap-always w-full relative bg-gray-900 mt-0">
-         <AuthCTA fullWidth={true} isLoggedIn={!!user} />
+         <AuthCTA fullWidth={true} />
       </div>
 
       {/* 8. Güncel Haberler / Blog Section */}

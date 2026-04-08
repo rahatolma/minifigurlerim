@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import { supabase } from '@/utils/supabase/client';
+import { getAboutSettings } from '@/services/dal';
 import RichTextContent from '@/components/ui/RichTextContent';
 
-export const revalidate = 0; // Her zaman güncel veri
+export const revalidate = 86400; // Her zaman güncel veri
 
 export const metadata = {
   title: 'Hakkımızda | Minifigürlerim',
@@ -10,7 +10,7 @@ export const metadata = {
 };
 
 export default async function AboutPage() {
-  const { data: settings } = await supabase.from('about_settings').select('*').eq('id', 1).single();
+  const settings = await getAboutSettings();
 
   // Varsayılan değerler
   const bgImage = settings?.hero_image_url || '/uploads/hakkimizda-hero.jpg';

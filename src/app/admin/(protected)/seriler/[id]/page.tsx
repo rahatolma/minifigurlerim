@@ -143,7 +143,7 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
     }
     
     setIsSubmitting(true);
-    const generatedSlug = slugify(`${formData.title} ${formData.category}`);
+    const generatedSlug = slugify(formData.title);
     
     try {
       const { error } = await supabase

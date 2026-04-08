@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { Home, Layers, Shapes, Menu, Box, X } from 'lucide-react';
 import { Link, usePathname } from '@/i18n/routing';
+import { useAuth } from '@/components/providers/AuthProvider';
 
-export default function MobileTabBar({ user }: { user?: any }) {
+export default function MobileTabBar() {
+  const { user } = useAuth();
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
 

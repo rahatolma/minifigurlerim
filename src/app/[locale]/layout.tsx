@@ -4,6 +4,8 @@ import { Toaster } from "react-hot-toast";
 import { PostHogProvider } from "@/components/providers/PostHogProvider";
 import AntiCopyShield from "@/components/utils/AntiCopyShield";
 import "../globals.css";
+import { AuthProvider } from "@/components/providers/AuthProvider";
+import { GamificationProvider } from "@/components/providers/GamificationProvider";
 
 const sen = Sen({
   variable: "--font-sen",
@@ -26,6 +28,11 @@ export const metadata: Metadata = {
 import { getLocale, getMessages } from 'next-intl/server';
 import { NextIntlClientProvider } from 'next-intl';
 
+export function generateStaticParams() {
+  // Desteklenen dilleri build time'da bildiriyoruz
+  return [{ locale: 'tr' }, { locale: 'en' }];
+}
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -41,8 +48,10 @@ export default async function RootLayout({
     >
       <body className={`${sen.className} min-h-full flex flex-col`}>
         <NextIntlClientProvider messages={messages}>
-          <PostHogProvider>
-            <AntiCopyShield />
+          <AuthProvider>
+            <GamificationProvider>
+              <PostHogProvider>
+                <AntiCopyShield />
             <Toaster 
               position="bottom-right" 
               toastOptions={{
@@ -57,8 +66,10 @@ export default async function RootLayout({
             />
             {children}
           </PostHogProvider>
-        </NextIntlClientProvider>
-      </body>
+          </GamificationProvider>
+        </AuthProvider>
+      </NextIntlClientProvider>
+    </body>
     </html>
   );
 }

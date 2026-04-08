@@ -1,6 +1,5 @@
 import FigureCard from '@/components/ui/FigureCard';
-import { supabase } from '@/utils/supabase/client';
-import { createClient } from '@/utils/supabase/server';
+import { getSeriesBySlug, getFiguresBySeries, getAllSeries } from '@/services/dal';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import RichTextContent from '@/components/ui/RichTextContent';
@@ -14,7 +13,8 @@ import FloatingSeriesNav from '@/components/ui/FloatingSeriesNav';
 
 // ... (code omitted for brevity to apply changes via multiple replacements, wait, I can just replace specific lines)
 
-export const revalidate = 0; // Her zaman canlı veri
+export const revalidate = 300; // 5 dakikalık (300s) ISR Cache window (Kullanıcı talebi)
+export const dynamicParams = true; // Yeni eklenen seriler anında çalışır
 
 import { Metadata, ResolvingMetadata } from 'next';
 import { getTranslations, getLocale } from 'next-intl/server';
@@ -32,7 +32,7 @@ export async function generateMetadata(
   const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
   const queryCol = isUUID ? 'id' : 'slug';
   
-  const { data: series } = await supabase.from('series').select('*').or(`slug.eq.${slug},id.eq.${slug},slug_en.eq.${slug}`).single();
+  const series = await getSeriesBySlug(slug);
 
   if (!series) {
     return { title: t('NotFoundTitle') };
@@ -80,10 +80,10 @@ export default async function SeriesDetail({
   const locale = await getLocale();
   const t = await getTranslations('SeriesDetail');
 
-  // Series verisini (or ile) çek
-  const { data: series, error } = await supabase.from('series').select('*').or(`slug.eq.${slug},id.eq.${slug},slug_en.eq.${slug}`).single();
+  // Series verisini çek
+  const series = await getSeriesBySlug(slug);
 
-  if (error || !series) {
+  if (!series) {
     return notFound();
   }
 
@@ -101,54 +101,20 @@ export default async function SeriesDetail({
   const fallbackT = await getTranslations('Fallback');
   
   // Bu seriye ait figürleri çek
-  const { data: figuresData } = await supabase
-    .from('minifigures')
-    .select('*')
-    .eq('series_id', series.id)
-    .order('created_at', { ascending: false });
-    
-  const figures = figuresData || [];
+  const figures = await getFiguresBySeries(series.id, true);
 
-  const serverClient = await createClient();
-  const { data: { user } } = await serverClient.auth.getUser();
-
-  const userStatusMap: Record<string, 'have' | 'want'> = {};
-  const userSeriesProgressMap: Record<string, { percent: number, collected: number, total: number }> = {};
-  
-  if (user) {
-      const [{ data: userCollects }, { data: cachedStats }] = await Promise.all([
-         serverClient.from('user_collections').select('status, minifigure_id').eq('user_id', user.id).in('minifigure_id', figures.map(f => f.id)),
-         serverClient.from('user_series_stats').select('*').eq('user_id', user.id).eq('series_id', series.id)
-      ]);
-
-      if (userCollects) {
-          userCollects.forEach(c => {
-             if (c.minifigure_id && c.status) userStatusMap[c.minifigure_id] = c.status as 'have'|'want';
-          });
-      }
-      if (cachedStats) {
-          cachedStats.forEach(stat => {
-              userSeriesProgressMap[stat.series_id] = {
-                  percent: Number(stat.completion_percent),
-                  collected: stat.owned_count,
-                  total: stat.total_count
-              };
-          });
-      }
-  }
-  
-  const currentSeriesStats = userSeriesProgressMap[series.id] || {
-    percent: 0,
-    collected: 0,
-    total: series.figure_count || figures.length
-  };
+  // Gamification Auth fetching has been completely stripped out here.
+  // The system relies exclusively on dynamic Island Context elements.
 
   // ÖNCEKİ / SONRAKİ SERİ YÖNLENDİRMESİ İÇİN (Floating Nav)
-  const { data: allSeries } = await supabase
-    .from('series')
-    .select('id, title, title_en, slug, slug_en, release_year')
-    .order('release_year', { ascending: true })
-    .order('created_at', { ascending: true }); // Aynı yıla sahipse eklendikçe sırala
+  // getAllSeries() results are ordered by created_at desc. Sort them locally by release_year if we want chronological order.
+  const rawAllSeries = await getAllSeries();
+  const allSeries = (rawAllSeries || []).sort((a, b) => {
+    if (a.release_year !== b.release_year) {
+      return (Number(a.release_year) || 0) - (Number(b.release_year) || 0);
+    }
+    return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+  });
 
   let prevSeries = null;
   let nextSeries = null;
@@ -258,8 +224,7 @@ export default async function SeriesDetail({
         <div className="w-full mt-8 md:mt-12">
            <BlockRenderer 
              blocks={content_blocks} 
-             collectionStats={currentSeriesStats}
-             isLoggedIn={!!user}
+             seriesId={series.id}
            />
         </div>
       )}
@@ -285,8 +250,6 @@ export default async function SeriesDetail({
                         year={fig.release_year}
                         rarity={fig.rarity}
                         price={fig.value_usd}
-                        initialStatus={userStatusMap[fig.id] || null}
-                        isLoggedIn={!!user}
                     />
                 ))}
             </div>

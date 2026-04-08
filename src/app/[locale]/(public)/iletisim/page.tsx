@@ -1,23 +1,15 @@
 import ContactForm from "@/components/ui/ContactForm";
-import { createClient } from "@/utils/supabase/server";
+import { getActiveFaqs } from "@/services/dal";
 
 export const metadata = {
   title: 'İletişim | Minifigürlerim',
   description: 'Bizimle iletişime geçin. Her türlü soru, görüş ve önerileriniz için buradayız.',
 };
 
-export const revalidate = 0; // FAQs can change dynamically
+export const revalidate = 86400; // FAQs can change dynamically
 
 export default async function ContactPage() {
-  const supabase = await createClient();
-  
-  // Sıkça Sorulan Soruları Çek
-  const { data: faqs } = await supabase
-    .from('faqs')
-    .select('*')
-    .eq('is_active', true)
-    .order('sort_order', { ascending: true });
-
+  const faqs = await getActiveFaqs();
   const activeFaqs = faqs || [];
 
   return (

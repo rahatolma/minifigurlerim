@@ -5,15 +5,21 @@ import { useRouter } from 'next/navigation';
 import { SeriesShowcaseBlockData } from '@/types/content-blocks';
 import RichTextContent from '@/components/ui/RichTextContent';
 import { Flag, Presentation, Star, Lightbulb, Zap } from 'lucide-react';
+import { useAuth } from '@/components/providers/AuthProvider';
+import { useGamification } from '@/components/providers/GamificationProvider';
 
 interface Props {
   data: SeriesShowcaseBlockData;
-  collectionStats?: { percent: number; collected: number; total: number };
-  isLoggedIn?: boolean;
+  seriesId?: string;
 }
 
-export default function SeriesShowcaseBlock({ data, collectionStats, isLoggedIn }: Props) {
+export default function SeriesShowcaseBlock({ data, seriesId }: Props) {
   const router = useRouter();
+  const { user } = useAuth();
+  const { userSeriesProgressMap } = useGamification();
+  const isLoggedIn = !!user;
+
+  const collectionStats = seriesId ? userSeriesProgressMap[seriesId] : null;
 
   const handleCollect = () => {
     if (!isLoggedIn) {

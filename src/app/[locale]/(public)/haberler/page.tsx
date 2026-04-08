@@ -2,9 +2,8 @@ import NewsCard from '@/components/ui/NewsCard';
 import NewsFilterClient from '@/components/ui/NewsFilterClient';
 import Link from 'next/link';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
-import { supabase } from '@/utils/supabase/client';
-
-export const revalidate = 0; // Her zaman canlı veriyi çek
+import { getAllNews } from '@/services/dal';
+export const revalidate = 3600; // Her zaman canlı veriyi çek
 
 import { getTranslations, getLocale } from 'next-intl/server';
 
@@ -20,13 +19,13 @@ export default async function NewsPage({
   const sortParam = (resolvedParams?.sort as string) || 'newest';
   
   // Sadece yayında olan (published) haberleri çek
-  const { data: newsData } = await supabase
-    .from('news')
-    .select('*')
-    .eq('status', 'published')
-    .order('created_at', { ascending: sortParam === 'oldest' });
+  const rawNews = await getAllNews();
+  let newsList = rawNews || [];
+  
+  if (sortParam === 'oldest') {
+    newsList = [...newsList].reverse();
+  }
 
-  let newsList = newsData || [];
 
   if (sortParam === 'popular') {
     newsList = [...newsList].sort((a, b) => (b.total_views || 0) - (a.total_views || 0));

@@ -122,7 +122,7 @@ export default function NewSeriesPage() {
     }
     
     setIsSubmitting(true);
-    const generatedSlug = slugify(`${formData.title} ${formData.category}`);
+    const generatedSlug = slugify(formData.title);
     
     try {
       const { error } = await supabase
