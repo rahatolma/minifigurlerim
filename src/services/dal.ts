@@ -212,9 +212,9 @@ export const getAllNews = cache(async () => {
     .from('news')
     .select('*')
     .eq('status', 'published')
-    .order('published_at', { ascending: false });
+    .order('created_at', { ascending: false });
 
-  if (error) throw error;
+  if (error) throw new Error(`Supabase Kolon Hatası: ${error.message} - Lütfen bu hatanın ekran görüntüsünü atın.`);
   return data;
 });
 

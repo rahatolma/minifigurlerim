@@ -73,14 +73,7 @@ export const exchangeCodeForSessionDal = async (code: string) => {
 };
 
 
-export const getAuthUserProfile = async () => {
-  const supabase = await createClient();
-  const { data: { user }, error } = await supabase.auth.getUser();
-  if (error || !user) return { user: null, profile: null };
 
-  const { data: profile } = await supabase.from('profiles').select('is_approved, role').eq('id', user.id).single();
-  return { user, profile };
-};
 
 // ==========================================
 // 2. KOLEKSİYON (CÜZDAN) YÖNETİMİ
