@@ -1,6 +1,6 @@
-import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import BorsaRowClient from './BorsaRowClient';
+import { getAuthUserProfile, getAdminBorsaFiguresDal } from '@/services/action_dal';
 
 export const metadata = {
   title: 'Borsa (Piyasa Yapıcı) - Minifigürlerim Admin',
@@ -9,35 +9,15 @@ export const metadata = {
 export const revalidate = 0;
 
 export default async function AdminBorsaPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { user, profile } = await getAuthUserProfile();
 
   if (!user) redirect('/admin/login');
 
-  const { data: profileCheck } = await supabase.from('profiles').select('role').eq('id', user.id).single();
-  if (profileCheck?.role !== 'admin') {
+  if (profile?.role !== 'admin') {
      return <div className="p-10 text-red-600 font-bold text-center mt-20">Yetkisiz Erişim (403). Sadece Yöneticiler piyasa işlemi yapabilir.</div>;
   }
 
-  // Güvenli (Hatasız) şekilde verileri çek. Eğer affiliate_link sütunu varsa dahil olur.
-  let { data: figures, error } = await supabase
-    .from('minifigures')
-    .select('id, name, figure_no, series_name, images, value_usd, affiliate_link')
-    .order('series_name', { ascending: true })
-    .order('figure_no', { ascending: true });
-
-  let fallbackError = null;
-
-  // Eğer affiliate_link column does not exist diye SQL patlarsa (SQL column yoksa), onsuz çekeriz
-  if (error) {
-     const fallback = await supabase
-        .from('minifigures')
-        .select('id, name, figure_no, series_name, images, value_usd')
-        .order('series_name', { ascending: true })
-        .order('figure_no', { ascending: true });
-     figures = fallback.data as any[];
-     fallbackError = fallback.error;
-  }
+  const { figures, error, fallbackError } = await getAdminBorsaFiguresDal();
 
   return (
     <div className="flex-1 flex flex-col min-w-0 p-8 sm:p-12 pb-32">

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
+import { trackUserViewDal } from '@/services/action_dal';
 import { headers } from 'next/headers';
 
 // Basit Memory-bazlı IP Rate Limiting Koruması (Vercel Lambda'da yeterli koruma sağlar)
@@ -30,16 +30,7 @@ export async function POST(request: Request) {
     viewCache.set(cacheKey, now);
 
     // Güvenli Server-Side RPC Tetikleyicisi
-    const supabase = await createClient();
-    const { error } = await supabase.rpc('increment_page_view', {
-      target_table: table,
-      target_id: id
-    });
-
-    if (error) {
-      console.error('RPC Error:', error);
-      throw error;
-    }
+    await trackUserViewDal(table, id);
 
     return NextResponse.json({ success: true });
   } catch (error) {

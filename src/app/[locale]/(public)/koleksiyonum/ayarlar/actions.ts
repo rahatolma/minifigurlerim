@@ -1,12 +1,16 @@
 'use server';
 
-import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
-import { createClient as createAdminClient } from '@supabase/supabase-js';
+import { 
+  getAuthUser, 
+  updateUserProfileDal, 
+  updateUserAuthEmailDal, 
+  updateUserPasswordDal, 
+  uploadAvatarAdminDal 
+} from '@/services/action_dal';
 
 export async function updateProfile(formData: FormData) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getAuthUser();
 
   if (!user) {
     return { error: 'Oturum bulunamadı. Lütfen giriş yapın.' };
@@ -21,31 +25,26 @@ export async function updateProfile(formData: FormData) {
     age = Number(ageStr);
   }
 
-  // 1. Profil (Metadataları) Güncelle
   const updatePayload: any = { 
     full_name: fullName || null, 
     age: age,
   };
   
-  const { error: profileError } = await supabase
-    .from('profiles')
-    .update(updatePayload)
-    .eq('id', user.id);
-
-  if (profileError) {
-     return { error: 'Profil güncellenirken bir hata oluştu: ' + profileError.message };
+  try {
+    await updateUserProfileDal(user.id, updatePayload);
+  } catch (err: any) {
+    return { error: 'Profil güncellenirken bir hata oluştu: ' + err.message };
   }
 
-  // 2. Email değişikliği varsa AUTH tetikle
   if (newEmail && newEmail !== user.email) {
-     const { error: emailError } = await supabase.auth.updateUser({ email: newEmail });
-     if (emailError) {
-       return { error: 'Profil güncellendi ama e-posta değiştirilemedi: ' + emailError.message };
+     try {
+       await updateUserAuthEmailDal(newEmail);
+       revalidatePath('/koleksiyonum/ayarlar');
+       revalidatePath('/koleksiyonum');
+       return { success: true, message: 'Profil güncellendi. Yeni e-postana gönderilen onay linkine tıklamalısın!' };
+     } catch (err: any) {
+       return { error: 'Profil güncellendi ama e-posta değiştirilemedi: ' + err.message };
      }
-     // Eğer başarıyla istek giderse toast mesajında bildirin
-     revalidatePath('/koleksiyonum/ayarlar');
-     revalidatePath('/koleksiyonum');
-     return { success: true, message: 'Profil güncellendi. Yeni e-postana gönderilen onay linkine tıklamalısın!' };
   }
 
   revalidatePath('/koleksiyonum/ayarlar');
@@ -55,8 +54,7 @@ export async function updateProfile(formData: FormData) {
 }
 
 export async function updatePassword(formData: FormData) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getAuthUser();
 
   if (!user) {
     return { error: 'Oturum bulunamadı.' };
@@ -73,20 +71,16 @@ export async function updatePassword(formData: FormData) {
     return { error: 'Girdiğiniz şifreler eşleşmiyor!' };
   }
 
-  const { error } = await supabase.auth.updateUser({
-    password: newPassword
-  });
-
-  if (error) {
-    return { error: 'Şifre güncellenemedi: ' + error.message };
+  try {
+    await updateUserPasswordDal(newPassword);
+    return { success: true };
+  } catch (err: any) {
+    return { error: 'Şifre güncellenemedi: ' + err.message };
   }
-
-  return { success: true };
 }
 
 export async function uploadAvatar(formData: FormData) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getAuthUser();
 
   if (!user) {
     return { error: 'Oturum bulunamadı.' };
@@ -101,39 +95,15 @@ export async function uploadAvatar(formData: FormData) {
     return { error: 'Dosya boyutu 5 MB\'dan küçük olmalıdır.' };
   }
 
-  const supabaseAdmin = createAdminClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-
-  // Güvenli dosya adı oluştur
   const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg';
   const fileName = `${user.id}-${Date.now()}.${fileExt}`;
   
-  // Storage'a yetkili (admin) olarak yükle (RLS takılmaz)
-  const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
-    .from('avatars')
-    .upload(fileName, file, { upsert: true });
-
-  if (uploadError) {
-    return { error: 'Görsel yüklenemedi. Lütfen "avatars" isminde public bir Storage kovanız olduğundan emin olun! (' + uploadError.message + ')' };
+  try {
+    const result = await uploadAvatarAdminDal(user.id, file, fileName);
+    revalidatePath('/koleksiyonum/ayarlar');
+    revalidatePath('/koleksiyonum');
+    return { success: true, url: result.url };
+  } catch (err: any) {
+    return { error: err.message };
   }
-
-  // Public URL'i al
-  const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(fileName);
-
-  // Profile kaydet
-  const { error: profileError } = await supabase
-    .from('profiles')
-    .update({ avatar_url: publicUrl })
-    .eq('id', user.id);
-
-  if (profileError) {
-    return { error: 'Görsel yüklendi ancak profile kaydedilemedi.' };
-  }
-
-  revalidatePath('/koleksiyonum/ayarlar');
-  revalidatePath('/koleksiyonum');
-
-  return { success: true, url: publicUrl };
 }

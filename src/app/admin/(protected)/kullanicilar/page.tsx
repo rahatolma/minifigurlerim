@@ -1,7 +1,7 @@
-import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import Image from 'next/image';
 import UserAdminActions from './components/UserAdminActions';
+import { getAuthUserProfile, getAdminUsersDal } from '@/services/action_dal';
 
 export const metadata = {
   title: 'Kullanıcı(Üye) Yönetimi - Minifigürlerim Admin',
@@ -10,17 +10,14 @@ export const metadata = {
 export const revalidate = 0; // Her zaman canlı
 
 export default async function AdminUsersPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { user, profile } = await getAuthUserProfile();
 
   if (!user) {
     redirect('/admin/login');
   }
 
   // Sadece Admin Rolündekiler Görebilir
-  const { data: profileCheck } = await supabase.from('profiles').select('role').eq('id', user.id).single();
-  
-  if (profileCheck?.role !== 'admin') {
+  if (profile?.role !== 'admin') {
      return (
         <div className="flex-1 flex flex-col p-10 mt-16 text-center">
             <h1 className="text-3xl font-black text-red-600 mb-4">Yetki Reddedildi (403)</h1>
@@ -29,14 +26,17 @@ export default async function AdminUsersPage() {
      )
   }
 
-  // Tüm Profilleri Çek (Yeniler üstte)
-  const { data: profiles, error } = await supabase
-    .from('profiles')
-    .select('id, username, avatar_url, created_at, is_approved, role')
-    .order('created_at', { ascending: false });
+  let profiles: any = [];
+  let errorMsg = null;
 
-  if (error) {
-     return <div className="p-10 text-red-600">Profiller yüklenemedi: {error.message}</div>;
+  try {
+     profiles = await getAdminUsersDal();
+  } catch (err: any) {
+     errorMsg = err.message;
+  }
+
+  if (errorMsg) {
+     return <div className="p-10 text-red-600">Profiller yüklenemedi: {errorMsg}</div>;
   }
 
   return (

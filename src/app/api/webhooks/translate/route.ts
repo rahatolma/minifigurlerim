@@ -1,12 +1,6 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
-
-// Use Service Role Key to bypass RLS for background updates
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { updateTranslationAdminDal } from '@/services/action_dal';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -106,12 +100,7 @@ export async function POST(req: Request) {
     }
 
     // Save back to Database
-    const { error } = await supabase
-       .from(table)
-       .update(updates)
-       .eq('id', record.id);
-
-    if (error) throw error;
+    await updateTranslationAdminDal(table, record.id, updates);
 
     return NextResponse.json({ success: true, updated: Object.keys(updates) });
 

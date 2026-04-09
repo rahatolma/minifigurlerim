@@ -21,7 +21,7 @@ const CMF_HISTORY = [
   { year: 'Bugün', date: 'Gelecek', title: 'Minifigürlerim Platformu', desc: 'Türkiye merkezli bu premium koleksiyon takip platformuyla AFOL kültürünü yaşatmak için harika bir sayfa açıldı!', color: 'bg-[#D22B2B]' }
 ];
 
-export const revalidate = 3600; // Her zaman canlı veriyi çek (SSR)
+export const revalidate = 300; // 5 dakikalık ISR cache
 
 export default async function SeriesPage({
   searchParams,

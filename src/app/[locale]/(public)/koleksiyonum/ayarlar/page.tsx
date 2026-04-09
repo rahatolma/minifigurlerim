@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server';
+import { getAuthUserProfile } from '@/services/action_dal';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import SettingsForm from './SettingsForm';
@@ -11,16 +11,11 @@ export const metadata = {
 };
 
 export default async function AyarlarPage() {
-  const supabase = await createClient();
-  
-  const { data: { user }, error } = await supabase.auth.getUser();
+  const { user, profile } = await getAuthUserProfile();
 
-  if (error || !user) {
+  if (!user) {
     redirect('/login');
   }
-
-  // Profil verisini çek (DB'de 'full_name' veya 'age' yoksa bile PostgREST schema cache uyarısı vermez veya undefined döner)
-  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
 
   return (
     <div className="bg-[#fcfcfc] min-h-screen pb-32">

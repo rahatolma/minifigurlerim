@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server';
+import { getAuthUser } from '@/services/action_dal';
 import { redirect } from 'next/navigation';
 import { getUserProfile, getUserCollectionsWithDetails, getAllSeries, getTotalMinifiguresCount, getUserSeriesStats, getMinifigurePriceHistoryBatch } from '@/services/dal';
 import { logOut } from '@/app/[locale]/(auth)/login/actions';
@@ -17,7 +17,7 @@ export default async function KoleksiyonumPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-  const supabase = await createClient();
+  const user = await getAuthUser();
   const resolvedParams = await searchParams;
   
   const currentStatus = (resolvedParams.status as string) || 'all';
@@ -26,9 +26,7 @@ export default async function KoleksiyonumPage({
   const currentType = (resolvedParams.type as string) || 'all';
   const currentRarity = (resolvedParams.rarity as string) || 'all';
   
-  const { data: { user }, error } = await supabase.auth.getUser();
-
-  if (error || !user) {
+  if (!user) {
     redirect('/login');
   }
 

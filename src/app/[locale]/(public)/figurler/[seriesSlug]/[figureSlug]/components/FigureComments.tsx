@@ -1,19 +1,20 @@
-import { createClient } from '@/utils/supabase/server';
+import { getAuthUser, getFigureRatings } from '@/services/action_dal';
 import Image from 'next/image';
 
 export default async function FigureComments({ minifigureId }: { minifigureId: string }) {
-  const supabase = await createClient();
+  const user = await getAuthUser();
 
-  // Yorumları ve kullanıcı bilgilerini (profiles tablosuyla joinleyerek) çek
-  // Supabase'de tablo ilişkileri foreign key üzerinden otomatik algılanır.
-  const { data: ratings, error } = await supabase
-    .from('user_ratings')
-    .select('id, rating, comment, created_at, profiles(username, avatar_url, role)')
-    .eq('minifigure_id', minifigureId)
-    .order('created_at', { ascending: false });
+  let ratings;
+  let errorMsg = null;
+  
+  try {
+     ratings = await getFigureRatings(minifigureId);
+  } catch (err: any) {
+     errorMsg = err.message;
+  }
 
-  if (error) {
-    return <div className="text-red-500 py-4 text-xs">Yorumlar yüklenemedi: {error.message}</div>;
+  if (errorMsg) {
+    return <div className="text-red-500 py-4 text-xs">Yorumlar yüklenemedi: {errorMsg}</div>;
   }
 
   return (

@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server';
+import { getAdminDashboardMetricsDal } from '@/services/action_dal';
 import { Package, Users, Database, Box, PlayCircle } from 'lucide-react';
 import Link from 'next/link';
 import DashboardCharts from '@/components/admin/analytics/DashboardCharts';
@@ -6,42 +6,20 @@ import DashboardCharts from '@/components/admin/analytics/DashboardCharts';
 export const revalidate = 0;
 
 export default async function AdminDashboard() {
-  const supabase = await createClient();
+  const metrics = await getAdminDashboardMetricsDal();
 
-  const [
-    { count: totalSeries },
-    { count: totalFigures },
-    { count: totalCollections }
-  ] = await Promise.all([
-    supabase.from('series').select('*', { count: 'exact', head: true }),
-    supabase.from('minifigures').select('*', { count: 'exact', head: true }),
-    supabase.from('user_collections').select('*', { count: 'exact', head: true })
-  ]);
-
-  // -- ANALYTICS VERİ DERLEMESİ (Son 30 Gün) --
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  
-  // 1. Raw veriyi çekiyoruz (Sadece son 30 gün timeline için, ancak top 5 için tüm zamanları çekebiliriz veya son 30 günü kullanabiliriz. Şimdilik son 30 günü kullanalım)
-  const { data: rawCollections } = await supabase
-    .from('user_collections')
-    .select('created_at, status, minifigure_id')
-    .gte('created_at', thirtyDaysAgo.toISOString())
-    .limit(5000);
-
-  // TOP 5 SERİLER İÇİN HARİTALAMA VERİSİ
-  const [ { data: allFigures }, { data: allSeries } ] = await Promise.all([
-    supabase.from('minifigures').select('id, series_id'),
-    supabase.from('series').select('id, name, image_url')
-  ]);
+  const totalSeries = metrics.totalSeries;
+  const totalFigures = metrics.totalFigures;
+  const totalCollections = metrics.totalCollections;
+  const rawCollections = metrics.rawCollections;
+  const allFigures = metrics.allFigures;
+  const allSeries = metrics.allSeries;
 
   const figToSeries = new Map(allFigures?.map(f => [f.id, f.series_id]) || []);
   const seriesScores: Record<string, number> = {};
 
-  // 2. Timeline Aggregation (Gün bazlı gruplama)
   const timelineMap: Record<string, number> = {};
   
-  // Son 30 günü sıfır data ile dolduralım (çizgi kopuk olmasın)
   for (let i = 29; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
@@ -49,13 +27,11 @@ export default async function AdminDashboard() {
     timelineMap[dateStr] = 0;
   }
 
-  // 3. Status Aggregation (Bende Var vs İstiyorum)
   let haveCount = 0;
   let wantCount = 0;
 
   if (rawCollections) {
     rawCollections.forEach(log => {
-      // Timeline için
       if (log.created_at) {
         const d = new Date(log.created_at);
         const dateStr = d.toLocaleDateString('tr-TR', { day: '2-digit', month: 'short' });
@@ -63,11 +39,9 @@ export default async function AdminDashboard() {
           timelineMap[dateStr] += 1;
         }
       }
-      // Status oranı için
       if (log.status === 'have') haveCount++;
       if (log.status === 'want') wantCount++;
 
-      // Top 5 Seriler için puanlama
       if (log.minifigure_id) {
          const sId = figToSeries.get(log.minifigure_id);
          if (sId) seriesScores[sId] = (seriesScores[sId] || 0) + 1;

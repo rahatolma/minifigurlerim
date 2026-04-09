@@ -1,10 +1,9 @@
 import Sidebar from '@/components/admin/Sidebar';
-import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
+import { getAuthUserProfile } from '@/services/action_dal';
 
 export default async function ProtectedAdminLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { user, profile } = await getAuthUserProfile();
 
   // Yetki Yok (Giriş Yapılmamış)
   if (!user) {
@@ -12,7 +11,6 @@ export default async function ProtectedAdminLayout({ children }: { children: Rea
   }
 
   // Admin Kontrolü
-  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
   const isAdmin = profile?.role === 'admin';
 
   if (!isAdmin) {

@@ -3,7 +3,7 @@ import NewsFilterClient from '@/components/ui/NewsFilterClient';
 import Link from 'next/link';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import { getAllNews } from '@/services/dal';
-export const revalidate = 3600; // Her zaman canlı veriyi çek
+export const revalidate = 300; // 5 dakikalık ISR cache
 
 import { getTranslations, getLocale } from 'next-intl/server';
 
