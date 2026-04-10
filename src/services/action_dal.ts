@@ -71,8 +71,39 @@ export const exchangeCodeForSessionDal = async (code: string) => {
   const supabase = await createClient();
   return supabase.auth.exchangeCodeForSession(code);
 };
+export const updateUserProfileDal = async (userId: string, updates: any) => {
+  const supabaseAdmin = getAdminClient();
+  const { error } = await supabaseAdmin.from('profiles').update(updates).eq('id', userId);
+  if (error) throw new Error(error.message);
+  return { success: true };
+};
 
+export const updateUserAuthEmailDal = async (email: string) => {
+  const supabase = await createClient();
+  const { error } = await supabase.auth.updateUser({ email });
+  if (error) throw new Error(error.message);
+  return { success: true };
+};
 
+export const updateUserPasswordDal = async (password: string) => {
+  const supabase = await createClient();
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) throw new Error(error.message);
+  return { success: true };
+};
+
+export const uploadAvatarAdminDal = async (userId: string, file: File, fileName: string) => {
+  const supabaseAdmin = getAdminClient();
+  const { data, error } = await supabaseAdmin.storage.from('avatars').upload(fileName, file, {
+    upsert: true,
+  });
+  if (error) throw new Error(error.message);
+  
+  const { data: publicData } = supabaseAdmin.storage.from('avatars').getPublicUrl(fileName);
+  await supabaseAdmin.from('profiles').update({ avatar_url: publicData.publicUrl }).eq('id', userId);
+
+  return { success: true, url: publicData.publicUrl };
+};
 
 
 // ==========================================
