@@ -323,3 +323,39 @@ export const getAdminDashboardMetricsDal = async () => {
 
   return { totalSeries, totalFigures, totalCollections, rawCollections, allFigures, allSeries };
 };
+
+export const toggleUserApprovalAdminDal = async (userId: string, currentStatus: boolean) => {
+  const supabaseAdmin = getAdminClient();
+  const { error } = await supabaseAdmin.from('profiles').update({ is_approved: !currentStatus }).eq('id', userId);
+  if (error) throw new Error(error.message);
+  return { success: true };
+};
+
+export const deleteUserFromDBAdminDal = async (userId: string) => {
+  const supabaseAdmin = getAdminClient();
+  const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);
+  if (error) throw new Error(error.message);
+  return { success: true };
+};
+
+export const getUserDetailedInfoAdminDal = async (userId: string) => {
+  const supabaseAdmin = getAdminClient();
+  const { data: profile, error: profileErr } = await supabaseAdmin.from('profiles').select('*').eq('id', userId).single();
+  if (profileErr) throw new Error(profileErr.message);
+
+  const { data: collections } = await supabaseAdmin.from('user_collections')
+    .select('minifigure_id, status, created_at, minifigures(name, figure_no, series_name)')
+    .eq('user_id', userId);
+  
+  return { profile, collections: collections || [] };
+};
+
+export const updateBorsaDataAdminDal = async (minifigureId: string, valueUsd: number, affiliateLink: string | null) => {
+  const supabaseAdmin = getAdminClient();
+  const { error } = await supabaseAdmin.from('minifigures').update({
+    value_usd: valueUsd,
+    affiliate_link: affiliateLink
+  }).eq('id', minifigureId);
+  if (error) throw new Error(error.message);
+  return { success: true };
+};
