@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { getAuthUserProfile, toggleUserCollectionDal, saveUserRatingDal } from '@/services/action_dal';
 
-export async function toggleCollectionStatus(minifigureId: string, currentStatus: string | null, newStatus: string) {
+export async function toggleCollectionStatus(minifigureId: string, currentStatus: 'have' | 'want' | null, newStatus: 'have' | 'want') {
   const { user, profile } = await getAuthUserProfile();
 
   if (!user) {

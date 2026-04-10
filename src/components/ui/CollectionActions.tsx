@@ -17,7 +17,7 @@ export default function CollectionActions({ minifigureId }: { minifigureId: stri
   const [loading, setLoading] = useState(false);
   
   // Local state for instant feedback, syncs with global
-  const [status, setStatus] = useState<string | null>(null);
+  const [status, setStatus] = useState<'have' | 'want' | null>(null);
   const [rating, setRating] = useState<number | null>(null);
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [mounted, setMounted] = useState(false);

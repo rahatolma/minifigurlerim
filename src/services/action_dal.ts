@@ -110,7 +110,7 @@ export const uploadAvatarAdminDal = async (userId: string, file: File, fileName:
 // 2. KOLEKSİYON (CÜZDAN) YÖNETİMİ
 // ==========================================
 
-export const toggleUserCollectionDal = async (userId: string, minifigureId: string, currentStatus: string | null, newStatus: string) => {
+export const toggleUserCollectionDal = async (userId: string, minifigureId: string, currentStatus: 'have' | 'want' | null, newStatus: 'have' | 'want') => {
   const supabaseAdmin = getAdminClient();
 
   if (currentStatus === newStatus) {
