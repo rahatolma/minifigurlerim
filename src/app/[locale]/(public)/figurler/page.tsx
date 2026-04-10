@@ -154,6 +154,10 @@ export default async function FiguresPage({
                                     year={fig.release_year}
                                     rarity={fig.rarity}
                                     price={fig.value_usd}
+                                    minPrice={fig.min_price}
+                                    maxPrice={fig.max_price}
+                                    valueScore={fig.value_score}
+                                    demandScore={fig.demand_score}
                                 />
                            </div>
                         ))}

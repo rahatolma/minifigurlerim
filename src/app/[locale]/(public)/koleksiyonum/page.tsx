@@ -20,7 +20,7 @@ export default async function KoleksiyonumPage({
   const user = await getAuthUser();
   const resolvedParams = await searchParams;
   
-  const currentStatus = (resolvedParams.status as string) || 'all';
+  const currentStatus = (resolvedParams.status as string) || 'have';
   const currentSeries = (resolvedParams.series as string) || 'all';
   const currentRole = (resolvedParams.role as string) || 'all';
   const currentType = (resolvedParams.type as string) || 'all';
@@ -380,11 +380,16 @@ export default async function KoleksiyonumPage({
                       return (
                          <div key={i} className="snap-center snap-always shrink-0 w-[90vw] md:w-auto flex flex-col justify-stretch">
                           <FigureCard 
-                              id={link}
+                              id={fig.id}
+                              slug={link}
                               name={fig.name}
                               seriesName={fig.series_name}
                               imageUrl={image}
                               price={fig.value_usd}
+                              minPrice={fig.min_price}
+                              maxPrice={fig.max_price}
+                              valueScore={fig.value_score}
+                              demandScore={fig.demand_score}
                           />
                          </div>
                       );

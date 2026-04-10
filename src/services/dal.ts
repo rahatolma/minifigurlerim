@@ -120,6 +120,35 @@ export const getLatestFigures = cache(async () => {
   return data;
 });
 
+// En Çok Talep Gören 6 Figür (Anasayfa)
+export const getTopDemandedFigures = cache(async (limit = 6) => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('minifigures')
+    .select('*, series(title)')
+    .not('demand_score', 'is', null) // Sadece skoru hesaplanmışlar
+    .order('demand_score', { ascending: false })
+    .order('view_count_30d', { ascending: false }) // Eşitlik durumunda etkileşime bak
+    .limit(limit);
+
+  if (error) throw error;
+  return data;
+});
+
+// En Değerli 6 Figür (Anasayfa)
+export const getTopValuedFigures = cache(async (limit = 6) => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('minifigures')
+    .select('*, series(title)')
+    .not('value_score', 'is', null) // Sadece skoru hesaplanmışlar
+    .order('value_score', { ascending: false })
+    .limit(limit * 2); // Havuzu azıcık geniş tut, tekrarı önlemek için JS ile kırpacağız
+
+  if (error) throw error;
+  return data;
+});
+
 // Single Seriyi Getir (Slug veya UUID bazlı detay)
 export const getSeriesBySlug = cache(async (slug: string) => {
   const supabase = await createClient();
@@ -298,7 +327,12 @@ export const getUserCollectionsWithDetails = cache(async (userId: string) => {
         value_usd,
         role,
         type,
-        rarity
+        rarity,
+        min_price,
+        max_price,
+        avg_price,
+        value_score,
+        demand_score
       )
     `)
     .eq('user_id', userId)

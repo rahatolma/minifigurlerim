@@ -10,7 +10,7 @@ import Link from 'next/link';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import { LayoutGrid, Package, TrendingUp } from 'lucide-react';
 import AuthCTA from '@/components/ui/AuthCTA';
-import { getHomeSliders, getLatestSeries, getLatestFigures, getLatestNews, getPreviewFiguresForSeries } from '@/services/dal';
+import { getHomeSliders, getLatestSeries, getLatestFigures, getLatestNews, getPreviewFiguresForSeries, getTopDemandedFigures, getTopValuedFigures } from '@/services/dal';
 
 export const revalidate = 86400; // Dinamik sayfa
 
@@ -19,6 +19,15 @@ export default async function Home() {
   const latestSeries = await getLatestSeries() || [];
   const latestFigures = await getLatestFigures() || [];
   const latestNews = await getLatestNews() || [];
+
+  // VALUE & DEMAND ENGINE YÜKLEMELERİ
+  const rawTopDemanded = await getTopDemandedFigures(6) || [];
+  const rawTopValued = await getTopValuedFigures(6) || [];
+  
+  // Çeşitlilik kontrolü: Demanded'da çıkanlar Valued'da çıkmasın (eğer yetiyorsa)
+  const topValued = rawTopValued.filter((v: any) => !rawTopDemanded.find((d: any) => d.id === v.id)).slice(0, 6);
+  // Eğer filtre yüzünden hiç eleman kalmazsa veya 2'den az kalırsa (imkansız ama tedbir) ilk gelenleri direkt alalım.
+  const finalTopValued = topValued.length >= 2 ? topValued : rawTopValued.slice(0, 6);
 
   // Series fig stats to display the counts correctly in the Series Carousel
   const allFigs = await getPreviewFiguresForSeries();
@@ -137,11 +146,96 @@ export default async function Home() {
                 year={fig.release_year}
                 rarity={fig.rarity}
                 price={fig.value_usd}
+                minPrice={fig.min_price}
+                maxPrice={fig.max_price}
+                valueScore={fig.value_score}
+                demandScore={fig.demand_score}
               />
             ))}
             {latestFigures.length === 0 && (
               <p className="text-gray-400 font-bold px-8 mt-8 w-full text-center">Henüz sistemde hiç figür yok.</p>
             )}
+          </ItemCarousel>
+      </section>
+      {/* 5. VALUE & DEMAND: En Çok Talep Görenler */}
+      <section className="py-[40px] md:py-[64px] bg-transparent border-t border-gray-200">
+          <ItemCarousel
+             titleBlock={
+               <div className="flex flex-col gap-1">
+                 <div className="flex items-center gap-2 md:gap-4">
+                   <div className="w-8 h-8 md:w-14 md:h-14 bg-white border-2 border-blue-500 text-blue-500 rounded-full flex items-center justify-center shadow-sm shrink-0">
+                       <TrendingUp className="w-[16px] h-[16px] md:w-[28px] md:h-[28px]" strokeWidth={2.5} />
+                   </div>
+                   <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Çok Talep Gören Figürler</h2>
+                 </div>
+                 <p className="text-gray-500 text-[11px] md:text-sm font-medium pl-12 md:pl-20">Son dönem kullanıcı ilgisine göre öne çıkan figürler.</p>
+               </div>
+             }
+             actionButton={
+               <Link href="/figurler" className="bg-white border-2 border-gray-200 text-gray-700 font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">Hepsini Keşfet</Link>
+             }
+          >
+             {rawTopDemanded.map((fig: any) => (
+                <FigureCard  
+                  key={fig.id}
+                  id={fig.id}
+                  slug={fig.slug}
+                  name={fig.name}
+                  seriesName={fig.series?.title || 'Bilinmeyen Seri'}
+                  imageUrl={(fig.images && fig.images.length > 0) ? fig.images[0] : 'https://via.placeholder.com/300x400.png?text=Görsel+Yok'}
+                  year={fig.release_year}
+                  rarity={fig.rarity}
+                  price={fig.value_usd}
+                  minPrice={fig.min_price}
+                  maxPrice={fig.max_price}
+                  valueScore={fig.value_score}
+                  demandScore={fig.demand_score}
+                />
+             ))}
+             {rawTopDemanded.length === 0 && (
+                <p className="text-gray-400 font-bold px-8 mt-8 w-full text-center">Henüz talep verisi hesaplanmadı.</p>
+             )}
+          </ItemCarousel>
+      </section>
+
+      {/* 6. VALUE & DEMAND: En Değerli Figürler */}
+      <section className="py-[40px] md:py-[64px] bg-transparent border-t border-gray-200">
+          <ItemCarousel
+             titleBlock={
+               <div className="flex flex-col gap-1">
+                 <div className="flex items-center gap-2 md:gap-4">
+                   <div className="w-8 h-8 md:w-14 md:h-14 bg-white border-2 border-yellow-500 text-yellow-500 rounded-full flex items-center justify-center shadow-sm shrink-0">
+                       <Package className="w-[16px] h-[16px] md:w-[28px] md:h-[28px]" strokeWidth={2.5} />
+                   </div>
+                   <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Değerli Figürler</h2>
+                 </div>
+                 <p className="text-gray-500 text-[11px] md:text-sm font-medium pl-12 md:pl-20">Nadirlik, yaş, talep ve piyasa sinyallerine göre öne çıkan parçalar.</p>
+               </div>
+             }
+             actionButton={
+               <Link href="/figurler" className="bg-white border-2 border-gray-200 text-gray-700 font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">Hepsini Keşfet</Link>
+             }
+          >
+             {finalTopValued.map((fig: any) => (
+                <FigureCard  
+                  key={fig.id}
+                  id={fig.id}
+                  slug={fig.slug}
+                  name={fig.name}
+                  seriesName={fig.series?.title || 'Bilinmeyen Seri'}
+                  imageUrl={(fig.images && fig.images.length > 0) ? fig.images[0] : 'https://via.placeholder.com/300x400.png?text=Görsel+Yok'}
+                  year={fig.release_year}
+                  rarity={fig.rarity}
+                  price={fig.value_usd}
+                  minPrice={fig.min_price}
+                  maxPrice={fig.max_price}
+                  valueScore={fig.value_score}
+                  demandScore={fig.demand_score}
+                />
+             ))}
+             {finalTopValued.length === 0 && (
+                <p className="text-gray-400 font-bold px-8 mt-8 w-full text-center">Henüz değer verisi hesaplanmadı.</p>
+             )}
           </ItemCarousel>
       </section>
 

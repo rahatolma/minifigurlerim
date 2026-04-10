@@ -43,7 +43,7 @@ export default function HeroSliderClient({ sliders }: { sliders: any[] }) {
   }
 
   return (
-    <section className="relative w-full bg-black text-white flex flex-col items-center justify-center text-center px-4 overflow-hidden h-[400px] md:h-[600px]">
+    <section className="relative w-full bg-black text-white flex flex-col items-center justify-center text-center px-4 overflow-hidden h-[400px] md:h-[700px]">
       {sliders.map((slide, index) => (
         <div 
           key={slide.id} 

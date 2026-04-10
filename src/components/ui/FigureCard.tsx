@@ -18,13 +18,15 @@ interface FigureCardProps {
   imageUrl: string;
   year?: string | number | null;
   rarity?: string | null;
-  price?: number | null;
-  // isLoggedIn ve initialStatus gibi property'ler Server'ı dinamik yapmamak için kaldırıldı,
-  // Context üzerinden Client-Side olarak izole halde (Dynamic Island) okunuyor.
+  price?: number | null; // Legacy value_usd mapped here temporarily just in case
+  minPrice?: number | null;
+  maxPrice?: number | null;
+  valueScore?: number | null;
+  demandScore?: number | null;
 }
 
 export default function FigureCard({ 
-  id, slug, name, seriesName, seriesSlug, imageUrl, year, rarity, price
+  id, slug, name, seriesName, seriesSlug, imageUrl, year, rarity, price, minPrice, maxPrice, valueScore, demandScore
 }: FigureCardProps) {
   
   const router = useRouter();
@@ -111,24 +113,40 @@ export default function FigureCard({
           
           <div className="w-full h-px bg-gray-100 mb-4"></div>
           
-          {/* META ROW */}
-          <div className="flex items-center justify-center flex-wrap gap-x-3 gap-y-1 text-[13px] font-bold text-gray-800 mb-5">
-             <span className="flex items-center gap-1.5 text-gray-600">
-                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                {year || '-'}
-             </span>
-             <span className="text-gray-300">•</span>
-             
-             <span className="flex items-center gap-1.5">
-                <span className={`w-2 h-2 rounded-full ${rarity === 'Nadir' ? 'bg-purple-500' : rarity === 'Çok Nadir' ? 'bg-orange-500' : rarity === 'Efsanevi' ? 'bg-yellow-400' : 'bg-[#10b981]'}`}></span>
-                {rarity || 'Yaygın'}
-             </span>
-             {price ? (
-                <>
-                   <span className="text-gray-300">•</span>
-                   <span className="font-black text-gray-900">${price} USD</span>
-                </>
-             ) : null}
+          {/* VALUE BEDGE & TAGS */}
+          <div className="flex flex-col gap-2 mt-4 px-2 mb-4">
+             {/* Tahmini Değer Alanı */}
+             <div className="flex flex-col items-center justify-center bg-gray-50 py-2.5 rounded-lg border border-gray-100">
+                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-0.5">Tahmini Değer</span>
+                <span className="text-[15px] font-black text-gray-900 tracking-tight">
+                  {minPrice && maxPrice ? `$${minPrice} - $${maxPrice}` : (price ? `$${price}` : '-')}
+                </span>
+             </div>
+
+             <div className="flex items-stretch gap-2 mt-1">
+                {/* Değer Skoru Label */}
+                <div className="flex flex-col flex-1 items-center justify-center bg-yellow-50/50 py-2 rounded-lg border border-yellow-100/50">
+                    <span className="text-[9px] text-yellow-600/80 font-bold uppercase tracking-widest mb-0.5">Değer Skoru</span>
+                    <span className="text-[11px] font-black text-yellow-700">
+                        {valueScore === undefined || valueScore === null ? 'Yaygın' : 
+                         valueScore >= 4.5 ? 'Efsane' : 
+                         valueScore >= 3.5 ? 'Çok Değerli' : 
+                         valueScore >= 2.5 ? 'Değerli' : 
+                         valueScore >= 1.5 ? 'Orta' : 'Yaygın'}
+                    </span>
+                </div>
+
+                {/* Talep Label */}
+                <div className="flex flex-col flex-1 items-center justify-center bg-blue-50/50 py-2 rounded-lg border border-blue-100/50">
+                    <span className="text-[9px] text-blue-600/80 font-bold uppercase tracking-widest mb-0.5">Talep Durumu</span>
+                    <span className="text-[11px] font-black text-blue-700 whitespace-nowrap">
+                        {demandScore === undefined || demandScore === null ? 'Düşük Talep' :
+                         demandScore >= 4.0 ? 'Çok Yüksek' : 
+                         demandScore >= 3.0 ? 'Yüksek' : 
+                         demandScore >= 2.0 ? 'Orta' : 'Düşük'}
+                    </span>
+                </div>
+             </div>
           </div>
 
           {/* ACTION BUTTONS */}

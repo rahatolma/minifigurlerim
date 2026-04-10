@@ -19,7 +19,7 @@ export default function VaultFilterClient({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const currentStatus = searchParams.get('status') || 'all';
+  const currentStatus = searchParams.get('status') || 'have';
   const currentSeries = searchParams.get('series') || 'all';
   const currentRole = searchParams.get('role') || 'all';
   const currentType = searchParams.get('type') || 'all';
@@ -60,7 +60,7 @@ export default function VaultFilterClient({
     }, 50);
   };
 
-  const hasFilters = currentStatus !== 'all' || currentSeries !== 'all' || currentRole !== 'all' || currentType !== 'all' || currentRarity !== 'all';
+  const hasFilters = currentStatus !== 'have' || currentSeries !== 'all' || currentRole !== 'all' || currentType !== 'all' || currentRarity !== 'all';
 
   const [drawerOpen, setDrawerOpen] = useState(false);
 
