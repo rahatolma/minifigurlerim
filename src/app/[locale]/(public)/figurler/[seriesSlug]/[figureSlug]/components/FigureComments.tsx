@@ -4,13 +4,13 @@ import Image from 'next/image';
 export default async function FigureComments({ minifigureId }: { minifigureId: string }) {
   const user = await getAuthUser();
 
-  let ratings;
+  let ratings: any[] | null = null;
   let errorMsg = null;
   
   try {
      ratings = await getFigureRatings(minifigureId);
   } catch (err: any) {
-     errorMsg = err.message;
+     errorMsg = err.message || 'Bilinmeyen Hata';
   }
 
   if (errorMsg) {
