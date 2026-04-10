@@ -16,11 +16,19 @@ export async function toggleCollectionStatus(minifigureId: string, currentStatus
   }
 
   try {
-    await toggleUserCollectionDal(user.id, minifigureId, currentStatus, newStatus);
+    const operation = toggleUserCollectionDal(user.id, minifigureId, currentStatus, newStatus);
+    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT')), 8000));
+    await Promise.race([operation, timeout]);
+    
     revalidatePath('/figurler/[slug]', 'page');
     return { success: true };
   } catch (err: any) {
-    return { error: err.message };
+    if (err.message === 'TIMEOUT') {
+       console.error(JSON.stringify({ code: 'COLLECTION_TOGGLE_TIMEOUT', message: 'Action timed out after 8s', userId: user.id, minifigureId }));
+       return { error: 'İşlem zaman aşımına uğradı, lütfen tekrar deneyiniz.' };
+    }
+    console.error(JSON.stringify({ code: 'COLLECTION_TOGGLE_FAILED', error: err.message, userId: user.id, minifigureId }));
+    return { error: 'Koleksiyon güncellenemedi, sistem yöneticisine bildirilmiştir.' };
   }
 }
 
@@ -37,10 +45,18 @@ export async function saveRating(minifigureId: string, rating: number, comment?:
   }
 
   try {
-    await saveUserRatingDal(user.id, minifigureId, rating, comment);
+    const operation = saveUserRatingDal(user.id, minifigureId, rating, comment);
+    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT')), 8000));
+    await Promise.race([operation, timeout]);
+    
     revalidatePath('/figurler/[slug]', 'page');
     return { success: true };
   } catch (err: any) {
-    return { error: err.message };
+    if (err.message === 'TIMEOUT') {
+       console.error(JSON.stringify({ code: 'COMMENT_SUBMIT_TIMEOUT', message: 'Action timed out after 8s', userId: user.id, minifigureId }));
+       return { error: 'Yorum kaydedilirken zaman aşımı yaşandı.' };
+    }
+    console.error(JSON.stringify({ code: 'COMMENT_SUBMIT_FAILED', error: err.message, userId: user.id, minifigureId }));
+    return { error: 'Puanlama yapılamadı, sistem yöneticilerine bildirilmiştir.' };
   }
 }

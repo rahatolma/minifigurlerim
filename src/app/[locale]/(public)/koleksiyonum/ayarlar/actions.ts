@@ -31,19 +31,34 @@ export async function updateProfile(formData: FormData) {
   };
   
   try {
-    await updateUserProfileDal(user.id, updatePayload);
+    const operation = updateUserProfileDal(user.id, updatePayload);
+    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT')), 8000));
+    await Promise.race([operation, timeout]);
   } catch (err: any) {
-    return { error: 'Profil güncellenirken bir hata oluştu: ' + err.message };
+    if (err.message === 'TIMEOUT') {
+       console.error(JSON.stringify({ code: 'PROFILE_UPDATE_TIMEOUT', message: 'Action timed out after 8s', userId: user.id }));
+       return { error: 'Profil güncellenirken zaman aşımı yaşandı.' };
+    }
+    console.error(JSON.stringify({ code: 'PROFILE_UPDATE_FAILED', error: err.message, userId: user.id }));
+    return { error: 'Profil güncellenemedi, lütfen daha sonra tekrar deneyiniz.' };
   }
 
   if (newEmail && newEmail !== user.email) {
      try {
-       await updateUserAuthEmailDal(newEmail);
+       const operation = updateUserAuthEmailDal(newEmail);
+       const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT')), 8000));
+       await Promise.race([operation, timeout]);
+       
        revalidatePath('/koleksiyonum/ayarlar');
        revalidatePath('/koleksiyonum');
        return { success: true, message: 'Profil güncellendi. Yeni e-postana gönderilen onay linkine tıklamalısın!' };
      } catch (err: any) {
-       return { error: 'Profil güncellendi ama e-posta değiştirilemedi: ' + err.message };
+       if (err.message === 'TIMEOUT') {
+          console.error(JSON.stringify({ code: 'EMAIL_UPDATE_TIMEOUT', message: 'Action timed out after 8s', userId: user.id }));
+          return { error: 'Profil güncellendi ancak e-posta değişimi zaman aşımına uğradı.' };
+       }
+       console.error(JSON.stringify({ code: 'EMAIL_UPDATE_FAILED', error: err.message, userId: user.id }));
+       return { error: 'Profil güncellendi ama e-posta sistemden dolayı değiştirilemedi.' };
      }
   }
 
@@ -72,10 +87,17 @@ export async function updatePassword(formData: FormData) {
   }
 
   try {
-    await updateUserPasswordDal(newPassword);
+    const operation = updateUserPasswordDal(newPassword);
+    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT')), 8000));
+    await Promise.race([operation, timeout]);
     return { success: true };
   } catch (err: any) {
-    return { error: 'Şifre güncellenemedi: ' + err.message };
+    if (err.message === 'TIMEOUT') {
+       console.error(JSON.stringify({ code: 'PASSWORD_UPDATE_TIMEOUT', message: 'Action timed out after 8s', userId: user.id }));
+       return { error: 'Şifre güncellenirken zaman aşımı yaşandı.' };
+    }
+    console.error(JSON.stringify({ code: 'PASSWORD_UPDATE_FAILED', error: err.message, userId: user.id }));
+    return { error: 'Şifre güncellenemedi, mevcut şifreniz geçerliliğini koruyor.' };
   }
 }
 
@@ -99,11 +121,19 @@ export async function uploadAvatar(formData: FormData) {
   const fileName = `${user.id}-${Date.now()}.${fileExt}`;
   
   try {
-    const result = await uploadAvatarAdminDal(user.id, file, fileName);
+    const operation = uploadAvatarAdminDal(user.id, file, fileName);
+    const timeout = new Promise<any>((_, reject) => setTimeout(() => reject(new Error('TIMEOUT')), 15000)); // 15s timeout file uploads
+    const result = await Promise.race([operation, timeout]);
+    
     revalidatePath('/koleksiyonum/ayarlar');
     revalidatePath('/koleksiyonum');
     return { success: true, url: result.url };
   } catch (err: any) {
-    return { error: err.message };
+    if (err.message === 'TIMEOUT') {
+       console.error(JSON.stringify({ code: 'AVATAR_UPLOAD_TIMEOUT', message: 'Action timed out after 15s', userId: user.id }));
+       return { error: 'Görsel yüklenirken zaman aşımı yaşandı.' };
+    }
+    console.error(JSON.stringify({ code: 'AVATAR_UPLOAD_FAILED', error: err.message, userId: user.id }));
+    return { error: 'Görsel yüklenemedi. ' + (err.message || '') };
   }
 }

@@ -197,7 +197,7 @@ export const getFigureRatings = async (minifigureId: string) => {
     .order('created_at', { ascending: false });
 
   if (error) throw new Error(error.message);
-  return data;
+  return data || [];
 };
 
 // ==========================================
@@ -234,7 +234,7 @@ export const getMinifiguresForCronDal = async (limit: number = 50) => {
     .limit(limit);
 
   if (error) throw new Error(error.message);
-  return data;
+  return data || [];
 };
 
 export const updateTranslationAdminDal = async (table: string, id: string, updates: any) => {
@@ -254,7 +254,7 @@ export const getAdminUsersDal = async () => {
     .select('id, username, avatar_url, created_at, is_approved, role')
     .order('created_at', { ascending: false });
   if (error) throw new Error(error.message);
-  return profiles;
+  return profiles || [];
 };
 
 export const getAdminBorsaFiguresDal = async () => {
@@ -291,7 +291,7 @@ export const getAdminFaqDal = async (id: string) => {
     .select('*')
     .eq('id', id)
     .single();
-  return data;
+  return data || null;
 };
 
 export const getAdminDashboardMetricsDal = async () => {
