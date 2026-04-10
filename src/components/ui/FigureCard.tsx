@@ -138,7 +138,7 @@ export default function FigureCard({
 
                 {/* Talep Label */}
                 <div className="flex flex-col flex-1 items-center justify-center bg-blue-50/50 py-2 px-1 rounded-lg border border-blue-100/50 text-center">
-                    <span className="text-[9px] text-blue-600/80 font-bold uppercase tracking-widest mb-0.5">Talep Durumu</span>
+                    <span className="text-[9px] text-blue-600/80 font-bold uppercase tracking-widest mb-0.5">Talep Sinyali</span>
                     <span className="text-[11px] font-black text-blue-700 leading-tight">
                         {demandScore === undefined || demandScore === null ? 'Veri Yetersiz' :
                          demandScore >= 4.0 ? 'Çok Yüksek' : 

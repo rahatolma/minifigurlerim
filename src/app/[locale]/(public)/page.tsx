@@ -161,18 +161,15 @@ export default async function Home() {
       <section className="py-[40px] md:py-[64px] bg-transparent border-t border-gray-200">
           <ItemCarousel
              titleBlock={
-               <div className="flex flex-col gap-1">
-                 <div className="flex items-center gap-2 md:gap-4">
-                   <div className="w-8 h-8 md:w-14 md:h-14 bg-white border-2 border-blue-500 text-blue-500 rounded-full flex items-center justify-center shadow-sm shrink-0">
-                       <TrendingUp className="w-[16px] h-[16px] md:w-[28px] md:h-[28px]" strokeWidth={2.5} />
-                   </div>
-                   <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Çok Talep Gören Figürler</h2>
+               <div className="flex items-center gap-2 md:gap-4">
+                 <div className="w-8 h-8 md:w-14 md:h-14 bg-white border-2 border-[#D22B2B] text-[#D22B2B] rounded-full flex items-center justify-center shadow-sm shrink-0">
+                     <TrendingUp className="w-[16px] h-[16px] md:w-[28px] md:h-[28px]" strokeWidth={2.5} />
                  </div>
-                 <p className="text-gray-500 text-[11px] md:text-sm font-medium pl-12 md:pl-20">Son dönem kullanıcı ilgisine göre öne çıkan figürler.</p>
+                 <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Çok Talep Gören Figürler</h2>
                </div>
              }
              actionButton={
-               <Link href="/figurler" className="bg-white border-2 border-gray-200 text-gray-700 font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">Hepsini Keşfet</Link>
+               <Link href="/figurler" className="bg-[#D22B2B] text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">Hepsini Keşfet</Link>
              }
           >
              {rawTopDemanded.map((fig: any) => (
@@ -202,18 +199,15 @@ export default async function Home() {
       <section className="py-[40px] md:py-[64px] bg-transparent border-t border-gray-200">
           <ItemCarousel
              titleBlock={
-               <div className="flex flex-col gap-1">
-                 <div className="flex items-center gap-2 md:gap-4">
-                   <div className="w-8 h-8 md:w-14 md:h-14 bg-white border-2 border-yellow-500 text-yellow-500 rounded-full flex items-center justify-center shadow-sm shrink-0">
-                       <Package className="w-[16px] h-[16px] md:w-[28px] md:h-[28px]" strokeWidth={2.5} />
-                   </div>
-                   <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Değerli Figürler</h2>
+               <div className="flex items-center gap-2 md:gap-4">
+                 <div className="w-8 h-8 md:w-14 md:h-14 bg-white border-2 border-[#D22B2B] text-[#D22B2B] rounded-full flex items-center justify-center shadow-sm shrink-0">
+                     <Package className="w-[16px] h-[16px] md:w-[28px] md:h-[28px]" strokeWidth={2.5} />
                  </div>
-                 <p className="text-gray-500 text-[11px] md:text-sm font-medium pl-12 md:pl-20">Nadirlik, yaş, talep ve piyasa sinyallerine göre öne çıkan parçalar.</p>
+                 <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Değerli Figürler</h2>
                </div>
              }
              actionButton={
-               <Link href="/figurler" className="bg-white border-2 border-gray-200 text-gray-700 font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">Hepsini Keşfet</Link>
+               <Link href="/figurler" className="bg-[#D22B2B] text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">Hepsini Keşfet</Link>
              }
           >
              {finalTopValued.map((fig: any) => (
