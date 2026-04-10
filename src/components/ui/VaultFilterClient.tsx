@@ -32,7 +32,11 @@ export default function VaultFilterClient({
     const params = new URLSearchParams(searchParams.toString());
     
     if (value === 'all') {
-        params.delete(name);
+        if (name === 'status') {
+            params.set(name, 'all'); // status için 'all' parametresi silinmesin, URL'ye açıkça yazılsın
+        } else {
+            params.delete(name);
+        }
     } else {
         params.set(name, value);
     }
@@ -43,7 +47,7 @@ export default function VaultFilterClient({
         const filterSection = document.getElementById('filter-section');
         if (filterSection) {
             const box = filterSection.getBoundingClientRect();
-            if (box.top < 120 || box.top > 140) {
+            if (box.top < 65 || box.top > 85) {
                  filterSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }

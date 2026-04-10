@@ -140,21 +140,28 @@ export default async function FigureDetail({
     <div className="bg-[#fcfcfc] min-h-screen w-full pb-32">
       <FloatingFigureNav prev={prevFigure} next={nextFigure} />
       <ClientViewTracker table="minifigures" id={figure.id} />
-      {/* 🧱 ÜST BLOĞU: Şablon Breadcrumb (İz Yolu) */}
-      <div className="border-b border-gray-200 bg-white">
-        <div className="max-w-7xl mx-auto px-8 flex flex-wrap items-center text-[10px] sm:text-[11px] font-black text-gray-400 tracking-[0.2em] uppercase" style={{ minHeight: '70px' }}>
-             <Link href="/" className="hover:text-black transition-colors">Ana Sayfa</Link> 
-             <span className="mx-3 text-gray-200">/</span> 
-             <Link href="/figurler" className="hover:text-black transition-colors">Figürler</Link> 
-             <span className="mx-3 text-gray-200">/</span> 
-             <span className="text-gray-900">{formatBrandText(figure.name)}</span>
-        </div>
-      </div>
+
 
       <div className="max-w-7xl mx-auto px-4 sm:px-8 mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative">
         
-        {/* 🧱 SOL KOLON: Detaylı Ansiklopedik Veriler */}
-        <div className="lg:col-span-6 flex flex-col items-start bg-white p-6 sm:p-10 rounded-2xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+                {/* 🧱 SOL KOLON: Görsel ve Hızlı Aksiyonlar */}
+        <div className="lg:col-span-6 xl:col-span-6 flex flex-col gap-6 sticky pb-6 z-40" style={{ top: '100px' }}>
+            
+            {/* 1- ANA GÖRSEL KUTUSU */}
+            <div className="bg-white p-4 sm:p-8 rounded-2xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col items-center justify-center lg:min-h-[350px]">
+                <FigureGallery images={images} name={figure.name} />
+            </div>
+
+            {/* 2- KOLEKSİYON VE PUANLAMA BUTONLARI */}
+            <CollectionActions minifigureId={figure.id} />
+
+        </div>
+
+        {/* 🧱 SAĞ KOLON: Detaylı Ansiklopedik Veriler */}
+        <div className="lg:col-span-6 xl:col-span-6 flex flex-col gap-6">
+            
+            {/* Üst Kutu: Bilgiler ve Tablo */}
+            <div className="bg-white p-6 sm:p-10 rounded-2xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col items-start w-full">
             
             {/* Etiketler (Seri & Kategori) */}
             <div className="flex flex-wrap gap-2 items-center w-full mb-6">
@@ -177,52 +184,9 @@ export default async function FigureDetail({
 
             {/* Açıklama Alanı */}
             <div className="text-gray-600 text-[15px] sm:text-[16px] font-medium leading-relaxed mb-10 w-full min-h-[40px]">
-                {figure.description ? formatBrandText(figure.description) : <span className="text-gray-400 italic">Figür açıklaması girilmemiş...</span>}
+                {figure.description ? formatBrandText(figure.description) : <span className="text-gray-400 opacity-60">Figür açıklaması girilmemiş...</span>}
             </div>
 
-            {/* DEĞER VE TALEP MOTORU BLOĞU */}
-            <div className="w-full bg-white border-2 border-gray-100 rounded-xl p-5 sm:p-6 mb-10 shadow-sm relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-4 opacity-5 bg-gray-900 aspect-square rounded-bl-full pointer-events-none transform translate-x-1/2 -translate-y-1/2 group-hover:scale-150 transition-transform duration-700"></div>
-                <div className="flex flex-col xl:flex-row gap-6 items-start xl:items-center justify-between border-b border-gray-100 pb-5 mb-5 relative z-10">
-                    <div className="flex flex-col">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-[#D22B2B] mb-1 flex items-center gap-1.5"><svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg> Koleksiyon Değeri</span>
-                        <span className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">
-                            {figure.min_price && figure.max_price ? `$${figure.min_price} - $${figure.max_price}` : (figure.value_usd ? `$${figure.value_usd}` : 'Belirsiz')}
-                        </span>
-                    </div>
-                    <div className="flex gap-3 w-full xl:w-auto">
-                         <div className="flex flex-col items-center justify-center bg-yellow-50 px-4 py-2.5 rounded-lg border border-yellow-100 flex-1 xl:min-w-[130px]">
-                            <span className="text-[9px] text-yellow-600/80 font-bold uppercase tracking-widest mb-1">Değer Skoru</span>
-                            <span className="text-sm font-black text-yellow-700">
-                                {figure.value_score === undefined || figure.value_score === null ? 'Yaygın' : 
-                                 figure.value_score >= 4.5 ? 'Efsane' : 
-                                 figure.value_score >= 3.5 ? 'Çok Değerli' : 
-                                 figure.value_score >= 2.5 ? 'Değerli' : 
-                                 figure.value_score >= 1.5 ? 'Orta' : 'Yaygın'}
-                            </span>
-                        </div>
-                        <div className="flex flex-col items-center justify-center bg-blue-50 px-4 py-2.5 rounded-lg border border-blue-100 flex-1 xl:min-w-[130px]">
-                            <span className="text-[9px] text-blue-600/80 font-bold uppercase tracking-widest mb-1">Talep Sinyali</span>
-                            <span className="text-sm font-black text-blue-700">
-                                {figure.demand_score === undefined || figure.demand_score === null ? 'Düşük Talep' :
-                                 figure.demand_score >= 4.0 ? 'Çok Yüksek' : 
-                                 figure.demand_score >= 3.0 ? 'Yüksek' : 
-                                 figure.demand_score >= 2.0 ? 'Orta' : 'Düşük'}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div className="flex flex-col gap-2 text-[10.5px] font-bold text-gray-500 leading-relaxed relative z-10">
-                   <p className="flex items-start gap-1.5"><strong className="text-gray-700 shrink-0 uppercase tracking-widest">Tahmini Değer:</strong> <span>Bu değer, global koleksiyon piyasasına göre hesaplanan tahmini bir aralıktır.</span></p>
-                   <p className="flex items-start gap-1.5"><strong className="text-gray-700 shrink-0 uppercase tracking-widest">Değer Skoru:</strong> <span>Nadirlik, yaş, talep ve piyasa verilerine göre hesaplanır.</span></p>
-                   <p className="flex items-start gap-1.5"><strong className="text-gray-700 shrink-0 uppercase tracking-widest">Talep:</strong> <span>Kullanıcı etkileşimleri ve koleksiyon eğilimlerine göre belirlenir.</span></p>
-                   <div className="mt-1.5 pt-2 border-t border-gray-100">
-                      <p className="text-[#D22B2B] italic font-medium inline-flex items-center gap-1.5"><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Fiyatlar ve değerler zamanla değişebilir, yalnızca referans amaçlıdır. Ticaret tavsiyesi değildir.</p>
-                   </div>
-                </div>
-            </div>
-            
             {/* 🧱 DİKEY ÖZELLİK LİSTESİ ŞABLONU (TABLE) */}
             <div className="w-full">
                 <div className="flex flex-col w-full border-t border-gray-900 mt-2">
@@ -253,43 +217,76 @@ export default async function FigureDetail({
                 </div>
             </div>
 
-        </div>
+            </div> {/* Üst Kutu Sonu */}
 
-        {/* 🧱 SAĞ KOLON: Görsel ve Hızlı Aksiyonlar */}
-        <div className="lg:col-span-6 flex flex-col gap-6 sticky pb-6 z-40" style={{ top: '170px' }}>
-            
-            {/* 1- GÖRÜNTÜLENME KUTUSU */}
-            <div className="w-full bg-white px-2 py-5 rounded-xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex items-center justify-between">
-                <div className="flex flex-col items-center flex-1">
-                    <span className="text-green-700 font-bold text-[16px]">{figure.total_views || 0}</span>
-                    <span className="text-gray-400 text-[9px] sm:text-[10px] uppercase font-black tracking-widest mt-1 text-center">T. Görüntüleme</span>
+            {/* 3- DEĞER VE TALEP MOTORU BLOĞU (MİNİMAL) */}
+            <div className="w-full bg-white border border-gray-100 rounded-xl p-4 sm:p-5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col gap-4">
+                <div className="flex gap-2 w-full">
+                    {/* 1. Koleksiyon Değeri Kutusu */}
+                    <div className="flex flex-col items-center justify-center bg-gray-50/50 px-2 py-2 rounded-lg border border-gray-100 flex-1 min-w-0">
+                        <span className="text-[8px] sm:text-[9px] text-[#D22B2B] font-bold uppercase tracking-widest mb-1 flex items-center justify-center gap-1 w-full truncate">
+                           <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg> 
+                           <span className="truncate">Kol. Değeri</span>
+                        </span>
+                        <span className="text-[12px] sm:text-[14px] font-black text-gray-900 tracking-tight truncate w-full text-center">
+                            {figure.min_price && figure.max_price ? `$${figure.min_price} - $${figure.max_price}` : (figure.value_usd ? `$${figure.value_usd}` : 'Belirsiz')}
+                        </span>
+                    </div>
+
+                    {/* 2. Değer Skoru Kutusu */}
+                    <div className="flex flex-col items-center justify-center bg-yellow-50/50 px-2 py-2 rounded-lg border border-yellow-100 flex-1 min-w-0">
+                        <span className="text-[8px] sm:text-[9px] text-yellow-600/80 font-bold uppercase tracking-widest mb-1 truncate w-full text-center">Değer Skoru</span>
+                        <span className="text-[12px] sm:text-[14px] font-black text-yellow-700 truncate w-full text-center">
+                            {figure.value_score === undefined || figure.value_score === null ? 'Yaygın' : 
+                             figure.value_score >= 4.5 ? 'Efsane' : 
+                             figure.value_score >= 3.5 ? 'Çok Değerli' : 
+                             figure.value_score >= 2.5 ? 'Değerli' : 
+                             figure.value_score >= 1.5 ? 'Orta' : 'Yaygın'}
+                        </span>
+                    </div>
+
+                    {/* 3. Talep Sinyali Kutusu */}
+                    <div className="flex flex-col items-center justify-center bg-blue-50/50 px-2 py-2 rounded-lg border border-blue-100 flex-1 min-w-0">
+                        <span className="text-[8px] sm:text-[9px] text-blue-600/80 font-bold uppercase tracking-widest mb-1 truncate w-full text-center">Talep Sinyali</span>
+                        <span className="text-[12px] sm:text-[14px] font-black text-blue-700 truncate w-full text-center">
+                            {figure.demand_score === undefined || figure.demand_score === null ? 'Düşük Talep' :
+                             figure.demand_score >= 4.0 ? 'Çok Yüksek' : 
+                             figure.demand_score >= 3.0 ? 'Yüksek' : 
+                             figure.demand_score >= 2.0 ? 'Orta' : 'Düşük'}
+                        </span>
+                    </div>
                 </div>
-                <div className="w-px h-8 bg-gray-100"></div>
-                <div className="flex flex-col items-center flex-1">
-                    <span className="text-green-700 font-bold text-[16px]">{figure.daily_views || 0}</span>
-                    <span className="text-gray-400 text-[9px] sm:text-[10px] uppercase font-black tracking-widest mt-1 text-center">G. Görüntüleme</span>
-                </div>
-                <div className="w-px h-8 bg-gray-100"></div>
-                <div className="flex flex-col items-center flex-1">
-                    <span className="text-red-500 font-bold text-[16px]">{Math.max(1, Math.floor((figure.description?.length || 0) / 250))} Dk</span>
-                    <span className="text-gray-400 text-[9px] sm:text-[10px] uppercase font-black tracking-widest mt-1 text-center">Okuma</span>
-                </div>
-                <div className="w-px h-8 bg-gray-100"></div>
-                <div className="flex flex-col items-center flex-1">
-                    <span className="text-gray-800 font-bold text-[16px]">0</span>
-                    <span className="text-gray-400 text-[9px] sm:text-[10px] uppercase font-black tracking-widest mt-1 text-center">Yorum</span>
+                
+                {/* İtalik olmayan minimal uyarı */}
+                <div className="pt-3 border-t border-gray-50 flex items-start justify-center text-center xl:text-left xl:justify-start gap-1.5 text-[9px] sm:text-[10px] text-gray-500 font-medium tracking-wide">
+                   <svg className="w-3.5 h-3.5 shrink-0 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                   <span>Fiyatlar ve değerler zamanla değişebilir, yalnızca referans amaçlıdır. Ticaret tavsiyesi değildir.</span>
                 </div>
             </div>
 
-            {/* 2- ANA GÖRSEL KUTUSU */}
-            <div className="bg-white p-4 sm:p-8 rounded-2xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col items-center justify-center lg:min-h-[400px]">
-                <FigureGallery images={images} name={figure.name} />
-            </div>
 
-            {/* 3- KOLEKSİYON VE PUANLAMA BUTONLARI */}
-            <CollectionActions 
-               minifigureId={figure.id} 
-            />
+            {/* 4- GÖRÜNTÜLENME KUTUSU (Ayrı Kutu) */}
+            <div className="w-full bg-white px-4 py-8 rounded-2xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-wrap sm:flex-nowrap items-center justify-between gap-y-4">
+                <div className="flex flex-col items-center flex-1 min-w-0 w-1/4 sm:w-auto">
+                    <span className="text-green-700 font-bold text-[14px]">{figure.total_views || 0}</span>
+                    <span className="text-gray-400 text-[8px] sm:text-[9px] uppercase font-black tracking-widest mt-1 text-center">T. Görüntüleme</span>
+                </div>
+                <div className="hidden sm:block w-px h-6 bg-gray-200"></div>
+                <div className="flex flex-col items-center flex-1 min-w-0 w-1/4 sm:w-auto">
+                    <span className="text-green-700 font-bold text-[14px]">{figure.daily_views || 0}</span>
+                    <span className="text-gray-400 text-[8px] sm:text-[9px] uppercase font-black tracking-widest mt-1 text-center">G. Görüntüleme</span>
+                </div>
+                <div className="hidden sm:block w-px h-6 bg-gray-200"></div>
+                <div className="flex flex-col items-center flex-1 min-w-0 w-1/4 sm:w-auto">
+                    <span className="text-red-500 font-bold text-[14px]">{Math.max(1, Math.floor((figure.description?.length || 0) / 250))} Dk</span>
+                    <span className="text-gray-400 text-[8px] sm:text-[9px] uppercase font-black tracking-widest mt-1 text-center">Okuma</span>
+                </div>
+                <div className="hidden sm:block w-px h-6 bg-gray-200"></div>
+                <div className="flex flex-col items-center flex-1 min-w-0 w-1/4 sm:w-auto">
+                    <span className="text-gray-800 font-bold text-[14px]">0</span>
+                    <span className="text-gray-400 text-[8px] sm:text-[9px] uppercase font-black tracking-widest mt-1 text-center">Yorum</span>
+                </div>
+            </div>
 
         </div>
 

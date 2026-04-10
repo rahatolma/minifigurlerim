@@ -66,16 +66,6 @@ export default async function FiguresPage({
   return (
     <div className="bg-[#fcfcfc] min-h-screen pb-32">
       
-      {/* ŞABLON BREADCRUMB */}
-      <div className="hidden md:block border-b border-gray-200 bg-white relative z-20">
-        <div className="max-w-7xl mx-auto px-8 flex items-center justify-between text-[10px] sm:text-[11px] font-black text-gray-400 tracking-[0.2em] uppercase" style={{ height: '70px' }}>
-             <div className="flex items-center">
-                 <Link href="/" className="hover:text-black transition-colors">Ana Sayfa</Link> 
-                 <span className="mx-3 text-gray-200">/</span> 
-                 <span className="text-gray-900">Figürler</span>
-             </div>
-        </div>
-      </div>
 
       {/* MİNİFİGÜR EVRİMİ (HERO TIMELINE) */}
       <div className="hidden md:block w-full bg-[#fcfcfc] pt-8 pb-12 overflow-hidden relative border-b border-gray-100 z-10">
@@ -116,9 +106,9 @@ export default async function FiguresPage({
       </div>
 
       {/* Filtreleme ve Sonuçların Başına Dönmek İçin Sabit Çıpa */}
-      <div id="filter-section" className="scroll-mt-[150px]"></div>
+      <div id="filter-section" className="scroll-mt-[75px]"></div>
 
-      <div className="md:sticky md:bg-[#fcfcfc] md:py-4 md:border-b md:border-gray-100 md:shadow-sm md:mb-6 z-40 md:z-40 top-[60px] md:top-[150px]">
+      <div className="md:sticky md:bg-[#fcfcfc] md:py-4 md:border-b md:border-gray-100 md:shadow-sm md:mb-6 z-40 md:z-40 top-0 md:top-[75px]">
         {/* YATAY FİLTRE BARI (Client-Side Auto Submit) */}
         <div className="max-w-7xl mx-auto px-0 md:px-8">
             <FiguresFilterClient 

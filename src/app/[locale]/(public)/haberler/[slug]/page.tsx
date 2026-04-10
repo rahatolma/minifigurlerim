@@ -101,18 +101,7 @@ export default async function NewsDetailPage({
       {/* Sunucu bazlı view takip işlemi için Client bileşeni (Figürlerdeki gibi) */}
       <ClientViewTracker table="news" id={news.id} />
 
-      {/* ŞABLON BREADCRUMB */}
-      <div className="border-b border-gray-100 bg-white">
-        <div className="max-w-7xl mx-auto px-8 flex items-center justify-between text-[10px] sm:text-[11px] font-black text-gray-400 tracking-[0.2em] uppercase" style={{ height: '70px' }}>
-             <div className="flex items-center">
-                 <Link href="/" className="hover:text-black transition-colors">{t('BreadcrumbHome')}</Link> 
-                 <span className="mx-3 text-gray-200">/</span> 
-                 <Link href="/haberler" className="hover:text-black transition-colors">{t('BreadcrumbNews')}</Link>
-                 <span className="mx-3 text-gray-200">/</span> 
-                 <span className="text-gray-900 truncate max-w-[150px] sm:max-w-[300px]">{title}</span>
-             </div>
-        </div>
-      </div>
+
 
       {/* HEADER / HERO ALANI */}
       <div className="w-full max-w-7xl mx-auto px-8 mt-16 mb-12">

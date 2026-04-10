@@ -160,7 +160,7 @@ export default function CollectionActions({ minifigureId }: { minifigureId: stri
           <button 
              onClick={() => handleToggle('want')}
              disabled={loading}
-             className={`w-full flex items-center justify-center gap-3 py-3.5 px-6 rounded-xl transition-all border-2 ${status === 'want' ? 'bg-red-50 border-red-200 text-[#D22B2B] font-bold shadow-inner' : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100 hover:border-gray-300 font-medium shadow-sm'}`}
+             className={`w-full flex items-center justify-center gap-3 py-3.5 px-6 rounded-xl transition-all duration-300 border-2 ${status === 'want' ? 'bg-red-50 border-red-200 text-[#D22B2B] font-bold shadow-inner' : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100 hover:border-gray-300 font-medium shadow-sm hover:-translate-y-1 hover:shadow-md'}`}
           >
              {status === 'want' ? (
                 <svg className="w-5 h-5 text-[#D22B2B]" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd"></path></svg>
@@ -178,7 +178,7 @@ export default function CollectionActions({ minifigureId }: { minifigureId: stri
           onClick={() => {
              setShowRatingModal(true);
           }}
-          className={`w-full py-3 px-4 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.04)] border flex items-center justify-center gap-2 font-bold text-sm transition-all ${rating ? 'bg-yellow-50 border-yellow-200 text-yellow-800' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'}`}
+          className={`w-full py-3 px-4 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.04)] border flex items-center justify-center gap-2 font-bold text-sm transition-all duration-300 ${rating ? 'bg-yellow-50 border-yellow-200 text-yellow-800' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:-translate-y-1 hover:shadow-md'}`}
        >
           <span className="text-yellow-400 text-lg">★</span> 
           {rating ? `${rating} Yıldız Puanı Verdin` : 'Figüre Puan Ver'}

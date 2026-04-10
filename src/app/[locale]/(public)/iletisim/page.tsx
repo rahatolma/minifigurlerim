@@ -14,14 +14,7 @@ export default async function ContactPage() {
 
   return (
     <div className="bg-[#fcfcfc] min-h-screen pb-32">
-      {/* 🧱 ÜST BLOĞU: Şablon Breadcrumb (İz Yolu) */}
-      <div className="hidden md:block border-b border-gray-100 bg-white relative z-20">
-        <div className="max-w-7xl mx-auto px-8 flex items-center text-[10px] sm:text-[11px] font-black text-gray-400 tracking-[0.2em] uppercase" style={{ minHeight: '70px' }}>
-             <a href="/" className="hover:text-black transition-colors">Ana Sayfa</a> 
-             <span className="mx-3 text-gray-200">/</span> 
-             <span className="text-gray-900">İLETİŞİM</span>
-        </div>
-      </div>
+
 
       <div className="max-w-4xl mx-auto px-6 md:px-8 mt-8 mb-24 flex flex-col gap-16">
          

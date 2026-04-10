@@ -1,12 +1,16 @@
+'use client';
 import Link from 'next/link';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
+import { useAuth } from '@/components/providers/AuthProvider';
 
 export interface AuthCTAProps {
   fullWidth?: boolean;
-  isLoggedIn?: boolean;
 }
 
-export default function AuthCTA({ fullWidth = false, isLoggedIn = false }: AuthCTAProps) {
+export default function AuthCTA({ fullWidth = false }: AuthCTAProps) {
+  const { user } = useAuth();
+  const isLoggedIn = !!user;
+
   const containerStyle = fullWidth
     ? "w-full relative overflow-hidden bg-gray-900 py-16 md:py-20 px-4 md:px-8 shadow-xl flex flex-col items-center justify-center text-center group border-y border-gray-800"
     : "w-full relative overflow-hidden bg-gray-900 rounded-3xl p-8 md:p-12 shadow-[0_15px_40px_rgba(0,0,0,0.15)] flex flex-col items-center justify-center text-center group border border-gray-800";

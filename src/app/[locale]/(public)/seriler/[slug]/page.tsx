@@ -136,16 +136,7 @@ export default async function SeriesDetail({
       <FloatingSeriesNav prev={prevSeries} next={nextSeries} />
 
       <ClientViewTracker table="series" id={series.id} />
-      {/* ŞABLON BREADCRUMB */}
-      <div className="border-b border-gray-200 bg-white relative z-20">
-        <div className="max-w-7xl mx-auto px-8 flex flex-wrap items-center text-[10px] sm:text-[11px] font-black text-gray-400 tracking-[0.2em] uppercase" style={{ minHeight: '70px' }}>
-             <Link href="/" className="hover:text-black transition-colors">{t('BreadcrumbHome')}</Link> 
-             <span className="mx-3 text-gray-200">/</span> 
-             <Link href="/seriler" className="hover:text-black transition-colors">{t('BreadcrumbSeries')}</Link>
-             <span className="mx-3 text-gray-200">/</span> 
-             <span className="text-gray-900">{formatBrandText(title)}</span>
-        </div>
-      </div>
+
 
       {/* Devasa Kapak Görseli (Sticky değil, sayfa akışında kalıp yok olacak) */}
       <section className="relative w-full h-[300px] md:h-[450px] flex items-end justify-center overflow-hidden bg-[#fcfcfc]">
@@ -162,8 +153,8 @@ export default async function SeriesDetail({
         <div className="absolute inset-x-0 bottom-0 h-[80%] bg-gradient-to-t from-[#fcfcfc] via-[#fcfcfc]/80 to-transparent pointer-events-none z-10" />
       </section>
 
-      {/* STICKY HEADER GURUBU (Başlık + Info Bar) */}
-      <div className="sticky top-[130px] md:top-[150px] z-40 w-full flex flex-col items-center shadow-[0_20px_40px_-15px_rgba(0,0,0,0.03)] bg-[#fcfcfc]/90 backdrop-blur-2xl">
+      {/* HEADER GURUBU (Başlık + Info Bar) */}
+      <div className="w-full flex flex-col items-center pb-4 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.03)] bg-[#fcfcfc] relative z-20">
          
          {/* Başlık (Hero Text) */}
          <div className="relative z-10 pt-8 md:pt-10 pb-6 flex flex-col items-center max-w-7xl px-4 w-full">

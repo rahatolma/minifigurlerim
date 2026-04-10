@@ -62,11 +62,9 @@ export default async function KoleksiyonumPage({
       return match;
   });
 
-  // KPI KARTLARI (Sıfır filtrede cüzdanın gerçek tam halini gösterir, filtre yapıldığında o filtrenin KPI haline gelir)
-  // "Bende olanlar" (sadece have olanlara göre KPI)
-  const haveItems = filteredCollections.filter((c: any) => c.status === 'have');
-  // "Radarımdakiler" (sadece want olanlara göre KPI)
-  const wantItems = filteredCollections.filter((c: any) => c.status === 'want');
+  // KPI KARTLARI (Kullanıcının TÜM hesabını yansıtır, alt filtrelerden etkilenmez)
+  const haveItems = rawCollections.filter((c: any) => c.status === 'have');
+  const wantItems = rawCollections.filter((c: any) => c.status === 'want');
 
   // YENİ MİMARİ: Hızlı Toplam (Count) Çekimi
   const totalFiguresInWorldRaw = await getTotalMinifiguresCount();
@@ -126,14 +124,7 @@ export default async function KoleksiyonumPage({
 
   return (
     <div className="bg-[#fcfcfc] min-h-screen pb-32 lg:pb-72">
-        {/* ŞABLON BREADCRUMB */}
-        <div className="hidden md:block border-b border-gray-200 bg-white relative z-20">
-           <div className="max-w-7xl mx-auto px-8 flex items-center text-[10px] sm:text-[11px] font-black text-gray-400 tracking-[0.2em] uppercase" style={{ height: '70px' }}>
-               <Link href="/" className="hover:text-black transition-colors">Ana Sayfa</Link> 
-               <span className="mx-3 text-gray-200">/</span> 
-               <span className="text-gray-900">Koleksiyonum</span>
-           </div>
-        </div>
+
 
         <div className="max-w-7xl mx-auto px-8 pt-8">
             
@@ -342,10 +333,10 @@ export default async function KoleksiyonumPage({
         </div>
 
         {/* --- YENİ DÜZEN FİLTRE VE GRID ALANI --- */}
-        <div id="filter-section" className="scroll-mt-[150px]"></div>
+        <div id="filter-section" className="scroll-mt-[75px]"></div>
 
         {/* FİLTRE BARI */}
-        <div className="md:sticky md:bg-[#fcfcfc] md:py-4 md:border-b md:border-gray-100 md:shadow-sm md:mb-6 top-[60px] z-40 md:z-40 md:top-[150px]">
+        <div className="md:sticky md:bg-[#fcfcfc] md:py-4 md:border-b md:border-gray-100 md:shadow-sm md:mb-6 top-0 z-40 md:z-40 md:top-[75px]">
           <div className="max-w-7xl mx-auto px-0 md:px-8">
               <VaultFilterClient 
                 seriesList={seriesList} 

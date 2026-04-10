@@ -34,18 +34,9 @@ export default async function NewsPage({
   return (
     <div className="bg-[#fcfcfc] min-h-screen">
       
-      {/* ŞABLON BREADCRUMB */}
-      <div className="hidden md:block border-b border-gray-200 bg-white">
-        <div className="max-w-7xl mx-auto px-8 flex items-center justify-between text-[10px] sm:text-[11px] font-black text-gray-400 tracking-[0.2em] uppercase" style={{ height: '70px' }}>
-             <div className="flex items-center">
-                 <Link href="/" className="hover:text-black transition-colors">{t('BreadcrumbHome')}</Link> 
-                 <span className="mx-3 text-gray-200">/</span> 
-                 <span className="text-gray-900">{t('BreadcrumbNews')}</span>
-             </div>
-        </div>
-      </div>
 
-      <div className="sticky bg-[#fcfcfc] py-4 border-b border-gray-100 shadow-sm mb-6 z-40" style={{ top: '142px' }}>
+
+      <div className="sticky top-0 md:top-[75px] bg-[#fcfcfc] py-4 border-b border-gray-100 shadow-sm mb-6 z-40">
         <div className="max-w-7xl mx-auto px-8">
           <NewsFilterClient 
             totalCount={newsList.length}

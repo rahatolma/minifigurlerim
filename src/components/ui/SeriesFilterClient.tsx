@@ -40,7 +40,7 @@ export default function SeriesFilterClient({
         const filterSection = document.getElementById('filter-section');
         if (filterSection) {
             const box = filterSection.getBoundingClientRect();
-            if (box.top < 130 || box.top > 160) { // Sticky bar is at top-[150px]
+            if (box.top < 65 || box.top > 85) { // Sticky bar is at top-[75px]
                  filterSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
@@ -93,7 +93,7 @@ export default function SeriesFilterClient({
           onChange={handleChange}
           className="hidden md:block border border-gray-200 bg-white shadow-sm rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-48 flex-1 cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
         >
-          <option value="all">{t('FilterTitle').split(' ')[0]}</option>
+          <option value="all">Kategoriler</option>
           {categories.map(c => <option key={c.slug} value={c.slug}>{c.name}</option>)}
         </select>
         

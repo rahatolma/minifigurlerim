@@ -53,7 +53,7 @@ export default function FiguresFilterClient({
             const box = filterSection.getBoundingClientRect();
             // Eğer elementin viewport'a göre konumu eksiyse (yani yukarıda bir yerdeyse, biz aşağı scroll etmişiz demektir)
             // Ya da sıfırdan çok farklıysa, o the scrollIntoView komutunu uygula
-            if (box.top < 120 || box.top > 140) {
+            if (box.top < 65 || box.top > 85) {
                  filterSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }

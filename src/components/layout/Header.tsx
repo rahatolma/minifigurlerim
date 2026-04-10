@@ -33,7 +33,7 @@ export default function Header() {
 
   return (
     <>
-    <header className="w-full flex-col sticky top-0 z-50 bg-white shadow-sm">
+    <header className="w-full flex-col bg-white shadow-sm relative z-[70]">
       {/* Top Tier: Logo & Right Tools */}
       <div className="text-black px-4 md:px-8 flex items-center justify-between mx-auto max-w-7xl h-[60px] md:h-[75px]">
         {/* Logo Container (Always Visible) */}
@@ -86,9 +86,10 @@ export default function Header() {
            </div>
         </div>
       </div>
+    </header>
 
       {/* Bottom Tier: Navigation (SADECE MASAÜSTÜNDE GÖRÜNÜR MDC) */}
-      <div className="hidden md:block bg-[var(--color-brand-red)] w-full shadow-md">
+      <nav className="hidden md:block bg-[var(--color-brand-red)] w-full shadow-md sticky top-0 z-[60]">
         <div className="mx-auto max-w-7xl flex items-center h-[75px] relative">
           {/* Nav Links */}
           <nav className="w-full h-full flex items-center justify-center px-8">
@@ -107,8 +108,7 @@ export default function Header() {
             </ul>
           </nav>
         </div>
-      </div>
-    </header>
+      </nav>
       
       {/* Global Yasal Uyarı Modalı */}
       <LegalNoticeModal />

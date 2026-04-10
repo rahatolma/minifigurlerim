@@ -19,16 +19,7 @@ export default async function AyarlarPage() {
 
   return (
     <div className="bg-[#fcfcfc] min-h-screen pb-32">
-        {/* ŞABLON BREADCRUMB */}
-        <div className="border-b border-gray-200 bg-white relative z-20">
-           <div className="max-w-7xl mx-auto px-8 flex items-center text-[10px] sm:text-[11px] font-black text-gray-400 tracking-[0.2em] uppercase" style={{ height: '70px' }}>
-               <Link href="/" className="hover:text-black transition-colors">Ana Sayfa</Link> 
-               <span className="mx-3 text-gray-200">/</span> 
-               <Link href="/koleksiyonum" className="hover:text-black transition-colors">Koleksiyonum</Link> 
-               <span className="mx-3 text-gray-200">/</span> 
-               <span className="text-gray-900">Hesap Ayarları</span>
-           </div>
-        </div>
+
 
         <div className="max-w-7xl mx-auto px-8 pt-8 flex flex-col md:flex-row gap-8 lg:gap-12">
             

@@ -94,16 +94,7 @@ export default async function SeriesPage({
   return (
     <div className="bg-[#fcfcfc] min-h-screen">
       
-      {/* ŞABLON BREADCRUMB */}
-      <div className="hidden md:block border-b border-gray-200 bg-white relative z-20">
-        <div className="max-w-7xl mx-auto px-8 flex items-center justify-between text-[10px] sm:text-[11px] font-black text-gray-400 tracking-[0.2em] uppercase" style={{ minHeight: '70px' }}>
-             <div className="flex items-center">
-                 <Link href="/" className="hover:text-black transition-colors">{t('BreadcrumbHome')}</Link> 
-                 <span className="mx-3 text-gray-200">/</span> 
-                 <span className="text-gray-900">{t('BreadcrumbSeries')}</span>
-             </div>
-        </div>
-      </div>
+
 
       {/* YATAY EFSANELER ZAMAN ÇİZELGESİ (CMF HISTORY) - SADECE MASAÜSTÜ */}
       <div className="hidden md:block w-full bg-[#fcfcfc] pt-8 pb-16 overflow-hidden relative border-b border-gray-100">
@@ -183,9 +174,9 @@ export default async function SeriesPage({
          <ScrollDownHint />
       </div>
 
-      <div id="filter-section" className="scroll-mt-[150px]"></div>
+      <div id="filter-section" className="scroll-mt-[75px]"></div>
 
-      <div className="md:sticky md:bg-[#fcfcfc] md:py-4 md:border-b md:border-gray-100 md:shadow-sm md:mb-6 z-40 md:z-30 top-[60px] md:top-[150px]">
+      <div className="md:sticky md:bg-[#fcfcfc] md:py-4 md:border-b md:border-gray-100 md:shadow-sm md:mb-6 z-40 md:z-30 top-0 md:top-[75px]">
         <div className="max-w-7xl mx-auto px-0 md:px-8">
           <SeriesFilterClient 
             categories={categoryFilters}

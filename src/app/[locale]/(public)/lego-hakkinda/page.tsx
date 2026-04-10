@@ -103,14 +103,7 @@ export default function LegoHakkindaPage() {
   return (
     <div className="bg-[#fcfcfc] min-h-screen pb-32">
       
-      {/* Breadcrumb */}
-      <div className="hidden md:block border-b border-gray-200 bg-white relative z-20">
-        <div className="max-w-7xl mx-auto px-8 flex items-center text-[10px] sm:text-[11px] font-black text-gray-400 tracking-[0.2em] uppercase" style={{ minHeight: '70px' }}>
-             <Link href="/" className="hover:text-black transition-colors">Ana Sayfa</Link> 
-             <span className="mx-3 text-gray-200">/</span> 
-             <span className="text-gray-900">LEGO® HAKKINDA</span>
-        </div>
-      </div>
+
 
       {/* Hero Header */}
       <div className="w-full relative px-4 sm:px-8 max-w-7xl mx-auto mt-8">
