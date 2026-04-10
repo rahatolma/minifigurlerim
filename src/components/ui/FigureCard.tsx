@@ -125,9 +125,9 @@ export default function FigureCard({
 
              <div className="flex items-stretch gap-2 mt-1">
                 {/* Değer Skoru Label */}
-                <div className="flex flex-col flex-1 items-center justify-center bg-yellow-50/50 py-2 rounded-lg border border-yellow-100/50">
+                <div className="flex flex-col flex-1 items-center justify-center bg-yellow-50/50 py-2 px-1 rounded-lg border border-yellow-100/50 text-center">
                     <span className="text-[9px] text-yellow-600/80 font-bold uppercase tracking-widest mb-0.5">Değer Skoru</span>
-                    <span className="text-[11px] font-black text-yellow-700 whitespace-nowrap">
+                    <span className="text-[11px] font-black text-yellow-700 leading-tight">
                         {valueScore === undefined || valueScore === null ? 'Veri Yetersiz' : 
                          valueScore >= 4.5 ? 'Efsane' : 
                          valueScore >= 3.5 ? 'Çok Değerli' : 
@@ -137,9 +137,9 @@ export default function FigureCard({
                 </div>
 
                 {/* Talep Label */}
-                <div className="flex flex-col flex-1 items-center justify-center bg-blue-50/50 py-2 rounded-lg border border-blue-100/50">
+                <div className="flex flex-col flex-1 items-center justify-center bg-blue-50/50 py-2 px-1 rounded-lg border border-blue-100/50 text-center">
                     <span className="text-[9px] text-blue-600/80 font-bold uppercase tracking-widest mb-0.5">Talep Durumu</span>
-                    <span className="text-[11px] font-black text-blue-700 whitespace-nowrap">
+                    <span className="text-[11px] font-black text-blue-700 leading-tight">
                         {demandScore === undefined || demandScore === null ? 'Veri Yetersiz' :
                          demandScore >= 4.0 ? 'Çok Yüksek' : 
                          demandScore >= 3.0 ? 'Yüksek' : 
@@ -155,27 +155,27 @@ export default function FigureCard({
                  <button 
                     onClick={(e) => handleToggle(e, 'have')} 
                     disabled={loading}
-                    className={`flex-1 flex items-center justify-center gap-1.5 py-3 px-1.5 sm:px-2 rounded-xl transition-all font-bold text-[11px] sm:text-[12px] truncate ${status === 'have' ? 'bg-[#5CB85C] text-white shadow-md' : 'bg-green-50/50 text-green-700 hover:bg-green-50 border border-green-100'}`}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-1.5 sm:px-2 rounded-xl transition-all font-bold text-[10px] sm:text-[11px] md:text-[12px] min-w-0 ${status === 'have' ? 'bg-[#5CB85C] text-white shadow-md' : 'bg-green-50/50 text-green-700 hover:bg-green-50 border border-green-100'}`}
                  >
                     {status === 'have' ? (
-                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+                       <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
                     ) : (
-                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"></path></svg>
+                       <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"></path></svg>
                     )}
-                    <span>{status === 'have' ? 'Koleksiyonda' : 'Koleksiyonuma Ekle'}</span>
+                    <span className="truncate">{status === 'have' ? 'Koleksiyonda' : 'Koleksiyonuma Ekle'}</span>
                  </button>
 
                  <button 
-                    onClick={(e) => handleToggle(e, 'want')} 
+                    onClick={(e) => handleToggle(e, 'want')}
                     disabled={loading}
-                    className={`flex-1 flex items-center justify-center gap-1.5 py-3 px-1.5 sm:px-2 rounded-xl transition-all font-bold text-[11px] sm:text-[12px] truncate ${status === 'want' ? 'bg-[#D22B2B] text-white shadow-md' : 'bg-red-50/30 text-red-600 hover:bg-red-50 border border-red-50'}`}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-1.5 sm:px-2 rounded-xl transition-all font-bold text-[10px] sm:text-[11px] md:text-[12px] min-w-0 ${status === 'want' ? 'bg-red-50 text-[#D22B2B] border border-red-100 shadow-inner' : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-100'}`}
                  >
                     {status === 'want' ? (
-                       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd"></path></svg>
+                       <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0 text-[#D22B2B]" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd"></path></svg>
                     ) : (
-                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                       <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                     )}
-                    <span>Takip Et</span>
+                    <span className="truncate">{status === 'want' ? 'Takipte' : 'İstek Listesi'}</span>
                  </button>
               </div>
           ) : (
