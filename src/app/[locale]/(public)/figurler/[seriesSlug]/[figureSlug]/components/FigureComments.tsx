@@ -4,11 +4,11 @@ import Image from 'next/image';
 export default async function FigureComments({ minifigureId }: { minifigureId: string }) {
   const user = await getAuthUser();
 
-  let ratings;
+  let ratings: any[] = [];
   let errorMsg = null;
   
   try {
-     ratings = await getFigureRatings(minifigureId);
+     ratings = await getFigureRatings(minifigureId) || [];
   } catch (err: any) {
      errorMsg = err.message;
   }
