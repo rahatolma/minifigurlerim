@@ -50,15 +50,22 @@ export default function CollectionActions({ minifigureId }: { minifigureId: stri
        return;
     }
 
-    setLoading(true);
-    const result = await toggleCollectionStatus(minifigureId, status, type);
+    const previousStatus = status;
+    const optimisticStatus = status === type ? null : type;
     
-    if (result?.success) {
-       const newStatus = status === type ? null : type;
-       setStatus(newStatus);
-       setGlobalStatus(minifigureId, newStatus);
-    } else {
-       alert(result?.error || 'Bir hata oluştu.');
+    // OPTIMISTIC UPDATE
+    setStatus(optimisticStatus);
+    setGlobalStatus(minifigureId, optimisticStatus);
+
+    setLoading(true);
+    // DAL depends on "currentStatus === newStatus" constraint to do deletion! So pass type as newStatus!
+    const result = await toggleCollectionStatus(minifigureId, previousStatus, type); 
+    
+    if (result?.error) {
+       // ROLLBACK ON ERROR
+       setStatus(previousStatus);
+       setGlobalStatus(minifigureId, previousStatus);
+       alert(result.error);
     }
     setLoading(false);
   };
