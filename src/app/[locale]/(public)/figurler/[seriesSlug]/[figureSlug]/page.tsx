@@ -278,7 +278,9 @@ export default async function FigureDetail({
                 </div>
                 <div className="hidden sm:block w-px h-6 bg-gray-200"></div>
                 <div className="flex flex-col items-center flex-1 min-w-0 w-1/4 sm:w-auto">
-                    <span className="text-red-500 font-bold text-[14px]">{Math.max(1, Math.floor((figure.description?.length || 0) / 250))} Dk</span>
+                    <span className="text-red-500 font-bold text-[14px]">
+                       {(!figure.description || figure.description.trim() === '') ? 'Yok' : `${Math.max(1, Math.floor((figure.description?.length || 0) / 250))} Dk`}
+                    </span>
                     <span className="text-gray-400 text-[8px] sm:text-[9px] uppercase font-black tracking-widest mt-1 text-center">Okuma</span>
                 </div>
                 <div className="hidden sm:block w-px h-6 bg-gray-200"></div>

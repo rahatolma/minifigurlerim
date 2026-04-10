@@ -127,8 +127,8 @@ export default function FigureCard({
                 {/* Değer Skoru Label */}
                 <div className="flex flex-col flex-1 items-center justify-center bg-yellow-50/50 py-2 rounded-lg border border-yellow-100/50">
                     <span className="text-[9px] text-yellow-600/80 font-bold uppercase tracking-widest mb-0.5">Değer Skoru</span>
-                    <span className="text-[11px] font-black text-yellow-700">
-                        {valueScore === undefined || valueScore === null ? 'Yaygın' : 
+                    <span className="text-[11px] font-black text-yellow-700 whitespace-nowrap">
+                        {valueScore === undefined || valueScore === null ? 'Veri Yetersiz' : 
                          valueScore >= 4.5 ? 'Efsane' : 
                          valueScore >= 3.5 ? 'Çok Değerli' : 
                          valueScore >= 2.5 ? 'Değerli' : 
@@ -140,7 +140,7 @@ export default function FigureCard({
                 <div className="flex flex-col flex-1 items-center justify-center bg-blue-50/50 py-2 rounded-lg border border-blue-100/50">
                     <span className="text-[9px] text-blue-600/80 font-bold uppercase tracking-widest mb-0.5">Talep Durumu</span>
                     <span className="text-[11px] font-black text-blue-700 whitespace-nowrap">
-                        {demandScore === undefined || demandScore === null ? 'Düşük Talep' :
+                        {demandScore === undefined || demandScore === null ? 'Veri Yetersiz' :
                          demandScore >= 4.0 ? 'Çok Yüksek' : 
                          demandScore >= 3.0 ? 'Yüksek' : 
                          demandScore >= 2.0 ? 'Orta' : 'Düşük'}
