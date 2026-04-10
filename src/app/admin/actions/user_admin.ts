@@ -46,8 +46,8 @@ export async function getUserDetailedInfo(targetUserId: string) {
 
   try {
     const data = await getUserDetailedInfoAdminDal(targetUserId);
-    return data;
+    return { ...data, success: true };
   } catch (err: any) {
-    return { error: err.message };
+    return { error: err.message, success: false };
   }
 }

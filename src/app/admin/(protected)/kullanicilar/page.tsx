@@ -70,7 +70,7 @@ export default async function AdminUsersPage() {
                  {profiles?.length === 0 && (
                     <tr><td colSpan={6} className="py-10 text-center text-sm text-gray-400">Henüz kayıtlı üye bulunmuyor.</td></tr>
                  )}
-                 {profiles?.map((p) => {
+                 {profiles?.map((p: any) => {
                     const isBanned = p.role === 'banned';
                     const bgClass = isBanned ? 'bg-red-50/20' : (!p.is_approved ? 'bg-yellow-50/20' : 'bg-white hover:bg-gray-50');
                     const img = p.avatar_url || 'https://via.placeholder.com/150x150?text=U';

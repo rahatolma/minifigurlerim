@@ -47,14 +47,14 @@ export default async function AdminBorsaPage() {
                  {figures?.map((fig: any) => (
                     <BorsaRowClient key={fig.id} figure={fig} />
                  ))}
-                 {(!figures || figures.length === 0) && (
+                  {(!figures || figures.length === 0) && (
                     <tr>
                       <td colSpan={4} className="py-10 text-center text-sm text-gray-400 font-medium">
                         {error ? (
-                            <div className="text-red-500 font-bold mb-2">Veritabanı Hatası: {error.message}</div>
+                            <div className="text-red-500 font-bold mb-2">Veritabanı Hatası: {error}</div>
                         ) : null}
                         {fallbackError ? (
-                            <div className="text-red-800 font-bold">İkinci Hata: {fallbackError.message}</div>
+                            <div className="text-red-800 font-bold">İkinci Hata: {fallbackError}</div>
                         ) : null}
                         {(!error && !fallbackError) ? 'Sistemde kaydedilmiş minifigür bulunmuyor.' : ''}
                       </td>
