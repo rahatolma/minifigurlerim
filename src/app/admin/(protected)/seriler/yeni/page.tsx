@@ -214,6 +214,7 @@ export default function NewSeriesPage() {
 
 
   const imageUploadBoxes = [
+    { id: 'cover_image_url', title: 'KAPAK GÖRSELİ', desc: 'Liste ve arama sonuçlarında görünecek kare görsel.' },
     { id: 'hero_image_url', title: 'HERO (SLIDE) GÖRSELİ', desc: 'Detay sayfasının en üstündeki devasa arkaplan görseli.' }
   ];
 

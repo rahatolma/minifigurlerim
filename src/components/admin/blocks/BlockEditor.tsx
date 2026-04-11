@@ -73,8 +73,9 @@ export default function BlockEditor({ blocks, onChange }: Props) {
           subtitle: '16 Karakter • Koleksiyon serilerinin başlangıcı',
           longStory: '', 
           imageTopLeft: '', 
+          imageTopRight: '',
           imageBottomLeft: '', 
-          imageRightTall: '',
+          imageBottomRight: '',
           box1Title: 'ÖNE ÇIKAN FİGÜRLER', box1Content: '',
           box2Title: 'BİZİM İÇİN BU SERİ', box2Content: '',
           box3Title: 'KISACASI', box3Content: '',
@@ -187,19 +188,23 @@ export default function BlockEditor({ blocks, onChange }: Props) {
                </div>
                
                <div className="pt-4 border-t border-gray-200">
-                 <label className="block text-sm font-black text-gray-900 mb-4">📸 3'LÜ GÖRSEL GRID'İ</label>
-                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                 <label className="block text-sm font-black text-gray-900 mb-4">📸 4'LÜ GÖRSEL GRID'İ</label>
+                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                    <div>
                      <label className="block text-[10px] font-bold text-gray-500 mb-2">1. Sol Üst Görsel</label>
                      {renderImageUploader(block, 'imageTopLeft', block.data.imageTopLeft || '')}
                    </div>
                    <div>
-                     <label className="block text-[10px] font-bold text-gray-500 mb-2">2. Sol Alt Görsel</label>
+                     <label className="block text-[10px] font-bold text-gray-500 mb-2">2. Sağ Üst Görsel</label>
+                     {renderImageUploader(block, 'imageTopRight', block.data.imageTopRight || '')}
+                   </div>
+                   <div>
+                     <label className="block text-[10px] font-bold text-gray-500 mb-2">3. Sol Alt Görsel</label>
                      {renderImageUploader(block, 'imageBottomLeft', block.data.imageBottomLeft || '')}
                    </div>
                    <div>
-                     <label className="block text-[10px] font-bold text-gray-500 mb-2">3. Sağ Uzun Görsel</label>
-                     {renderImageUploader(block, 'imageRightTall', block.data.imageRightTall || '')}
+                     <label className="block text-[10px] font-bold text-gray-500 mb-2">4. Sağ Alt Görsel</label>
+                     {renderImageUploader(block, 'imageBottomRight', block.data.imageBottomRight || '')}
                    </div>
                  </div>
                </div>

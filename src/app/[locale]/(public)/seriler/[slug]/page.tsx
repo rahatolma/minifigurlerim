@@ -139,25 +139,25 @@ export default async function SeriesDetail({
 
 
       {/* Devasa Kapak Görseli (Sticky değil, sayfa akışında kalıp yok olacak) */}
-      <section className="relative w-full h-[300px] md:h-[450px] flex items-end justify-center overflow-hidden bg-[#fcfcfc]">
-        <div className="absolute inset-0 w-full h-full max-w-7xl mx-auto">
-          <div 
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-700" 
-            style={{ backgroundImage: `url(${series.hero_image_url || 'https://via.placeholder.com/1920x600.png?text=Hero+Görseli+Yok'})` }}
+      <section className="relative w-full flex items-end justify-center overflow-hidden bg-[#fcfcfc]">
+        <div className="relative w-full max-w-7xl mx-auto flex justify-center">
+          <img 
+            src={series.hero_image_url || 'https://via.placeholder.com/1920x600.png?text=Hero+Görseli+Yok'} 
+            alt={title}
+            className="w-full h-auto object-bottom"
           />
           {/* Kenar Gradientleri (Görsel max sınırda kesilince yumuşatmak için) */}
-          <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#fcfcfc] to-transparent z-10" />
-          <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#fcfcfc] to-transparent z-10" />
+          <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#fcfcfc] to-transparent z-10" />
+          <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#fcfcfc] to-transparent z-10" />
+          {/* Alt Gradient kaldırıldı. Görseller alttan sıfır kesildiği için gölgelerin üzerine beyaz blur binmesi engellendi. */}
         </div>
-        {/* Alt Gradient (Sayfayla çok yumuşak bütünleşme - yüksekliği arttırıldı) */}
-        <div className="absolute inset-x-0 bottom-0 h-[80%] bg-gradient-to-t from-[#fcfcfc] via-[#fcfcfc]/80 to-transparent pointer-events-none z-10" />
       </section>
 
       {/* HEADER GURUBU (Başlık + Info Bar) */}
-      <div className="w-full flex flex-col items-center pb-4 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.03)] bg-[#fcfcfc] relative z-20">
+      <div className="w-full flex flex-col items-center pb-4 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.03)] bg-[#fcfcfc] relative z-20 -mt-2">
          
          {/* Başlık (Hero Text) */}
-         <div className="relative z-10 pt-8 md:pt-10 pb-6 flex flex-col items-center max-w-7xl px-4 w-full">
+         <div className="relative z-10 pt-4 pb-6 flex flex-col items-center max-w-7xl px-4 w-full">
            <h1 className="text-3xl md:text-[45px] text-[#111] font-black text-center leading-tight tracking-tight mb-4">
              {formatBrandText(title)}
            </h1>

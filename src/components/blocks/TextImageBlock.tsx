@@ -32,11 +32,11 @@ export default function TextImageBlock({ data }: Props) {
           {/* Image Column */}
           {data.imageUrl && (
             <div className="flex-1 w-full flex justify-center items-center">
-              <div className="relative w-full max-w-[500px] aspect-square rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.06)] bg-gray-50 border border-gray-100 flex items-center justify-center p-8 group">
+              <div className="relative w-full max-w-[500px] rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.06)] bg-[#fafafa] border border-gray-100 flex items-center justify-center p-12 lg:p-16 group">
                 <img 
                   src={data.imageUrl} 
                   alt={data.title || "Content Image"} 
-                  className="w-full h-full object-contain mix-blend-multiply transition-transform duration-700 group-hover:scale-105"
+                  className="w-full h-auto object-contain mix-blend-multiply transition-transform duration-700 group-hover:scale-105"
                   loading="lazy"
                 />
               </div>

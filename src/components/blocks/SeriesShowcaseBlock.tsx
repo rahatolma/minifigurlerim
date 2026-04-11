@@ -45,32 +45,39 @@ export default function SeriesShowcaseBlock({ data, seriesId }: Props) {
         {/* SOL: 3-Image Grid Layout & İstatistik Hapı */}
         <div className="w-full lg:w-1/2 flex flex-col gap-6">
            <div className="grid grid-cols-2 gap-4">
-             {/* Sol Sütun (2 Yatay/Kare Fotoğraf Üst Üste) */}
+             {/* Sol Sütun (Üst ve Alt) */}
              <div className="flex flex-col gap-4">
                 {data.imageTopLeft ? (
-                   <div className="w-full aspect-square bg-gray-50 rounded-2xl overflow-hidden border border-gray-100/50">
-                      <img src={data.imageTopLeft} alt="Top Left Detail" className="w-full h-full object-cover" />
+                   <div className="w-full aspect-square bg-[#fafafa] rounded-2xl overflow-hidden border border-gray-100/50 p-6 md:p-8 flex items-center justify-center">
+                      <img src={data.imageTopLeft} alt="Top Left Detail" className="w-full h-full object-contain mix-blend-multiply" />
                    </div>
                 ) : (
-                   <div className="w-full aspect-square bg-gray-50 rounded-2xl hidden md:block border border-gray-100/50"></div>
+                   <div className="w-full aspect-square bg-[#fafafa] rounded-2xl hidden md:block border border-gray-100/50"></div>
                 )}
                 {data.imageBottomLeft ? (
-                   <div className="w-full aspect-square bg-gray-50 rounded-2xl overflow-hidden border border-gray-100/50">
-                      <img src={data.imageBottomLeft} alt="Bottom Left Detail" className="w-full h-full object-cover" />
+                   <div className="w-full aspect-square bg-[#fafafa] rounded-2xl overflow-hidden border border-gray-100/50 p-6 md:p-8 flex items-center justify-center">
+                      <img src={data.imageBottomLeft} alt="Bottom Left Detail" className="w-full h-full object-contain mix-blend-multiply" />
                    </div>
                 ) : (
-                   <div className="w-full aspect-square bg-gray-50 rounded-2xl hidden md:block border border-gray-100/50"></div>
+                   <div className="w-full aspect-square bg-[#fafafa] rounded-2xl hidden md:block border border-gray-100/50"></div>
                 )}
              </div>
              
-             {/* Sağ Sütun (1 Dikey Uzun Fotoğraf) */}
-             <div className="h-full">
-                {data.imageRightTall ? (
-                   <div className="w-full h-full min-h-[300px] bg-gray-50 rounded-2xl overflow-hidden border border-gray-100/50">
-                      <img src={data.imageRightTall} alt="Right Tall Overview" className="w-full h-full object-cover" />
+             {/* Sağ Sütun (Üst ve Alt) */}
+             <div className="flex flex-col gap-4">
+                {data.imageTopRight ? (
+                   <div className="w-full aspect-square bg-[#fafafa] rounded-2xl overflow-hidden border border-gray-100/50 p-6 md:p-8 flex items-center justify-center">
+                      <img src={data.imageTopRight} alt="Top Right Detail" className="w-full h-full object-contain mix-blend-multiply" />
                    </div>
                 ) : (
-                   <div className="w-full h-full min-h-[300px] bg-gray-50 rounded-2xl border border-gray-100/50"></div>
+                   <div className="w-full aspect-square bg-[#fafafa] rounded-2xl hidden md:block border border-gray-100/50"></div>
+                )}
+                {data.imageBottomRight ? (
+                   <div className="w-full aspect-square bg-[#fafafa] rounded-2xl overflow-hidden border border-gray-100/50 p-6 md:p-8 flex items-center justify-center">
+                      <img src={data.imageBottomRight} alt="Bottom Right Detail" className="w-full h-full object-contain mix-blend-multiply" />
+                   </div>
+                ) : (
+                   <div className="w-full aspect-square bg-[#fafafa] rounded-2xl hidden md:block border border-gray-100/50"></div>
                 )}
              </div>
            </div>

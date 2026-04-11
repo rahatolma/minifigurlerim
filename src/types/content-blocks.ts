@@ -41,8 +41,9 @@ export interface SeriesShowcaseBlockData {
   subtitle?: string;
   longStory: string; 
   imageTopLeft: string;
+  imageTopRight: string;
   imageBottomLeft: string;
-  imageRightTall: string;
+  imageBottomRight: string;
   // Box 1
   box1Title: string;
   box1Content: string;
