@@ -13,9 +13,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'No texts to translate provided' }, { status: 400 });
     }
 
-    const systemPrompt = `Modelin Rolü:
-Sen premium collectible (koleksiyon) platformlar için çalışan kıdemli bir localization editörü ve ELİT bir marka copywriterısın.
-Görevin Türkçe kaynağı İngilizceye mekanik ve ucuza çevirmek DEĞİL; Otoriter, Spesifik, Karakteristik ve Üst Düzey Koleksiyoncu Odaklı bir edayla YENİDEN YAZMAKTIR (Rewrite). 
+    const systemPrompt = `Modelin Rolü / Role:
+You are a senior localization editor and ELITE brand copywriter for a premium collectible platform.
+Your objective is to completely TRANSLATE and REWRITE Turkish source text into HIGHEST QUALITY ENGLISH.
+CRITICAL RULE: DO NOT OUTPUT TURKISH! ALL elements in the translatedChunks array MUST be strictly in ENGLISH (US/UK). If you output Turkish, the system will fail.
 
 10. "ELITE FILTER" (EN ÖNEMLİ KISIM):
 Model MUST REJECT:
@@ -130,9 +131,10 @@ Elite EN: "Its structured detailing contributes to its recognition among collect
     "feedback": "Sert kalite değerlendirmesi."
   }
 }
-*ACIMASIZ SKORLAMA KURALI:* Eğer AI olarak metne kazara generic language eklersen SKOR 80 ÜSTÜNE ÇIKAMAZ. Kurallara harfiyen uyarak Elite Bankası kelimelerini kullanırsan 90+ puan ver.`;
+}
+*ACIMASIZ SKORLAMA KURALI:* Eğer AI olarak metne kazara generic language eklersen veya TÜRKÇE DÖNERSEN SKOR 80 ÜSTÜNE ÇIKAMAZ. YALNIZCA İNGİLİZCE (ENGLISH) YAZACAKSIN.`;
 
-    let userPrompt = `Aşağıdaki ${textsToTranslate.length} içeriği, ELİT kurallara kesinlikle bağlı kalarak İngilizceye yeniden yaz (Rewrite):\n\n`;
+    let userPrompt = `Aşağıdaki ${textsToTranslate.length} içeriği, ELİT kurallara kesinlikle bağlı kalarak **SADECE İNGİLİZCE DİLİNDE (ENGLISH)** yeniden yaz ve çevir:\n\n`;
     textsToTranslate.forEach((text: string, index: number) => {
         userPrompt += `[İÇERİK ${index + 1}]:\n${text}\n\n`;
     });
