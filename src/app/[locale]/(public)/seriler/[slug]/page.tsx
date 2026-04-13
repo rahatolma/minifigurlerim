@@ -10,6 +10,7 @@ import AuthCTA from '@/components/ui/AuthCTA';
 import BlockRenderer from '@/components/blocks/BlockRenderer';
 import { formatBrandText } from '@/utils/textFormatting';
 import FloatingSeriesNav from '@/components/ui/FloatingSeriesNav';
+import HeroImage from '@/components/ui/HeroImage';
 
 // ... (code omitted for brevity to apply changes via multiple replacements, wait, I can just replace specific lines)
 
@@ -138,20 +139,10 @@ export default async function SeriesDetail({
       <ClientViewTracker table="series" id={series.id} />
 
 
-      {/* Devasa Kapak Görseli (Sticky değil, sayfa akışında kalıp yok olacak) */}
-      <section className="relative w-full flex items-end justify-center overflow-hidden bg-[#fcfcfc]">
-        <div className="relative w-full max-w-7xl mx-auto flex justify-center">
-          <img 
-            src={series.hero_image_url || 'https://via.placeholder.com/1920x600.png?text=Hero+Görseli+Yok'} 
-            alt={title}
-            className="w-full h-auto object-bottom"
-          />
-          {/* Kenar Gradientleri (Görsel max sınırda kesilince yumuşatmak için) */}
-          <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#fcfcfc] to-transparent z-10" />
-          <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#fcfcfc] to-transparent z-10" />
-          {/* Alt Gradient kaldırıldı. Görseller alttan sıfır kesildiği için gölgelerin üzerine beyaz blur binmesi engellendi. */}
-        </div>
-      </section>
+      {/* Devasa Kapak Görseli */}
+      {series.hero_image_url && (
+        <HeroImage src={series.hero_image_url} alt={title} />
+      )}
 
       {/* HEADER GURUBU (Başlık + Info Bar) */}
       <div className="w-full flex flex-col items-center pb-4 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.03)] bg-[#fcfcfc] relative z-20 -mt-2">
@@ -159,7 +150,27 @@ export default async function SeriesDetail({
          {/* Başlık (Hero Text) */}
          <div className="relative z-10 pt-4 pb-6 flex flex-col items-center max-w-7xl px-4 w-full">
            <h1 className="text-3xl md:text-[45px] text-[#111] font-black text-center leading-tight tracking-tight mb-4">
-             {formatBrandText(title)}
+              {(() => {
+                const prefixFull = "LEGO® Minifigürler Serisi";
+                const prefixShort = "LEGO® Minifigürler";
+                const rawTitle = formatBrandText(title);
+                if (rawTitle.startsWith(prefixFull) && rawTitle.length > prefixFull.length) {
+                  return (
+                    <>
+                      <span className="block text-lg md:text-xl text-gray-500 font-black tracking-[0.1em] uppercase mb-1 md:mb-2">{prefixFull}</span>
+                      <span className="block">{rawTitle.substring(prefixFull.length).trim()}</span>
+                    </>
+                  );
+                } else if (rawTitle.startsWith(prefixShort) && rawTitle.length > prefixShort.length) {
+                  return (
+                    <>
+                      <span className="block text-lg md:text-xl text-gray-500 font-black tracking-[0.1em] uppercase mb-1 md:mb-2">{prefixShort}</span>
+                      <span className="block">{rawTitle.substring(prefixShort.length).trim()}</span>
+                    </>
+                  );
+                }
+                return rawTitle;
+              })()}
            </h1>
            {isFallback && (
              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-orange-50 border border-orange-100 rounded-md text-[11px] font-bold text-orange-700 tracking-wide shadow-sm">
@@ -224,7 +235,28 @@ export default async function SeriesDetail({
       <div id="figures-list" className="max-w-7xl mx-auto px-8 mt-8 md:mt-12 pt-8 scroll-mt-24 bg-white relative z-20">
         <h3 className="text-sm font-black mb-2 text-gray-300 tracking-[0.2em] uppercase">{t('DiscoverSeries')}</h3>
         <h2 className="text-3xl md:text-5xl font-black text-gray-900 mb-8 tracking-tighter">
-          {t('FiguresPrefix')}{formatBrandText(title)}{t('FiguresSuffix')}
+            {(() => {
+                const prefixFull = "LEGO® Minifigürler Serisi";
+                const prefixShort = "LEGO® Minifigürler";
+                const fullText = `${t('FiguresPrefix')}${formatBrandText(title)}${t('FiguresSuffix')}`.trim();
+                
+                if (fullText.startsWith(prefixFull) && fullText.length > prefixFull.length) {
+                  return (
+                    <>
+                      <span className="block text-base md:text-xl text-gray-400 opacity-80 font-black tracking-[0.1em] uppercase mb-1 md:mb-2">{prefixFull}</span>
+                      <span className="block">{fullText.substring(prefixFull.length).trim()}</span>
+                    </>
+                  );
+                } else if (fullText.startsWith(prefixShort) && fullText.length > prefixShort.length) {
+                  return (
+                    <>
+                      <span className="block text-base md:text-xl text-gray-400 opacity-80 font-black tracking-[0.1em] uppercase mb-1 md:mb-2">{prefixShort}</span>
+                      <span className="block">{fullText.substring(prefixShort.length).trim()}</span>
+                    </>
+                  );
+                }
+                return fullText;
+              })()}
         </h2>
         
         {figures && figures.length > 0 ? (
@@ -237,7 +269,7 @@ export default async function SeriesDetail({
                         name={fig.name}
                         seriesName={title}
                         seriesSlug={locale === 'en' && series.slug_en ? series.slug_en : series.slug}
-                        imageUrl={(fig.images && fig.images.length > 0) ? fig.images[0] : 'https://via.placeholder.com/300x400.png?text=Görsel+Yok'}
+                        imageUrl={(fig.images && fig.images.length > 0) && fig.images[0] ? fig.images[0] : ''}
                         year={fig.release_year}
                         rarity={fig.rarity}
                         price={fig.value_usd}

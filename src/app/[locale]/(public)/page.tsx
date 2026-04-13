@@ -108,6 +108,7 @@ export default async function Home() {
                 title={series.title}
                 imageUrl={series.cover_image_url || 'https://via.placeholder.com/400x300.png?text=Görsel+Yok'}
                 year={series.release_year || (series.created_at ? new Date(series.created_at).getFullYear() : '2010')}
+                seriesNo={series.series_no}
                 category={series.category || 'CMF'}
                 totalFigures={series.figure_count || seriesFigStats[series.id]?.count || 0}
                 rarity={series.rarity || 'Yaygın'}

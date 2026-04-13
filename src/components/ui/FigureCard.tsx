@@ -47,6 +47,12 @@ export default function FigureCard({
   const safeSeriesSlug = seriesSlug || (seriesName ? slugify(seriesName) : 'gizemli-seri');
   const targetHref = `/figurler/${safeSeriesSlug}/${slug || id}` as any;
 
+  const [imgSrc, setImgSrc] = useState(imageUrl || '/images/placeholder.svg');
+
+  useEffect(() => {
+    setImgSrc(imageUrl || '/images/placeholder.svg');
+  }, [imageUrl]);
+
   const handleToggle = async (e: React.MouseEvent, type: 'have' | 'want') => {
       e.preventDefault(); 
       e.stopPropagation();
@@ -87,7 +93,7 @@ export default function FigureCard({
                 Takipte
              </div>
           )}
-          <Image src={imageUrl} alt={name} fill className="object-contain p-6 mix-blend-multiply group-hover:scale-110 transition-transform duration-500" />
+          <Image src={imgSrc} alt={name} fill className="object-contain p-6 mix-blend-multiply group-hover:scale-110 transition-transform duration-500" onError={() => setImgSrc('/images/placeholder.svg')} />
           
           {/* PREMIUM HOVER BADGE */}
           <div className="absolute bottom-4 left-0 w-full flex justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-20 translate-y-2 group-hover:translate-y-0 pointer-events-none">

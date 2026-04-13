@@ -94,17 +94,48 @@ export const getHomeSliders = cache(async () => {
   return data;
 });
 
-// Sadece en son 12 Seri Getir (Anasayfa)
+// Sadece en son 12 Seri Getir (Anasayfa) - Gerçek Kronolojik Sıralama (Yıl/Ay)
 export const getLatestSeries = cache(async () => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('series')
     .select('*')
     .order('created_at', { ascending: false })
-    .limit(12);
+    .limit(100); // Havuzu geniş tuttuk ki JS ile kronolojik dizebilelim
 
   if (error) throw error;
-  return data;
+  
+  if (!data) return [];
+
+  const extractYearMonthScore = (item: any) => {
+    let year = 2010;
+    if (item.release_year) {
+      const parsed = parseInt(String(item.release_year).trim().replace(/[^0-9]/g, ''), 10);
+      if (!isNaN(parsed) && parsed > 1900) year = parsed;
+    } else if (item.created_at) {
+      year = new Date(item.created_at).getFullYear();
+    }
+
+    let month = 1; 
+    if (item.release_month) {
+       const m = String(item.release_month).trim().toLowerCase();
+       const months = ['ocak','şubat','mart','nisan','mayıs','haziran','temmuz','ağustos','eylül','ekim','kasım','aralık'];
+       const index = months.indexOf(m);
+       if (index !== -1) month = index + 1;
+    } else if (item.created_at) {
+       month = new Date(item.created_at).getMonth() + 1;
+    }
+    return (year * 100) + month; 
+  };
+
+  const sortedData = [...data].sort((a, b) => {
+    const scoreA = extractYearMonthScore(a);
+    const scoreB = extractYearMonthScore(b);
+    if (scoreB !== scoreA) return scoreB - scoreA;
+    return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+  });
+
+  return sortedData.slice(0, 12);
 });
 
 // Sadece en son 12 Figür Getir (Anasayfa)

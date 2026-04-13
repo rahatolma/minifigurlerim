@@ -21,7 +21,8 @@ const CMF_HISTORY = [
   { year: 'Bugün', date: 'Gelecek', title: 'Minifigürlerim Platformu', desc: 'Türkiye merkezli bu premium koleksiyon takip platformuyla AFOL kültürünü yaşatmak için harika bir sayfa açıldı!', color: 'bg-[#D22B2B]' }
 ];
 
-export const revalidate = 300; // 5 dakikalık ISR cache
+export const revalidate = 0; // GEÇİCİ OLARAK 0 (Anında yansısın diye önbelleği kapattım)
+export const dynamic = 'force-dynamic'; // Tamamen dinamik render zorlaması (Client Router Cache bile yoksayılır)
 
 export default async function SeriesPage({
   searchParams,
@@ -66,10 +67,50 @@ export default async function SeriesPage({
     });
   }
 
+  // Güçlü ve Hataya Dayanıklı Yıl/Ay Çıkarıcı (YYYYMM formatında skor üretir)
+  const extractYearMonthScore = (item: any) => {
+    let year = 2010;
+    if (item.release_year) {
+      const parsed = parseInt(String(item.release_year).trim().replace(/[^0-9]/g, ''), 10);
+      if (!isNaN(parsed) && parsed > 1900) year = parsed;
+    } else if (item.created_at) {
+      year = new Date(item.created_at).getFullYear();
+    }
+
+    let month = 1; // Default Ocak
+    if (item.release_month) {
+       const m = String(item.release_month).trim().toLowerCase();
+       const months = ['ocak','şubat','mart','nisan','mayıs','haziran','temmuz','ağustos','eylül','ekim','kasım','aralık'];
+       const index = months.indexOf(m);
+       if (index !== -1) month = index + 1;
+    } else if (item.created_at) {
+       month = new Date(item.created_at).getMonth() + 1;
+    }
+
+    return (year * 100) + month; // Örn: 202405 (Mayıs 2024)
+  };
+
   if (sortParam === 'newest') {
-    // Already sorted by created_at desc (Default)
+    // Default sıralama artık Çıkış Yılı ve Ayına göredir (YYYYMM DESC)
+    filteredSeries = [...filteredSeries].sort((a, b) => {
+      const scoreA = extractYearMonthScore(a);
+      const scoreB = extractYearMonthScore(b);
+      
+      if (scoreB !== scoreA) return scoreB - scoreA;
+      
+      // Yıl/Ay tamamen aynıysa yüklenme tarihine göre (saat/dakika vs) en son yüklenen üstte.
+      return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+    });
   } else if (sortParam === 'oldest') {
-    filteredSeries = filteredSeries.reverse();
+    // Eskiden yeniye sıralama (YYYYMM ASC)
+    filteredSeries = [...filteredSeries].sort((a, b) => {
+      const scoreA = extractYearMonthScore(a);
+      const scoreB = extractYearMonthScore(b);
+      
+      if (scoreA !== scoreB) return scoreA - scoreB;
+      
+      return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
+    });
   } else if (sortParam === 'popular') {
     filteredSeries = [...filteredSeries].sort((a, b) => (b.total_views || 0) - (a.total_views || 0));
   }
@@ -198,6 +239,7 @@ export default async function SeriesPage({
                   title={locale === 'en' && series.title_en ? series.title_en : series.title}
                   imageUrl={series.cover_image_url || 'https://via.placeholder.com/400x300.png?text=Görsel+Yok'}
                   year={series.release_year || (series.created_at ? new Date(series.created_at).getFullYear() : '2010')}
+                  seriesNo={series.series_no}
                   category={series.category || 'CMF'}
                   totalFigures={series.figure_count || seriesFigStats[series.id]?.count || 0}
                   rarity={series.rarity || 'Yaygın'}
@@ -235,6 +277,7 @@ export default async function SeriesPage({
                       title={locale === 'en' && series.title_en ? series.title_en : series.title}
                       imageUrl={series.cover_image_url || 'https://via.placeholder.com/400x300.png?text=Görsel+Yok'}
                       year={series.release_year || (series.created_at ? new Date(series.created_at).getFullYear() : '2010')}
+                      seriesNo={series.series_no}
                       category={series.category || 'CMF'}
                       totalFigures={series.figure_count || seriesFigStats[series.id]?.count || 0}
                       rarity={series.rarity || 'Yaygın'}

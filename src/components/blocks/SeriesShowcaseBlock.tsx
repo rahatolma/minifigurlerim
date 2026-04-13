@@ -214,24 +214,28 @@ export default function SeriesShowcaseBlock({ data, seriesId }: Props) {
 
       {/* ALT BÖLÜM: 3 Sütunlu Vurgu Kutuları (Öne Çıkanlar vs) */}
       <div className="max-w-7xl mx-auto px-6 md:px-8">
-         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+         <div className="flex flex-col gap-6 md:gap-8">
             
-            {/* Sütun 1: Card Design */}
+            {/* Üst Tam Genişlik: Card Design (Sütun 1) */}
             {(data.box1Title || data.box1Content) && (
-              <div className="flex flex-col items-center text-center bg-white border border-gray-100 border-t-4 border-t-[#111] shadow-[0_4px_20px_rgba(0,0,0,0.03)] rounded-3xl p-8 md:p-12 relative overflow-hidden group hover:shadow-xl hover:border-t-[#D22B2B] transition-all duration-300">
-                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[150px] font-black text-gray-100 opacity-30 select-none pointer-events-none group-hover:scale-105 group-hover:text-gray-200 transition-all duration-700 ease-out z-0 leading-none">1</div>
+              <div className="flex flex-col items-center text-center bg-white border border-gray-100 border-t-4 border-t-[#111] shadow-[0_4px_20px_rgba(0,0,0,0.03)] rounded-3xl p-8 md:p-12 lg:p-16 relative overflow-hidden group hover:shadow-xl hover:border-t-[#D22B2B] transition-all duration-300">
+                 {/* Büyük arkaplan sayısı biraz daha yumuşatıldı ve büyütüldü */}
+                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[200px] md:text-[300px] font-black text-gray-50 opacity-40 select-none pointer-events-none group-hover:scale-105 group-hover:text-gray-100 transition-all duration-700 ease-out z-0 leading-none">1</div>
                  
-                 <div className="mb-5 text-[#111] relative z-10 bg-gray-50 p-4 rounded-full group-hover:bg-red-50 group-hover:text-[#D22B2B] transition-colors">
-                   <Star size={24} strokeWidth={2.5} />
+                 <div className="mb-6 text-[#111] relative z-10 bg-gray-50 p-5 rounded-full group-hover:bg-red-50 group-hover:text-[#D22B2B] transition-colors">
+                   <Star size={32} strokeWidth={2.5} />
                  </div>
                  
-                 <h3 className="text-2xl font-black text-gray-900 tracking-tight mb-4 relative z-10 break-words w-full">{data.box1Title}</h3>
+                 <h3 className="text-3xl font-black text-gray-900 tracking-tight mb-6 relative z-10 break-words w-full">{data.box1Title}</h3>
                  
-                 <p className="text-gray-600 font-medium text-[15px] leading-[1.8] relative z-10">
+                 <p className="text-gray-600 font-medium text-[16px] md:text-[18px] leading-[1.8] relative z-10 max-w-4xl">
                    {data.box1Content}
                  </p>
               </div>
             )}
+
+            {/* Alt 2 Sütunlu Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
 
             {/* Sütun 2: Card Design */}
             {(data.box2Title || data.box2Content) && (
@@ -267,17 +271,19 @@ export default function SeriesShowcaseBlock({ data, seriesId }: Props) {
               </div>
             )}
 
+            </div>
          </div>
       </div>
 
       {/* EN ALT BÖLÜM: Koleksiyoner Yorumu (Eğer doldurulmuşsa) */}
       {(data.quoteTitle || data.quoteContent) && (
-        <div className="w-full max-w-7xl mx-auto px-6 md:px-8 mt-12 mb-8 text-center bg-[#F2CD37] rounded-[32px] p-8 md:p-12 shadow-[0_15px_40px_-10px_rgba(242,205,55,0.4)] relative overflow-hidden">
-           {/* Dekoratif Arka Plan Işıkları */}
-           <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-20 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
-           <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#111] opacity-[0.04] rounded-full blur-3xl -translate-x-1/2 translate-y-1/2 pointer-events-none"></div>
+        <div className="w-full max-w-7xl mx-auto px-6 md:px-8 mt-12 mb-8">
+           <div className="w-full text-center bg-[#F2CD37] rounded-[32px] p-8 md:p-12 lg:p-16 shadow-[0_15px_40px_-10px_rgba(242,205,55,0.4)] relative overflow-hidden">
+               {/* Dekoratif Arka Plan Işıkları */}
+               <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-20 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+               <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#111] opacity-[0.04] rounded-full blur-3xl -translate-x-1/2 translate-y-1/2 pointer-events-none"></div>
 
-           <div className="flex flex-col items-center gap-6 md:gap-8 relative z-10 w-full">
+               <div className="flex flex-col items-center gap-6 md:gap-8 relative z-10 w-full">
              {/* Büyük Yorum Başlığı */}
              {data.quoteTitle && (
                <div className="flex flex-col items-center gap-5">
@@ -298,7 +304,8 @@ export default function SeriesShowcaseBlock({ data, seriesId }: Props) {
                </div>
              )}
            </div>
-        </div>
+         </div>
+       </div>
       )}
 
     </div>

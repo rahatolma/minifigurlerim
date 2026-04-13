@@ -58,7 +58,7 @@ function formatBlockDataStrings<T>(data: T): T {
   };
 
   return (
-    <div className="w-full flex items-center justify-center">
+    <div className="w-full flex flex-col items-center justify-center gap-0">
       <div className="w-full relative flex flex-col gap-0">
         {sortedBlocks.map((block) => renderBlock(block))}
       </div>

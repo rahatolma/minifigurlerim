@@ -1,6 +1,7 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useGamification } from '@/components/providers/GamificationProvider';
@@ -10,6 +11,7 @@ interface SeriesCardProps {
   title: string;
   imageUrl: string;
   year?: string | number | null;
+  seriesNo?: string | null;
   totalFigures?: number | null;
   latestFigureName?: string | null;
   category?: string | null;
@@ -25,7 +27,7 @@ interface SeriesCardProps {
 }
 
 export default function SeriesCard({ 
-  id, title, imageUrl, year, category, rarity, totalFigures, latestFigureName
+  id, title, imageUrl, year, seriesNo, category, rarity, totalFigures, latestFigureName
 }: SeriesCardProps) {
   const t = useTranslations('SeriesCard');
   const locale = useLocale();
@@ -34,30 +36,69 @@ export default function SeriesCard({
   const isLoggedIn = !!user;
   const seriesProgress = userSeriesProgressMap[id] || null;
 
+  const [imgSrc, setImgSrc] = useState(imageUrl || '/images/placeholder.svg');
+
+  useEffect(() => {
+    setImgSrc(imageUrl || '/images/placeholder.svg');
+  }, [imageUrl]);
+
+  // Başlıkta "LEGO® Minifigürler" markasını formatlamak için:
+  const formattedTitle = (() => {
+    // Önce en uzun varsayılan kalıbı deniyoruz
+    const prefixFull = "LEGO® Minifigürler Serisi";
+    const prefixShort = "LEGO® Minifigürler";
+    
+    if (title.startsWith(prefixFull) && title.length > prefixFull.length) {
+      return (
+        <>
+          <span className="block text-[15px] sm:text-[17px] text-gray-800 mb-0.5">{prefixFull}</span>
+          <span className="block line-clamp-2 leading-snug">{title.substring(prefixFull.length).trim()}</span>
+        </>
+      );
+    } else if (title.startsWith(prefixShort) && title.length > prefixShort.length) {
+      return (
+        <>
+          <span className="block text-[15px] sm:text-[17px] text-gray-800 mb-0.5">{prefixShort}</span>
+          <span className="block line-clamp-2 leading-snug">{title.substring(prefixShort.length).trim()}</span>
+        </>
+      );
+    }
+    return title;
+  })();
+
   return (
     <div className="flex flex-col h-full bg-white rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 hover:shadow-[0_15px_30px_rgba(0,0,0,0.06)] hover:border-gray-200 hover:-translate-y-1 transition-all duration-300 relative group">
        <Link href={`/seriler/${id}`} className="relative w-full aspect-[4/3] bg-[#fff] flex items-center justify-center border-b border-gray-50 flex-none group-hover:bg-[#fcfcfc] transition-colors">
-          <Image src={imageUrl} alt={title} fill className="object-contain px-6 py-4 mix-blend-multiply group-hover:scale-110 transition-transform duration-500" />
+          <Image src={imgSrc} alt={title} fill className="object-contain px-6 py-4 mix-blend-multiply group-hover:scale-110 transition-transform duration-500" onError={() => setImgSrc('/images/placeholder.svg')} />
        </Link>
 
        <div className="px-6 pt-5 pb-6 flex flex-col flex-1 bg-white">
           <Link href={`/seriler/${id}`} className="flex flex-col flex-1 cursor-pointer items-center text-center">
-              <h3 className="font-black text-[22px] text-[#D22B2B] leading-tight tracking-tight hover:underline mb-1 w-full">{title}</h3>
+              <h3 className="font-black text-[18px] sm:text-[20px] text-[#D22B2B] leading-tight tracking-tight hover:underline mb-1 w-full">{formattedTitle}</h3>
               <p className="font-semibold text-[13px] text-gray-500 mb-4 w-full">{category || t('CategoryDefault')}</p>
           </Link>
           
           <div className="w-full h-px bg-gray-100 mb-4"></div>
           
-          {/* META ROW: 2016 • 16 Figür • Yaygın */}
-          <div className="flex items-center justify-center gap-3 text-[13px] font-bold text-gray-800 mb-5">
-             <span className="flex items-center gap-1.5 text-gray-600">
-                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+          {/* META ROW: 2016 • 71004 • 16 Figür • Yaygın */}
+          <div className="flex items-center justify-center gap-2.5 sm:gap-3 text-[11px] sm:text-[13px] font-bold text-gray-800 mb-5 flex-wrap w-full px-2">
+             <span className="flex items-center gap-1.5 text-gray-600 whitespace-nowrap">
+                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                 {year || '-'}
              </span>
-             <span className="text-gray-300">•</span>
-             <span className="font-black text-gray-900">{totalFigures !== undefined ? totalFigures : (seriesProgress?.total ?? 0)} {t('Figure')}</span>
-             <span className="text-gray-300">•</span>
-             <span className="font-bold text-[#D22B2B]">{rarity || t('CommonRarity')}</span>
+             
+             {seriesNo && (
+               <>
+                 <span className="text-gray-300 shrink-0">•</span>
+                 <span className="text-gray-600 whitespace-nowrap">{seriesNo}</span>
+               </>
+             )}
+
+             <span className="text-gray-300 shrink-0">•</span>
+             <span className="font-black text-gray-900 whitespace-nowrap">{totalFigures !== undefined ? totalFigures : (seriesProgress?.total ?? 0)} {t('Figure')}</span>
+             
+             <span className="text-gray-300 shrink-0">•</span>
+             <span className="font-bold text-[#D22B2B] whitespace-nowrap">{rarity || t('CommonRarity')}</span>
           </div>
 
           {/* SERIES PROGRESS VE ALT ALANLAR */}

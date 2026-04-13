@@ -110,15 +110,16 @@ export default function SeriesListPage() {
                   {/* Akordeon İçeriği (Tablo) */}
                   {isOpen && (
                     <div className="border-t border-gray-100 overflow-x-auto">
-                      <table className="w-full text-left text-sm whitespace-nowrap">
+                      <table className="w-full text-left text-sm whitespace-nowrap table-fixed">
                         <thead className="bg-[#fcfcfc] border-b border-gray-100 text-gray-500 font-black uppercase tracking-wider text-[10px]">
                           <tr>
-                            <th className="px-8 py-4">Görsel</th>
-                            <th className="px-8 py-4">Seri Adı</th>
-                            <th className="px-8 py-4">Kategori</th>
-                            <th className="px-8 py-4">Figür Adedi</th>
-                            <th className="px-8 py-4">Çıkış</th>
-                            <th className="px-8 py-4 text-right">İşlem</th>
+                            <th className="px-4 py-4 w-[6%] min-w-[70px]">Görsel</th>
+                            <th className="px-6 py-4 w-[38%] min-w-[300px]">Seri Adı</th>
+                            <th className="px-6 py-4 w-[8%]">Seri No</th>
+                            <th className="px-6 py-4 w-[15%]">Kategori</th>
+                            <th className="px-6 py-4 w-[11%]">Figür Adedi</th>
+                            <th className="px-6 py-4 w-[12%]">Çıkış</th>
+                            <th className="px-6 py-4 w-[10%] text-right min-w-[80px]">İşlem</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50 font-semibold text-[13px] text-gray-800">
@@ -126,18 +127,19 @@ export default function SeriesListPage() {
                             const releaseText = `${s.release_month || ''} ${s.release_year || ''}`.trim() || '-';
                             return (
                               <tr key={s.id} className="hover:bg-gray-50 transition-colors">
-                                <td className="px-8 py-3">
+                                <td className="px-4 py-3 w-[6%]">
                                   {s.cover_image_url ? (
                                     <img src={s.cover_image_url} alt={s.title} className="h-10 w-14 object-contain rounded border border-gray-200 bg-white" />
                                   ) : (
                                     <div className="h-10 w-14 bg-gray-50 rounded border border-gray-100 flex items-center justify-center text-[9px] text-gray-400 font-bold tracking-widest">YOK</div>
                                   )}
                                 </td>
-                                <td className="px-8 py-3 font-black text-gray-900 truncate max-w-xs">{s.title}</td>
-                                <td className="px-8 py-3 text-gray-500">{s.category}</td>
-                                <td className="px-8 py-3">{s.figure_count || '-'}</td>
-                                <td className="px-8 py-3">{releaseText}</td>
-                                <td className="px-8 py-3">
+                                <td className="px-6 py-3 font-black text-gray-900 truncate w-[38%]">{s.title}</td>
+                                <td className="px-6 py-3 text-gray-600 font-bold w-[8%]">{s.series_no || '-'}</td>
+                                <td className="px-6 py-3 text-gray-500 truncate w-[15%]">{s.category}</td>
+                                <td className="px-6 py-3 w-[11%]">{s.figure_count || '-'}</td>
+                                <td className="px-6 py-3 truncate w-[12%]">{releaseText}</td>
+                                <td className="px-6 py-3 w-[10%]">
                                    <div className="flex items-center justify-end gap-1">
                                      <Link href={`/admin/seriler/${s.id}`} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"><Edit size={16} /></Link>
                                      <button onClick={() => handleDelete(s.id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-all"><Trash2 size={16} /></button>
