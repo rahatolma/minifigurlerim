@@ -22,7 +22,7 @@ jobs:
         cache: 'npm'
 
     - name: Install Dependencies
-      run: npm install --no-audit --no-fund --legacy-peer-deps
+      run: npm ci
 
     - name: Run Standart Enforcer AST & Regex Sweep
       run: node scripts/enforce-standards.mjs
