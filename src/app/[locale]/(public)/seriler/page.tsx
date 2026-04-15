@@ -52,8 +52,12 @@ export default async function SeriesPage({
 
   // 3. Filtrelenmiş Serileri Doğrudan Veritabanından (DB) Çek
   // Kural: UI tarafında asla dataset.filter() gibi diziyi manipüle etme! Tüm filter/sort DAL'a havale edildi.
+  const resolvedCategoryName = categoryParam === 'all' 
+    ? 'all' 
+    : (catData?.find((c: any) => c.slug === categoryParam)?.name || categoryParam);
+
   const filtersToApply = {
-    category: categoryParam,
+    category: resolvedCategoryName,
     series: seriesParam
   };
   
