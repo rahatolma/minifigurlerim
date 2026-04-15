@@ -21,6 +21,9 @@ jobs:
         node-version: '20'
         cache: 'npm'
 
+    - name: Install Dependencies
+      run: npm ci
+
     - name: Run Standart Enforcer AST & Regex Sweep
       run: node scripts/enforce-standards.mjs
 
