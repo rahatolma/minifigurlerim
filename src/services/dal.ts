@@ -455,10 +455,14 @@ export const getMinifigureListItems = cache(async (
   let query = supabase
     .from('minifigures').select('id, created_at, series_id, name, brand, category, series_name, series_no, figure_no, role, type, code, piece_count, body_material, rarity, value_usd, release_year, images, total_views, daily_views, custom_attributes, description, release_month, slug, affiliate_link, name_en, series_name_en, role_en, description_en, min_price, max_price, avg_price, rarity_score, series_score, view_count_30d, collection_count_30d, favorite_count_30d, rating_count, value_score, demand_score, figure_name, slug_tr, slug_en, figure_number, figure_code, character_name, short_description_tr, short_description_en, figure_role, figure_type, price_updated_at, rarity_level, accessory_count, main_color, thumbnail_url, is_featured, is_active, is_published, series(id, slug_tr, slug_en, title, title_en)', { count: "exact" });
 
-  if (filters.series) query = query.eq('series_id', filters.series);
-  if (filters.role) query = query.eq('role', filters.role);
-  if (filters.type) query = query.eq('type', filters.type);
-  if (filters.rarity) query = query.eq('rarity', filters.rarity);
+  if (filters.series && filters.series !== 'all') {
+    const isId = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(filters.series);
+    const filterCol = isId ? 'series_id' : 'series_name';
+    query = query.eq(filterCol, filters.series);
+  }
+  if (filters.role && filters.role !== 'all') query = query.eq('role', filters.role);
+  if (filters.type && filters.type !== 'all') query = query.eq('type', filters.type);
+  if (filters.rarity && filters.rarity !== 'all') query = query.eq('rarity', filters.rarity);
 
   query = query.eq('is_published', true).order('created_at', { ascending: false }).range(offset, offset + limit - 1);
 
@@ -477,8 +481,8 @@ export const getSeriesListItems = cache(async (
         .from('series').select('id, title, slug_tr, slug_en, description, description_blocks_en, is_active, release_year, category, category_main, cover_image_url, hero_image_url, content_blocks, series_no, rarity, figure_count, is_published, total_views, title_en');
 
     query = query.eq('is_published', true);
-    if (filters.category) query = query.eq('category', filters.category);
-    if (filters.series) query = query.eq('slug_tr', filters.series);
+    if (filters.category && filters.category !== 'all') query = query.eq('category', filters.category);
+    if (filters.series && filters.series !== 'all') query = query.eq('slug_tr', filters.series);
     
     // Sort logic would typically be here, but we pass sortParam and it looks like UI handles it, or we can handle it if needed.
     // For now we just return standard sorting and UI does the rest.
