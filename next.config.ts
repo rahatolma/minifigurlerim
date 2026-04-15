@@ -21,9 +21,6 @@ const nextConfig: NextConfig = {
       }
     ],
   },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
 };
 
 const isDev = process.env.NODE_ENV !== 'production';

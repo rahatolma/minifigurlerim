@@ -44,9 +44,9 @@ export default async function KoleksiyonumPage({
   const seriesList = sRes || [];
 
   // Dinamik Olarak Kasadaki Filtre Seçeneklerini Oluştur (Sadece kullanıcının sahip olduğu/istediği şeylerin kategorileri)
-  const roles = Array.from(new Set(rawCollections.map(c => (c.minifigures as any)?.role).filter(Boolean))) as string[];
-  const types = Array.from(new Set(rawCollections.map(c => (c.minifigures as any)?.type).filter(Boolean))) as string[];
-  const rarities = Array.from(new Set(rawCollections.map(c => (c.minifigures as any)?.rarity).filter(Boolean))) as string[];
+  const roles = Array.from(new Set(rawCollections.map((c: import("@/services/dal").UserCollectionDTO) => (c.minifigures as any)?.role).filter(Boolean))) as string[];
+  const types = Array.from(new Set(rawCollections.map((c: import("@/services/dal").UserCollectionDTO) => (c.minifigures as any)?.type).filter(Boolean))) as string[];
+  const rarities = Array.from(new Set(rawCollections.map((c: import("@/services/dal").UserCollectionDTO) => (c.minifigures as any)?.rarity).filter(Boolean))) as string[];
 
   // 4. İSTEMCİ FİLTRELEMESİNİ VERİYE UYGULA
   let filteredCollections = rawCollections.filter((c: any) => {
@@ -80,15 +80,15 @@ export default async function KoleksiyonumPage({
   const cachedStats = await getUserSeriesStats(user.id);
 
   // Geliştirilmiş Progress datası: En üste en dolu olanlar gelir
-  const activeSeriesProgress = (cachedStats || []).map(stat => ({
+  const activeSeriesProgress = (cachedStats || []).map((stat: any) => ({
       seriesId: stat.series_id,
       seriesTitle: stat.series_name || 'Bilinmeyen Seri',
       haveCount: stat.owned_count,
       maxCount: Math.max(1, stat.total_count),
       percent: Number(stat.completion_percent)
-  })).sort((a, b) => b.percent - a.percent);
+  })).sort((a: { percent: number }, b: { percent: number }) => b.percent - a.percent);
 
-  const completedSeriesCount = activeSeriesProgress.filter(sp => sp.haveCount >= sp.maxCount && sp.maxCount > 0).length;
+  const completedSeriesCount = activeSeriesProgress.filter((sp: { haveCount: number, maxCount: number }) => sp.haveCount >= sp.maxCount && sp.maxCount > 0).length;
 
   // Filtrelenmiş "Bende Olanlar"ın Toplam Değeri
   const portfolioValue = haveItems.reduce((acc: number, curr: any) => {
@@ -104,7 +104,7 @@ export default async function KoleksiyonumPage({
          
       if (historyData && historyData.length > 0) {
          const oldPricesLookup: Record<string, number> = {};
-         historyData.forEach(hd => {
+         historyData.forEach((hd: any) => {
              if (!oldPricesLookup[hd.minifigure_id]) {
                  oldPricesLookup[hd.minifigure_id] = Number(hd.value_usd);
              }

@@ -39,12 +39,12 @@ export default async function SeriesPage({
   
   // Öncelikle Seri Kategorileri grubunu bul
   const groups = await getDefinitions();
-  const seriesGroup = groups?.find(g => g.name.toLowerCase().includes('seri') && g.name.toLowerCase().includes('kategori'));
+  const seriesGroup = groups?.find((g: any) => g.name.toLowerCase().includes('seri') && g.name.toLowerCase().includes('kategori'));
   const targetType = seriesGroup ? seriesGroup.slug : 'seri-kategorileri';
 
   // 1. Kategorileri Çek
   const catData = await getCategoriesByType(targetType);
-  const categoryFilters = (catData || []).map(c => ({ slug: c.slug, name: locale === 'en' && c.name_en ? c.name_en : c.name }));
+  const categoryFilters = (catData || []).map((c: { slug: string, name: string, name_en?: string }) => ({ slug: c.slug, name: locale === 'en' && c.name_en ? c.name_en : c.name }));
 
   // 2. Tüm Serileri Çek (Sadece Dropdown Filter menüsü doldurmak için - Minimal payload)
   const allSeries = await getAllSeries();
@@ -65,7 +65,7 @@ export default async function SeriesPage({
   const allFigs = await getPreviewFiguresForSeries();
   const seriesFigStats: Record<string, { count: number, latestName: string | null, samples: string[] }> = {};
   if (allFigs) {
-     allFigs.forEach(f => {
+     allFigs.forEach((f: any) => {
          if (!seriesFigStats[f.series_id]) {
              seriesFigStats[f.series_id] = { count: 0, latestName: f.name, samples: [] };
          }

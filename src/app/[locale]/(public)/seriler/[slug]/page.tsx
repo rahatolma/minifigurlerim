@@ -263,8 +263,8 @@ export default async function SeriesDetail({
         {figures && figures.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                 {figures.map((rawFig: any) => mapFigureForCard(rawFig))
-                        .filter((mappedCard): mappedCard is NonNullable<typeof mappedCard> => mappedCard !== null)
-                        .map((mappedCard) => (
+                        .filter((mappedCard: any): mappedCard is NonNullable<typeof mappedCard> => mappedCard !== null)
+                        .map((mappedCard: any) => (
                           <FigureCard key={mappedCard.id} {...mappedCard} />
                         ))}
             </div>

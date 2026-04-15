@@ -14,7 +14,7 @@ export const getExplorePageData = async (): Promise<ExploreDataShape> => {
   let figures: FigureCardData[] = [];
 
   try {
-    const rawData = await getExploreFigures(24);
+    const rawData = await getExploreFigures();
     if (Array.isArray(rawData)) {
       figures = rawData.map(mapFigureForCard).filter(Boolean) as FigureCardData[];
     }

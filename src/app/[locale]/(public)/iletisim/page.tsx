@@ -33,7 +33,7 @@ export default async function ContactPage() {
                <div className="bg-white border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] rounded-[32px] p-8 md:p-12 border-t-4 border-t-[#D22B2B]">
                   <h2 className="text-3xl font-black text-center text-gray-900 mb-10 tracking-tight">Sıkça Sorulan Sorular</h2>
                   <div className="space-y-3">
-                      {activeFaqs.map((faq, idx) => (
+                      {activeFaqs.map((faq: import("@/services/dal").FaqDTO, idx: number) => (
                           <details key={faq.id} className="group border border-gray-100 rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden">
                               <summary className="w-full text-left py-5 px-6 font-bold text-[15px] text-gray-900 flex justify-between items-center hover:bg-gray-50 transition-colors cursor-pointer select-none">
                                   <span className="flex gap-4 items-center">
