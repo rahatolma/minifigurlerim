@@ -9,25 +9,25 @@ import { slugify } from '@/utils/helpers';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useGamification } from '@/components/providers/GamificationProvider';
 
-interface FigureCardProps {
-  id: string; // Veritabanı UUID
-  slug?: string; // URL Navigasyonu için
-  name: string;
-  seriesName: string;
-  seriesSlug?: string;
-  imageUrl: string;
-  year?: string | number | null;
-  rarity?: string | null;
-  price?: number | null; // Legacy value_usd mapped here temporarily just in case
-  minPrice?: number | null;
-  maxPrice?: number | null;
-  valueScore?: number | null;
-  demandScore?: number | null;
-}
+import { FigureCardData } from '@/utils/figureMapper';
 
-export default function FigureCard({ 
-  id, slug, name, seriesName, seriesSlug, imageUrl, year, rarity, price, minPrice, maxPrice, valueScore, demandScore
-}: FigureCardProps) {
+export default function FigureCard(props: FigureCardData) {
+  const {
+    id,
+    figure_name,
+    figure_slug_tr,
+    image_url,
+    min_price,
+    max_price,
+    avg_price, // Will use avg_price as fallback for single price if needed, or stick to max
+    rarity_level,
+    value_score,
+    demand_score,
+    series_name,
+    series_slug_tr
+  } = props;
+
+
   
   const router = useRouter();
   const { user } = useAuth();
@@ -44,14 +44,14 @@ export default function FigureCard({
     setStatus(userStatusMap[id] || null);
   }, [userStatusMap, id]);
 
-  const safeSeriesSlug = seriesSlug || (seriesName ? slugify(seriesName) : 'gizemli-seri');
-  const targetHref = `/figurler/${safeSeriesSlug}/${slug || id}` as any;
+  const safeSeriesSlug = series_slug_tr || slugify(series_name);
+  const targetHref = `/figurler/${safeSeriesSlug}/${figure_slug_tr || id}` as any;
 
-  const [imgSrc, setImgSrc] = useState(imageUrl || '/images/placeholder.svg');
+  const [imgSrc, setImgSrc] = useState(image_url || '/images/placeholder.svg');
 
   useEffect(() => {
-    setImgSrc(imageUrl || '/images/placeholder.svg');
-  }, [imageUrl]);
+    setImgSrc(image_url || '/images/placeholder.svg');
+  }, [image_url]);
 
   const handleToggle = async (e: React.MouseEvent, type: 'have' | 'want') => {
       e.preventDefault(); 
@@ -93,7 +93,7 @@ export default function FigureCard({
                 Takipte
              </div>
           )}
-          <Image src={imgSrc} alt={name} fill className="object-contain p-6 mix-blend-multiply group-hover:scale-110 transition-transform duration-500" onError={() => setImgSrc('/images/placeholder.svg')} />
+          <Image src={imgSrc} alt={figure_name} fill className="object-contain p-6 mix-blend-multiply group-hover:scale-110 transition-transform duration-500" onError={() => setImgSrc('/images/placeholder.svg')} />
           
           {/* PREMIUM HOVER BADGE */}
           <div className="absolute bottom-4 left-0 w-full flex justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-20 translate-y-2 group-hover:translate-y-0 pointer-events-none">
@@ -113,8 +113,8 @@ export default function FigureCard({
 
        <div className="px-6 pt-5 pb-6 flex flex-col flex-1 bg-white">
           <Link href={targetHref} className="flex flex-col flex-1 cursor-pointer items-center text-center">
-              <h3 className="font-black text-[22px] text-[#D22B2B] leading-tight tracking-tight hover:underline mb-1 w-full">{name}</h3>
-              <p className="font-semibold text-[13px] text-gray-500 mb-4 w-full">{seriesName || 'LEGO® Minifigürler'}</p>
+              <h3 className="font-black text-[22px] text-[#D22B2B] leading-tight tracking-tight hover:underline mb-1 w-full">{figure_name}</h3>
+              <p className="font-semibold text-[13px] text-gray-500 mb-4 w-full">{series_name}</p>
           </Link>
           
           <div className="w-full h-px bg-gray-100 mb-4"></div>
@@ -125,7 +125,7 @@ export default function FigureCard({
              <div className="flex flex-col items-center justify-center bg-gray-50 py-2.5 rounded-lg border border-gray-100">
                 <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-0.5">Tahmini Değer</span>
                 <span className="text-[15px] font-black text-gray-900 tracking-tight">
-                  {minPrice && maxPrice ? `$${minPrice} - $${maxPrice}` : (price ? `$${price}` : '-')}
+                  {min_price && max_price ? `$${min_price} - $${max_price}` : (avg_price ? `$${avg_price}` : '-')}
                 </span>
              </div>
 
@@ -134,11 +134,11 @@ export default function FigureCard({
                 <div className="flex flex-col flex-1 items-center justify-center bg-yellow-50/50 py-2 px-1 rounded-lg border border-yellow-100/50 text-center">
                     <span className="text-[9px] text-yellow-600/80 font-bold uppercase tracking-widest mb-0.5">Değer Skoru</span>
                     <span className="text-[11px] font-black text-yellow-700 leading-tight">
-                        {valueScore === undefined || valueScore === null ? 'Veri Yetersiz' : 
-                         valueScore >= 4.5 ? 'Efsane' : 
-                         valueScore >= 3.5 ? 'Çok Değerli' : 
-                         valueScore >= 2.5 ? 'Değerli' : 
-                         valueScore >= 1.5 ? 'Orta' : 'Yaygın'}
+                        {value_score === undefined || value_score === null ? 'Veri Yetersiz' : 
+                         value_score >= 4.5 ? 'Efsane' : 
+                         value_score >= 3.5 ? 'Çok Değerli' : 
+                         value_score >= 2.5 ? 'Değerli' : 
+                         value_score >= 1.5 ? 'Orta' : 'Yaygın'}
                     </span>
                 </div>
 
@@ -146,10 +146,10 @@ export default function FigureCard({
                 <div className="flex flex-col flex-1 items-center justify-center bg-blue-50/50 py-2 px-1 rounded-lg border border-blue-100/50 text-center">
                     <span className="text-[9px] text-blue-600/80 font-bold uppercase tracking-widest mb-0.5">Talep Sinyali</span>
                     <span className="text-[11px] font-black text-blue-700 leading-tight">
-                        {demandScore === undefined || demandScore === null ? 'Veri Yetersiz' :
-                         demandScore >= 4.0 ? 'Çok Yüksek' : 
-                         demandScore >= 3.0 ? 'Yüksek' : 
-                         demandScore >= 2.0 ? 'Orta' : 'Düşük'}
+                        {demand_score === undefined || demand_score === null ? 'Veri Yetersiz' :
+                         demand_score >= 4.0 ? 'Çok Yüksek' : 
+                         demand_score >= 3.0 ? 'Yüksek' : 
+                         demand_score >= 2.0 ? 'Orta' : 'Düşük'}
                     </span>
                 </div>
              </div>

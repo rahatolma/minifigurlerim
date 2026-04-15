@@ -4,6 +4,7 @@ import { getUserProfile, getUserCollectionsWithDetails, getAllSeries, getTotalMi
 import { logOut } from '@/app/[locale]/(auth)/login/actions';
 import Link from 'next/link';
 import FigureCard from '@/components/ui/FigureCard';
+import { mapFigureForCard } from '@/utils/figureMapper';
 import VaultFilterClient from '@/components/ui/VaultFilterClient';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 
@@ -365,23 +366,30 @@ export default async function KoleksiyonumPage({
                <div className="flex flex-row snap-x snap-mandatory overflow-x-auto pb-8 -mx-8 px-8 gap-4 md:grid md:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 md:gap-5 md:overflow-visible md:snap-none md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                   {filteredCollections.map((item: any, i: number) => {
                       const fig = item.minifigures;
-                      const image = fig.images?.[0] || 'https://via.placeholder.com/300x400?text=Lego+Minifig';
-                      const link = fig.slug || fig.id;
+                      
+                      // DTO Mapping (Mevcut projection'a göre name -> figure_name vb)
+                      const rawDTO = {
+                          id: fig.id,
+                          name: fig.name,
+                          slug_tr: fig.slug,
+                          image_url: fig.images?.[0], // Fallbacks handled by mapper
+                          min_price: fig.min_price,
+                          max_price: fig.max_price,
+                          avg_price: fig.value_usd,
+                          value_score: fig.value_score,
+                          demand_score: fig.demand_score,
+                          series: {
+                              series_name: fig.series_name,
+                              slug_tr: fig.series_slug || fig.series_id // Placeholder
+                          }
+                      };
+                      
+                      const mappedFig = mapFigureForCard(rawDTO);
+                      if (!mappedFig) return null;
 
                       return (
                          <div key={i} className="snap-center snap-always shrink-0 w-[90vw] md:w-auto flex flex-col justify-stretch">
-                          <FigureCard 
-                              id={fig.id}
-                              slug={link}
-                              name={fig.name}
-                              seriesName={fig.series_name}
-                              imageUrl={image}
-                              price={fig.value_usd}
-                              minPrice={fig.min_price}
-                              maxPrice={fig.max_price}
-                              valueScore={fig.value_score}
-                              demandScore={fig.demand_score}
-                          />
+                          <FigureCard {...mappedFig} />
                          </div>
                       );
                   })}

@@ -1,0 +1,31 @@
+name: Global Performance Standard Enforcer
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  enforce-standards:
+    name: Core Architecture Validation (CI Code Check)
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code Repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js Environment
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Run Standart Enforcer AST & Regex Sweep
+      run: node scripts/enforce-standards.mjs
+
+    - name: Run TypeScript Strict Check
+      run: npx tsc --noEmit
+
+    - name: Verify Production Build
+      run: npm run build

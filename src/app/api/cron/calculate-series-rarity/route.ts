@@ -40,7 +40,7 @@ export async function GET(request: Request) {
         let prices = [];
         let validFigCount = 0;
 
-        for (const f of figures) {
+        for (const f of figures || []) {
           const hasVal = typeof f.value_score === 'number' && f.value_score > 0;
           const hasDem = typeof f.demand_score === 'number' && f.demand_score > 0;
           const hasPrc = typeof f.avg_price === 'number' && f.avg_price > 0;
@@ -132,7 +132,7 @@ export async function GET(request: Request) {
         finalRarity = series.manual_rarity; 
       } else if (series.manual_rarity && series.manual_rarity !== '') {
         if (hasEnoughData) {
-           finalRarity = computedRarity;
+           finalRarity = computedRarity || 'Yaygın';
         } else {
            finalRarity = series.manual_rarity;
         }

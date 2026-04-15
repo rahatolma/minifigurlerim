@@ -13,6 +13,7 @@ import AuthProtectedBlur from '@/components/ui/AuthProtectedBlur';
 
 import { slugify } from '@/utils/helpers';
 import { formatBrandText } from '@/utils/textFormatting';
+import { mapFigureForDetail } from '@/utils/figureMapper';
 
 export const revalidate = 300; // 5 dakikalık ISR window
 
@@ -35,43 +36,46 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const resolvedParams = await params;
-  const slug = resolvedParams.figureSlug;
-  const figure = await getMinifigureBySlug(slug);
+  const rawFigure = await getMinifigureBySlug(resolvedParams.figureSlug);
 
-  if (!figure) {
+  if (!rawFigure) {
     return { title: 'Figür Bulunamadı | Minifigürlerim' };
+  }
+  const figure = mapFigureForDetail(rawFigure);
+  if (!figure) {
+    return { title: 'Figür Bozuk | Minifigürlerim' };
   }
 
   const defaultImage = 'https://minifigurlerim.com/og-image.jpg';
-  const figureImage = figure.images && figure.images.length > 0 ? (figure.images[0].url || defaultImage) : defaultImage;
-  const desc = figure.description ? figure.description.substring(0, 150) + '...' : `${figure.name} detayları ve borsa geçmişi Minifigürlerim platformunda.`;
+  const figureImage = figure.image_url || defaultImage;
+  const desc = figure.short_description_tr ? figure.short_description_tr.substring(0, 150) + '...' : `${figure.figure_name} detayları ve borsa geçmişi Minifigürlerim platformunda.`;
 
   // Dinamik OG Mimarisi
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://minifigurlerim.com';
   const ogUrl = new URL(`${baseUrl}/api/og/figure`);
-  ogUrl.searchParams.set('title', figure.name || '');
+  ogUrl.searchParams.set('title', figure.figure_name || '');
   ogUrl.searchParams.set('series', figure.series_name || 'Gizemli Seri');
   ogUrl.searchParams.set('image', figureImage);
 
   return {
-    title: `${figure.name} | LEGO Minifigür İncelemesi`,
+    title: `${figure.figure_name} | LEGO Minifigür İncelemesi`,
     description: desc,
     openGraph: {
-      title: `${figure.name} | Karakter Detayları`,
+      title: `${figure.figure_name} | Karakter Detayları`,
       description: desc,
       images: [
         {
            url: ogUrl.toString(),
            width: 1200,
            height: 630,
-           alt: figure.name,
+           alt: figure.figure_name,
         }
       ],
       type: 'article',
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${figure.name} | LEGO Minifigürleri`,
+      title: `${figure.figure_name} | LEGO Minifigürleri`,
       description: desc,
       images: [ogUrl.toString()],
     }
@@ -91,7 +95,10 @@ export default async function FigureDetail({
   const queryCol = isUUID ? 'id' : 'slug';
 
   // Figür verisini çek
-  const figure = await getMinifigureBySlug(slug);
+  const rawFigure = await getMinifigureBySlug(resolvedParams.figureSlug);
+  if (!rawFigure) return notFound();
+  
+  const figure = mapFigureForDetail(rawFigure);
   if (!figure) return notFound();
 
   // Sistem tanım gruplarını çek
@@ -106,13 +113,13 @@ export default async function FigureDetail({
 
   // TR Pazar Arama Yönlendirme Kurgusu
   const EBAY_CAMP_ID = process.env.NEXT_PUBLIC_AMAZON_TR_TAG || 'minifigurlerim-21'; // Amazon Partner Kimliği
-  const searchKeyword = encodeURIComponent(`Lego Minifigure ${figure.figure_no || figure.code || figure.name}`);
+  const searchKeyword = encodeURIComponent(`Lego Minifigure ${figure.figure_number || figure.figure_code || figure.figure_name}`);
   const amazonUrl = `https://www.amazon.com.tr/s?k=${searchKeyword}&tag=${EBAY_CAMP_ID}`;
   const trendyolUrl = `https://www.trendyol.com/sr?q=${searchKeyword}`;
   const hepsiburadaUrl = `https://www.hepsiburada.com/ara?q=${searchKeyword}`;
 
-  // Ana Görseller (JSON array)
-  const images = (figure.images && Array.isArray(figure.images) && figure.images.length > 0) ? figure.images : [];
+  // Ana Görseller
+  const images = figure.image_url ? [figure.image_url] : [];
   
   // ÖNCEKİ VE SONRAKİ FİGÜR MANTIĞI (AYNI SERİ İÇİNDE)
   let prevFigure = null;
@@ -149,7 +156,7 @@ export default async function FigureDetail({
             
             {/* 1- ANA GÖRSEL KUTUSU */}
             <div className="bg-white p-4 sm:p-8 rounded-2xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col items-center justify-center lg:min-h-[350px]">
-                <FigureGallery images={images} name={figure.name} />
+                <FigureGallery images={images} name={figure.figure_name} />
             </div>
 
             {/* 2- KOLEKSİYON VE PUANLAMA BUTONLARI */}
@@ -166,42 +173,45 @@ export default async function FigureDetail({
             {/* Etiketler (Seri & Kategori) */}
             <div className="flex flex-wrap gap-2 items-center w-full mb-6">
                 {figure.series_name && (
-                    <Link href={figure.series?.slug ? `/seriler/${figure.series.slug}` : `/seriler`} className="bg-red-50 text-[#D22B2B] hover:bg-[#D22B2B] hover:text-white transition-colors font-black uppercase tracking-widest text-[9px] sm:text-[10px] px-3.5 py-1.5 rounded-sm">
+                    <Link href={figure.series_slug_tr ? `/seriler/${figure.series_slug_tr}` : `/seriler`} className="bg-red-50 text-[#D22B2B] hover:bg-[#D22B2B] hover:text-white transition-colors font-black uppercase tracking-widest text-[9px] sm:text-[10px] px-3.5 py-1.5 rounded-sm">
                         {figure.series_name}
                     </Link>
                 )}
-                {figure.category && (
-                    <Link href={`/seriler?category=${slugify(figure.category)}`} className="bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors font-black uppercase tracking-widest text-[9px] sm:text-[10px] px-3.5 py-1.5 rounded-sm">
-                        {figure.category}
+                {figure.category_main && (
+                    <Link href={`/seriler?category=${slugify(figure.category_main)}`} className="bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors font-black uppercase tracking-widest text-[9px] sm:text-[10px] px-3.5 py-1.5 rounded-sm">
+                        {figure.category_main}
                     </Link>
                 )}
             </div>
 
             {/* Başlık */}
             <h1 className="text-3xl md:text-5xl lg:text-5xl font-black text-[#111] leading-[1.1] tracking-tight mb-8">
-                {formatBrandText(figure.name)}
+                {formatBrandText(figure.figure_name)}
             </h1>
 
             {/* Açıklama Alanı */}
             <div className="text-gray-600 text-[15px] sm:text-[16px] font-medium leading-relaxed mb-10 w-full min-h-[40px]">
-                {figure.description ? formatBrandText(figure.description) : <span className="text-gray-400 opacity-60">Figür açıklaması girilmemiş...</span>}
+                {figure.short_description_tr ? formatBrandText(figure.short_description_tr) : <span className="text-gray-400 opacity-60">Figür açıklaması girilmemiş...</span>}
             </div>
 
             {/* 🧱 DİKEY ÖZELLİK LİSTESİ ŞABLONU (TABLE) */}
             <div className="w-full">
                 <div className="flex flex-col w-full border-t border-gray-900 mt-2">
-                    <TableRow label="Marka" value={figure.brand} />
+                    <TableRow label="Marka" value="LEGO®" />
                     <TableRow label="Seri Adı" value={figure.series_name} />
-                    <TableRow label="Seri No" value={figure.series_no} />
-                    <TableRow label="Seri Kategori" value={figure.category} />
-                    <TableRow label="Figür Adı" value={figure.name} />
-                    <TableRow label="Figür Sıra No" value={figure.figure_no} />
-                    <TableRow label="Figür Rolü" value={figure.role} />
-                    <TableRow label="Figür Tipi" value={figure.type} />
-                    <TableRow label="Figür Kodu" value={figure.code} />
+                    <TableRow label="Seri No" value={figure.series_number} />
+                    <TableRow label="Seri Kategori" value={figure.category_main} />
+                    <TableRow label="Figür Adı" value={figure.figure_name} />
+                    <TableRow label="Figür Sıra No" value={figure.figure_number} />
+                    <TableRow label="Figür Rolü" value={figure.figure_role} />
+                    <TableRow label="Figür Tipi" value={figure.figure_type} />
+                    <TableRow label="Figür Kodu" value={figure.figure_code} />
+                    <TableRow label="Karakter" value={figure.character_name} />
+                    <TableRow label="Ana Renk" value={figure.main_color} />
                     <TableRow label="Parça Sayısı" value={figure.piece_count} />
-                    <TableRow label="Nadirlik Derecesi" value={figure.rarity} />
-                    <TableRow label="Çıkış Tarihi Ay" value={figure.release_month} />
+                    <TableRow label="Aksesuar Sayısı" value={figure.accessory_count} />
+                    <TableRow label="Nadirlik Derecesi" value={figure.final_rarity || figure.rarity_level} />
+                    <TableRow label="Çıkış Tarihi Ay" value={figure.release_month_tr} />
                     <TableRow label="Çıkış Tarihi Yıl" value={figure.release_year} />
                     
                     {/* DİNAMİK JSON Özel Detaylar */}
@@ -229,7 +239,7 @@ export default async function FigureDetail({
                            <span className="truncate">Kol. Değeri</span>
                         </span>
                         <span className="text-[12px] sm:text-[14px] font-black text-gray-900 tracking-tight truncate w-full text-center">
-                            {figure.min_price && figure.max_price ? `$${figure.min_price} - $${figure.max_price}` : (figure.value_usd ? `$${figure.value_usd}` : 'Belirsiz')}
+                            {figure.min_price && figure.max_price ? `$${figure.min_price} - $${figure.max_price}` : (figure.avg_price ? `$${figure.avg_price}` : 'Belirsiz')}
                         </span>
                     </div>
 
@@ -265,21 +275,20 @@ export default async function FigureDetail({
             </div>
 
 
-            {/* 4- GÖRÜNTÜLENME KUTUSU (Ayrı Kutu) */}
             <div className="w-full bg-white px-4 py-8 rounded-2xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-wrap sm:flex-nowrap items-center justify-between gap-y-4">
                 <div className="flex flex-col items-center flex-1 min-w-0 w-1/4 sm:w-auto">
-                    <span className="text-green-700 font-bold text-[14px]">{figure.total_views || 0}</span>
+                    <span className="text-green-700 font-bold text-[14px]">{rawFigure.total_views || 0}</span>
                     <span className="text-gray-400 text-[8px] sm:text-[9px] uppercase font-black tracking-widest mt-1 text-center">T. Görüntüleme</span>
                 </div>
                 <div className="hidden sm:block w-px h-6 bg-gray-200"></div>
                 <div className="flex flex-col items-center flex-1 min-w-0 w-1/4 sm:w-auto">
-                    <span className="text-green-700 font-bold text-[14px]">{figure.daily_views || 0}</span>
+                    <span className="text-green-700 font-bold text-[14px]">{rawFigure.daily_views || 0}</span>
                     <span className="text-gray-400 text-[8px] sm:text-[9px] uppercase font-black tracking-widest mt-1 text-center">G. Görüntüleme</span>
                 </div>
                 <div className="hidden sm:block w-px h-6 bg-gray-200"></div>
                 <div className="flex flex-col items-center flex-1 min-w-0 w-1/4 sm:w-auto">
                     <span className="text-red-500 font-bold text-[14px]">
-                       {(!figure.description || figure.description.trim() === '') ? 'Yok' : `${Math.max(1, Math.floor((figure.description?.length || 0) / 250))} Dk`}
+                       {(!figure.short_description_tr || figure.short_description_tr.trim() === '') ? 'Yok' : `${Math.max(1, Math.floor((figure.short_description_tr?.length || 0) / 250))} Dk`}
                     </span>
                     <span className="text-gray-400 text-[8px] sm:text-[9px] uppercase font-black tracking-widest mt-1 text-center">Okuma</span>
                 </div>
@@ -321,7 +330,7 @@ export default async function FigureDetail({
                           </div>
                           <div className="flex flex-col justify-center flex-1 w-full bg-gray-50/50 rounded-2xl p-6 border border-gray-100/50">
                              <MultiMarketButton 
-                                customLink={figure.affiliate_link} 
+                                customLink={undefined} // rawFigure.affiliate_link left out of interface to keep clean, or can ignore
                                 amazonUrl={amazonUrl} 
                                 trendyolUrl={trendyolUrl} 
                                 hepsiburadaUrl={hepsiburadaUrl} 

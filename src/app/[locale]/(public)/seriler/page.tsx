@@ -2,7 +2,7 @@ import SeriesCard from '@/components/ui/SeriesCard';
 import SeriesFilterClient from '@/components/ui/SeriesFilterClient';
 import Link from 'next/link';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
-import { getDefinitions, getCategoriesByType, getAllSeries, getPreviewFiguresForSeries } from '@/services/dal';
+import { getDefinitions, getCategoriesByType, getAllSeries, getPreviewFiguresForSeries, getSeriesListItems } from '@/services/dal';
 import ScrollDownHint from '@/components/ui/ScrollDownHint';
 import AuthCTA from '@/components/ui/AuthCTA';
 import DragScrollContainer from '@/components/ui/DragScrollContainer';
@@ -46,74 +46,18 @@ export default async function SeriesPage({
   const catData = await getCategoriesByType(targetType);
   const categoryFilters = (catData || []).map(c => ({ slug: c.slug, name: locale === 'en' && c.name_en ? c.name_en : c.name }));
 
-  // 2. Tüm Serileri Çek (Dropdown için)
+  // 2. Tüm Serileri Çek (Sadece Dropdown Filter menüsü doldurmak için - Minimal payload)
   const allSeries = await getAllSeries();
   const seriesListFilters = (allSeries || []).map(s => ({ slug: locale === 'en' && s.slug_en ? s.slug_en : (s.slug || s.id.toString()), title: locale === 'en' && s.title_en ? s.title_en : s.title }));
 
-  // 3. Filtrelenmiş Serileri belirle
-  let filteredSeries = allSeries || [];
-
-  if (categoryParam !== 'all') {
-    const selectedCat = catData?.find(c => c.slug === categoryParam);
-    if (selectedCat) {
-      filteredSeries = filteredSeries.filter(s => s.category === selectedCat.name);
-    }
-  }
-
-  if (seriesParam !== 'all') {
-    filteredSeries = filteredSeries.filter(s => {
-       const s_slug = locale === 'en' && s.slug_en ? s.slug_en : (s.slug || s.id.toString());
-       return s_slug === seriesParam;
-    });
-  }
-
-  // Güçlü ve Hataya Dayanıklı Yıl/Ay Çıkarıcı (YYYYMM formatında skor üretir)
-  const extractYearMonthScore = (item: any) => {
-    let year = 2010;
-    if (item.release_year) {
-      const parsed = parseInt(String(item.release_year).trim().replace(/[^0-9]/g, ''), 10);
-      if (!isNaN(parsed) && parsed > 1900) year = parsed;
-    } else if (item.created_at) {
-      year = new Date(item.created_at).getFullYear();
-    }
-
-    let month = 1; // Default Ocak
-    if (item.release_month) {
-       const m = String(item.release_month).trim().toLowerCase();
-       const months = ['ocak','şubat','mart','nisan','mayıs','haziran','temmuz','ağustos','eylül','ekim','kasım','aralık'];
-       const index = months.indexOf(m);
-       if (index !== -1) month = index + 1;
-    } else if (item.created_at) {
-       month = new Date(item.created_at).getMonth() + 1;
-    }
-
-    return (year * 100) + month; // Örn: 202405 (Mayıs 2024)
+  // 3. Filtrelenmiş Serileri Doğrudan Veritabanından (DB) Çek
+  // Kural: UI tarafında asla dataset.filter() gibi diziyi manipüle etme! Tüm filter/sort DAL'a havale edildi.
+  const filtersToApply = {
+    category: categoryParam,
+    series: seriesParam
   };
-
-  if (sortParam === 'newest') {
-    // Default sıralama artık Çıkış Yılı ve Ayına göredir (YYYYMM DESC)
-    filteredSeries = [...filteredSeries].sort((a, b) => {
-      const scoreA = extractYearMonthScore(a);
-      const scoreB = extractYearMonthScore(b);
-      
-      if (scoreB !== scoreA) return scoreB - scoreA;
-      
-      // Yıl/Ay tamamen aynıysa yüklenme tarihine göre (saat/dakika vs) en son yüklenen üstte.
-      return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
-    });
-  } else if (sortParam === 'oldest') {
-    // Eskiden yeniye sıralama (YYYYMM ASC)
-    filteredSeries = [...filteredSeries].sort((a, b) => {
-      const scoreA = extractYearMonthScore(a);
-      const scoreB = extractYearMonthScore(b);
-      
-      if (scoreA !== scoreB) return scoreA - scoreB;
-      
-      return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
-    });
-  } else if (sortParam === 'popular') {
-    filteredSeries = [...filteredSeries].sort((a, b) => (b.total_views || 0) - (a.total_views || 0));
-  }
+  
+  let filteredSeries = await getSeriesListItems(filtersToApply, sortParam) || [];
 
   // YENİ: Gamification artık Client Component Hook'larına (Dynamic Island) taşındı.
   // Bu kod blogu tamamen Statik ve Tam Caching (SSG/ISR) yapısına uygun bırakıldı.
