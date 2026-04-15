@@ -1,6 +1,5 @@
 import * as Sentry from '@sentry/nextjs';
 import { getExploreFigures } from '@/services/dal';
-import { unstable_rethrow } from 'next/navigation';
 import { mapFigureForCard, FigureCardData } from '@/utils/figureMapper';
 
 export interface ExploreDataShape {
@@ -20,7 +19,6 @@ export const getExplorePageData = async (): Promise<ExploreDataShape> => {
       figures = rawData.map(mapFigureForCard).filter(Boolean) as FigureCardData[];
     }
   } catch (err: any) {
-    unstable_rethrow(err);
     const duration = performance.now() - t0;
     console.error(`[Explore Aggregation] block 'explore_figures' failed after ${duration.toFixed(2)}ms:`, err);
     Sentry.withScope(scope => {

@@ -1,6 +1,5 @@
 import * as Sentry from '@sentry/nextjs';
 import { getHomeSliders, getLatestSeries, getLatestFigures, getTopDemandedFigures, getTopValuedFigures, getLatestNews, getPreviewFiguresForSeries } from '@/services/dal';
-import { unstable_rethrow } from 'next/navigation';
 import { mapFigureForCard, FigureCardData } from '@/utils/figureMapper';
 
 export interface HomepageDataShape {
@@ -32,7 +31,6 @@ async function safeFetch<T>(
     }
     return { data: processedData as T, degraded: false };
   } catch (err: any) {
-    unstable_rethrow(err);
     const t1 = performance.now();
     console.error(`[Homepage Aggregation] ${blockName} failed after ${(t1-t0).toFixed(2)}ms:`, err);
     Sentry.withScope(scope => {
