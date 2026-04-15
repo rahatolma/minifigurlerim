@@ -33,7 +33,7 @@ export default function NewSeriesPage() {
     figure_count: '',
     release_month: '',
     release_year: '',
-    rarity: 'Yaygın',
+    manual_rarity: 'Yaygın',
     content_blocks: [] as AnyContentBlock[],
     title_en: '',
     content_blocks_en: [] as AnyContentBlock[],
@@ -137,7 +137,7 @@ export default function NewSeriesPage() {
             figure_count: formData.figure_count ? parseInt(formData.figure_count) : null,
             release_month: formData.release_month,
             release_year: formData.release_year,
-            rarity: formData.rarity,
+            manual_rarity: formData.manual_rarity,
             cover_image_url: imageUrls.cover_image_url,
             hero_image_url: imageUrls.hero_image_url,
             content_blocks: formData.content_blocks,
@@ -349,12 +349,13 @@ export default function NewSeriesPage() {
               </div>
               <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
                  <div className="w-1/3 py-5 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
-                    <label className="text-gray-900 block truncate font-black tracking-wide">Nadirlik Derecesi</label>
+                    <label className="text-gray-900 block truncate font-black tracking-wide">Nadirlik Derecesi (Manual)</label>
+                    <p className="text-[10px] text-gray-500 mt-1">Seçtiğiniz bu değer "Sınırlı Üretim" gibi bir istisna değilse arka plandaki algoritma tarafından ezilebilir.</p>
                  </div>
                  <div className="w-2/3 py-3">
-                    <select name="rarity" value={formData.rarity} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold appearance-none cursor-pointer">
+                    <select name="manual_rarity" value={formData.manual_rarity} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold appearance-none cursor-pointer">
                         <option value="Yaygın">Yaygın</option>
-                        {['Nadir', 'Çok Nadir', 'Sınırlı Üretim', 'Özel Sürüm'].map(r => <option key={r} value={r}>{r}</option>)}
+                        {['Nadir', 'Çok Nadir', 'Sınırlı Üretim', 'Özel Üretim', 'Özel Sürüm'].map(r => <option key={r} value={r}>{r}</option>)}
                     </select>
                  </div>
               </div>

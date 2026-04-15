@@ -36,7 +36,9 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
     figure_count: '',
     release_month: '',
     release_year: '',
-    rarity: '',
+    manual_rarity: '',
+    computed_rarity: '',
+    final_rarity: '',
     content_blocks: [] as AnyContentBlock[],
     title_en: '',
     content_blocks_en: [] as AnyContentBlock[],
@@ -64,7 +66,9 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
                  figure_count: data.figure_count ? data.figure_count.toString() : '',
                  release_month: data.release_month || '',
                  release_year: data.release_year || '',
-                 rarity: data.rarity || '',
+                 manual_rarity: data.manual_rarity || '',
+                 computed_rarity: data.computed_rarity || '',
+                 final_rarity: data.final_rarity || '',
                  content_blocks: Array.isArray(data.content_blocks) ? data.content_blocks : [],
                  title_en: data.title_en || '',
                  content_blocks_en: Array.isArray(data.description_blocks_en) ? data.description_blocks_en : [],
@@ -220,7 +224,7 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
           figure_count: formData.figure_count ? parseInt(formData.figure_count) : null,
           release_month: formData.release_month,
           release_year: formData.release_year,
-          rarity: formData.rarity,
+          manual_rarity: formData.manual_rarity,
           cover_image_url: imageUrls.cover_image_url,
           hero_image_url: imageUrls.hero_image_url,
           content_blocks: formData.content_blocks,
@@ -399,13 +403,33 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
               </div>
               <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
                  <div className="w-1/3 py-5 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
-                    <label className="text-gray-900 block truncate font-black tracking-wide">Nadirlik Derecesi</label>
+                    <label className="text-gray-900 block truncate font-black tracking-wide">Nadirlik Derecesi (Manual)</label>
+                    <p className="text-[10px] text-gray-500 mt-1">Sadece istisnai "Sınırlı Üretim" gibi durumlarda Computed'ı ezer.</p>
                  </div>
                  <div className="w-2/3 py-3">
-                    <select name="rarity" value={formData.rarity} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold appearance-none cursor-pointer">
+                    <select name="manual_rarity" value={formData.manual_rarity} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold appearance-none cursor-pointer">
+                        <option value="">Seçiniz</option>
                         <option value="Yaygın">Yaygın</option>
-                        {['Nadir', 'Çok Nadir', 'Sınırlı Üretim', 'Özel Sürüm'].map(r => <option key={r} value={r}>{r}</option>)}
+                        {['Nadir', 'Çok Nadir', 'Sınırlı Üretim', 'Özel Üretim', 'Özel Sürüm'].map(r => <option key={r} value={r}>{r}</option>)}
                     </select>
+                 </div>
+              </div>
+              <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+                 <div className="w-1/3 py-5 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
+                    <label className="text-gray-900 block truncate font-black tracking-wide">Hesaplanan Rarity (Sistem)</label>
+                    <p className="text-[10px] text-gray-500 mt-1">Günlük Cron Job tarafından algoritmik üretilen sinyal.</p>
+                 </div>
+                 <div className="w-2/3 py-3 px-3">
+                    <span className="bg-gray-100 border border-gray-200 text-gray-600 font-bold px-3 py-1.5 rounded text-[10px] tracking-widest">{formData.computed_rarity || 'Hesaplanmadı'}</span>
+                 </div>
+              </div>
+              <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+                 <div className="w-1/3 py-5 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
+                    <label className="text-gray-900 block truncate font-black tracking-wide">Final Rarity (Önyüz)</label>
+                    <p className="text-[10px] text-gray-500 mt-1">Önyüzün okuyacağı son etiket durumu.</p>
+                 </div>
+                 <div className="w-2/3 py-3 px-3">
+                    <span className="bg-blue-50 border border-blue-200 text-blue-700 font-bold px-3 py-1.5 rounded text-[10px] tracking-widest uppercase">{formData.final_rarity || 'Hesaplanmadı'}</span>
                  </div>
               </div>
             </div>
