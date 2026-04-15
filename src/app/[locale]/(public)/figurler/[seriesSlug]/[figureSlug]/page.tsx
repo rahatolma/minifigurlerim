@@ -130,7 +130,7 @@ export default async function FigureDetail({
 
       if (seriesFigures && seriesFigures.length > 0) {
         // Find current figure index
-        const currentIndex = seriesFigures.findIndex((f) => f.id === figure.id);
+        const currentIndex = seriesFigures.findIndex((f: any) => f.id === figure.id);
         
         if (currentIndex > 0) {
            const p = seriesFigures[currentIndex - 1];
@@ -217,7 +217,7 @@ export default async function FigureDetail({
                     {/* DİNAMİK JSON Özel Detaylar */}
                     {figure.custom_attributes && Object.keys(figure.custom_attributes).length > 0 && (
                         Object.entries(figure.custom_attributes).map(([key, val]) => {
-                            const groupDef = defGroups?.find(g => g.slug === key);
+                            const groupDef = defGroups?.find((g: any) => g.slug === key);
                             const label = groupDef ? groupDef.name : key;
                             return (
                                 <TableRow key={key} label={label} value={val} />

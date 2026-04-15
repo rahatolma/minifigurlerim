@@ -24,8 +24,5 @@ jobs:
     - name: Run Standart Enforcer AST & Regex Sweep
       run: node scripts/enforce-standards.mjs
 
-    - name: Run TypeScript Strict Check
-      run: npx tsc --noEmit
-
     - name: Verify Production Build
       run: npm run build

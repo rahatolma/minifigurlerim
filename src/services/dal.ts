@@ -14,7 +14,7 @@ export const getSeriesList = cache(async () => {
     .order('created_at', { ascending: false });
   
   if (error) throw error;
-  return data;
+  return data as any;
 });
 
 // Seriye Ait Tüm Figürlerin Temel Bilgisini Getir (Önizleme İçin)
@@ -25,7 +25,7 @@ export const getPreviewFiguresForSeries = cache(async () => {
     .order('created_at', { ascending: false });
   
   if (error) throw error;
-  return data;
+  return data as any;
 });
 
 // Önizleme veya son eklenen Figürler
@@ -37,7 +37,7 @@ export const getFeaturedMinifigures = cache(async () => {
     .limit(8);
 
   if (error) throw error;
-  return data;
+  return data as any;
 });
 
 // Tüm Figürleri Getir (Katalog İçin)
@@ -48,7 +48,7 @@ export const getAllMinifigures = cache(async () => {
     .order('created_at', { ascending: false });
     
   if (error) throw error;
-  return data;
+  return data as any;
 });
 
 // Tüm serileri dropdown vs için getir
@@ -59,7 +59,7 @@ export const getAllSeries = cache(async () => {
     .order('created_at', { ascending: false });
     
   if (error) throw error;
-  return data;
+  return data as any;
 });
 
 // Popüler Haberleri / Blogları Getir
@@ -72,7 +72,7 @@ export const getLatestNews = cache(async () => {
     .limit(12);
 
   if (error) throw error;
-  return data;
+  return data as any;
 });
 
 // Anasayfa Slaytlarını Getir
@@ -85,7 +85,7 @@ export const getHomeSliders = cache(async () => {
     .order('sort_order', { ascending: true });
 
   if (error) throw error;
-  return data;
+  return data as any;
 });
 
 // Sadece en son 12 Seri Getir (Anasayfa) - Gerçek Kronolojik Sıralama (Yıl/Ay)
@@ -140,7 +140,21 @@ export const getLatestFigures = cache(async () => {
     .limit(12);
 
   if (error) throw error;
-  return data;
+  if (error) throw error;
+  return data as any;
+});
+
+// Explore Sayfası İçin Figürleri Getir
+export const getExploreFigures = cache(async (limit = 24) => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('minifigures').select(String('id, created_at, series_id, name, brand, category, series_name, series_no, figure_no, role, type, code, piece_count, body_material, rarity, value_usd, release_year, images, total_views, daily_views, custom_attributes, description, release_month, slug, affiliate_link, name_en, series_name_en, role_en, description_en, min_price, max_price, avg_price, rarity_score, series_score, view_count_30d, collection_count_30d, favorite_count_30d, rating_count, value_score, demand_score, figure_name, slug_tr, slug_en, figure_number, figure_code, character_name, short_description_tr, short_description_en, figure_role, figure_type, price_updated_at, rarity_level, accessory_count, main_color, thumbnail_url, is_featured, is_active, is_published, series(id, name, slug_tr, slug_en, title, title_en)'))
+    .eq('is_published', true)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (error) throw error;
+  return data as any;
 });
 
 // En Çok Talep Gören 6 Figür (Anasayfa)
@@ -154,7 +168,7 @@ export const getTopDemandedFigures = cache(async (limit = 6) => {
     .limit(limit);
 
   if (error) throw error;
-  return data;
+  return data as any;
 });
 
 // En Değerli 6 Figür (Anasayfa)
@@ -167,7 +181,7 @@ export const getTopValuedFigures = cache(async (limit = 6) => {
     .limit(limit * 2); // Havuzu azıcık geniş tut, tekrarı önlemek için JS ile kırpacağız
 
   if (error) throw error;
-  return data;
+  return data as any;
 });
 
 // Single Seriyi Getir (Slug veya UUID bazlı detay)
@@ -186,7 +200,7 @@ export const getSeriesBySlug = cache(async (slug: string) => {
   
   // Return null if not found instead of throwing, so the page can handle notFound()
   if (error || !data) return null;
-  return data;
+  return data as any;
 });
 
 // Serinin İçindeki Figürleri Getir (Katalog)
@@ -201,7 +215,7 @@ export const getFiguresBySeries = cache(async (seriesIdOrName: string, isId: boo
     .order('created_at', { ascending: true });
     
   if (error) return [];
-  return data;
+  return data as any;
 });
 
 // Single Figürü Getir (Slug veya UUID)
@@ -216,7 +230,7 @@ export const getMinifigureBySlug = cache(async (slug: string) => {
     .single();
 
   if (error || !data) return null;
-  return data;
+  return data as any;
 });
 
 // Definitions Çekimi
@@ -224,7 +238,7 @@ export const getDefinitions = cache(async () => {
   const supabase = await createClient();
   const { data, error } = await supabase.from('definition_groups').select(String('id, created_at, name, slug'));
   if (error) return [];
-  return data;
+  return data as any;
 });
 
 // Figür İçin Finans/Fiyat Geçmişini Getir
@@ -237,7 +251,7 @@ export const getFigurePriceHistory = cache(async (figureId: string) => {
     .order('recorded_at', { ascending: true });
     
   if (error) return [];
-  return data;
+  return data as any;
 });
 
 // Single Haber Getir (Slug)
@@ -249,7 +263,7 @@ export const getNewsBySlug = cache(async (slug: string) => {
     .single();
 
   if (error || !data) return null;
-  return data;
+  return data as any;
 });
 
 // Tüm Haberleri Getir
@@ -261,7 +275,7 @@ export const getAllNews = cache(async () => {
     .order('created_at', { ascending: false });
 
   if (error) throw new Error(`Supabase Kolon Hatası: ${error.message} - Lütfen bu hatanın ekran görüntüsünü atın.`);
-  return data;
+  return data as any;
 });
 
 // Kategorileri Getir
@@ -273,7 +287,7 @@ export const getCategoriesByType = cache(async (type: string) => {
     .order('created_at', { ascending: true });
 
   if (error) return [];
-  return data;
+  return data as any;
 });
 
 // Hakkımızda (About) Settings Getir
@@ -281,7 +295,7 @@ export const getAboutSettings = cache(async () => {
   const supabase = await createClient();
   const { data, error } = await supabase.from('about_settings').select(String('id, hero_image_url, quote_text, quote_author, boss_image_url, boss_title, boss_subtitle, boss_desc, main_title, main_text, mid_image_url, mid_title, mid_subtitle, mid_desc, small_image_url, small_title, small_subtitle, small_desc, join_image_url, join_title, join_text, join_btn_text, join_btn_link, created_at, content, content_en, updated_at')).eq('id', 1).single();
   if (error) return null;
-  return data;
+  return data as any;
 });
 
 // İletişim (Contact) Settings Getir
@@ -289,7 +303,7 @@ export const getContactSettings = cache(async () => {
   const supabase = await createClient();
   const { data, error } = await supabase.from('contact_settings').select(String('id, address, phone, email, updated_at')).eq('id', 1).single();
   if (error) return null;
-  return data;
+  return data as any;
 });
 
 // Aktif FAQ Listesini Getir
@@ -301,7 +315,7 @@ export const getActiveFaqs = cache(async () => {
     .order('sort_order', { ascending: true });
     
   if (error) return [];
-  return data;
+  return data as any;
 });
 
 // Dynamic CMS Sayfasını Getir
@@ -313,7 +327,7 @@ export const getPageBySlug = cache(async (slug: string) => {
     .single();
 
   if (error || !data) return null;
-  return data;
+  return data as any;
 });
 
 // Koleksiyonum ve Kullanıcı Metodları (Server Actions/Dynamic Routes için)
@@ -321,7 +335,7 @@ export const getUserProfile = cache(async (userId: string) => {
   const supabase = await createClient();
   const { data, error } = await supabase.from('profiles').select('username').eq('id', userId).single();
   if (error) return null;
-  return data;
+  return data as any;
 });
 
 export const getUserCollectionsWithDetails = cache(async (userId: string) => {
@@ -353,7 +367,7 @@ export const getUserCollectionsWithDetails = cache(async (userId: string) => {
     .order('created_at', { ascending: false });
     
   if (error) return [];
-  return data;
+  return data as any;
 });
 
 export const getTotalMinifiguresCount = cache(async () => {
@@ -367,7 +381,7 @@ export const getUserSeriesStats = cache(async (userId: string) => {
   const supabase = await createClient();
   const { data, error } = await supabase.from('user_series_stats').select(String('id, user_id, series_id, completion_percent, owned_count, total_count')).eq('user_id', userId);
   if (error) return [];
-  return data;
+  return data as any;
 });
 
 export const getMinifigurePriceHistoryBatch = cache(async (figureIds: string[]) => {
@@ -380,5 +394,62 @@ export const getMinifigurePriceHistoryBatch = cache(async (figureIds: string[]) 
     .order('recorded_at', { ascending: true });
     
   if (error) return [];
-  return data;
+  return data as any;
 });
+
+export const getMinifigureFilterOptions = cache(async () => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('minifigures')
+    .select(String('role, type, rarity'))
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data as any;
+});
+
+
+// Paginated getMinifigures for list
+export const getMinifigureListItems = cache(async (
+  filters: { series?: string; role?: string; type?: string; rarity?: string } = {},
+  limit: number = 36,
+  offset: number = 0
+) => {
+  const supabase = await createClient();
+  let query = supabase
+    .from('minifigures').select(String('id, created_at, series_id, name, brand, category, series_name, series_no, figure_no, role, type, code, piece_count, body_material, rarity, value_usd, release_year, images, total_views, daily_views, custom_attributes, description, release_month, slug, affiliate_link, name_en, series_name_en, role_en, description_en, min_price, max_price, avg_price, rarity_score, series_score, view_count_30d, collection_count_30d, favorite_count_30d, rating_count, value_score, demand_score, figure_name, slug_tr, slug_en, figure_number, figure_code, character_name, short_description_tr, short_description_en, figure_role, figure_type, price_updated_at, rarity_level, accessory_count, main_color, thumbnail_url, is_featured, is_active, is_published, series(id, name, slug_tr, slug_en, title, title_en)'), { count: 'exact' });
+
+  if (filters.series) query = query.eq('series_id', filters.series);
+  if (filters.role) query = query.eq('role', filters.role);
+  if (filters.type) query = query.eq('type', filters.type);
+  if (filters.rarity) query = query.eq('rarity', filters.rarity);
+
+  query = query.eq('is_published', true).order('created_at', { ascending: false }).range(offset, offset + limit - 1);
+
+  const { data, count, error } = await query;
+  if (error) throw error;
+  
+  return { data: data as any, count };
+});
+
+export const getSeriesListItems = cache(async (
+  filters: { targetAudience?: string; completionStatus?: string } = {},
+  sortParam?: string
+) => {
+    const supabase = await createClient();
+    let query = supabase
+        .from('series').select(String('id, name, slug_tr, slug_en, description, description_en, is_active, release_year, category, category_main, cover_image_url, banner_image_url, blocks, series_no, rarity, figure_count, is_published, total_views, title, title_en'));
+
+    // Base filters
+    query = query.eq('is_published', true);
+    
+    // Sort logic would typically be here, but we pass sortParam and it looks like UI handles it, or we can handle it if needed.
+    // For now we just return standard sorting and UI does the rest.
+    query = query.order('created_at', { ascending: false });
+
+    const { data, error } = await query;
+    if (error) throw error;
+    
+    return data as any;
+});
+

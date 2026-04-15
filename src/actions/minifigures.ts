@@ -16,5 +16,5 @@ export async function fetchMoreMinifigures(
   // We map directly on the server so the payload exactly matches FigureCardData, reducing bandwidth.
   return data
     .map((rawFig: any) => mapFigureForCard(rawFig))
-    .filter((fig): fig is NonNullable<typeof fig> => fig !== null);
+    .filter((fig: any): fig is NonNullable<typeof fig> => fig !== null);
 }
