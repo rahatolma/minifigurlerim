@@ -43,7 +43,9 @@ export default async function FiguresPage({
      getMinifigureFilterOptions()
   ]);
   
-  const { roles, types, rarities } = filterOptions;
+  const roles = Array.from(new Set(((filterOptions as any) || []).map((f: any) => f.role).filter(Boolean))) as string[];
+  const types = Array.from(new Set(((filterOptions as any) || []).map((f: any) => f.type).filter(Boolean))) as string[];
+  const rarities = Array.from(new Set(((filterOptions as any) || []).map((f: any) => f.rarity).filter(Boolean))) as string[];
 
   // 2. Data'yı DAL üzerinden Filtrelenmiş ve Projeksiyonlanmış Halde Dar Çek
   const filtersToApply = {
