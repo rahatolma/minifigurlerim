@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/utils/supabase/client';
 import { Plus, Pencil, Trash2, Eye, EyeOff } from 'lucide-react';
+import { deleteSliderData } from '@/app/admin/actions/slider';
 import toast from 'react-hot-toast';
 
 export default function SlidersPage() {
@@ -36,12 +37,11 @@ export default function SlidersPage() {
   async function handleDelete(id: string) {
     if (!confirm('Bu slaytı silmek istediğinize emin misiniz?')) return;
     
-    // Once resimleri (storage'dan) silebiliriz, ama idareten sadece veriyi siliyoruz.
-    const { error } = await supabase.from('home_sliders').delete().eq('id', id);
-    if (error) {
-      toast.error('Silinirken hata oluştu.');
+    const result = await deleteSliderData(id);
+    if (!result.success) {
+      toast.error(result.error);
     } else {
-      toast.success('Slayt başarıyla silindi.');
+      toast.success(result.message);
       loadSliders();
     }
   }

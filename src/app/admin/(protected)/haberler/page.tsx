@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/utils/supabase/client';
 import { Plus, Loader2, Edit, Trash2 } from 'lucide-react';
+import { deleteNewsData } from '@/app/admin/actions/news';
 import toast from 'react-hot-toast';
 
 export default function NewsListPage() {
@@ -30,12 +31,11 @@ export default function NewsListPage() {
   const handleDelete = async (id: string, title: string) => {
     if(!confirm(`DİKKAT: "${title}" adlı haberi silmek istediğinize emin misiniz?`)) return;
     
-    // Haberin görsellerini de silmek iyi bir pratiktir ancak şimdilik sadece kaydı siliyoruz
-    const { error } = await supabase.from('news').delete().eq('id', id);
-    if (error) {
-      toast.error('Silme hatası: ' + error.message);
+    const result = await deleteNewsData(id);
+    if (!result.success) {
+      toast.error(result.error);
     } else {
-      toast.success('Haber başarıyla silindi.');
+      toast.success(result.message);
       fetchNews();
     }
   }

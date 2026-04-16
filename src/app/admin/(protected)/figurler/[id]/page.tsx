@@ -7,6 +7,7 @@ import { ChevronRight, ImagePlus, Wand2, Loader2, Save } from 'lucide-react';
 import { supabase } from '@/utils/supabase/client';
 import toast from 'react-hot-toast';
 import { slugify } from '@/utils/helpers';
+import { saveFigureData } from '@/app/admin/actions/figure';
 
 export default function EditFigurePage() {
   const router = useRouter();
@@ -191,9 +192,7 @@ console.error(err);
     const generatedSlug = slugify(`${formData.name} ${selectedSeries?.title || ''} ${formData.code || ''}`);
 
     try {
-      const { error } = await supabase
-        .from('minifigures')
-        .update({
+      const dbPayload = {
             slug: generatedSlug,
             series_id: formData.series_id,
             name: formData.name,
@@ -223,11 +222,12 @@ console.error(err);
             release_year: formData.release_year,
             images: uploadedImages.filter(Boolean),
             custom_attributes: finalCustomAttr
-        })
-        .eq('id', figureId);
+      };
+      
+      const result = await saveFigureData(dbPayload, true, figureId);
+      if (!result.success) throw new Error(result.error);
 
-      if (error) throw error;
-      toast.success('Figür başarıyla güncellendi.');
+      toast.success(result.message);
       router.push('/admin/figurler');
     } catch (err: any) {
       console.error(err);

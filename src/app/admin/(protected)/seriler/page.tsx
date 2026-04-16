@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/utils/supabase/client';
 import { Plus, Loader2, Edit, Trash2, ChevronDown, ChevronRight } from 'lucide-react';
+import { deleteSeriesData } from '@/app/admin/actions/series';
+import toast from 'react-hot-toast';
 
 export default function SeriesListPage() {
   const [series, setSeries] = useState<any[]>([]);
@@ -28,8 +30,14 @@ export default function SeriesListPage() {
 
   const handleDelete = async (id: string) => {
     if(!confirm('DİKKAT: Bu seriyi silerseniz, içindeki tüm figürler de silinebilir. Onaylıyor musunuz?')) return;
-    await supabase.from('series').delete().eq('id', id);
-    fetchSeries();
+    
+    const result = await deleteSeriesData(id);
+    if (!result.success) {
+      toast.error(result.error);
+    } else {
+      toast.success(result.message);
+      fetchSeries();
+    }
   }
 
   const filteredSeries = series.filter(s => 

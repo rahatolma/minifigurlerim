@@ -10,6 +10,7 @@ import { slugify } from '@/utils/helpers';
 import BlockEditor from '@/components/admin/blocks/BlockEditor';
 import { AnyContentBlock } from '@/types/content-blocks';
 import toast from 'react-hot-toast';
+import { saveSeriesData } from '@/app/admin/actions/series';
 
 export default function NewSeriesPage() {
   const router = useRouter();
@@ -127,10 +128,7 @@ console.error(err);
     const generatedSlug = slugify(formData.title);
     
     try {
-      const { error } = await supabase
-        .from('series')
-        .insert([
-          {
+      const dbPayload = {
             slug: generatedSlug,
             title: formData.title,
             category: formData.category,
@@ -148,11 +146,12 @@ console.error(err);
             slug_en: formData.slug_en,
             meta_title_en: formData.meta_title_en,
             meta_description_en: formData.meta_description_en
-          }
-        ]);
+      };
+      
+      const result = await saveSeriesData(dbPayload, false);
+      if (!result.success) throw new Error(result.error);
 
-      if (error) throw error;
-      toast.success('Seri başarıyla kaydedildi! 🎉');
+      toast.success(result.message);
       router.push('/admin/seriler');
     } catch (err: any) {
 console.error(err);

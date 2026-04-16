@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/utils/supabase/client';
 import { ChevronDown, ChevronRight, Plus, Loader2, Edit, Trash2 } from 'lucide-react';
+import { deleteFigureData } from '@/app/admin/actions/figure';
+import toast from 'react-hot-toast';
 
 export default function FiguresListPage() {
   const [figures, setFigures] = useState<any[]>([]);
@@ -28,8 +30,14 @@ export default function FiguresListPage() {
 
   const handleDelete = async (id: string, name: string) => {
     if(!confirm(`DİKKAT: "${name}" figürünü silmek istediğinize emin misiniz?`)) return;
-    await supabase.from('minifigures').delete().eq('id', id);
-    fetchFigures();
+    
+    const result = await deleteFigureData(id);
+    if (!result.success) {
+      toast.error(result.error);
+    } else {
+      toast.success(result.message);
+      fetchFigures();
+    }
   }
 
   // Filtering

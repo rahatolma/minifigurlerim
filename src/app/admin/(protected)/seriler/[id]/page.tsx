@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import { slugify } from '@/utils/helpers';
 import BlockEditor from '@/components/admin/blocks/BlockEditor';
 import { AnyContentBlock } from '@/types/content-blocks';
+import { saveSeriesData } from '@/app/admin/actions/series';
 
 export default function EditSeriesPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -217,9 +218,7 @@ console.error(err);
     const generatedSlug = slugify(formData.title);
     
     try {
-      const { error } = await supabase
-        .from('series')
-        .update({
+      const dbPayload = {
           slug: generatedSlug,
           title: formData.title,
           category: formData.category,
@@ -237,29 +236,13 @@ console.error(err);
           slug_en: formData.slug_en,
           meta_title_en: formData.meta_title_en,
           meta_description_en: formData.meta_description_en
-        })
-        .eq('id', id);
+      };
+      
+      const result = await saveSeriesData(dbPayload, true, id);
+      if (!result.success) throw new Error(result.error);
 
-      if (error) throw error;
-
-      // Kaskad Güncelleme
-      const { error: cascadeError } = await supabase
-        .from('minifigures')
-        .update({
-          category: formData.category,
-          series_name: formData.title,
-          series_no: formData.series_no
-        })
-        .eq('series_id', id);
-
-      if (cascadeError) {
-        console.error("Figürler kaskad güncellenirken hata:", cascadeError);
-        toast.error("Seri güncellendi ama içindeki figürler eşitlenemedi.");
-      } else {
-        toast.success('Seri GÜNCELLENDİ ve içindeki tüm figürler otomatik eşitlendi! 🎉');
-        router.push('/admin/seriler');
-      }
-
+      toast.success(result.message);
+      router.push('/admin/seriler');
     } catch (err: any) {
 console.error(err);
       toast.error('Güncelleme Hatası: ' + err.message);

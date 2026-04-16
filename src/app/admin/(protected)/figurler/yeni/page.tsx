@@ -7,6 +7,7 @@ import { ChevronRight, ImagePlus, Wand2, Loader2, Save } from 'lucide-react';
 import { supabase } from '@/utils/supabase/client';
 import toast from 'react-hot-toast';
 import { slugify } from '@/utils/helpers';
+import { saveFigureData } from '@/app/admin/actions/figure';
 
 export default function NewFigurePage() {
   const router = useRouter();
@@ -146,44 +147,42 @@ console.error(err);
     const generatedSlug = slugify(`${formData.name} ${selectedSeries?.title || ''} ${formData.code || ''}`);
 
     try {
-      const { error } = await supabase
-        .from('minifigures')
-        .insert([
-          {
-            slug: generatedSlug,
-            series_id: formData.series_id,
-            name: formData.name,
-            description: formData.description,
-            brand: formData.brand,
-            category: selectedSeries?.category || '',
-            series_name: selectedSeries?.title || '',
-            series_no: selectedSeries?.series_no || '',
-            figure_no: formData.figure_no,
-            role: role,
-            type: type,
-            code: formData.code,
-            piece_count: pieceCount,
-            body_material: formData.body_material,
-            rarity: rarity,
-            value_usd: valueUsd,
-            min_price: formData.min_price ? parseFloat(formData.min_price.toString().replace(',', '.')) : null,
-            max_price: formData.max_price ? parseFloat(formData.max_price.toString().replace(',', '.')) : null,
-            avg_price: formData.avg_price ? parseFloat(formData.avg_price.toString().replace(',', '.')) : null,
-            rarity_score: parseInt(formData.rarity_score) || 1,
-            series_score: parseInt(formData.series_score) || 1,
-            view_count_30d: parseInt(formData.view_count_30d.toString()) || 0,
-            collection_count_30d: parseInt(formData.collection_count_30d.toString()) || 0,
-            favorite_count_30d: parseInt(formData.favorite_count_30d.toString()) || 0,
-            rating_count: parseInt(formData.rating_count.toString()) || 0,
-            release_month: formData.release_month,
-            release_year: formData.release_year,
-            images: uploadedImages.filter(Boolean),
-            custom_attributes: finalCustomAttr // Yeni JSONB kolonu
-          }
-        ]);
+      const dbPayload = {
+        slug: generatedSlug,
+        series_id: formData.series_id,
+        name: formData.name,
+        description: formData.description,
+        brand: formData.brand,
+        category: selectedSeries?.category || '',
+        series_name: selectedSeries?.title || '',
+        series_no: selectedSeries?.series_no || '',
+        figure_no: formData.figure_no,
+        role: role,
+        type: type,
+        code: formData.code,
+        piece_count: pieceCount,
+        body_material: formData.body_material,
+        rarity: rarity,
+        value_usd: valueUsd,
+        min_price: formData.min_price ? parseFloat(formData.min_price.toString().replace(',', '.')) : null,
+        max_price: formData.max_price ? parseFloat(formData.max_price.toString().replace(',', '.')) : null,
+        avg_price: formData.avg_price ? parseFloat(formData.avg_price.toString().replace(',', '.')) : null,
+        rarity_score: parseInt(formData.rarity_score) || 1,
+        series_score: parseInt(formData.series_score) || 1,
+        view_count_30d: parseInt(formData.view_count_30d.toString()) || 0,
+        collection_count_30d: parseInt(formData.collection_count_30d.toString()) || 0,
+        favorite_count_30d: parseInt(formData.favorite_count_30d.toString()) || 0,
+        rating_count: parseInt(formData.rating_count.toString()) || 0,
+        release_month: formData.release_month,
+        release_year: formData.release_year,
+        images: uploadedImages.filter(Boolean),
+        custom_attributes: finalCustomAttr
+      };
 
-      if (error) throw error;
-      toast.success('Figür sisteme başarıyla kaydedildi.');
+      const result = await saveFigureData(dbPayload, false);
+      if (!result.success) throw new Error(result.error);
+
+      toast.success(result.message);
       router.push('/admin/figurler');
     } catch (err: any) {
       console.error(err);

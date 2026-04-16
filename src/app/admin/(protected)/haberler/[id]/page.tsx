@@ -8,6 +8,7 @@ import RichTextEditor from '@/components/admin/RichTextEditor';
 import { supabase } from '@/utils/supabase/client';
 import { slugify } from '@/utils/helpers';
 import toast from 'react-hot-toast';
+import { saveNewsData } from '@/app/admin/actions/news';
 
 export default function EditNewsPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -123,9 +124,7 @@ console.error(err);
     const generatedSlug = slugify(formData.title);
     
     try {
-      const { error } = await supabase
-        .from('news')
-        .update({
+      const dbPayload = {
           slug: generatedSlug,
           title: formData.title,
           summary: formData.summary,
@@ -134,11 +133,12 @@ console.error(err);
           min_read: formData.min_read ? parseInt(formData.min_read) : 1,
           cover_image_url: imageUrls.cover_image_url,
           cover_image_vertical_url: imageUrls.cover_image_vertical_url,
-        })
-        .eq('id', id);
+      };
 
-      if (error) throw error;
-      toast.success('Haber başarıyla güncellendi! 🎉');
+      const result = await saveNewsData(dbPayload, true, id);
+      if (!result.success) throw new Error(result.error);
+
+      toast.success(result.message);
       router.push('/admin/haberler');
     } catch (err: any) {
 console.error(err);

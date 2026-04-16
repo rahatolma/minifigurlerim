@@ -6,6 +6,7 @@ import { Loader2, Save, ImagePlus, ChevronRight } from 'lucide-react';
 import { supabase } from '@/utils/supabase/client';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
+import { saveSliderData } from '@/app/admin/actions/slider';
 
 type SliderFormProps = {
   initialData?: any;
@@ -88,23 +89,18 @@ console.error(err);
     
     setIsSubmitting(true);
     try {
-      if (isEdit) {
-        const { error } = await supabase
-          .from('home_sliders')
-          .update(formData)
-          .eq('id', initialData.id);
-        if (error) throw error;
-        toast.success("Slayt başarıyla güncellendi! 🎉");
-      } else {
-        const { error } = await supabase
-          .from('home_sliders')
-          .insert([formData]);
-        if (error) throw error;
-        toast.success("Yeni slayt kaydedildi! 🎉");
+      const result = await saveSliderData(formData, isEdit, isEdit ? initialData.id : undefined);
+      
+      if (!result.success) {
+        throw new Error(result.error);
       }
+      
+      toast.success(result.message || "İşlem başarılı.");
+      
+      router.refresh(); // Client cache temizleyip güncel datayı sunucudan çekmesi için şart
       router.push('/admin/slaytlar');
     } catch (err: any) {
-console.error(err);
+ console.error(err);
       toast.error("Kayıt Hatası: " + err.message);
     } finally {
       setIsSubmitting(false);
