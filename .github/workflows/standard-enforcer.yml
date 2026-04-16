@@ -31,4 +31,12 @@ jobs:
       run: npx tsc --noEmit
 
     - name: Verify Production Build
-      run: npm run build
+      run: |
+        touch .env.local
+        npm run build
+
+    - name: Runtime Validation (Post-Build Connectivity Verification)
+      run: |
+        npm start &
+        sleep 10
+        curl -f -s http://localhost:3000/ || exit 1
