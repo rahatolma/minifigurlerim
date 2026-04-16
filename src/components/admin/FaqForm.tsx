@@ -53,6 +53,7 @@ export default function FaqForm({ initialData, isEdit }: FaqFormProps) {
       }
       router.push('/admin/sss');
     } catch (err: any) {
+console.error(err);
       toast.error("Kayıt Hatası: " + err.message);
     } finally {
       setIsSubmitting(false);

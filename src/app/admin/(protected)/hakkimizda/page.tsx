@@ -77,6 +77,7 @@ export default function AboutSettingsPage() {
         });
       }
     } catch (err: any) {
+console.error(err);
       toast.error('Ayarlar yüklenemedi: ' + err.message);
     } finally {
       setLoading(false);
@@ -102,6 +103,7 @@ export default function AboutSettingsPage() {
       const { data: { publicUrl } } = supabase.storage.from('minifigure-images').getPublicUrl(filePath);
       setImageUrls(prev => ({ ...prev, [fieldName]: publicUrl }));
     } catch (error: any) {
+console.error(error);
       toast.error('Resim Yükleme Hatası: ' + error.message);
     } finally {
       setUploadingField(null);
@@ -118,6 +120,7 @@ export default function AboutSettingsPage() {
       }
       setImageUrls(prev => ({ ...prev, [fieldName]: null }));
     } catch (err: any) {
+console.error(err);
       toast.error('Silinirken hata oluştu');
     }
   };
@@ -130,6 +133,7 @@ export default function AboutSettingsPage() {
       if (error) throw error;
       toast.success('Hakkımızda sayfası güncellendi! 🎉');
     } catch (err: any) {
+console.error(err);
       toast.error('Hata: ' + err.message);
     } finally {
       setIsSubmitting(false);

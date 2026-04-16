@@ -60,6 +60,7 @@ export default function NewNewsPage() {
       
       setImageUrls(prev => ({ ...prev, [fieldName]: publicUrl }));
     } catch (error: any) {
+console.error(error);
       toast.error('Resim Yükleme Hatası: ' + error.message);
     } finally {
       setUploadingField(null);
@@ -79,6 +80,7 @@ export default function NewNewsPage() {
       }
       setImageUrls(prev => ({ ...prev, [fieldName]: null }));
     } catch (err: any) {
+console.error(err);
       toast.error('Görsel silinirken hata: ' + err.message);
     }
   };
@@ -119,6 +121,7 @@ export default function NewNewsPage() {
       toast.success('Haber başarıyla kaydedildi! 🎉');
       router.push('/admin/haberler');
     } catch (err: any) {
+console.error(err);
       toast.error('Kayıt Hatası: ' + err.message);
     } finally {
       setIsSubmitting(false);
@@ -165,6 +168,7 @@ export default function NewNewsPage() {
 
       toast.success('İngilizce Haber Taslağı Başarıyla Oluşturuldu!', { id: toastId });
     } catch (err: any) {
+console.error(err);
       toast.error('Yapay Zeka Hatası: ' + err.message, { id: toastId });
     } finally {
       setIsGeneratingAI(false);

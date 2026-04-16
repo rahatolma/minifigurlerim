@@ -82,6 +82,7 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
                });
              }
            } catch (err: any) {
+console.error(err);
              toast.error("Hata: Seri bulunamadı.");
              router.push('/admin/seriler');
            }
@@ -115,6 +116,7 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
       
       setImageUrls(prev => ({ ...prev, [fieldName]: publicUrl }));
     } catch (error: any) {
+console.error(error);
       toast.error('Resim Yükleme Hatası: ' + error.message);
     } finally {
       setUploadingField(null);
@@ -135,6 +137,7 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
       setImageUrls(prev => ({ ...prev, [fieldName]: null }));
       toast.success('Görsel başarıyla silindi.');
     } catch (err: any) {
+console.error(err);
       toast.error('Görsel silinirken hata: ' + err.message);
     }
   };
@@ -184,6 +187,7 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
 
       toast.success('İngilizce Taslak Başarıyla Oluşturuldu!', { id: toastId });
     } catch (err: any) {
+console.error(err);
       toast.error('Yapay Zeka Hatası: ' + err.message, { id: toastId });
     } finally {
       setIsGeneratingAI(false);
@@ -257,6 +261,7 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
       }
 
     } catch (err: any) {
+console.error(err);
       toast.error('Güncelleme Hatası: ' + err.message);
     } finally {
       setIsSubmitting(false);

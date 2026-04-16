@@ -56,6 +56,7 @@ export default function SliderForm({ initialData, isEdit }: SliderFormProps) {
       setFormData(prev => ({ ...prev, image_url: publicUrl }));
       toast.success('Görsel başarıyla yüklendi.');
     } catch (error: any) {
+console.error(error);
       toast.error('Resim Yükleme Hatası: ' + error.message);
     } finally {
       setUploading(false);
@@ -73,6 +74,7 @@ export default function SliderForm({ initialData, isEdit }: SliderFormProps) {
       setFormData(prev => ({ ...prev, image_url: '' }));
       toast.success('Görsel başarıyla silindi.');
     } catch (err: any) {
+console.error(err);
       toast.error('Silme hatası: ' + err.message);
     }
   };
@@ -102,6 +104,7 @@ export default function SliderForm({ initialData, isEdit }: SliderFormProps) {
       }
       router.push('/admin/slaytlar');
     } catch (err: any) {
+console.error(err);
       toast.error("Kayıt Hatası: " + err.message);
     } finally {
       setIsSubmitting(false);

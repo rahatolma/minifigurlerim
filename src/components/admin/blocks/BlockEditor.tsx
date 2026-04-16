@@ -102,6 +102,7 @@ export default function BlockEditor({ blocks, onChange }: Props) {
       updateBlockData(blockId, { [dataKey]: publicUrl });
       toast.success('Görsel başarıyla yüklendi.');
     } catch (error: any) {
+console.error(error);
       toast.error('Resim Yükleme Hatası: ' + error.message);
     } finally {
       setUploadingBlockId(null);

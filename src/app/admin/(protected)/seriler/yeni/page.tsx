@@ -79,6 +79,7 @@ export default function NewSeriesPage() {
       
       setImageUrls(prev => ({ ...prev, [fieldName]: publicUrl }));
     } catch (error: any) {
+console.error(error);
       alert('Resim Yükleme Hatası: ' + error.message);
     } finally {
       setUploadingField(null);
@@ -98,6 +99,7 @@ export default function NewSeriesPage() {
       }
       setImageUrls(prev => ({ ...prev, [fieldName]: null }));
     } catch (err: any) {
+console.error(err);
       alert('Görsel silinirken hata: ' + err.message);
     }
   };
@@ -153,6 +155,7 @@ export default function NewSeriesPage() {
       toast.success('Seri başarıyla kaydedildi! 🎉');
       router.push('/admin/seriler');
     } catch (err: any) {
+console.error(err);
       toast.error('Kayıt Hatası: ' + err.message);
     } finally {
       setIsSubmitting(false);
@@ -205,6 +208,7 @@ export default function NewSeriesPage() {
 
       toast.success('İngilizce Taslak Başarıyla Oluşturuldu!', { id: toastId });
     } catch (err: any) {
+console.error(err);
       toast.error('Yapay Zeka Hatası: ' + err.message, { id: toastId });
     } finally {
       setIsGeneratingAI(false);

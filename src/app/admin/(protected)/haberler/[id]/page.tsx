@@ -52,6 +52,7 @@ export default function EditNewsPage({ params }: { params: Promise<{ id: string 
             });
           }
         } catch (err: any) {
+console.error(err);
           toast.error("Hata: Haber bulunamadı.");
           router.push('/admin/haberler');
         }
@@ -85,6 +86,7 @@ export default function EditNewsPage({ params }: { params: Promise<{ id: string 
       
       setImageUrls(prev => ({ ...prev, [fieldName]: publicUrl }));
     } catch (error: any) {
+console.error(error);
       toast.error('Resim Yükleme Hatası: ' + error.message);
     } finally {
       setUploadingField(null);
@@ -105,6 +107,7 @@ export default function EditNewsPage({ params }: { params: Promise<{ id: string 
       setImageUrls(prev => ({ ...prev, [fieldName]: null }));
       toast.success('Görsel başarıyla silindi.');
     } catch (err: any) {
+console.error(err);
       toast.error('Görsel silinirken hata: ' + err.message);
     }
   };
@@ -138,6 +141,7 @@ export default function EditNewsPage({ params }: { params: Promise<{ id: string 
       toast.success('Haber başarıyla güncellendi! 🎉');
       router.push('/admin/haberler');
     } catch (err: any) {
+console.error(err);
       toast.error('Güncelleme Hatası: ' + err.message);
     } finally {
       setIsSubmitting(false);

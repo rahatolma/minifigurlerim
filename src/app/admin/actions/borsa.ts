@@ -17,6 +17,7 @@ export async function updateBorsaData(minifigureId: string, valueUsd: number, af
     revalidatePath('/figurler/[slug]', 'page');
     return { success: true };
   } catch (err: any) {
+console.error(err);
     return { error: err.message };
   }
 }

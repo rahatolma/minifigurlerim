@@ -31,6 +31,7 @@ export default function ContactForm() {
       (e.target as HTMLFormElement).reset();
 
     } catch (err: any) {
+console.error(err);
       toast.error('Mesaj gönderilirken hata oluştu: ' + err.message);
     } finally {
       setIsSubmitting(false);

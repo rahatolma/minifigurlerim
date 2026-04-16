@@ -71,6 +71,7 @@ export default function DefinitionsPage() {
         fetchData();
         setOpenGroup(slug); // Yeni grubu otomatik aç
       } catch (err: any) {
+console.error(err);
         toast.error("Grup Eklenemedi: Şema güncellenirken bekleyin veya " + err.message);
       } finally {
         setIsAddingGroup(false);
@@ -90,6 +91,7 @@ export default function DefinitionsPage() {
       toast.success("Alt Tanım başarıyla eklendi.");
       fetchData();
     } catch (err: any) {
+console.error(err);
       toast.error("Alt Tanım Eklenemedi: " + err.message);
     } finally {
       setIsAdding(false);

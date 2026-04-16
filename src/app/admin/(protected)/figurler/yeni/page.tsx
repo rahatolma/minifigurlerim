@@ -90,6 +90,7 @@ export default function NewFigurePage() {
         return newImages;
       });
     } catch (err: any) {
+console.error(err);
       toast.error("Görsel yüklenemedi: " + err.message);
     } finally {
       setUploadingIdx(null);
@@ -114,6 +115,7 @@ export default function NewFigurePage() {
       });
       toast.success('Görsel başarıyla silindi.');
     } catch (err: any) {
+console.error(err);
       toast.error('Görsel silinirken hata: ' + err.message);
     }
   };

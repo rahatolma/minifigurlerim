@@ -19,6 +19,7 @@ export async function toggleUserApproval(userId: string, currentStatus: boolean)
     revalidatePath('/admin/kullanicilar');
     return { success: true };
   } catch (err: any) {
+console.error(err);
     return { error: err.message };
   }
 }
@@ -34,6 +35,7 @@ export async function deleteUserFromDB(userId: string) {
     revalidatePath('/admin/kullanicilar');
     return { success: true };
   } catch (err: any) {
+console.error(err);
     return { error: err.message };
   }
 }
@@ -48,6 +50,7 @@ export async function getUserDetailedInfo(targetUserId: string) {
     const data = await getUserDetailedInfoAdminDal(targetUserId);
     return { ...data, success: true };
   } catch (err: any) {
+console.error(err);
     return { error: err.message, success: false };
   }
 }

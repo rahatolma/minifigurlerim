@@ -32,6 +32,7 @@ export default async function AdminUsersPage() {
   try {
      profiles = await getAdminUsersDal();
   } catch (err: any) {
+console.error(err);
      errorMsg = err.message;
   }
 
