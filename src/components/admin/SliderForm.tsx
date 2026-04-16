@@ -89,13 +89,13 @@ console.error(err);
     
     setIsSubmitting(true);
     try {
-      const result = await saveSliderData(formData, isEdit, isEdit ? initialData.id : undefined);
+      const result = await saveSliderData(formData, !!isEdit, isEdit ? initialData.id : undefined);
       
       if (!result.success) {
         throw new Error(result.error);
       }
       
-      toast.success(result.message || "İşlem başarılı.");
+      toast.success(result.message);
       
       router.refresh(); // Client cache temizleyip güncel datayı sunucudan çekmesi için şart
       router.push('/admin/slaytlar');
