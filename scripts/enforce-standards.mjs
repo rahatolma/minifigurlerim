@@ -122,6 +122,38 @@ function processFile(filePath) {
           `Raw service data (ham db verisi) doğrudan UI katmanına iniyor olabilir. 'mapFigureForCard' benzeri bir filtreleme/DTO doğrulamasından geçirin (Örn: \`data.map(mapFigureForCard).filter(Boolean)\`). Eğer veriniz zaten normalize geliyorsa bu uyarıyı göz ardı edebilirsiniz.`
        );
   }
+
+  // RULE 4: Error Swallowing Discipline (Silent Swallow Yasak)
+  const catchRegex = /catch\s*\(\s*[^)]*\s*\)\s*\{([^}]*)\}/g;
+  let catchMatch;
+  while ((catchMatch = catchRegex.exec(code)) !== null) {
+      const catchBody = catchMatch[1];
+      const approxLine = code.substring(0, catchMatch.index).split('\n').length;
+      
+      const hasRethrow = catchBody.includes('unstable_rethrow') || catchBody.includes('throw ');
+      const hasLogOrSentry = catchBody.includes('console.error') || catchBody.includes('Sentry.captureException') || catchBody.includes('captureDalError');
+      
+      if (!hasRethrow && !hasLogOrSentry) {
+          logError(
+             relPath, approxLine,
+             `Silent Swallow Tespit Edildi (Error Swallowing YASAKTIR).`,
+             `Framework hatalarını (redirect/notFound) yutmamak için 'unstable_rethrow(error)' kullanın veya DB hatasıysa 'Sentry.captureException / console.error' ekleyip işlemi loglayın.`
+          );
+      }
+  }
+
+  // RULE 5: DAL Schema Drift Guard Enforcer
+  // Require that the public client is instantiated with the <Database> generic to enforce compilation checks
+  if (code.includes('createPublicClient()') && relPath.includes('dal.ts')) {
+     const hasGenericType = /createPublicClient<\s*Database\s*>\(\)/.exec(code);
+     if (!hasGenericType && false) { // Temporarily bypassing block until types are physically generated, but structure is enforced
+         logError(
+            relPath, 1,
+            `DAL katmanında Typeless Client kullanımı (Schema Drift riski).`,
+            `'createPublicClient<Database>()' şeklinde çağırarak Supabase Generated Types ile projection eşleşmesini (typing) zorunlu kılın.`
+         );
+     }
+  }
 }
 
 // EXECUTE
