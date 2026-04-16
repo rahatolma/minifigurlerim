@@ -1,3 +1,5 @@
+import { createClient } from "@/utils/supabase/server";
+
 import { createPublicClient } from '@/utils/supabase/public';
 import { notFound } from 'next/navigation';
 import { sanitizeFilter, captureDalError } from '@/utils/dalHelpers';
