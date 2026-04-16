@@ -3,7 +3,7 @@ import path from 'path';
 import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
-console.log('🛡️  [Verify-Env] Checking project stability shield...');
+console.log(' [Verify-Env] Checking project stability shield...');
 
 const cwd = process.cwd();
 
@@ -24,16 +24,16 @@ for (const mod of criticalModules) {
       throw new Error('Not found');
     }
   } catch (err) {
-    console.error(`❌ [Verify-Env] CRITICAL MODULE MISSING OR CORRUPT: ${mod}`);
+    console.error(`[Verify-Env] CRITICAL MODULE MISSING OR CORRUPT: ${mod}`);
     failed = true;
   }
 }
 
 if (failed) {
-  console.error('\n🚨 [Verify-Env] DEPENDENCY SHIELD FAILED!');
-  console.error('👉 The node_modules directory appears to be corrupted or missing required critical dependencies.');
-  console.error('👉 Action Required: Run `npm ci` to cleanly rebuild the environment.');
+  console.error('\n[Verify-Env] DEPENDENCY SHIELD FAILED!');
+  console.error('The node_modules directory appears to be corrupted or missing required critical dependencies.');
+  console.error('Action Required: Run `npm ci` to cleanly rebuild the environment.');
   process.exit(1);
 }
 
-console.log('✅ [Verify-Env] Module shield intact. Proceeding to startup...\n');
+console.log('[Verify-Env] Module shield intact. Proceeding to startup...\n');

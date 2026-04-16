@@ -10,7 +10,7 @@ const ALLOWED_DB_LAYERS = ['/services', '/actions', '/lib/db', '/app/api', '/com
 let hasFailures = false;
 let hasWarnings = false;
 
-console.log('\n🔍 [CI STANDARD ENFORCER] Starting strict codebase scan...\n');
+console.log('\n[CI STANDARD ENFORCER] Starting strict codebase scan...\n');
 
 function walkDir(dir, callback) {
   if (!fs.existsSync(dir)) return;
@@ -30,14 +30,14 @@ function walkDir(dir, callback) {
 
 // FORMATTER HELPERS
 function logError(file, lineNo, reason, fixStr) {
-  console.log(`❌ [FAIL] ${file}:${lineNo}`);
+  console.log(`[FAIL] ${file}:${lineNo}`);
   console.log(`   └─ İhlal: ${reason}`);
   console.log(`   └─ Çözüm: ${fixStr}\n`);
   hasFailures = true;
 }
 
 function logWarning(file, reason, fixStr) {
-  console.log(`⚠️  [WARN] ${file}`);
+  console.log(` [WARN] ${file}`);
   console.log(`   └─ İhlal: ${reason}`);
   console.log(`   └─ Öneri: ${fixStr}\n`);
   hasWarnings = true;
@@ -59,7 +59,7 @@ function processFile(filePath) {
     const line = lines[i];
 
     // RULE 1: select('*') and wildcard permutations
-    // 1️⃣ KURAL 1: Projection Güvenliği (select * yasak)
+    // KURAL 1: Projection Güvenliği (select * yasak)
     // İstisna: Admin paneli bu kuraldan muaf tutulabilir çünkü performans bottleneck'i oluşturmaz ve tüm alanlara ihtiyaç duyar.
     if (!filePath.includes('/admin/')) {
       const hasWildcardSelect = /\.select\s*\(\s*(['"`])(.*?)\1\s*\)/.exec(line);
@@ -167,12 +167,12 @@ try {
 // REPORTING
 console.log('--- CI SCAN COMPLETE ---');
 if (hasFailures) {
-  console.log('\n❌ [CI PIPELINE FAILED] Kırmızı çizgiler ihlal edildi! Lütfen yukarıdaki hataları düzeltin.\n');
+  console.log('\n[CI PIPELINE FAILED] Kırmızı çizgiler ihlal edildi! Lütfen yukarıdaki hataları düzeltin.\n');
   process.exit(1);
 } else if (hasWarnings) {
-  console.log('\n⚠️  [CI PIPELINE PASSED WITH WARNINGS] Minimum standart korundu ancak bazı potansiyel DTO sızıntıları uyarısı verildi. Kod gözden (Code Review) geçirilmelidir.\n');
+  console.log('\n [CI PIPELINE PASSED WITH WARNINGS] Minimum standart korundu ancak bazı potansiyel DTO sızıntıları uyarısı verildi. Kod gözden (Code Review) geçirilmelidir.\n');
   process.exit(0);
 } else {
-  console.log('\n✅ [CI PIPELINE PASSED] Tüm anayasa kuralları (Global Perf. Standard v1.0) başarıyla karşılanıyor. Güvenle merge edebilirsiniz!\n');
+  console.log('\n[CI PIPELINE PASSED] Tüm anayasa kuralları (Global Perf. Standard v1.0) başarıyla karşılanıyor. Güvenle merge edebilirsiniz!\n');
   process.exit(0);
 }

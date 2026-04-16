@@ -37,7 +37,7 @@ export async function updateSession(request: NextRequest) {
               cookiesToSet.forEach(({ name, value, options }) =>
                 supabaseResponse.cookies.set(name, value, options)
               )
-            } catch (error) {
+            } catch (error) { console.error(error);
               // The `set` method was called from a Server Component.
               // This can be ignored if you have middleware refreshing user sessions.
             }
