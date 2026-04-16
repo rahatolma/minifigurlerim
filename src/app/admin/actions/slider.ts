@@ -2,8 +2,9 @@
 
 import { getAuthUserProfile } from '@/services/action_dal';
 import { createAdminClient } from '@/utils/supabase/admin';
+import { AdminActionResponse } from '@/types/admin-action';
 
-export async function saveSliderData(formData: any, isEdit: boolean, sliderId?: string) {
+export async function saveSliderData(formData: any, isEdit: boolean, sliderId?: string): Promise<AdminActionResponse> {
   try {
     // 1. Yetki Kontrolü
     const { user, profile } = await getAuthUserProfile();
@@ -56,7 +57,7 @@ export async function saveSliderData(formData: any, isEdit: boolean, sliderId?: 
   }
 }
 
-export async function deleteSliderData(sliderId: string) {
+export async function deleteSliderData(sliderId: string): Promise<AdminActionResponse> {
   try {
     const { user, profile } = await getAuthUserProfile();
     if (!user || profile?.role !== 'admin') {

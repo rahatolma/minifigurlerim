@@ -3,8 +3,9 @@
 import 'server-only';
 import { getAuthUserProfile } from '@/services/action_dal';
 import { createAdminClient } from '@/utils/supabase/admin';
+import { AdminActionResponse } from '@/types/admin-action';
 
-export async function saveFigureData(formData: any, isEdit: boolean, figureId?: string) {
+export async function saveFigureData(formData: any, isEdit: boolean, figureId?: string): Promise<AdminActionResponse> {
   try {
     // 1. Yetki Kontrolü
     const { user, profile } = await getAuthUserProfile();
@@ -59,7 +60,7 @@ export async function saveFigureData(formData: any, isEdit: boolean, figureId?: 
   }
 }
 
-export async function deleteFigureData(figureId: string) {
+export async function deleteFigureData(figureId: string): Promise<AdminActionResponse> {
   try {
     const { user, profile } = await getAuthUserProfile();
     if (!user || profile?.role !== 'admin') {

@@ -3,8 +3,9 @@
 import 'server-only';
 import { getAuthUserProfile } from '@/services/action_dal';
 import { createAdminClient } from '@/utils/supabase/admin';
+import { AdminActionResponse } from '@/types/admin-action';
 
-export async function saveSeriesData(formData: any, isEdit: boolean, seriesId?: string) {
+export async function saveSeriesData(formData: any, isEdit: boolean, seriesId?: string): Promise<AdminActionResponse> {
   try {
     // 1. Yetki Kontrolü
     const { user, profile } = await getAuthUserProfile();
@@ -77,7 +78,7 @@ export async function saveSeriesData(formData: any, isEdit: boolean, seriesId?: 
   }
 }
 
-export async function deleteSeriesData(seriesId: string) {
+export async function deleteSeriesData(seriesId: string): Promise<AdminActionResponse> {
   try {
     const { user, profile } = await getAuthUserProfile();
     if (!user || profile?.role !== 'admin') {
