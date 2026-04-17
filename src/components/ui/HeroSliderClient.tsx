@@ -95,7 +95,7 @@ export default function HeroSliderClient({ sliders }: { sliders: any[] }) {
 
             {/* Alt Mini Güven Satırı (Trust Badge) */}
             <div className="flex items-center justify-center gap-3 md:gap-4 mt-8 text-[10px] md:text-sm font-bold tracking-widest uppercase text-white/70">
-              <span className="drop-shadow-md">1000+ FİGÜR</span>
+              <span className="drop-shadow-md">800+ MİNİFİGÜR</span>
               <span className="text-white/40">•</span>
               <span className="drop-shadow-md">25+ SERİ</span>
               <span className="text-white/40 hidden sm:inline-block">•</span>

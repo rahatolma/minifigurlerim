@@ -1,7 +1,7 @@
 {
   "Navigation": {
     "Home": "Ana Sayfa",
-    "Series": "LEGO® Minifigür Serileri",
+    "Series": "LEGO® Minifigürler Serileri",
     "Figures": "LEGO® Minifigürleri",
     "AboutLego": "LEGO® Hakkında",
     "AboutUs": "Hakkımızda",
@@ -110,7 +110,7 @@
     "FigureCountUnit": "Figür",
     "NotFoundTitle": "Seri Bulunamadı | Minifigürlerim",
     "NotFoundDesc": "serisindeki tüm minifigürler ve fiyat/borsa geçmişleri.",
-    "MetaTitleSuffix": " | LEGO Minifigür Serileri",
+    "MetaTitleSuffix": " | LEGO Minifigürler Serileri",
     "MetaGraphSuffix": " | Komple Seri Rehberi",
     "MetaTwitterSuffix": " | LEGO Serileri"
   },

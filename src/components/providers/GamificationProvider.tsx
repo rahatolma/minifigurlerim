@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { getUserCollectionStatus, getUserSeriesProgress } from '@/services/client_dal';
-import { useAuth } from './AuthProvider';
+import { useAuth } from '@/components/providers/AuthProvider';
 
 interface SeriesProgress {
   percent: number;

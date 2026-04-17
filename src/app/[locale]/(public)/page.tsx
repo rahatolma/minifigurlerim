@@ -3,7 +3,6 @@ import FigureCard from '@/components/ui/FigureCard';
 import HeroSliderClient from '@/components/ui/HeroSliderClient';
 import ItemCarousel from '@/components/ui/ItemCarousel';
 import BeforeAfterSlider from '@/components/ui/BeforeAfterSlider';
-import InstagramBlock from '@/components/ui/InstagramBlock';
 import NewsCard from '@/components/ui/NewsCard';
 import { supabase } from '@/utils/supabase/client';
 import Link from 'next/link';
@@ -48,8 +47,8 @@ export default async function Home() {
                     <Package className="w-7 h-7" strokeWidth={2.5} />
                 </div>
                 <div className="flex flex-col text-left w-full">
-                    <h3 className="text-gray-900 text-[17px] font-black leading-snug">Her Figürü Yakından Tanı</h3>
-                    <p className="text-gray-500 font-medium text-[13px] mt-1 leading-snug">Her figürün parçaları, nadirliği ve koleksiyon değerine dair bilgileri inceleyin.</p>
+                    <h3 className="text-gray-900 text-[17px] font-black leading-snug">Her minifigürü yakından tanı</h3>
+                    <p className="text-gray-500 font-medium text-[13px] mt-1 leading-snug">Her minifigürün parçaları, nadirliği ve koleksiyon değerine dair bilgileri inceleyin.</p>
                 </div>
             </Link>
             
@@ -60,7 +59,7 @@ export default async function Home() {
                 </div>
                 <div className="flex flex-col text-left w-full">
                     <h3 className="text-gray-900 text-[17px] font-black leading-snug">Koleksiyonunu Bilinçli Büyüt</h3>
-                    <p className="text-gray-500 font-medium text-[13px] mt-1 leading-snug">Hangi figür değerli? Hangi seriler öne çıkıyor? Koleksiyon dünyasını öğrenin.</p>
+                    <p className="text-gray-500 font-medium text-[13px] mt-1 leading-snug">Hangi minifigür değerli? Hangi seriler öne çıkıyor? Koleksiyon dünyasını öğrenin.</p>
                 </div>
             </Link>
         </div>
@@ -181,7 +180,7 @@ export default async function Home() {
           </ItemCarousel>
       </section>
 
-      {/* 5. Erişime Aç / Koleksiyon Yönetimi (Full Width / Site Width) */}
+      {/* 7. Erişime Aç / Koleksiyon Yönetimi (Full Width / Site Width) */}
       <div className="hidden md:block snap-center snap-always w-full relative bg-gray-900 mt-0">
          <AuthCTA fullWidth={true} />
       </div>
@@ -222,12 +221,7 @@ export default async function Home() {
           </ItemCarousel>
       </section>
 
-      {/* 9. Instagram Bloğu Section */}
-      <section className="hidden md:block snap-end snap-always bg-transparent py-[64px]">
-        <div className="max-w-7xl mx-auto px-8">
-           <InstagramBlock />
-        </div>
-      </section>
+
       
     </div>
   );

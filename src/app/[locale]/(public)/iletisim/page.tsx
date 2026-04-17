@@ -1,5 +1,6 @@
 import ContactForm from "@/components/ui/ContactForm";
 import { getActiveFaqs } from "@/services/dal";
+import InstagramBlock from "@/components/ui/InstagramBlock";
 
 export const metadata = {
   title: 'İletişim | Minifigürlerim',
@@ -52,6 +53,11 @@ export default async function ContactPage() {
             ) : null}
          </div>
 
+      </div>
+
+      {/* Instagram Bloğu (Full Width / Max-7xl) */}
+      <div className="max-w-7xl mx-auto px-6 md:px-8 mt-16 mb-8">
+         <InstagramBlock />
       </div>
     </div>
   );

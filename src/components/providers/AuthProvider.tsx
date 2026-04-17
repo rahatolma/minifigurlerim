@@ -10,7 +10,7 @@ interface AuthContextType {
   loading: boolean;
 }
 
-const AuthContext = createContext<AuthContextType>({ user: null, session: null, loading: true });
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -44,4 +44,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('MİMARİ HATA: useAuth() hook\'u bir AuthProvider sarmalayıcısı dışında çağrılamaz. Bu component yanlış bir ağaçta (boundary) render ediliyor.');
+  }
+  return context;
+};

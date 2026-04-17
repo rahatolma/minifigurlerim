@@ -9,7 +9,18 @@ const eslintConfig = defineConfig([
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
       "@next/next/no-img-element": "off",
-      "prefer-const": "off"
+      "prefer-const": "off",
+      "no-restricted-imports": [
+        "error",
+        {
+          "patterns": [
+            {
+              "group": ["./*Provider*", "../*Provider*", "./*Context*", "../*Context*"],
+              "message": "MİMARİ KURAL: Provider ve Context dosyaları için relative (./ veya ../) import kullanılamaz. Bellekte çift instance ('Duplicate Module Identity') oluşmasını engellemek için HER ZAMAN absolute ('@/...') import yapın."
+            }
+          ]
+        }
+      ]
     }
   },
   // Override default ignores of eslint-config-next.

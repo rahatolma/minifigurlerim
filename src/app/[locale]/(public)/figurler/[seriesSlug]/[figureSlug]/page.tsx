@@ -198,7 +198,16 @@ export default async function FigureDetail({
             <div className="w-full">
                 <div className="flex flex-col w-full border-t border-gray-900 mt-2">
                     <TableRow label="Marka" value="LEGO®" />
-                    <TableRow label="Seri Adı" value={figure.series_name} />
+                    <TableRow label="Seri Adı" value={
+                        figure.series_name ? (
+                            <div className="flex flex-col text-right items-end">
+                                <span className="text-gray-900">LEGO® Minifigürler Serisi</span>
+                                <span className="text-gray-600 block mt-1">
+                                    {figure.series_name.replace(/LEGO®?/i, '').replace(/Minifigürler/i, '').replace(/Serisi/i, '').trim() || '-'}
+                                </span>
+                            </div>
+                        ) : '-'
+                    } />
                     <TableRow label="Seri No" value={figure.series_number} />
                     <TableRow label="Seri Kategori" value={figure.category_main} />
                     <TableRow label="Figür Adı" value={figure.figure_name} />

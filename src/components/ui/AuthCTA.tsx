@@ -8,6 +8,9 @@ export interface AuthCTAProps {
 }
 
 export default function AuthCTA({ fullWidth = false }: AuthCTAProps) {
+  // Mimari kural 2 & 3 Revizyonu:
+  // useAuth() artık stricly tiplendi. Provider dışına çıkarsa anında sert hata (throw Error) fırlatacak.
+  // Bu yüzden kozmetik bir 'fallback' yapmıyoruz, doğrudan context'in gücüne ve hatasına güveniyoruz.
   const { user } = useAuth();
   const isLoggedIn = !!user;
 
@@ -54,7 +57,7 @@ export default function AuthCTA({ fullWidth = false }: AuthCTAProps) {
       <div className="relative z-10 flex items-center justify-center gap-4 text-[11px] md:text-[13px] font-bold text-gray-400 tracking-wide">
         <span className="flex items-center gap-1.5">
           <svg className="w-4 h-4 text-[#D22B2B]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-          1000+ Figür
+          800+ Minifigür
         </span>
         <span className="text-gray-600">•</span>
         <span className="flex items-center gap-1.5">

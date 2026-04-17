@@ -113,8 +113,31 @@ export default function FigureCard(props: FigureCardData) {
 
        <div className="px-6 pt-5 pb-6 flex flex-col flex-1 bg-white">
           <Link href={targetHref} className="flex flex-col flex-1 cursor-pointer items-center text-center">
-              <h3 className="font-black text-[22px] text-[#D22B2B] leading-tight tracking-tight hover:underline mb-1 w-full">{figure_name}</h3>
-              <p className="font-semibold text-[13px] text-gray-500 mb-4 w-full">{series_name}</p>
+              {series_name && (
+                  <div className="flex flex-col items-center justify-center w-full gap-1 mb-3">
+                      <span className="bg-red-50/50 text-[#D22B2B] font-black uppercase tracking-widest text-[7px] sm:text-[8px] px-2 py-1 rounded-sm text-center leading-tight">
+                          LEGO® MİNİFİGÜRLER SERİSİ
+                      </span>
+                      <span className="bg-red-50 text-[#D22B2B] transition-colors font-black uppercase tracking-widest text-[8px] sm:text-[9px] px-2.5 py-1.5 rounded-sm text-center leading-tight">
+                          {series_name.replace(/LEGO®?/i, '').replace(/Minifigürler/i, '').replace(/Serisi/i, '').trim()}
+                      </span>
+                  </div>
+              )}
+              <h3 className="font-black text-[22px] text-[#D22B2B] leading-tight tracking-tight hover:underline mb-4 w-full">
+                  {(() => {
+                      if (!figure_name) return "";
+                      const parts = figure_name.split('(');
+                      if (parts.length > 1) {
+                         return (
+                            <>
+                               {parts[0].trim()}
+                               <span className="block mt-0.5 text-gray-500 font-bold text-[16px]">({parts.slice(1).join('(').trim()}</span>
+                            </>
+                         )
+                      }
+                      return figure_name;
+                  })()}
+              </h3>
           </Link>
           
           <div className="w-full h-px bg-gray-100 mb-4"></div>
