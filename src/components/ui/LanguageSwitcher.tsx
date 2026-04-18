@@ -2,17 +2,23 @@
 
 import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from '@/i18n/routing';
+import { useParams } from 'next/navigation';
 import { useTransition } from 'react';
 
 export default function LanguageSwitcher() {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
+  const params = useParams();
   const [isPending, startTransition] = useTransition();
 
   function onLanguageChange(newLocale: 'en' | 'tr') {
     startTransition(() => {
-      router.replace(pathname, { locale: newLocale });
+      if (!pathname) return;
+      
+      // We explicitly cast the routing object to the exact signature Next-Intl expects
+      const routeArg = { pathname, params } as Parameters<typeof router.replace>[0];
+      router.replace(routeArg, { locale: newLocale });
     });
   }
 
