@@ -9,6 +9,7 @@ import { supabase } from '@/utils/supabase/client';
 import { slugify } from '@/utils/helpers';
 import toast from 'react-hot-toast';
 import { saveNewsData } from '@/app/admin/actions/news';
+import { uploadEntityMedia } from '@/services/media_dal';
 
 export default function NewNewsPage() {
   const router = useRouter();
@@ -47,17 +48,13 @@ export default function NewNewsPage() {
       setUploadingField(fieldName);
       
       const file = event.target.files[0];
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `news/${fileName}`;
+      const formMedia = new FormData();
+      formMedia.append('file', file);
+      formMedia.append('entityType', 'blog');
+      formMedia.append('slug', formData.title ? slugify(formData.title) : 'new-news');
+      formMedia.append('field', fieldName);
 
-      const { error: uploadError } = await supabase.storage
-        .from('minifigure-images')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-      
-      const { data: { publicUrl } } = supabase.storage.from('minifigure-images').getPublicUrl(filePath);
+      const publicUrl = await uploadEntityMedia(formMedia);
       
       setImageUrls(prev => ({ ...prev, [fieldName]: publicUrl }));
     } catch (error: any) {

@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
+import CustomDropdown from './CustomDropdown';
 
 export default function FiguresFilterClient({
   seriesList,
@@ -28,7 +29,10 @@ export default function FiguresFilterClient({
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const name = e.target.name;
     const value = e.target.value;
+    handleFilterUpdate(name, value);
+  };
 
+  const handleFilterUpdate = (name: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
     
     if (value === 'all' || value === 'newest') {
@@ -49,10 +53,7 @@ export default function FiguresFilterClient({
     setTimeout(() => {
         const filterSection = document.getElementById('filter-section');
         if (filterSection) {
-            // Ekranda filtre barının üstünde kaldık (çok aşağıdayız), yukarı doğru yumuşak kaydır
             const box = filterSection.getBoundingClientRect();
-            // Eğer elementin viewport'a göre konumu eksiyse (yani yukarıda bir yerdeyse, biz aşağı scroll etmişiz demektir)
-            // Ya da sıfırdan çok farklıysa, o the scrollIntoView komutunu uygula
             if (box.top < 65 || box.top > 85) {
                  filterSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
@@ -78,57 +79,69 @@ export default function FiguresFilterClient({
     <>
       <div className="hidden md:flex flex-nowrap md:flex-wrap items-center gap-2 md:gap-3 w-full">
 
-        {/* MASAÜSTÜ: Tümünü Göster (Desktop) */}
-        <select 
-          name="sort" 
-          value={currentSort} 
-          onChange={handleChange}
-          className="hidden md:block border border-gray-200 rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-48 flex-1 bg-white cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
-        >
-          <option value="newest">En Yeniler</option>
-          <option value="oldest">En Eskiler</option>
-          <option value="popular">En Popüler</option>
-        </select>
+        {/* MASAÜSTÜ: Doğrudan Açılır Kutular */}
+        <CustomDropdown 
+          name="sort"
+          options={[
+            { value: 'newest', label: 'En Yeniler' },
+            { value: 'oldest', label: 'En Eskiler' },
+            { value: 'popular', label: 'En Popüler' }
+          ]}
+          value={currentSort}
+          onChange={(val: string) => handleFilterUpdate('sort', val)}
+          placeholder="Sıralama"
+          showSearch={false}
+        />
         
-        <select 
-          name="series" 
-          value={currentSeries} 
-          onChange={handleChange}
-          className="hidden md:block border border-gray-200 rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-48 flex-1 bg-white cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
-        >
-          <option value="all">Seriler</option>
-          {seriesList.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
-        </select>
+        <CustomDropdown 
+          name="series"
+          options={[
+            { value: 'all', label: 'Tüm Seriler' },
+            ...seriesList.map(s => ({ value: s.id.toString(), label: s.title }))
+          ]}
+          value={currentSeries}
+          onChange={(val: string) => handleFilterUpdate('series', val)}
+          placeholder="Seriler"
+          searchPlaceholder="Seri ara..."
+          showSearch={true}
+          dropdownWidthClass="w-[450px]"
+        />
         
-        <select 
-          name="role" 
-          value={currentRole} 
-          onChange={handleChange}
-          className="hidden md:block border border-gray-200 rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-40 flex-1 bg-white cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
-        >
-          <option value="all">Figür Rolü</option>
-          {roles.map(r => <option key={r} value={r}>{r}</option>)}
-        </select>
+        <CustomDropdown 
+          name="role"
+          options={[
+            { value: 'all', label: 'Tüm Roller' },
+            ...roles.map(r => ({ value: r, label: r }))
+          ]}
+          value={currentRole}
+          onChange={(val: string) => handleFilterUpdate('role', val)}
+          placeholder="Figür Rolü"
+          showSearch={false}
+        />
         
-        <select 
-          name="type" 
-          value={currentType} 
-          onChange={handleChange}
-          className="hidden md:block border border-gray-200 rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-40 flex-1 bg-white cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
-        >
-          <option value="all">Figür Tipi</option>
-          {types.map(t => <option key={t} value={t}>{t}</option>)}
-        </select>
+        <CustomDropdown 
+          name="type"
+          options={[
+            { value: 'all', label: 'Tüm Tipler' },
+            ...types.map(t => ({ value: t, label: t }))
+          ]}
+          value={currentType}
+          onChange={(val: string) => handleFilterUpdate('type', val)}
+          placeholder="Figür Tipi"
+          showSearch={false}
+        />
 
-        <select 
-          name="rarity" 
-          value={currentRarity} 
-          onChange={handleChange}
-          className="hidden md:block border border-gray-200 rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-40 flex-1 bg-white cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
-        >
-          <option value="all">Nadirlik</option>
-          {rarities.map(r => <option key={r} value={r}>{r}</option>)}
-        </select>
+        <CustomDropdown 
+          name="rarity"
+          options={[
+            { value: 'all', label: 'Tüm Nadirlikler' },
+            ...rarities.map(r => ({ value: r, label: r }))
+          ]}
+          value={currentRarity}
+          onChange={(val: string) => handleFilterUpdate('rarity', val)}
+          placeholder="Nadirlik"
+          showSearch={false}
+        />
 
         {/* ORTAK: Rozet ve Temizle Butonu */}
         <div className="border border-gray-200 bg-gray-50 rounded-xl px-4 py-3 flex items-center justify-center flex-1 shrink-0 md:min-w-max">

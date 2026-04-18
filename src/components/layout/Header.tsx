@@ -39,7 +39,7 @@ export default function Header() {
         {/* Logo Container (Always Visible) */}
         <div className="flex-1 md:flex-none">
             <Link href="/" className="inline-block flex items-center h-full">
-               <img src="/uploads/media__1774631571720.png" alt="Minifigürlerim Logo" className="h-[28px] md:h-[36px] w-auto" />
+               <img src="/images/site-logo.png" alt="Minifigürlerim Logo" className="h-[28px] md:h-[36px] w-auto" />
             </Link>
         </div>
         

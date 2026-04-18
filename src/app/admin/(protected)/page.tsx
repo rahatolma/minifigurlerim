@@ -77,54 +77,61 @@ export default async function AdminDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         
         {/* TOTAL SERIES */}
-        <div className="bg-white rounded-[24px] p-6 lg:p-8 flex flex-col justify-between border border-gray-100/80 shadow-[0_4px_20px_rgba(0,0,0,0.02)] relative overflow-hidden group hover:border-[#D22B2B]/20 transition-all min-h-[180px]">
+        <div className="bg-white/80 backdrop-blur-xl rounded-[28px] p-6 lg:p-8 flex flex-col justify-between border border-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden group hover:-translate-y-1 transition-all duration-300 min-h-[180px]">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <div className="flex items-center justify-between z-10 relative">
-             <div className="w-12 h-12 bg-blue-50 text-blue-500 flex items-center justify-center rounded-2xl group-hover:bg-blue-500 group-hover:text-white transition-colors">
-               <Database className="w-6 h-6" strokeWidth={2} />
+             <div className="w-14 h-14 bg-blue-50 text-blue-600 flex items-center justify-center rounded-[20px] group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300 shadow-sm">
+               <Database className="w-6 h-6" strokeWidth={2.5} />
              </div>
           </div>
           <div className="mt-6 z-10 relative">
-             <p className="text-[10px] sm:text-[11px] font-black text-gray-400 uppercase tracking-widest leading-none mb-3">TANIMLI SERİLER</p>
-             <p className="text-4xl font-black text-gray-900 leading-none">{totalSeries || 0}</p>
+             <p className="text-[11px] sm:text-[12px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none mb-3">TANIMLI SERİLER</p>
+             <p className="text-4xl sm:text-5xl font-black text-gray-900 leading-none tracking-tight">{totalSeries || 0}</p>
           </div>
         </div>
 
         {/* TOTAL FIGURES */}
-        <div className="bg-white rounded-[24px] p-6 lg:p-8 flex flex-col justify-between border border-gray-100/80 shadow-[0_4px_20px_rgba(0,0,0,0.02)] relative overflow-hidden group hover:border-[#D22B2B]/20 transition-all min-h-[180px]">
+        <div className="bg-white/80 backdrop-blur-xl rounded-[28px] p-6 lg:p-8 flex flex-col justify-between border border-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden group hover:-translate-y-1 transition-all duration-300 min-h-[180px]">
+          <div className="absolute inset-0 bg-gradient-to-br from-orange-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <div className="flex items-center justify-between z-10 relative">
-             <div className="w-12 h-12 bg-orange-50 text-orange-500 flex items-center justify-center rounded-2xl group-hover:bg-orange-500 group-hover:text-white transition-colors">
-               <Package className="w-6 h-6" strokeWidth={2} />
+             <div className="w-14 h-14 bg-orange-50 text-orange-500 flex items-center justify-center rounded-[20px] group-hover:bg-orange-500 group-hover:text-white transition-colors duration-300 shadow-sm">
+               <Package className="w-6 h-6" strokeWidth={2.5} />
              </div>
           </div>
           <div className="mt-6 z-10 relative">
-             <p className="text-[10px] sm:text-[11px] font-black text-gray-400 uppercase tracking-widest leading-none mb-3">TANIMLI FİGÜRLER</p>
-             <p className="text-4xl font-black text-gray-900 leading-none">{totalFigures || 0}</p>
+             <p className="text-[11px] sm:text-[12px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none mb-3">TANIMLI FİGÜRLER</p>
+             <p className="text-4xl sm:text-5xl font-black text-gray-900 leading-none tracking-tight">{totalFigures || 0}</p>
           </div>
         </div>
 
         {/* TOTAL COLLECTIONS */}
-        <div className="bg-white rounded-[24px] p-6 lg:p-8 flex flex-col justify-between border border-gray-100/80 shadow-[0_4px_20px_rgba(0,0,0,0.02)] relative overflow-hidden group hover:border-[#D22B2B]/20 transition-all min-h-[180px]">
+        <div className="bg-white/80 backdrop-blur-xl rounded-[28px] p-6 lg:p-8 flex flex-col justify-between border border-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden group hover:-translate-y-1 transition-all duration-300 min-h-[180px]">
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <div className="flex items-center justify-between z-10 relative">
-             <div className="w-12 h-12 bg-emerald-50 text-emerald-500 flex items-center justify-center rounded-2xl group-hover:bg-emerald-500 group-hover:text-white transition-colors">
-               <Box className="w-6 h-6" strokeWidth={2} />
+             <div className="w-14 h-14 bg-emerald-50 text-emerald-600 flex items-center justify-center rounded-[20px] group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-300 shadow-sm">
+               <Box className="w-6 h-6" strokeWidth={2.5} />
              </div>
           </div>
           <div className="mt-6 z-10 relative">
-             <p className="text-[10px] sm:text-[11px] font-black text-gray-400 uppercase tracking-widest leading-none mb-3">KOLEKSİYONLARA EKLENEN</p>
-             <p className="text-4xl font-black text-[#D22B2B] leading-none">{totalCollections || 0}</p>
+             <p className="text-[11px] sm:text-[12px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none mb-3">KOLEKSİYON EKLEMELERİ</p>
+             <p className="text-4xl sm:text-5xl font-black text-[#D22B2B] leading-none tracking-tight">{totalCollections || 0}</p>
           </div>
         </div>
 
         {/* ACTIVE USERS (Placeholder/Hit) */}
-        <div className="bg-white rounded-[24px] p-6 lg:p-8 flex flex-col justify-between border border-gray-100/80 shadow-[0_4px_20px_rgba(0,0,0,0.02)] relative overflow-hidden group hover:border-[#D22B2B]/20 transition-all min-h-[180px]">
+        <div className="bg-white/80 backdrop-blur-xl rounded-[28px] p-6 lg:p-8 flex flex-col justify-between border border-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden group hover:-translate-y-1 transition-all duration-300 min-h-[180px]">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <div className="flex items-center justify-between z-10 relative">
-             <div className="w-12 h-12 bg-purple-50 text-purple-500 flex items-center justify-center rounded-2xl group-hover:bg-purple-500 group-hover:text-white transition-colors">
-               <Users className="w-6 h-6" strokeWidth={2} />
+             <div className="w-14 h-14 bg-purple-50 text-purple-600 flex items-center justify-center rounded-[20px] group-hover:bg-purple-600 group-hover:text-white transition-colors duration-300 shadow-sm">
+               <Users className="w-6 h-6" strokeWidth={2.5} />
              </div>
           </div>
           <div className="mt-6 z-10 relative">
-             <p className="text-[10px] sm:text-[11px] font-black text-gray-400 uppercase tracking-widest leading-none mb-3">SİSTEM DURUMU</p>
-             <p className="text-4xl font-black text-gray-900 leading-none">Aktif</p>
+             <p className="text-[11px] sm:text-[12px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none mb-3">SİSTEM DURUMU</p>
+             <div className="flex items-center">
+               <span className="w-3 h-3 rounded-full bg-emerald-500 mr-2 animate-pulse" />
+               <p className="text-4xl sm:text-5xl font-black text-gray-900 leading-none tracking-tight">Aktif</p>
+             </div>
           </div>
         </div>
 

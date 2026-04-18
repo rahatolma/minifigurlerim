@@ -10,6 +10,7 @@ import { slugify } from '@/utils/helpers';
 import BlockEditor from '@/components/admin/blocks/BlockEditor';
 import { AnyContentBlock } from '@/types/content-blocks';
 import { saveSeriesData } from '@/app/admin/actions/series';
+import { uploadEntityMedia } from '@/services/media_dal';
 
 export default function EditSeriesPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -103,17 +104,13 @@ console.error(err);
       setUploadingField(fieldName);
       
       const file = event.target.files[0];
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `series/${fileName}`;
+      const formMedia = new FormData();
+      formMedia.append('file', file);
+      formMedia.append('entityType', 'series');
+      formMedia.append('slug', formData.title ? slugify(formData.title) : 'unknown-series');
+      formMedia.append('field', fieldName);
 
-      const { error: uploadError } = await supabase.storage
-        .from('minifigure-images')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-      
-      const { data: { publicUrl } } = supabase.storage.from('minifigure-images').getPublicUrl(filePath);
+      const publicUrl = await uploadEntityMedia(formMedia);
       
       setImageUrls(prev => ({ ...prev, [fieldName]: publicUrl }));
     } catch (error: any) {

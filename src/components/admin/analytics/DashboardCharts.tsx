@@ -59,7 +59,7 @@ export default function DashboardCharts({ timelineData, statusData, topSeriesDat
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
       
       {/* SOL KOLON: 1. Koleksiyon Aktivitesi (Timeline - Area Chart) */}
-      <div className="lg:col-span-2 bg-white rounded-[24px] p-6 lg:p-8 border border-gray-100/80 shadow-[0_4px_20px_rgba(0,0,0,0.02)] relative overflow-hidden group hover:border-[#D22B2B]/20 transition-all">
+      <div className="lg:col-span-2 bg-white/80 backdrop-blur-xl rounded-[28px] p-6 lg:p-8 border border-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden group hover:shadow-[0_8px_40px_rgba(210,43,43,0.08)] transition-all duration-300">
         <div className="mb-8">
           <h3 className="text-gray-900 text-lg font-black tracking-tight">30 Günlük Koleksiyon Aktivitesi</h3>
           <p className="text-gray-400 text-sm font-semibold mt-1">Sisteme eklenen ve istek listesine alınan figür trendleri</p>
@@ -113,7 +113,7 @@ export default function DashboardCharts({ timelineData, statusData, topSeriesDat
       <div className="lg:col-span-1 flex flex-col gap-6">
         
         {/* 2. Koleksiyon Durum Dağılımı (Pie Chart) */}
-        <div className="flex-1 bg-white rounded-[24px] p-6 lg:p-8 border border-gray-100/80 shadow-[0_4px_20px_rgba(0,0,0,0.02)] relative overflow-hidden group hover:border-[#D22B2B]/20 transition-all flex flex-col">
+        <div className="flex-1 bg-white/80 backdrop-blur-xl rounded-[28px] p-6 lg:p-8 border border-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden group hover:shadow-[0_8px_40px_rgba(210,43,43,0.08)] transition-all duration-300 flex flex-col">
           <div className="mb-4">
             <h3 className="text-gray-900 text-lg font-black tracking-tight">Kullanıcı Eğilimleri</h3>
             <p className="text-gray-400 text-sm font-semibold mt-1">İstek listesi vs Sahip olunanlar oranı</p>
@@ -173,7 +173,7 @@ export default function DashboardCharts({ timelineData, statusData, topSeriesDat
         </div>
 
         {/* 3. Top 5 En Çok Eklenen Seriler */}
-        <div className="bg-white rounded-[24px] p-6 lg:p-8 border border-gray-100/80 shadow-[0_4px_20px_rgba(0,0,0,0.02)] relative overflow-hidden group hover:border-[#D22B2B]/20 transition-all flex flex-col">
+        <div className="bg-white/80 backdrop-blur-xl rounded-[28px] p-6 lg:p-8 border border-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden group hover:shadow-[0_8px_40px_rgba(210,43,43,0.08)] transition-all duration-300 flex flex-col">
           <div className="mb-5">
             <h3 className="text-gray-900 text-lg font-black tracking-tight">Koleksiyonerlerin Favorileri</h3>
             <p className="text-gray-400 text-sm font-semibold mt-1">Sistemde en çok etkileşim alan ilk 5 seri</p>

@@ -71,6 +71,9 @@ export default function SeriesListPage() {
         <div>
           <h1 className="text-3xl font-black text-gray-900 mb-2">LEGO Serileri</h1>
           <p className="text-sm font-semibold text-gray-500 uppercase tracking-widest">MINIFIG OS. ENTERPRISE SYSTEM</p>
+          <div className="mt-3 inline-flex bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-bold px-3 py-1.5 rounded uppercase tracking-wider">
+            ⚠️ Not: Web arayüzündeki Popüler sıralama şu an "total_views" bazlıdır (geçici)
+          </div>
         </div>
         <div className="flex items-center gap-4 w-full md:w-auto">
           <input 

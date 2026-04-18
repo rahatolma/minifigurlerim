@@ -5,6 +5,8 @@ import { supabase } from '@/utils/supabase/client';
 import { Loader2, Save, ImagePlus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import RichTextEditor from '@/components/admin/RichTextEditor';
+import { updateAboutSettingsAction } from './actions';
+import { uploadEntityMedia } from '@/services/media_dal';
 
 export default function AboutSettingsPage() {
   const [loading, setLoading] = useState(true);
@@ -93,18 +95,20 @@ console.error(err);
       if (!event.target.files || event.target.files.length === 0) return;
       setUploadingField(fieldName);
       const file = event.target.files[0];
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `about/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage.from('minifigure-images').upload(filePath, file);
-      if (uploadError) throw uploadError;
       
-      const { data: { publicUrl } } = supabase.storage.from('minifigure-images').getPublicUrl(filePath);
+      const formMedia = new FormData();
+      formMedia.append('file', file);
+      formMedia.append('entityType', 'about');
+      formMedia.append('slug', 'site-settings');
+      formMedia.append('field', fieldName);
+
+      const publicUrl = await uploadEntityMedia(formMedia);
+
       setImageUrls(prev => ({ ...prev, [fieldName]: publicUrl }));
-    } catch (error: any) {
-console.error(error);
-      toast.error('Resim Yükleme Hatası: ' + error.message);
+      toast.success('Görsel yüklendi');
+    } catch (err: any) {
+      console.error(err);
+      toast.error('Yükleme hatası: ' + err.message);
     } finally {
       setUploadingField(null);
     }
@@ -129,8 +133,7 @@ console.error(err);
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.from('about_settings').upsert({ id: 1, ...formData, ...imageUrls });
-      if (error) throw error;
+      await updateAboutSettingsAction({ ...formData, ...imageUrls });
       toast.success('Hakkımızda sayfası güncellendi! 🎉');
     } catch (err: any) {
 console.error(err);

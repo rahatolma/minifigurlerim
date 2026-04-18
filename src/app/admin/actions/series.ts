@@ -4,6 +4,7 @@ import 'server-only';
 import { getAuthUserProfile } from '@/services/action_dal';
 import { createAdminClient } from '@/utils/supabase/admin';
 import { AdminActionResponse } from '@/types/admin-action';
+import { validateNamingConvention, normalizeSlug } from '@/utils/validations/naming-standards';
 
 export async function saveSeriesData(formData: any, isEdit: boolean, seriesId?: string): Promise<AdminActionResponse> {
   try {
@@ -24,6 +25,17 @@ export async function saveSeriesData(formData: any, isEdit: boolean, seriesId?: 
            throw new Error('Geçersiz görsel kaynağı! Yalnızca sisteme güvenli yüklenmiş görseller kabul edilir.');
         }
       }
+    }
+
+    // 2.5 Naming Convention Enforcement (Mimari Zorunluluk)
+    if (formData.title) validateNamingConvention(formData.title);
+    if (formData.category) validateNamingConvention(formData.category);
+    
+    // Slug mekanik standartlaması
+    if (formData.title && (!formData.slug || formData.slug.trim() === '')) {
+      formData.slug = normalizeSlug(formData.title);
+    } else if (formData.slug) {
+      formData.slug = normalizeSlug(formData.slug);
     }
 
     // 3. Servis Rolü ile Veritabanı İstemcisi

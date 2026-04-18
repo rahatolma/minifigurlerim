@@ -19,7 +19,7 @@ export default function WelcomeBlock() {
           </p>
         </div>
         <div className="pt-4">
-          <img src="/uploads/media__1774632782593.png" alt="Minifigür Hastası İmza" className="h-14 md:h-16 w-auto mix-blend-multiply opacity-90 -ml-2" />
+          <img src="/images/signature.png" alt="Minifigür Hastası İmza" className="h-14 md:h-16 w-auto mix-blend-multiply opacity-90 -ml-2" />
         </div>
       </div>
       <div className="w-full lg:w-1/2 flex justify-center lg:justify-end mt-12 lg:mt-0 lg:pl-10">

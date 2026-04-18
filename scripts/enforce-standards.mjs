@@ -131,7 +131,7 @@ function processFile(filePath) {
       const approxLine = code.substring(0, catchMatch.index).split('\n').length;
       
       const hasRethrow = catchBody.includes('unstable_rethrow') || catchBody.includes('throw ');
-      const hasLogOrSentry = catchBody.includes('console.error') || catchBody.includes('Sentry.captureException') || catchBody.includes('captureDalError');
+      const hasLogOrSentry = catchBody.includes('console.error') || catchBody.includes('Sentry.captureException') || catchBody.includes('captureDalError') || catchBody.includes('actionLog(');
       
       if (!hasRethrow && !hasLogOrSentry) {
           logError(

@@ -5,10 +5,9 @@ import ItemCarousel from '@/components/ui/ItemCarousel';
 import BeforeAfterSlider from '@/components/ui/BeforeAfterSlider';
 import NewsCard from '@/components/ui/NewsCard';
 import { supabase } from '@/utils/supabase/client';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import { LayoutGrid, Package, TrendingUp } from 'lucide-react';
-import AuthCTA from '@/components/ui/AuthCTA';
 import { getHomepageData } from '@/services/homepageAggregation';
 
 export const revalidate = 86400; // Dinamik sayfa
@@ -85,7 +84,7 @@ export default async function Home() {
                 key={series.id}
                 id={series.slug || series.id}
                 title={series.title}
-                imageUrl={series.cover_image_url || 'https://via.placeholder.com/400x300.png?text=Görsel+Yok'}
+                imageUrl={series.cover_image_url || '/images/placeholder.svg'}
                 year={series.release_year || '2024'}
                 seriesNo={series.series_no}
                 category={series.category || 'Minifigures'}
@@ -180,10 +179,7 @@ export default async function Home() {
           </ItemCarousel>
       </section>
 
-      {/* 7. Erişime Aç / Koleksiyon Yönetimi (Full Width / Site Width) */}
-      <div className="hidden md:block snap-center snap-always w-full relative bg-gray-900 mt-0">
-         <AuthCTA fullWidth={true} />
-      </div>
+      {/* 7. [AuthCTA Layout'a Taşındı] Erişime Aç / Koleksiyon Yönetimi (Full Width) */}
 
       {/* 8. Güncel Haberler / Blog Section */}
       <section className="bg-white py-[40px] md:py-[64px] border-t border-gray-100">
@@ -208,7 +204,7 @@ export default async function Home() {
                 key={newsItem.id}
                 slug={newsItem.slug || newsItem.id}
                 title={newsItem.title}
-                imageUrl={newsItem.cover_image_url || 'https://via.placeholder.com/400x300.png?text=Görsel+Yok'}
+                imageUrl={newsItem.cover_image_url || '/images/placeholder.svg'}
                 views={newsItem.total_views || 0}
                 dailyViews={newsItem.daily_views || 0}
                 minRead={newsItem.min_read || 1}

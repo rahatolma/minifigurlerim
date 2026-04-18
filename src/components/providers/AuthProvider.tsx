@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/utils/supabase/client';
+import * as Sentry from '@sentry/nextjs';
 import { User, Session } from '@supabase/supabase-js';
 
 interface AuthContextType {
@@ -18,10 +19,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const syncSentryUser = (sessionUser: User | null) => {
+      if (sessionUser) {
+        Sentry.setUser({ id: sessionUser.id, email: sessionUser.email });
+      } else {
+        Sentry.setUser(null);
+      }
+    };
+
     // İlk yüklemede state'i ayarla
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      syncSentryUser(session?.user ?? null);
       setLoading(false);
     });
 
@@ -29,6 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
+      syncSentryUser(session?.user ?? null);
       setLoading(false);
     });
 

@@ -35,7 +35,7 @@ export default async function LoginPage({
         
         {/* LOGO ALANI */}
         <Link href="/" className="inline-block hover:opacity-90 transition-opacity">
-           <img src="/uploads/media__1774631571720.png" alt="Minifigürlerim Logo" className="h-[48px] w-auto drop-shadow-sm" />
+           <img src="/images/site-logo.png" alt="Minifigürlerim Logo" className="h-[48px] w-auto drop-shadow-sm" />
         </Link>
 
         {/* BEYAZ KART BÖLÜMÜ */}

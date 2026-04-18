@@ -263,10 +263,16 @@ export const getMinifigureBySlug = cache(async (slug: string) => {
   const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
   const queryCol = isUUID ? 'id' : 'slug';
 
-  const { data, error } = await supabase
-    .from('minifigures').select('id, created_at, series_id, name, brand, category, series_name, series_no, figure_no, role, type, code, piece_count, body_material, rarity, value_usd, release_year, images, total_views, daily_views, custom_attributes, description, release_month, slug, affiliate_link, name_en, series_name_en, role_en, description_en, min_price, max_price, avg_price, rarity_score, series_score, view_count_30d, collection_count_30d, favorite_count_30d, rating_count, value_score, demand_score, figure_name, slug_tr, slug_en, figure_number, figure_code, character_name, short_description_tr, short_description_en, figure_role, figure_type, price_updated_at, rarity_level, accessory_count, main_color, thumbnail_url, is_featured, is_active, is_published, series(id, slug_tr, slug_en, title, title_en)')
-    .eq(queryCol, slug)
-    .single();
+  let query = supabase
+    .from('minifigures').select('id, created_at, series_id, name, brand, category, series_name, series_no, figure_no, role, type, code, piece_count, body_material, rarity, value_usd, release_year, images, total_views, daily_views, custom_attributes, description, release_month, slug, affiliate_link, name_en, series_name_en, role_en, description_en, min_price, max_price, avg_price, rarity_score, series_score, view_count_30d, collection_count_30d, favorite_count_30d, rating_count, value_score, demand_score, figure_name, slug_tr, slug_en, figure_number, figure_code, character_name, short_description_tr, short_description_en, figure_role, figure_type, price_updated_at, rarity_level, accessory_count, main_color, thumbnail_url, is_featured, is_active, is_published, series(id, slug_tr, slug_en, title, title_en)');
+    
+  if (isUUID) {
+    query = query.eq('id', slug);
+  } else {
+    query = query.or(`slug.eq."${slug}",slug_tr.eq."${slug}",slug_en.eq."${slug}"`);
+  }
+  
+  const { data, error } = await query.single();
 
   if (error || !data) return null;
   return data as any;
@@ -399,7 +405,14 @@ export const getUserCollectionsWithDetails = cache(async (userId: string) => {
         max_price,
         avg_price,
         value_score,
-        demand_score
+        demand_score,
+        series (
+          id,
+          title,
+          title_en,
+          slug_tr,
+          slug_en
+        )
       )
     `)
     .eq('user_id', userId)
@@ -500,9 +513,28 @@ export const getSeriesListItems = cache(async (
     const safeSeries = sanitizeFilter(filters.series);
     if (safeSeries) query = query.eq('slug_tr', safeSeries);
     
-    // Sort logic would typically be here, but we pass sortParam and it looks like UI handles it, or we can handle it if needed.
-    // For now we just return standard sorting and UI does the rest.
-    query = query.order('created_at', { ascending: false });
+    // Uygulama sıralaması
+    switch (sortParam) {
+        case 'popular':
+            query = query
+                .order('total_views', { ascending: false })
+                .order('release_year', { ascending: false })
+                .order('series_no', { ascending: false, nullsFirst: false });
+            break;
+        case 'oldest':
+            query = query
+                .order('release_year', { ascending: true })
+                .order('series_no', { ascending: true, nullsFirst: false })
+                .order('created_at', { ascending: true });
+            break;
+        case 'newest':
+        default:
+            query = query
+                .order('release_year', { ascending: false })
+                .order('series_no', { ascending: false, nullsFirst: false })
+                .order('created_at', { ascending: false });
+            break;
+    }
 
     const { data, error } = await query;
     if (error) {

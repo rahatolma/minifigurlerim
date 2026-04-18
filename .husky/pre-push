@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "============================================================"
+echo "🛡  Minifigürlerim Docs Enforcement Check"
+echo "============================================================"
+
+# List modified files
+MODIFIED_SRC=$(git diff --cached --name-only | grep '^src/')
+MODIFIED_DOCS=$(git diff --cached --name-only | grep '^docs/')
+
+if [ -n "$MODIFIED_SRC" ] && [ -z "$MODIFIED_DOCS" ]; then
+  echo "⚠️ UYARI: 'src/' içerisindeki kodları değiştirdin ama '/docs' klasöründe veya README.md dosyasında hiçbir mimari kayıt (Architecture/Standards) güncellemedin."
+  echo "👉 Kural: 'Yeni mimari karar docs’a yazılmadan tamamlandı sayılmaz.'"
+  echo "Eğer bu kod sadece bir hotfix/refactor ise devam edebilirsin ancak mimari etki yaratıyorsa lütfen dokümantasyonu güncelle!"
+  echo "============================================================"
+  
+  # Fail push command intentionally so they have to look at this? 
+  # Actually, let's keep it as a loud visual warning, rather than a hard blocker, 
+  # to prevent extreme developer friction for typos. 
+  # If the user explicitly wants a blocker later, we can add `exit 1` here.
+  sleep 2
+else
+  echo "✅ Dokümantasyon senkronizasyonu geçerli."
+fi

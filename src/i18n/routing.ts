@@ -9,9 +9,17 @@ export const routing = defineRouting({
       tr: '/seriler',
       en: '/series'
     },
+    '/seriler/[slug]': {
+      tr: '/seriler/[slug]',
+      en: '/series/[slug]'
+    },
     '/figurler': {
       tr: '/figurler',
       en: '/figures'
+    },
+    '/figurler/[seriesSlug]/[figureSlug]': {
+      tr: '/figurler/[seriesSlug]/[figureSlug]',
+      en: '/figures/[seriesSlug]/[figureSlug]'
     },
     '/': '/',
     '/koleksiyonum': '/koleksiyonum',

@@ -17,7 +17,7 @@ export default function Footer() {
           {/* BLOK 1: Logo & Haber Bülteni */}
           <div className="flex flex-col items-start md:col-span-5 lg:col-span-4">
             <Link href="/" className="inline-block transform hover:scale-105 transition-transform mb-8">
-              <img src="/uploads/media__1774631571720.png" alt="Minifigürlerim Logo" className="h-[36px] w-auto" />
+              <img src="/images/site-logo.png" alt="Minifigürlerim Logo" className="h-[36px] w-auto" />
             </Link>
             <p className="text-[14px] text-gray-700 font-bold leading-relaxed pr-4">
               {tFooter('NewsletterText')}
@@ -67,7 +67,7 @@ export default function Footer() {
           {/* BLOK 4: Image - Only visible on lg+ screens for precise layout */}
           <div className="hidden lg:flex flex-col items-center justify-end lg:col-span-2 relative h-full">
             <img 
-              src="/uploads/footer-lego-guy.png" 
+              src="/images/footer-lego-guy.png" 
               alt="LEGO Contact Minifigure" 
               className="absolute bottom-[-16px] right-0 w-[240px] max-w-none object-contain drop-shadow-[0_15px_15px_rgba(0,0,0,0.15)] z-10"
               style={{ pointerEvents: "none" }}

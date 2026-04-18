@@ -8,6 +8,7 @@ import { supabase } from '@/utils/supabase/client';
 import toast from 'react-hot-toast';
 import { slugify } from '@/utils/helpers';
 import { saveFigureData } from '@/app/admin/actions/figure';
+import { uploadEntityMedia } from '@/services/media_dal';
 
 export default function EditFigurePage() {
   const router = useRouter();
@@ -121,14 +122,13 @@ export default function EditFigurePage() {
       if (!e.target.files || e.target.files.length === 0) return;
       setUploadingIdx(idx);
       const file = e.target.files[0];
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `figures/${fileName}`;
+      const formMedia = new FormData();
+      formMedia.append('file', file);
+      formMedia.append('entityType', 'figures');
+      formMedia.append('slug', slugify(formData.code || formData.name || 'figure-no-name'));
+      formMedia.append('field', `main-${idx}`);
 
-      const { error: uploadError } = await supabase.storage.from('minifigure-images').upload(filePath, file);
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage.from('minifigure-images').getPublicUrl(filePath);
+      const publicUrl = await uploadEntityMedia(formMedia);
       
       setUploadedImages(prev => {
         const newImages = [...prev];

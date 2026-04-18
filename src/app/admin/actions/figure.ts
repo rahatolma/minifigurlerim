@@ -4,6 +4,7 @@ import 'server-only';
 import { getAuthUserProfile } from '@/services/action_dal';
 import { createAdminClient } from '@/utils/supabase/admin';
 import { AdminActionResponse } from '@/types/admin-action';
+import { validateNamingConvention, normalizeSlug } from '@/utils/validations/naming-standards';
 
 export async function saveFigureData(formData: any, isEdit: boolean, figureId?: string): Promise<AdminActionResponse> {
   try {
@@ -26,10 +27,34 @@ export async function saveFigureData(formData: any, isEdit: boolean, figureId?: 
       }
     }
 
+    // 2.5 Naming Convention Enforcement (Mimari Zorunluluk)
+    if (formData.title) validateNamingConvention(formData.title);
+    if (formData.character) validateNamingConvention(formData.character);
+    
+    // Slug mekanik standartlaması
+    if (formData.title && (!formData.slug || formData.slug.trim() === '')) {
+      formData.slug = normalizeSlug(formData.title);
+    } else if (formData.slug) {
+      formData.slug = normalizeSlug(formData.slug);
+    }
+
     // 3. Servis Rolü ile Veritabanı İstemcisi
     const adminClient = createAdminClient();
 
-    // 4. Veritabanı Yazma İşlemi
+    // 4. Duplicate Slug Check (Guard)
+    if (formData.slug) {
+      let query = adminClient.from('minifigures').select('id').eq('slug', formData.slug);
+      if (isEdit && figureId) {
+        query = query.neq('id', figureId);
+      }
+      const { data: existingSlugs, error: slugErr } = await query;
+      if (slugErr) throw slugErr;
+      if (existingSlugs && existingSlugs.length > 0) {
+        throw new Error('BU SLUG ZATEN KULLANIMDA! Duplicate veri oluşturulması yönerge gereği bloklanmıştır.');
+      }
+    }
+
+    // 5. Veritabanı Yazma İşlemi
     if (isEdit && figureId) {
       const { data, error } = await adminClient
         .from('minifigures')

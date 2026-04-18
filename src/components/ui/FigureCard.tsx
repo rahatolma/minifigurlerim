@@ -1,13 +1,15 @@
 'use client';
 
 import Image from 'next/image';
-import { Link } from '@/i18n/routing';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { toggleCollectionStatus } from '@/app/actions/collection';
 import { slugify } from '@/utils/helpers';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useGamification } from '@/components/providers/GamificationProvider';
+import { useLocale } from 'next-intl';
+import { getFigureUrl } from '@/utils/routeBuilder';
 
 import { FigureCardData } from '@/utils/figureMapper';
 
@@ -43,9 +45,14 @@ export default function FigureCard(props: FigureCardData) {
   useEffect(() => {
     setStatus(userStatusMap[id] || null);
   }, [userStatusMap, id]);
+  const locale = useLocale();
 
   const safeSeriesSlug = series_slug_tr || slugify(series_name);
-  const targetHref = `/figurler/${safeSeriesSlug}/${figure_slug_tr || id}` as any;
+  const targetHref = getFigureUrl({
+    seriesSlug: safeSeriesSlug,
+    figureSlug: figure_slug_tr || id,
+    locale: locale as any
+  });
 
   const [imgSrc, setImgSrc] = useState(image_url || '/images/placeholder.svg');
 
@@ -78,9 +85,9 @@ export default function FigureCard(props: FigureCardData) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 hover:shadow-[0_15px_30px_rgba(0,0,0,0.06)] hover:border-gray-200 hover:-translate-y-1 transition-all duration-300 relative group">
+    <div className="flex flex-col h-full bg-white rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 hover:shadow-[0_20px_40px_rgba(210,43,43,0.08)] hover:border-[#D22B2B]/20 hover:-translate-y-2 transition-all duration-400 ease-out relative group">
        
-       <Link href={targetHref} className="relative w-full aspect-square bg-[#fff] flex items-center justify-center p-8 border-b border-gray-50 flex-none group-hover:bg-[#fcfcfc] transition-colors">
+       <Link href={targetHref || "#"} onClick={(e) => !targetHref && e.preventDefault()} aria-disabled={!targetHref} className={`relative w-full aspect-square bg-[#fff] flex items-center justify-center p-8 border-b border-gray-50 flex-none transition-colors ${targetHref ? 'group-hover:bg-[#fcfcfc]' : 'opacity-50 cursor-not-allowed'}`}>
           {(status === 'have') && (
              <div className="absolute top-4 left-4 z-10 bg-[#5CB85C] text-white text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded shadow-sm flex items-center gap-1">
                 <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
@@ -98,7 +105,7 @@ export default function FigureCard(props: FigureCardData) {
           {/* PREMIUM HOVER BADGE */}
           <div className="absolute bottom-4 left-0 w-full flex justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-20 translate-y-2 group-hover:translate-y-0 pointer-events-none">
              {status === 'have' ? (
-                <span className="bg-[#5CB85C]/95 backdrop-blur-sm shadow-lg text-white text-[9px] uppercase font-black tracking-widest px-3.5 py-1.5 rounded-full flex items-center gap-1.5">
+                <span className="bg-yellow-400/95 backdrop-blur-sm shadow-md shadow-yellow-400/30 text-black text-[9px] uppercase font-black tracking-widest px-3.5 py-1.5 rounded-full flex items-center gap-1.5">
                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.5" d="M5 13l4 4L19 7"></path></svg>
                    Koleksiyonunda Mevcut
                 </span>
@@ -111,19 +118,11 @@ export default function FigureCard(props: FigureCardData) {
           </div>
        </Link>
 
-       <div className="px-6 pt-5 pb-6 flex flex-col flex-1 bg-white">
-          <Link href={targetHref} className="flex flex-col flex-1 cursor-pointer items-center text-center">
-              {series_name && (
-                  <div className="flex flex-col items-center justify-center w-full gap-1 mb-3">
-                      <span className="bg-red-50/50 text-[#D22B2B] font-black uppercase tracking-widest text-[7px] sm:text-[8px] px-2 py-1 rounded-sm text-center leading-tight">
-                          LEGO® MİNİFİGÜRLER SERİSİ
-                      </span>
-                      <span className="bg-red-50 text-[#D22B2B] transition-colors font-black uppercase tracking-widest text-[8px] sm:text-[9px] px-2.5 py-1.5 rounded-sm text-center leading-tight">
-                          {series_name.replace(/LEGO®?/i, '').replace(/Minifigürler/i, '').replace(/Serisi/i, '').trim()}
-                      </span>
-                  </div>
-              )}
-              <h3 className="font-black text-[22px] text-[#D22B2B] leading-tight tracking-tight hover:underline mb-4 w-full">
+       <div className="px-6 pt-5 pb-6 flex flex-col flex-1 bg-white relative z-10">
+          <Link href={targetHref || "#"} onClick={(e) => !targetHref && e.preventDefault()} aria-disabled={!targetHref} className={`flex flex-col flex-1 items-center text-center ${targetHref ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}>
+              
+              {/* 1. Figure Name (Top) */}
+              <h3 className="font-black text-[20px] sm:text-[22px] text-[#D22B2B] leading-tight tracking-tight group-hover:text-[#D22B2B] transition-colors hover:underline mb-2 w-full">
                   {(() => {
                       if (!figure_name) return "";
                       const parts = figure_name.split('(');
@@ -131,13 +130,25 @@ export default function FigureCard(props: FigureCardData) {
                          return (
                             <>
                                {parts[0].trim()}
-                               <span className="block mt-0.5 text-gray-500 font-bold text-[16px]">({parts.slice(1).join('(').trim()}</span>
+                               <span className="block mt-0.5 text-gray-500 font-bold text-[14px] sm:text-[16px]">({parts.slice(1).join('(').trim()}</span>
                             </>
                          )
                       }
                       return figure_name;
                   })()}
               </h3>
+
+              {/* 2. Series Name Stack (Matching SeriesCard font sizes) */}
+              {series_name && (
+                  <div className="flex flex-col items-center justify-center w-full mb-4">
+                      <span className="block text-[14px] leading-[18px] font-semibold text-gray-800 mb-2">
+                          LEGO® Minifigürler Serisi
+                      </span>
+                      <span className="block text-[14px] leading-[18px] font-semibold text-gray-500">
+                          {series_name.replace(/LEGO®?/i, '').replace(/Minifigürler/i, '').replace(/Serisi/i, '').trim() || 'Özel Seri'}
+                      </span>
+                  </div>
+              )}
           </Link>
           
           <div className="w-full h-px bg-gray-100 mb-4"></div>
@@ -180,7 +191,7 @@ export default function FigureCard(props: FigureCardData) {
 
           {/* ACTION BUTTONS */}
           {isLoggedIn ? (
-              <div className="flex w-full gap-2 mb-4">
+              <div className="flex w-full gap-2">
                  <button 
                     onClick={(e) => handleToggle(e, 'have')} 
                     disabled={loading}
@@ -197,10 +208,10 @@ export default function FigureCard(props: FigureCardData) {
                  <button 
                     onClick={(e) => handleToggle(e, 'want')}
                     disabled={loading}
-                    className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-1.5 sm:px-2 rounded-xl transition-all font-bold text-[10px] sm:text-[11px] md:text-[12px] min-w-0 ${status === 'want' ? 'bg-red-50 text-[#D22B2B] border border-red-100 shadow-inner' : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-100'}`}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-1.5 sm:px-2 rounded-xl transition-all font-bold text-[10px] sm:text-[11px] md:text-[12px] min-w-0 ${status === 'want' ? 'bg-[#D22B2B] text-white shadow-[0_2px_10px_rgba(210,43,43,0.3)]' : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-100'}`}
                  >
                     {status === 'want' ? (
-                       <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0 text-[#D22B2B]" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd"></path></svg>
+                       <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd"></path></svg>
                     ) : (
                        <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                     )}
@@ -208,7 +219,7 @@ export default function FigureCard(props: FigureCardData) {
                  </button>
               </div>
           ) : (
-              <div className="flex w-full gap-2 mb-4 relative group/blur">
+              <div className="flex w-full gap-2 relative group/blur">
                   {/* Blur Overlay - Covers everything below */}
                   <Link href="/login" className="absolute -inset-x-0 -bottom-0 top-0 bg-white/40 backdrop-blur-[3px] z-10 flex flex-col items-center justify-center transition-all duration-300 hover:bg-white/20 hover:backdrop-blur-[2px] rounded-b-xl overflow-hidden cursor-pointer group/overlay">
                       {/* Hover Text (Mobilde Sürekli Açık) */}

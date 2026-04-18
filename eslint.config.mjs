@@ -15,8 +15,13 @@ const eslintConfig = defineConfig([
         {
           "patterns": [
             {
-              "group": ["./*Provider*", "../*Provider*", "./*Context*", "../*Context*"],
-              "message": "MİMARİ KURAL: Provider ve Context dosyaları için relative (./ veya ../) import kullanılamaz. Bellekte çift instance ('Duplicate Module Identity') oluşmasını engellemek için HER ZAMAN absolute ('@/...') import yapın."
+              "group": [
+                "./*Provider*", "../*Provider*", 
+                "./*Context*", "../*Context*",
+                "../services/*", "../../services/*",
+                "../utils/supabase/*", "../../utils/supabase/*"
+              ],
+              "message": "MİMARİ KURAL: Provider, Context, Supabase Client ve Core Service dosyaları için relative (./ veya ../) import KULLANILAMAZ. Bellekte çift instance ('Duplicate Module Identity') hata risklerine karşı HER ZAMAN absolute ('@/...') import yapın."
             }
           ]
         }

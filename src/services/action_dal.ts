@@ -151,15 +151,23 @@ export const toggleUserCollectionDal = async (userId: string, minifigureId: stri
              }
              
              const percent = parseFloat(((ownedCount / finalTotal) * 100).toFixed(2));
-             await supabaseAdmin.from('user_series_stats').upsert({
-                user_id: userId,
-                series_id: figData.series_id,
-                series_name: figData.series_name || 'Bilinmeyen Seri',
-                owned_count: ownedCount,
-                total_count: finalTotal,
-                completion_percent: percent,
-                updated_at: new Date().toISOString()
-             }, { onConflict: 'user_id, series_id' });
+             
+             if (ownedCount === 0) {
+                 // Temizlik: Sıfıra düşen serinin çöp kalıntısını kasada (user_series_stats) bırakma.
+                 await supabaseAdmin.from('user_series_stats').delete()
+                 .eq('user_id', userId)
+                 .eq('series_id', figData.series_id);
+             } else {
+                 await supabaseAdmin.from('user_series_stats').upsert({
+                    user_id: userId,
+                    series_id: figData.series_id,
+                    series_name: figData.series_name || 'Bilinmeyen Seri',
+                    owned_count: ownedCount,
+                    total_count: finalTotal,
+                    completion_percent: percent,
+                    updated_at: new Date().toISOString()
+                 }, { onConflict: 'user_id, series_id' });
+             }
          }
      } catch (err) {
          console.error('[GAMIFICATION CACHE ERROR]', err);

@@ -29,6 +29,12 @@ export default function ClientViewTracker({ table, id }: ClientViewTrackerProps)
       incrementView();
       sessionStorage.setItem(viewedKey, 'true');
     }
+
+    // Ayrıca Kullanıcının en son incelediği figürü Koleksiyon sayfasında gösterebilmek için cookie'ye yaz:
+    if (table === 'minifigures') {
+       // max-age: 30 days
+       document.cookie = `last_viewed_figure_id=${id}; path=/; max-age=${60 * 60 * 24 * 30}`;
+    }
   }, [table, id]);
 
   return null; // Arayüzü yok, sadece görünmez sayaç tetikleyici
