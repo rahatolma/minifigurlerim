@@ -404,7 +404,7 @@ export default async function KoleksiyonumPage({
                                seriesSlug: (lastWantedFigure as any)?.series?.slug_tr || (lastWantedFigure as any)?.series_slug || slugify((lastWantedFigure as any)?.series?.title || (lastWantedFigure as any)?.series_name || 'seri-yok'),
                                figureSlug: (lastWantedFigure as any).slug || (lastWantedFigure as any).id,
                                locale: locale as any
-                            })} className="text-[10px] font-black text-[#0052cc] uppercase tracking-widest mt-1.5 flex items-center gap-1 opacity-90 hover:underline">
+                            }) || "#"} className="text-[10px] font-black text-[#0052cc] uppercase tracking-widest mt-1.5 flex items-center gap-1 opacity-90 hover:underline">
                                İncelemeye Devam Et →
                             </Link>
                          </>
