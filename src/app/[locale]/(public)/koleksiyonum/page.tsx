@@ -164,6 +164,25 @@ export default async function KoleksiyonumPage({
      if (dbFigure) lastWantedFigure = dbFigure;
   }
 
+  // YENİ STANDART: Güvenli Route Hesaplaması (Dinamik)
+  let lastAddedUrl = null;
+  if (lastAddedFigure) {
+     lastAddedUrl = getFigureUrl({
+        seriesSlug: (lastAddedFigure as any)?.series?.slug_tr || (lastAddedFigure as any)?.series_slug || slugify((lastAddedFigure as any)?.series?.title || (lastAddedFigure as any)?.series_name || 'seri-yok'),
+        figureSlug: (lastAddedFigure as any).slug || (lastAddedFigure as any).id,
+        locale: locale as any
+     });
+  }
+
+  let lastWantedUrl = null;
+  if (lastWantedFigure) {
+     lastWantedUrl = getFigureUrl({
+        seriesSlug: (lastWantedFigure as any)?.series?.slug_tr || (lastWantedFigure as any)?.series_slug || slugify((lastWantedFigure as any)?.series?.title || (lastWantedFigure as any)?.series_name || 'seri-yok'),
+        figureSlug: (lastWantedFigure as any).slug || (lastWantedFigure as any).id,
+        locale: locale as any
+     });
+  }
+
   return (
     <div className="bg-[#fcfcfc] min-h-screen pb-16 lg:pb-24">
 
@@ -354,13 +373,9 @@ export default async function KoleksiyonumPage({
                          <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"></path></svg>
                          <span className="truncate">Son Eklediğin Figür</span>
                       </span>
-                      {lastAddedFigure ? (
+                      {lastAddedFigure && lastAddedUrl ? (
                          <>
-                            <Link href={getFigureUrl({
-                               seriesSlug: (lastAddedFigure as any)?.series?.slug_tr || (lastAddedFigure as any)?.series_slug || slugify((lastAddedFigure as any)?.series?.title || (lastAddedFigure as any)?.series_name || 'seri-yok'),
-                               figureSlug: (lastAddedFigure as any).slug || (lastAddedFigure as any).id,
-                               locale: locale as any
-                            }) || "#"} className="text-[16px] font-black text-gray-900 group-hover:text-[#D22B2B] transition-colors line-clamp-1 flex-1">
+                            <Link href={lastAddedUrl} className="text-[16px] font-black text-gray-900 group-hover:text-[#D22B2B] transition-colors line-clamp-1 flex-1">
                                {(lastAddedFigure as any).name}
                             </Link>
                             <span className="text-[13px] font-bold text-gray-400 mt-0.5 truncate flex-shrink-0">{(lastAddedFigure as any)?.series?.title || (lastAddedFigure as any).series_name || 'Bilinmeyen Seri'}</span>
@@ -389,22 +404,14 @@ export default async function KoleksiyonumPage({
                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                          <span className="truncate">Son İncelediğin Figür</span>
                       </span>
-                      {lastWantedFigure ? (
+                      {lastWantedFigure && lastWantedUrl ? (
                          <>
-                            <Link href={getFigureUrl({
-                               seriesSlug: (lastWantedFigure as any)?.series?.slug_tr || (lastWantedFigure as any)?.series_slug || slugify((lastWantedFigure as any)?.series?.title || (lastWantedFigure as any)?.series_name || 'seri-yok'),
-                               figureSlug: (lastWantedFigure as any).slug || (lastWantedFigure as any).id,
-                               locale: locale as any
-                            }) || "#"} className="text-[16px] font-black text-gray-900 group-hover:text-[#0052cc] transition-colors line-clamp-1 flex-1">
+                            <Link href={lastWantedUrl} className="text-[16px] font-black text-gray-900 group-hover:text-[#0052cc] transition-colors line-clamp-1 flex-1">
                                {(lastWantedFigure as any).name || (lastWantedFigure as any).figure_name}
                             </Link>
                             <span className="text-[13px] font-bold text-gray-400 mt-0.5 truncate flex-shrink-0">{(lastWantedFigure as any)?.series?.title || (lastWantedFigure as any).series_name || 'Bilinmeyen Seri'}</span>
                             
-                            <Link href={getFigureUrl({
-                               seriesSlug: (lastWantedFigure as any)?.series?.slug_tr || (lastWantedFigure as any)?.series_slug || slugify((lastWantedFigure as any)?.series?.title || (lastWantedFigure as any)?.series_name || 'seri-yok'),
-                               figureSlug: (lastWantedFigure as any).slug || (lastWantedFigure as any).id,
-                               locale: locale as any
-                            }) || "#"} className="text-[10px] font-black text-[#0052cc] uppercase tracking-widest mt-1.5 flex items-center gap-1 opacity-90 hover:underline">
+                            <Link href={lastWantedUrl} className="text-[10px] font-black text-[#0052cc] uppercase tracking-widest mt-1.5 flex items-center gap-1 opacity-90 hover:underline">
                                İncelemeye Devam Et →
                             </Link>
                          </>
