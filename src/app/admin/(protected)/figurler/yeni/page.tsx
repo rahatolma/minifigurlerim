@@ -28,7 +28,7 @@ export default function NewFigurePage() {
     brand: 'LEGO®',
     name: '',
     description: '',
-    figure_no: '',
+    figure_number: '',
     code: '',
     piece_count: '',
     body_material: 'Abs Plastik',
@@ -123,8 +123,8 @@ console.error(err);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.series_id) {
-      toast.error("Lütfen Figür Adı ve Ait Olduğu Seri alanlarını doldurun.");
+    if (!formData.name || !formData.series_id || !formData.code || (!formData.figure_number && formData.figure_number !== "0") || (!formData.piece_count && formData.piece_count !== "0")) {
+      toast.error("Validasyon Hatası: 'Seri', 'Figür Adı', 'Figür Kodu', 'Figür Sıra No' ve 'Parça Sayısı' zorunludur.");
       return;
     }
     
@@ -148,18 +148,18 @@ console.error(err);
 
     try {
       const dbPayload = {
-        slug: generatedSlug,
         series_id: formData.series_id,
-        name: formData.name,
+        figure_name: formData.name,
+        slug_tr: generatedSlug,
+        figure_code: formData.code,
         description: formData.description,
         brand: formData.brand,
         category: selectedSeries?.category || '',
         series_name: selectedSeries?.title || '',
         series_no: selectedSeries?.series_no || '',
-        figure_no: formData.figure_no,
+        figure_number: formData.figure_number,
         role: role,
         type: type,
-        code: formData.code,
         piece_count: pieceCount,
         body_material: formData.body_material,
         rarity: rarity,
@@ -341,8 +341,8 @@ console.error(err);
 
                 {/* FİGÜR SIRA NO */}
                 <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
-                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Figür Sıra No</label></div>
-                    <div className="w-2/3 py-2"><input name="figure_no" type="text" value={formData.figure_no} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" /></div>
+                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Figür Sıra No <span className="text-[#D22B2B]">*</span></label></div>
+                    <div className="w-2/3 py-2"><input name="figure_number" type="text" value={formData.figure_number} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" /></div>
                 </div>
 
                 {/* FİGÜR ROLÜ (Dinamik Dropdown) */}
@@ -369,13 +369,13 @@ console.error(err);
 
                 {/* FİGÜR KODU */}
                 <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
-                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Figür Kodu</label></div>
+                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Figür Kodu <span className="text-[#D22B2B]">*</span></label></div>
                     <div className="w-2/3 py-2"><input name="code" type="text" value={formData.code} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" /></div>
                 </div>
 
                 {/* PARÇA SAYISI */}
                 <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
-                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Parça Sayısı</label></div>
+                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Parça Sayısı <span className="text-[#D22B2B]">*</span></label></div>
                     <div className="w-2/3 py-2"><input name="piece_count" type="number" value={formData.piece_count} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" /></div>
                 </div>
 

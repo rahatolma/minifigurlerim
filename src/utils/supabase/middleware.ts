@@ -15,6 +15,8 @@ export async function updateSession(request: NextRequest) {
     ? NextResponse.next({ request }) 
     : handleI18nRouting(request)
 
+  console.log(`\n\n🚨 MIDDLEWARE_DEBUG incoming=${request.url} status=${supabaseResponse.status} location=${supabaseResponse.headers.get('location') || 'NONE'}\n\n`)
+
   try {
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
     

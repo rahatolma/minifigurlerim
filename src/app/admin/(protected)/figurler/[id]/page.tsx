@@ -29,8 +29,9 @@ export default function EditFigurePage() {
     series_id: '',
     brand: 'LEGO®',
     name: '',
+    slug_tr: '',
     description: '',
-    figure_no: '',
+    figure_number: '',
     code: '',
     piece_count: '',
     body_material: 'Abs Plastik',
@@ -70,10 +71,11 @@ export default function EditFigurePage() {
         setFormData({
             series_id: fig.series_id || '',
             brand: fig.brand || 'LEGO®',
-            name: fig.name || '',
+            name: fig.figure_name || fig.name || '',
+            slug_tr: fig.slug_tr || fig.slug || '',
             description: fig.description || '',
-            figure_no: fig.figure_no || '',
-            code: fig.code || '',
+            figure_number: fig.figure_number?.toString() || fig.figure_no?.toString() || '',
+            code: fig.figure_code || fig.code || '',
             piece_count: fig.piece_count ? fig.piece_count.toString() : '',
             body_material: fig.body_material || 'Abs Plastik',
             value_usd: fig.value_usd ? fig.value_usd.toString() : '',
@@ -168,8 +170,8 @@ console.error(err);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.series_id) {
-      toast.error("Lütfen Figür Adı ve Ait Olduğu Seri alanlarını doldurun.");
+    if (!formData.name || !formData.series_id || !formData.code || (!formData.figure_number && formData.figure_number !== "0") || (!formData.piece_count && formData.piece_count !== "0")) {
+      toast.error("Validasyon Hatası: 'Seri', 'Figür Adı', 'Figür Kodu', 'Figür Sıra No' ve 'Parça Sayısı' zorunludur.");
       return;
     }
     
@@ -189,41 +191,42 @@ console.error(err);
     if (finalCustomAttr['nadirlik-derecesi']) { rarity = finalCustomAttr['nadirlik-derecesi']; delete finalCustomAttr['nadirlik-derecesi']; }
 
     const selectedSeries = seriesList.find(s => s.id === formData.series_id);
-    const generatedSlug = slugify(`${formData.name} ${selectedSeries?.title || ''} ${formData.code || ''}`);
+    const generatedSlug = formData.slug_tr;
 
     try {
       const dbPayload = {
-            slug: generatedSlug,
-            series_id: formData.series_id,
-            name: formData.name,
-            description: formData.description,
-            brand: formData.brand,
-            category: selectedSeries?.category || '',
-            series_name: selectedSeries?.title || '',
-            series_no: selectedSeries?.series_no || '',
-            figure_no: formData.figure_no,
-            role: role,
-            type: type,
-            code: formData.code,
-            piece_count: pieceCount,
-            body_material: formData.body_material,
-            rarity: rarity,
-            value_usd: valueUsd,
-            min_price: formData.min_price ? parseFloat(formData.min_price.toString().replace(',', '.')) : null,
-            max_price: formData.max_price ? parseFloat(formData.max_price.toString().replace(',', '.')) : null,
-            avg_price: formData.avg_price ? parseFloat(formData.avg_price.toString().replace(',', '.')) : null,
-            rarity_score: parseInt(formData.rarity_score) || 1,
-            series_score: parseInt(formData.series_score) || 1,
-            view_count_30d: parseInt(formData.view_count_30d.toString()) || 0,
-            collection_count_30d: parseInt(formData.collection_count_30d.toString()) || 0,
-            favorite_count_30d: parseInt(formData.favorite_count_30d.toString()) || 0,
-            rating_count: parseInt(formData.rating_count.toString()) || 0,
-            release_month: formData.release_month,
-            release_year: formData.release_year,
-            images: uploadedImages.filter(Boolean),
-            custom_attributes: finalCustomAttr
+        series_id: formData.series_id,
+        figure_name: formData.name,
+        slug_tr: generatedSlug,
+        figure_code: formData.code,
+        description: formData.description,
+        brand: formData.brand,
+        category: selectedSeries?.category || '',
+        series_name: selectedSeries?.title || '',
+        series_no: selectedSeries?.series_no || '',
+        figure_number: formData.figure_number,
+        role: role,
+        type: type,
+        piece_count: pieceCount,
+        body_material: formData.body_material,
+        rarity: rarity,
+        value_usd: valueUsd,
+        min_price: formData.min_price ? parseFloat(formData.min_price.toString().replace(',', '.')) : null,
+        max_price: formData.max_price ? parseFloat(formData.max_price.toString().replace(',', '.')) : null,
+        avg_price: formData.avg_price ? parseFloat(formData.avg_price.toString().replace(',', '.')) : null,
+        rarity_score: parseInt(formData.rarity_score) || 1,
+        series_score: parseInt(formData.series_score) || 1,
+        view_count_30d: parseInt(formData.view_count_30d.toString()) || 0,
+        collection_count_30d: parseInt(formData.collection_count_30d.toString()) || 0,
+        favorite_count_30d: parseInt(formData.favorite_count_30d.toString()) || 0,
+        rating_count: parseInt(formData.rating_count.toString()) || 0,
+        release_month: formData.release_month,
+        release_year: formData.release_year,
+        images: uploadedImages.filter(Boolean),
+        custom_attributes: finalCustomAttr
       };
       
+      console.log('--- DB PAYLOAD ---', dbPayload);
       const result = await saveFigureData(dbPayload, true, figureId);
       if (!result.success) throw new Error(result.error);
 
@@ -362,6 +365,17 @@ console.error(err);
                     <div className="w-2/3 py-2"><input name="name" type="text" value={formData.name} onChange={handleChange} required className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" /></div>
                 </div>
 
+                {/* URL SLUG (TR) */}
+                <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
+                        <label className="text-gray-900 block font-black">URL Uzantısı (Slug) <span className="text-[#D22B2B]">*</span></label>
+                        <span className="block text-[10px] text-gray-500 font-medium">Manuel düzenlenebilir</span>
+                    </div>
+                    <div className="w-2/3 py-2">
+                        <input name="slug_tr" type="text" value={formData.slug_tr} onChange={handleChange} required className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold text-blue-600" />
+                    </div>
+                </div>
+
                 {/* FİGÜR AÇIKLAMASI */}
                 <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
                     <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors self-start mt-2">
@@ -386,8 +400,8 @@ console.error(err);
 
                 {/* FİGÜR SIRA NO */}
                 <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
-                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Figür Sıra No</label></div>
-                    <div className="w-2/3 py-2"><input name="figure_no" type="text" value={formData.figure_no} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" /></div>
+                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Figür Sıra No <span className="text-[#D22B2B]">*</span></label></div>
+                    <div className="w-2/3 py-2"><input name="figure_number" type="text" value={formData.figure_number} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" /></div>
                 </div>
 
                 {/* FİGÜR ROLÜ (Dinamik Dropdown) */}
@@ -414,13 +428,13 @@ console.error(err);
 
                 {/* FİGÜR KODU */}
                 <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
-                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Figür Kodu</label></div>
+                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Figür Kodu <span className="text-[#D22B2B]">*</span></label></div>
                     <div className="w-2/3 py-2"><input name="code" type="text" value={formData.code} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" /></div>
                 </div>
 
                 {/* PARÇA SAYISI */}
                 <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
-                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Parça Sayısı</label></div>
+                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Parça Sayısı <span className="text-[#D22B2B]">*</span></label></div>
                     <div className="w-2/3 py-2"><input name="piece_count" type="number" value={formData.piece_count} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" /></div>
                 </div>
 

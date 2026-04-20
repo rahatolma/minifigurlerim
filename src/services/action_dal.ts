@@ -273,17 +273,17 @@ export const getAdminBorsaFiguresDal = async () => {
 
   const { data, error } = await supabaseAdmin
     .from('minifigures')
-    .select('id, name, figure_no, series_name, images, value_usd, affiliate_link')
+    .select('id, name, figure_number, series_name, images, value_usd, affiliate_link')
     .order('series_name', { ascending: true })
-    .order('figure_no', { ascending: true });
+    .order('figure_number', { ascending: true });
 
   if (error) {
      errorMsg = error.message;
      const fallback = await supabaseAdmin
         .from('minifigures')
-        .select('id, name, figure_no, series_name, images, value_usd')
+        .select('id, name, figure_number, series_name, images, value_usd')
         .order('series_name', { ascending: true })
-        .order('figure_no', { ascending: true });
+        .order('figure_number', { ascending: true });
      figures = fallback.data as any[] || [];
      fallbackErrorMsg = fallback.error?.message || null;
   } else {
@@ -351,7 +351,7 @@ export const getUserDetailedInfoAdminDal = async (userId: string) => {
   if (profileErr) throw new Error(profileErr.message);
 
   const { data: collections } = await supabaseAdmin.from('user_collections')
-    .select('minifigure_id, status, created_at, minifigures(name, figure_no, series_name)')
+    .select('minifigure_id, status, created_at, minifigures(name, figure_number, series_name)')
     .eq('user_id', userId);
   
   return { profile, collections: collections || [] };

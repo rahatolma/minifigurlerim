@@ -24,17 +24,17 @@ import { permanentRedirect } from 'next/navigation';
 
 // SEO Metadata Olusturucu
 export async function generateMetadata(
-  { params }: { params: Promise<{ slug: string }> },
+  { params }: { params: Promise<{ slug: string, locale: string }> },
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const locale = await getLocale();
   const t = await getTranslations('SeriesDetail');
   const resolvedParams = await params;
-  const slug = resolvedParams.slug;
+  const { slug, locale: paramLocale } = resolvedParams;
   const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
   const queryCol = isUUID ? 'id' : 'slug';
   
-  const series = await getSeriesBySlug(slug);
+  const series = await getSeriesBySlug(slug, paramLocale);
 
   if (!series) {
     return { title: t('NotFoundTitle') };
@@ -75,15 +75,15 @@ export async function generateMetadata(
 export default async function SeriesDetail({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string, locale: string }>
 }) {
   const resolvedParams = await params;
-  const { slug } = resolvedParams;
+  const { slug, locale: localeParam } = resolvedParams;
   const locale = await getLocale();
   const t = await getTranslations('SeriesDetail');
 
   // Series verisini çek
-  const series = await getSeriesBySlug(slug);
+  const series = await getSeriesBySlug(slug, localeParam);
 
   if (!series) {
     return notFound();

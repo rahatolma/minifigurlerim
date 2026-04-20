@@ -1,7 +1,9 @@
-import { getMinifigureListItems, getMinifigureFilterOptions, getAllSeries } from '@/services/dal';
+import { getMinifigureListItems, getMinifigureFilterOptions, getAllSeries, getTotalMinifiguresCount } from '@/services/dal';
 import FigureCard from '@/components/ui/FigureCard';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import Link from 'next/link';
+import { permanentRedirect } from 'next/navigation';
+import { getCanonicalQueryString } from '@/utils/filterHelpers';
 import FiguresFilterClient from '@/components/ui/FiguresFilterClient';
 import DragScrollContainer from '@/components/ui/DragScrollContainer';
 import { mapFigureForCard } from '@/utils/figureMapper';
@@ -13,48 +15,61 @@ import EvolutionTimelineClient from '@/components/ui/EvolutionTimelineClient';
 export const revalidate = 3600; // Her zaman güncel
 
 export default async function FiguresPage({
+  params,
   searchParams,
 }: {
+  params: Promise<{ locale: string }>
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const resolvedParams = await searchParams;
+  const resolvedLocaleParams = await params;
+  const locale = resolvedLocaleParams?.locale || 'tr';
   const sortParam = (resolvedParams?.sort as string) || 'newest';
-  const selectedSeries = (resolvedParams?.series as string) || 'all';
-  const selectedRole = (resolvedParams?.role as string) || 'all';
-  const selectedType = (resolvedParams?.type as string) || 'all';
-  const selectedRarity = (resolvedParams?.rarity as string) || 'all';
+  let selectedSeries = (resolvedParams?.series as string) || 'all';
+  let selectedRole = (resolvedParams?.role as string) || 'all';
+  let selectedType = (resolvedParams?.type as string) || 'all';
+  let selectedRarity = (resolvedParams?.rarity as string) || 'all';
   const currentPage = parseInt((resolvedParams?.page as string) || '1', 10);
   const itemsPerPage = 36;
 
   // 1. Statik Kapsüler ve Filtre Verilerini Paralel Çek
-  const [seriesList, filterOptions] = await Promise.all([
+  const [seriesList, filterOptions, absoluteTotalCount] = await Promise.all([
      getAllSeries(),
-     getMinifigureFilterOptions()
+     getMinifigureFilterOptions({ series: selectedSeries }),
+     getTotalMinifiguresCount()
   ]);
   
   const roles = Array.from(new Set(((filterOptions as any) || []).map((f: any) => f.role).filter(Boolean))) as string[];
   const types = Array.from(new Set(((filterOptions as any) || []).map((f: any) => f.type).filter(Boolean))) as string[];
-  const rarities = Array.from(new Set(((filterOptions as any) || []).map((f: any) => f.rarity).filter(Boolean))) as string[];
+  const rarities = Array.from(new Set(((filterOptions as any) || []).map((f: any) => f.normalized_rarity).filter(Boolean))) as string[];
+
+  console.log("DB RARITIES ARRAY YAKALANDI ===>", rarities);
+
+  // --- CANONICAL QUERY NORMALIZATION ---
+  const { needsRedirect, canonicalQueryString } = getCanonicalQueryString(
+      resolvedParams || {},
+      { roles, types, rarities }
+  );
+
+  const rarityParam = resolvedParams?.rarity || 'NONE';
+  console.log(`\n\n🚨 FIGURES_DEBUG locale=${locale} rarity=${rarityParam} rarities=[${rarities.join(',')}] needsRedirect=${needsRedirect} canonical=${canonicalQueryString}\n\n`);
+
+  if (needsRedirect) {
+      permanentRedirect(canonicalQueryString ? `/${locale}/figurler?${canonicalQueryString}` : `/${locale}/figurler`);
+  }
+  // --- END OF NORMALIZATION ---
 
   // 2. Data'yı DAL üzerinden Filtrelenmiş ve Projeksiyonlanmış Halde Dar Çek
   const filtersToApply = {
     series: selectedSeries,
     role: selectedRole,
     type: selectedType,
-    rarity: selectedRarity
+    rarity: selectedRarity,
+    sort: sortParam
   };
   
   const fetchedFigures = await getMinifigureListItems(filtersToApply);
   let allFigures = fetchedFigures?.data || [];
-
-  // Sıralama (Sort) hala Node JS katmanında yapılıyor ancak liste daraltıldığı için maliyetsizdir. İstenirse SQL Order da eklenebilir.
-  if (sortParam === 'newest') {
-      allFigures = allFigures.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-  } else if (sortParam === 'oldest') {
-      allFigures = allFigures.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-  } else if (sortParam === 'popular') {
-      allFigures = allFigures.sort((a, b) => ((b as any).total_views || 0) - ((a as any).total_views || 0));
-  }
 
   // Initial Server Rendered Batch for the Component (filtering out hard failures)
   const initialClientFigures = allFigures
@@ -79,7 +94,8 @@ export default async function FiguresPage({
               roles={roles} 
               types={types} 
               rarities={rarities} 
-              totalCount={allFigures.length}
+              totalCount={fetchedFigures.count || 0}
+              absoluteTotalCount={absoluteTotalCount}
             />
         </div>
       </div>

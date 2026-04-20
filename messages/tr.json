@@ -90,7 +90,7 @@
     "SortTitle": "Sırala",
     "SortNewest": "En Yeniler",
     "SortOldest": "En Eskiler",
-    "SortPopular": "En Çok Tıklananlar",
+    "SortPopular": "En popüler",
     "EmptyStateTitle": "Eşleşen Seri Bulunamadı",
     "EmptyStateDesc": "Seçtiğiniz filtrelere uygun bir seri bulunamadı. Lütfen filtreleri temizleyerek tekrar deneyin.",
     "ClearFilters": "Filtreleri Temizle"

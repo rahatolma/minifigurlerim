@@ -21,22 +21,25 @@ import { Metadata, ResolvingMetadata } from 'next';
 
 // 🧱 LİSTE BLOĞU: Ansiklopedik temiz veri satırı
 const TableRow = ({ label, value }: { label: string, value: any }) => {
-    const displayValue = (!value || value === '' || value === 'Seçim Yapılmadı') ? '-' : value;
+    if (!value || value === '' || value === '-' || value === 'Seçim Yapılmadı' || value === 'Belirsiz') {
+        return null;
+    }
     return (
         <div className="flex justify-between items-center border-b border-gray-100 py-4 sm:py-5 text-[14px]">
             <div className="w-[40%] font-black text-gray-500 uppercase tracking-widest text-[10px] shrink-0 pr-4">{label}</div>
-            <div className="w-[60%] font-bold text-gray-900 text-right break-words">{displayValue}</div>
+            <div className="w-[60%] font-bold text-gray-900 text-right break-words">{value}</div>
         </div>
     );
 }
 
 // SEO Metadata Olusturucu
 export async function generateMetadata(
-  { params }: { params: Promise<{ seriesSlug: string, figureSlug: string }> },
+  { params }: { params: Promise<{ seriesSlug: string, figureSlug: string, locale: string }> },
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const resolvedParams = await params;
-  const rawFigure = await getMinifigureBySlug(resolvedParams.figureSlug);
+  const { locale } = resolvedParams;
+  const rawFigure = await getMinifigureBySlug(resolvedParams.figureSlug, locale, resolvedParams.seriesSlug);
 
   if (!rawFigure) {
     return { title: 'Figür Bulunamadı | Minifigürlerim' };
@@ -85,17 +88,17 @@ export async function generateMetadata(
 export default async function FigureDetail({
   params,
 }: {
-  params: Promise<{ seriesSlug: string, figureSlug: string }>
+  params: Promise<{ seriesSlug: string, figureSlug: string, locale: string }>
 }) {
   const resolvedParams = await params;
-  const { figureSlug: slug, seriesSlug } = resolvedParams;
+  const { figureSlug: slug, seriesSlug, locale } = resolvedParams;
 
   // UUID kontrolü yapıyoruz. Eski (ID bazlı) linkle mi gelindi yoksa yeni jenerasyon SEO Slug ile mi?
   const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
   const queryCol = isUUID ? 'id' : 'slug';
 
   // Figür verisini çek
-  const rawFigure = await getMinifigureBySlug(resolvedParams.figureSlug);
+  const rawFigure = await getMinifigureBySlug(resolvedParams.figureSlug, locale, resolvedParams.seriesSlug);
   if (!rawFigure) return notFound();
   
   const figure = mapFigureForDetail(rawFigure);
@@ -215,10 +218,7 @@ export default async function FigureDetail({
                     <TableRow label="Figür Rolü" value={figure.figure_role} />
                     <TableRow label="Figür Tipi" value={figure.figure_type} />
                     <TableRow label="Figür Kodu" value={figure.figure_code} />
-                    <TableRow label="Karakter" value={figure.character_name} />
-                    <TableRow label="Ana Renk" value={figure.main_color} />
                     <TableRow label="Parça Sayısı" value={figure.piece_count} />
-                    <TableRow label="Aksesuar Sayısı" value={figure.accessory_count} />
                     <TableRow label="Nadirlik Derecesi" value={figure.final_rarity || figure.rarity_level} />
                     <TableRow label="Çıkış Tarihi Ay" value={figure.release_month_tr} />
                     <TableRow label="Çıkış Tarihi Yıl" value={figure.release_year} />

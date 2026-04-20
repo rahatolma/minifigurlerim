@@ -2,7 +2,7 @@
 
 import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from '@/i18n/routing';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useTransition } from 'react';
 
 export default function LanguageSwitcher() {
@@ -10,14 +10,15 @@ export default function LanguageSwitcher() {
   const router = useRouter();
   const pathname = usePathname();
   const params = useParams();
+  const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
   function onLanguageChange(newLocale: 'en' | 'tr') {
     startTransition(() => {
       if (!pathname) return;
       
-      // We explicitly cast the routing object to the exact signature Next-Intl expects
-      const routeArg = { pathname, params } as Parameters<typeof router.replace>[0];
+      const query = Object.fromEntries(searchParams.entries());
+      const routeArg = { pathname, params, query } as any;
       router.replace(routeArg, { locale: newLocale });
     });
   }
@@ -25,6 +26,7 @@ export default function LanguageSwitcher() {
   return (
     <div className="flex items-center gap-2 text-sm font-bold bg-[#f4f4f4] rounded-full p-1 border border-gray-200">
       <button
+        data-testid="lang-switch-tr"
         onClick={() => onLanguageChange('tr')}
         disabled={isPending}
         className={`px-3 py-1.5 rounded-full transition-all ${
@@ -36,6 +38,7 @@ export default function LanguageSwitcher() {
         TR
       </button>
       <button
+        data-testid="lang-switch-en"
         onClick={() => onLanguageChange('en')}
         disabled={isPending}
         className={`px-3 py-1.5 rounded-full transition-all ${

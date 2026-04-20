@@ -72,7 +72,7 @@ export default async function Home() {
                 <div className="w-8 h-8 md:w-14 md:h-14 bg-[#D22B2B] rounded-full flex items-center justify-center text-white shadow-md border-2 md:border-4 border-red-100 shrink-0">
                     <LegoHeadIcon mode="search" className="w-[16px] h-[16px] md:w-[28px] md:h-[28px]" color="text-white" />
                 </div>
-                <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Yeni CMF Serileri</h2>
+                <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Yeni Seriler</h2>
               </div>
             }
             actionButton={
@@ -133,7 +133,7 @@ export default async function Home() {
                  <div className="w-8 h-8 md:w-14 md:h-14 bg-white border-2 border-[#D22B2B] text-[#D22B2B] rounded-full flex items-center justify-center shadow-sm shrink-0">
                      <TrendingUp className="w-[16px] h-[16px] md:w-[28px] md:h-[28px]" strokeWidth={2.5} />
                  </div>
-                 <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Çok Talep Gören Figürler</h2>
+                 <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Popüler Minifigürler</h2>
                </div>
              }
              actionButton={
@@ -160,7 +160,7 @@ export default async function Home() {
                  <div className="w-8 h-8 md:w-14 md:h-14 bg-white border-2 border-[#D22B2B] text-[#D22B2B] rounded-full flex items-center justify-center shadow-sm shrink-0">
                      <Package className="w-[16px] h-[16px] md:w-[28px] md:h-[28px]" strokeWidth={2.5} />
                  </div>
-                 <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Değerli Figürler</h2>
+                 <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Değerli Minifigürler</h2>
                </div>
              }
              actionButton={

@@ -67,7 +67,6 @@ export interface RawListFigureDTO {
   figure_code: string;
   code: string;
   figure_number: string;
-  figure_no: string;
   thumbnail_url: string;
   image_url: string;
   images: string[];
@@ -150,8 +149,8 @@ export function mapFigureForCard(row: RawListFigureDTO | any): FigureCardData | 
   const series_name = series.series_name || series.title || 'Bilinmeyen Seri';
   const series_slug_tr = series.slug_tr || series.slug || '';
   const series_slug_en = series.slug_en || null;
-  const series_number = series.series_number || series.number || null;
-  const category_main = series.category_main || series.category || 'Belirsiz';
+  const series_number = series.series_number || series.series_no || series.number || null;
+  const category_main = series.category_main || series.category || null;
   
   const manual_rarity = series.manual_rarity || series.rarity || null;
   const final_rarity = series.final_rarity || manual_rarity || null;

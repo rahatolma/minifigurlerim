@@ -34,7 +34,7 @@ export default function BorsaRowClient({
                  </div>
                  <div>
                     <p className="text-sm font-black text-gray-900 line-clamp-1">{figure.name}</p>
-                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{figure.series_name} • {figure.figure_no}</p>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{figure.series_name} • {figure.figure_number}</p>
                  </div>
               </div>
            </td>
