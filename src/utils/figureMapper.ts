@@ -99,6 +99,14 @@ export interface RawListFigureDTO {
     rarity: string;
     final_rarity: string;
   };
+  
+  // Dual-Read Fields from PostgREST Joins (Migration Phase)
+  figure_role_id?: string;
+  figure_type_id?: string;
+  rarity_id?: string;
+  role_def?: { name: string };
+  type_def?: { name: string };
+  rarity_def?: { name: string };
 }
 
 // Runtime Contract Guard (Strict Enterprise Validation)
@@ -141,8 +149,10 @@ export function mapFigureForCard(row: RawListFigureDTO | any): FigureCardData | 
   }
   const figure_number = row.figure_number || null;
   
-  // 4. Rarity levels
-  const rarity_level = row.rarity_level || row.rarity || 'Yaygın';
+  // 4. Rarity levels (DUAL-READ)
+  // Önce Supabase Migration A'dan gelen yeni Relation aranır, yoksa legacy string değerleri kullanılır.
+  const rarity_level = row.rarity_def?.name || row.rarity_level || row.rarity || 'Yaygın';
+  
   
   // 5. SERIES MAPPING
   const series_id = series.id || row.series_id || '';
@@ -182,8 +192,11 @@ export function mapFigureForCard(row: RawListFigureDTO | any): FigureCardData | 
     rarity_level,
     value_score: row.value_score || null,
     demand_score: row.demand_score || null,
-    figure_role: row.figure_role || null,
-    figure_type: row.figure_type || null,
+    
+    // Dual-Read Fallbacks
+    figure_role: row.role_def?.name || row.figure_role || row.role || null,
+    figure_type: row.type_def?.name || row.figure_type || row.type || null,
+    
     is_featured: !!row.is_featured,
     
     // Extracted Series

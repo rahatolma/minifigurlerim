@@ -9,8 +9,25 @@ export const metadata = {
   description: 'Minifigür sevgisine sahip herkesin buluştuğu bir topluluk merkezi.',
 };
 
-export default async function AboutPage() {
+export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {
+  const resolvedParams = await params;
   const settings = await getAboutSettings();
+  
+  const finalSelectedValues = {
+    boss_image_url: settings?.boss_image_url || '/images/placeholder.svg',
+    hero_image_url: settings?.hero_image_url || '/images/placeholder.svg',
+    main_text: settings?.main_text ? settings.main_text.substring(0, 30) + '...' : null
+  };
+
+  console.log("🔥 TRACE 3 - PUBLIC PAGE QUERY & RENDER:", {
+    locale: resolvedParams?.locale,
+    hamDbSonucu: {
+      boss_image_url: settings?.boss_image_url,
+      hero_image_url: settings?.hero_image_url,
+      main_text: settings?.main_text ? settings.main_text.substring(0, 30) + '...' : null
+    },
+    finalRenderGidecekDegerler: finalSelectedValues
+  });
 
   // Varsayılan değerler
   const bgImage = settings?.hero_image_url || '/images/placeholder.svg';

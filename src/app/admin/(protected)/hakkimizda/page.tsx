@@ -105,7 +105,7 @@ console.error(err);
       const publicUrl = await uploadEntityMedia(formMedia);
 
       setImageUrls(prev => ({ ...prev, [fieldName]: publicUrl }));
-      toast.success('Görsel yüklendi');
+      toast.success('Görsel Şablonu Yüklendi. Lütfen en alttan DEĞİŞİKLİKLERİ KAYDET e basın.', { duration: 5000 });
     } catch (err: any) {
       console.error(err);
       toast.error('Yükleme hatası: ' + err.message);
@@ -132,8 +132,19 @@ console.error(err);
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    
+    const payload = { ...formData, ...imageUrls };
+    // TRACE KANITI: Payload'u detaylıca консолa bas
+    console.log("🔥 TRACE 1 - ACTIONA GİDEN PAYLOAD:", {
+      boss_image_url: payload.boss_image_url,
+      hero_image_url: payload.hero_image_url,
+      main_text: payload.main_text ? payload.main_text.substring(0, 30) + '...' : null,
+      full_payload: payload
+    });
+    
     try {
-      await updateAboutSettingsAction({ ...formData, ...imageUrls });
+      const response = await updateAboutSettingsAction(payload);
+      console.log("🔥 TRACE 2 - DB'DEN DÖNEN YENİ ROW:", response);
       toast.success('Hakkımızda sayfası güncellendi! 🎉');
     } catch (err: any) {
 console.error(err);
@@ -164,9 +175,15 @@ console.error(err);
         
         {/* Sol Kolon: Görseller */}
         <div className="lg:col-span-4 space-y-4">
-          <div className="bg-white border text-left border-gray-200 p-6 rounded-md shadow-sm mb-4">
-             <h3 className="font-bold text-sm text-black mb-1">Medya Yöneticisi</h3>
-             <p className="text-[11px] font-medium text-gray-500">Sayfadaki tüm görselleri buradan güncelleyin.</p>
+          <div className="bg-[#fffcf0] border text-left border-[#f59e0b] p-5 rounded-md shadow-sm mb-4 relative overflow-hidden">
+             <div className="absolute top-0 left-0 w-1.5 h-full bg-[#f59e0b]"></div>
+             <h3 className="font-bold text-sm text-[#b45309] mb-1 flex items-center gap-2">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
+                 Kayıt Onayı Bekleniyor!
+             </h3>
+             <p className="text-[11px] font-bold text-gray-700 leading-relaxed mt-2">
+                 Görselleri seçip <b>Önizlemesini gördüğünüzde</b> henüz veritabanına <span className="text-red-500 uppercase">YAZILMAZ</span>. Sitede aktif olması için işleminiz bittikten sonra sayfanın en altındaki kırmızı <b className="text-[#D22B2B]">"DEĞİŞİKLİKLERİ KAYDET"</b> butonuna basmanız zorunludur.
+             </p>
           </div>
           {uploadBoxes.map(box => (
             <div key={box.id} className="bg-white rounded-md border border-gray-200 shadow-sm overflow-hidden">

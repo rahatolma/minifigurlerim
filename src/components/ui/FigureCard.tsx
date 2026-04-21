@@ -168,23 +168,14 @@ export default function FigureCard(props: FigureCardData) {
                 <div className="flex flex-col flex-1 items-center justify-center bg-yellow-50/50 py-2 px-1 rounded-lg border border-yellow-100/50 text-center">
                     <span className="text-[9px] text-yellow-600/80 font-bold uppercase tracking-widest mb-0.5">Değer Skoru</span>
                     <span className="text-[11px] font-black text-yellow-700 leading-tight">
-                        {value_score === undefined || value_score === null ? 'Veri Yetersiz' : 
-                         value_score >= 4.5 ? 'Efsane' : 
-                         value_score >= 3.5 ? 'Çok Değerli' : 
-                         value_score >= 2.5 ? 'Değerli' : 
-                         value_score >= 1.5 ? 'Orta' : 'Yaygın'}
+                        {rarity_level || 'Yaygın'}
                     </span>
                 </div>
 
                 {/* Talep Label */}
                 <div className="flex flex-col flex-1 items-center justify-center bg-blue-50/50 py-2 px-1 rounded-lg border border-blue-100/50 text-center">
                     <span className="text-[9px] text-blue-600/80 font-bold uppercase tracking-widest mb-0.5">Talep Sinyali</span>
-                    <span className="text-[11px] font-black text-blue-700 leading-tight">
-                        {demand_score === undefined || demand_score === null ? 'Veri Yetersiz' :
-                         demand_score >= 4.0 ? 'Çok Yüksek' : 
-                         demand_score >= 3.0 ? 'Yüksek' : 
-                         demand_score >= 2.0 ? 'Orta' : 'Düşük'}
-                    </span>
+                    <span className="text-[11px] font-black text-blue-700 leading-tight">Düşük</span>
                 </div>
              </div>
           </div>

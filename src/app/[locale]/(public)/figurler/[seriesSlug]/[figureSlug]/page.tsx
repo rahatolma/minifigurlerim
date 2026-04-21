@@ -219,17 +219,19 @@ export default async function FigureDetail({
                     <TableRow label="Figür Tipi" value={figure.figure_type} />
                     <TableRow label="Figür Kodu" value={figure.figure_code} />
                     <TableRow label="Parça Sayısı" value={figure.piece_count} />
-                    <TableRow label="Nadirlik Derecesi" value={figure.final_rarity || figure.rarity_level} />
+
                     <TableRow label="Çıkış Tarihi Ay" value={figure.release_month_tr} />
                     <TableRow label="Çıkış Tarihi Yıl" value={figure.release_year} />
                     
                     {/* DİNAMİK JSON Özel Detaylar */}
                     {figure.custom_attributes && Object.keys(figure.custom_attributes).length > 0 && (
-                        Object.entries(figure.custom_attributes).map(([key, val]) => {
+                        Object.entries(figure.custom_attributes)
+                        .filter(([key]) => !['nadirlik-derecesi', 'figur-rolu', 'figur-tipi'].includes(key))
+                        .map(([key, val]) => {
                             const groupDef = defGroups?.find((g: any) => g.slug === key);
                             const label = groupDef ? groupDef.name : key;
                             return (
-                                <TableRow key={key} label={label} value={val} />
+                                <TableRow key={key} label={label} value={val as string} />
                             )
                         })
                     )}
@@ -248,7 +250,7 @@ export default async function FigureDetail({
                            <span className="truncate">Kol. Değeri</span>
                         </span>
                         <span className="text-[12px] sm:text-[14px] font-black text-gray-900 tracking-tight truncate w-full text-center">
-                            {figure.min_price && figure.max_price ? `$${figure.min_price} - $${figure.max_price}` : (figure.avg_price ? `$${figure.avg_price}` : 'Belirsiz')}
+                            Belirsiz
                         </span>
                     </div>
 
@@ -256,11 +258,7 @@ export default async function FigureDetail({
                     <div className="flex flex-col items-center justify-center bg-yellow-50/50 px-2 py-2 rounded-lg border border-yellow-100 flex-1 min-w-0">
                         <span className="text-[8px] sm:text-[9px] text-yellow-600/80 font-bold uppercase tracking-widest mb-1 truncate w-full text-center">Değer Skoru</span>
                         <span className="text-[12px] sm:text-[14px] font-black text-yellow-700 truncate w-full text-center">
-                            {figure.value_score === undefined || figure.value_score === null ? 'Yaygın' : 
-                             figure.value_score >= 4.5 ? 'Efsane' : 
-                             figure.value_score >= 3.5 ? 'Çok Değerli' : 
-                             figure.value_score >= 2.5 ? 'Değerli' : 
-                             figure.value_score >= 1.5 ? 'Orta' : 'Yaygın'}
+                            {figure.rarity_level || 'Yaygın'}
                         </span>
                     </div>
 
@@ -268,10 +266,7 @@ export default async function FigureDetail({
                     <div className="flex flex-col items-center justify-center bg-blue-50/50 px-2 py-2 rounded-lg border border-blue-100 flex-1 min-w-0">
                         <span className="text-[8px] sm:text-[9px] text-blue-600/80 font-bold uppercase tracking-widest mb-1 truncate w-full text-center">Talep Sinyali</span>
                         <span className="text-[12px] sm:text-[14px] font-black text-blue-700 truncate w-full text-center">
-                            {figure.demand_score === undefined || figure.demand_score === null ? 'Düşük Talep' :
-                             figure.demand_score >= 4.0 ? 'Çok Yüksek' : 
-                             figure.demand_score >= 3.0 ? 'Yüksek' : 
-                             figure.demand_score >= 2.0 ? 'Orta' : 'Düşük'}
+                            Düşük
                         </span>
                     </div>
                 </div>
@@ -279,7 +274,7 @@ export default async function FigureDetail({
                 {/* İtalik olmayan minimal uyarı */}
                 <div className="pt-3 border-t border-gray-50 flex items-start justify-center text-center xl:text-left xl:justify-start gap-1.5 text-[9px] sm:text-[10px] text-gray-500 font-medium tracking-wide">
                    <svg className="w-3.5 h-3.5 shrink-0 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                   <span>Fiyatlar ve değerler zamanla değişebilir, yalnızca referans amaçlıdır. Ticaret tavsiyesi değildir.</span>
+                   <span>Değer ve Talep metrikleri (koleksiyona ekleme, favori, görüntülenme) dinamik olarak kullanıcı eylemlerinden hesaplanmaktadır. Sistem şu an veri toplama aşamasındadır ve değerler geçicidir.</span>
                 </div>
             </div>
 

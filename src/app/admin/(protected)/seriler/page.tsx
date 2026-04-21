@@ -52,10 +52,14 @@ export default function SeriesListPage() {
     return acc;
   }, {} as Record<string, any[]>);
 
-  // Arama metni değiştiğinde veya seri yüklendiğinde tüm kategorileri açık hale getir
+  // Arama metni değiştiğinde, eğer arama varsa kategorileri aç
   useEffect(() => {
-    setOpenCategories(Object.keys(groupedSeries));
-  }, [series, searchQuery]);
+    if (searchQuery.trim().length > 0) {
+      setOpenCategories(Object.keys(groupedSeries));
+    } else {
+      setOpenCategories([]);
+    }
+  }, [searchQuery]);
 
   const toggleCategory = (categoryName: string) => {
     setOpenCategories(prev => 

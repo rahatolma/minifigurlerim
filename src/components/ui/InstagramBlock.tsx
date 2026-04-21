@@ -28,7 +28,7 @@ export default function InstagramBlock() {
                   target="_blank" 
                   className="inline-flex items-center justify-center bg-black text-white px-8 py-5 font-black rounded text-[13px] uppercase tracking-widest hover:-translate-y-1 hover:shadow-2xl hover:bg-[#111] transition-all duration-300"
                 >
-                  Takip Edin
+                  Yayına Açıldığında Haberdar Ol
                 </Link>
               </div>
             </div>
@@ -46,8 +46,8 @@ export default function InstagramBlock() {
              
              <div className="space-y-4 text-gray-500">
                 <InstagramIcon size={40} className="mx-auto opacity-50" />
-                <p className="text-sm font-bold tracking-widest uppercase">INSTAGRAM WIDGET ALANI</p>
-                <p className="text-xs font-medium max-w-sm mx-auto">Admin panelinden aldığın (Snapwidget / Elfsight vs) embed kodunu `src/components/ui/InstagramBlock.tsx` dosyasında gizli yorum satırının olduğu yere yapıştır.</p>
+                <p className="text-sm font-bold tracking-widest uppercase">Henüz yayında değiliz.</p>
+                <p className="text-xs font-medium max-w-sm mx-auto leading-relaxed">Ama çok yakında koleksiyonerler için özel içerikler burada olacak.</p>
              </div>
 
           </div>
