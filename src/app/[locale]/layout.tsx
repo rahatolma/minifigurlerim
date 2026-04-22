@@ -8,6 +8,7 @@ import { AuthProvider } from "@/components/providers/AuthProvider";
 import { GamificationProvider } from "@/components/providers/GamificationProvider";
 import { Suspense } from "react";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const sen = Sen({
   variable: "--font-sen",
@@ -71,6 +72,7 @@ export default async function RootLayout({
             />
             {children}
             <Analytics />
+            <SpeedInsights />
           </PostHogProvider>
           </GamificationProvider>
         </AuthProvider>
