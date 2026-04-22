@@ -46,7 +46,8 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
     content_blocks_en: [] as AnyContentBlock[],
     slug_en: '',
     meta_title_en: '',
-    meta_description_en: ''
+    meta_description_en: '',
+    en_status: 'missing'
   });
 
   useEffect(() => {
@@ -76,7 +77,8 @@ export default function EditSeriesPage({ params }: { params: Promise<{ id: strin
                  content_blocks_en: Array.isArray(data.description_blocks_en) ? data.description_blocks_en : [],
                  slug_en: data.slug_en || '',
                  meta_title_en: data.meta_title_en || '',
-                 meta_description_en: data.meta_description_en || ''
+                 meta_description_en: data.meta_description_en || '',
+                 en_status: data.en_status || 'missing'
                });
                setImageUrls({
                  cover_image_url: data.cover_image_url || null,
@@ -142,50 +144,52 @@ console.error(err);
 
   const handleAIGenerate = async (e: React.MouseEvent) => {
     e.preventDefault();
-    if (!formData.title) return toast.error("Taslak için TR Seri Adı girilmesi şarttır.");
+    if (!id) return toast.error("Taslak için önce seriyi kaydetmelisiniz.");
+
+    if (formData.title_en || formData.content_blocks_en?.length > 0) {
+      const confirmOverwrite = window.confirm("İngilizce içerik zaten mevcut. Üzerine yazarak yeni bir taslak oluşturmak istediğinize emin misiniz?");
+      if (!confirmOverwrite) return;
+    }
 
     setIsGeneratingAI(true);
     const toastId = toast.loading('Yapay Zeka Taslağı Hazırlıyor...', { duration: 15000 });
     
     try {
-      const textsToTranslate = [
-        formData.title,
-        JSON.stringify(formData.content_blocks)
-      ];
-      
-      const seoData = { title: formData.title };
-
-      const res = await fetch('/api/cto/translate-draft', {
+      const res = await fetch('/api/cto/generate-en-draft', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ textsToTranslate, seoData })
+        body: JSON.stringify({ entity_type: 'series', entity_id: id })
       });
 
-      if (!res.ok) throw new Error('API yanıt vermedi.');
-      const data = await res.json();
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.error || 'API yanıt vermedi.');
       
-      const [translatedTitle, translatedBlocksStr, metaTitleEn, metaDescEn, slugEn] = data.translatedChunks;
-      let translatedBlocks = [];
-      try {
-        translatedBlocks = JSON.parse(translatedBlocksStr);
-      } catch(e) {
-        console.error("JSON parse error from AI:", e);
-        translatedBlocks = formData.content_blocks; 
+      const { title_en, description_blocks_en, meta_title_en, meta_description_en, slug_en } = resData.data;
+
+      // Ensure content blocks are correctly parsed if they come as string
+      let parsedBlocks = description_blocks_en;
+      if (typeof parsedBlocks === 'string') {
+        try {
+          parsedBlocks = JSON.parse(parsedBlocks);
+        } catch (e) {
+          console.error("JSON parse error in AI blocks:", e);
+          parsedBlocks = [];
+        }
       }
-      setQualityReport(data.qualityReport);
 
       setFormData(prev => ({
         ...prev,
-        title_en: translatedTitle || prev.title_en,
-        content_blocks_en: translatedBlocks,
-        meta_title_en: metaTitleEn || prev.meta_title_en,
-        meta_description_en: metaDescEn || prev.meta_description_en,
-        slug_en: slugEn ? slugify(slugEn) : prev.slug_en
+        title_en: title_en || prev.title_en,
+        content_blocks_en: parsedBlocks || prev.content_blocks_en,
+        meta_title_en: meta_title_en || prev.meta_title_en,
+        meta_description_en: meta_description_en || prev.meta_description_en,
+        slug_en: slug_en || prev.slug_en,
+        en_status: 'draft'
       }));
 
       toast.success('İngilizce Taslak Başarıyla Oluşturuldu!', { id: toastId });
     } catch (err: any) {
-console.error(err);
+      console.error(err);
       toast.error('Yapay Zeka Hatası: ' + err.message, { id: toastId });
     } finally {
       setIsGeneratingAI(false);
@@ -232,7 +236,8 @@ console.error(err);
           description_blocks_en: formData.content_blocks_en,
           slug_en: formData.slug_en,
           meta_title_en: formData.meta_title_en,
-          meta_description_en: formData.meta_description_en
+          meta_description_en: formData.meta_description_en,
+          en_status: formData.en_status
       };
       
       const result = await saveSeriesData(dbPayload, true, id);
@@ -473,6 +478,19 @@ console.error(err);
                             SKOR: {qualityReport.score}/100
                           </span>
                        )}
+                       <div className="ml-4 flex items-center gap-2">
+                         <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Durum:</span>
+                         <select 
+                           name="en_status" 
+                           value={formData.en_status} 
+                           onChange={handleChange} 
+                           className="bg-white border border-blue-200 text-blue-800 text-[11px] font-bold py-1 px-2 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                         >
+                           <option value="missing">Missing</option>
+                           <option value="draft">Draft</option>
+                           <option value="reviewed">Reviewed</option>
+                         </select>
+                       </div>
                      </div>
                      
                      {!qualityReport ? (

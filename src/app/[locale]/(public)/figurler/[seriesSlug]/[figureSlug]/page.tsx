@@ -11,6 +11,7 @@ import CollectorPodium from '@/components/ui/CollectorPodium';
 import SimilarFigures from '@/components/ui/SimilarFigures';
 import MultiMarketButton from '@/components/ui/MultiMarketButton';
 import FloatingFigureNav from '@/components/ui/FloatingFigureNav';
+import TranslationFallbackBadge from '@/components/ui/TranslationFallbackBadge';
 
 import { slugify } from '@/utils/helpers';
 import { formatBrandText } from '@/utils/textFormatting';
@@ -50,20 +51,35 @@ export async function generateMetadata(
     return { title: 'Minifigür Bozuk | Minifigürlerim' };
   }
 
+  const isFallback = locale === 'en' && !figure.name_en && !figure.description_en;
+  
+  const titleText = locale === 'en' && figure.meta_title_en && !isFallback ? figure.meta_title_en : (locale === 'en' && figure.name_en && !isFallback ? figure.name_en : figure.figure_name);
+  const descText = locale === 'en' && figure.meta_description_en && !isFallback ? figure.meta_description_en : (locale === 'en' && figure.short_description_en && !isFallback ? figure.short_description_en : figure.short_description_tr);
+
   const defaultImage = 'https://minifigurlerim.com/og-image.jpg';
   const figureImage = figure.image_url || defaultImage;
-  const desc = figure.short_description_tr ? figure.short_description_tr.substring(0, 150) + '...' : `${figure.figure_name} detayları ve borsa geçmişi Minifigürlerim platformunda.`;
+  const desc = descText ? descText.substring(0, 150) + '...' : `${titleText} detayları ve borsa geçmişi Minifigürlerim platformunda.`;
 
   // Dinamik OG Mimarisi
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://minifigurlerim.com';
   const ogUrl = new URL(`${baseUrl}/api/og/figure`);
-  ogUrl.searchParams.set('title', figure.figure_name || '');
+  ogUrl.searchParams.set('title', titleText || '');
   ogUrl.searchParams.set('series', figure.series_name || 'Gizemli Seri');
   ogUrl.searchParams.set('image', figureImage);
+  
+  const canonicalUrl = isFallback ? `/tr/figurler/${figure.slug_tr}` : (locale === 'en' && figure.slug_en ? `/en/figures/${figure.slug_en}` : `/tr/figurler/${figure.slug_tr}`);
 
   return {
-    title: `${figure.figure_name} | LEGO Minifigür İncelemesi`,
+    title: figure.meta_title_en && locale === 'en' && !isFallback ? titleText : `${titleText} | LEGO Minifigür İncelemesi`,
     description: desc,
+    alternates: {
+      canonical: canonicalUrl,
+      languages: {
+        'tr-TR': `/tr/figurler/${figure.slug_tr}`,
+        'en-US': figure.slug_en ? `/en/figures/${figure.slug_en}` : `/en/figures/${figure.slug_tr}`
+      }
+    },
+    robots: isFallback ? { index: false, follow: true } : undefined,
     openGraph: {
       title: `${figure.figure_name} | Karakter Detayları`,
       description: desc,
@@ -175,8 +191,11 @@ export default async function FigureDetail({
      }
   }
 
+  const isFallback = locale === 'en' && !rawFigure.name_en && !rawFigure.short_description_en;
+
   return (
     <div className="bg-[#fcfcfc] min-h-screen w-full pb-16">
+      {isFallback && <TranslationFallbackBadge />}
       <FloatingFigureNav prev={prevFigure} next={nextFigure} />
       <ClientViewTracker table="minifigures" id={figure.id} />
       <AnalyticsViewTracker figure={{

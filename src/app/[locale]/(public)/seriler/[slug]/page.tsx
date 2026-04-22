@@ -12,6 +12,7 @@ import { formatBrandText } from '@/utils/textFormatting';
 import FloatingSeriesNav from '@/components/ui/FloatingSeriesNav';
 import HeroImage from '@/components/ui/HeroImage';
 import { mapFigureForCard } from '@/utils/figureMapper';
+import TranslationFallbackBadge from '@/components/ui/TranslationFallbackBadge';
 
 // ... (code omitted for brevity to apply changes via multiple replacements, wait, I can just replace specific lines)
 
@@ -40,23 +41,28 @@ export async function generateMetadata(
     return { title: t('NotFoundTitle') };
   }
 
-  const title = locale === 'en' && series.title_en ? series.title_en : series.title;
-  const descriptionText = locale === 'en' && series.meta_description_en ? series.meta_description_en : (series.description || '');
+  const isFallback = locale === 'en' && !series.title_en && !series.description_blocks_en;
+
+  const title = locale === 'en' && series.meta_title_en && !isFallback ? series.meta_title_en : (locale === 'en' && series.title_en && !isFallback ? series.title_en : series.title);
+  const descriptionText = locale === 'en' && series.meta_description_en && !isFallback ? series.meta_description_en : (series.description || '');
 
   const defaultImage = 'https://minifigurlerim.com/og-image.jpg';
   const seriesImage = series.cover_image_url || defaultImage;
   const desc = descriptionText ? descriptionText.substring(0, 150) + '...' : `${title} ${t('NotFoundDesc')}`;
 
+  const canonicalUrl = isFallback ? `/tr/seriler/${series.slug}` : (locale === 'en' && series.slug_en ? `/en/series/${series.slug_en}` : `/tr/seriler/${series.slug}`);
+
   return {
-    title: `${title}${t('MetaTitleSuffix')}`,
+    title: series.meta_title_en && locale === 'en' && !isFallback ? title : `${title}${t('MetaTitleSuffix')}`,
     description: desc,
     alternates: {
-      canonical: locale === 'en' && series.slug_en ? `/en/series/${series.slug_en}` : `/tr/seriler/${series.slug}`,
+      canonical: canonicalUrl,
       languages: {
         'tr-TR': `/tr/seriler/${series.slug}`,
         'en-US': series.slug_en ? `/en/series/${series.slug_en}` : `/en/series/${series.slug}`
       }
     },
+    robots: isFallback ? { index: false, follow: true } : undefined,
     openGraph: {
       title: `${title}${t('MetaGraphSuffix')}`,
       description: desc,
@@ -135,6 +141,7 @@ export default async function SeriesDetail({
 
   return (
     <div className="bg-white min-h-screen pb-20 w-full">
+      {isFallback && <TranslationFallbackBadge />}
       <FloatingSeriesNav prev={prevSeries} next={nextSeries} />
 
       <ClientViewTracker table="series" id={series.id} />

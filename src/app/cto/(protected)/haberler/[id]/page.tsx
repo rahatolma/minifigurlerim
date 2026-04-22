@@ -3,7 +3,7 @@
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ChevronRight, ImagePlus, Loader2, Save } from 'lucide-react';
+import { ChevronRight, ImagePlus, Loader2, Save, Globe } from 'lucide-react';
 import RichTextEditor from '@/components/cto/RichTextEditor';
 import { supabase } from '@/utils/supabase/client';
 import { slugify } from '@/utils/helpers';
@@ -18,6 +18,7 @@ export default function EditNewsPage({ params }: { params: Promise<{ id: string 
   
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGeneratingEN, setIsGeneratingEN] = useState(false);
   const [uploadingField, setUploadingField] = useState<string | null>(null);
   
   const [imageUrls, setImageUrls] = useState({
@@ -30,7 +31,14 @@ export default function EditNewsPage({ params }: { params: Promise<{ id: string 
     summary: '',
     content: '',
     status: 'published',
-    min_read: '1'
+    min_read: '1',
+    title_en: '',
+    slug_en: '',
+    summary_en: '',
+    content_blocks_en: '',
+    meta_title_en: '',
+    meta_description_en: '',
+    en_status: 'missing'
   });
 
   useEffect(() => {
@@ -46,7 +54,14 @@ export default function EditNewsPage({ params }: { params: Promise<{ id: string 
               summary: data.summary || '',
               content: data.content || '',
               status: data.status || 'published',
-              min_read: data.min_read ? data.min_read.toString() : '1'
+              min_read: data.min_read ? data.min_read.toString() : '1',
+              title_en: data.title_en || '',
+              slug_en: data.slug_en || '',
+              summary_en: data.summary_en || '',
+              content_blocks_en: data.content_blocks_en || '',
+              meta_title_en: data.meta_title_en || '',
+              meta_description_en: data.meta_description_en || '',
+              en_status: data.en_status || 'missing'
             });
             setImageUrls({
               cover_image_url: data.cover_image_url || null,
@@ -130,6 +145,13 @@ console.error(err);
           min_read: formData.min_read ? parseInt(formData.min_read) : 1,
           cover_image_url: imageUrls.cover_image_url,
           cover_image_vertical_url: imageUrls.cover_image_vertical_url,
+          title_en: formData.title_en,
+          slug_en: formData.slug_en,
+          summary_en: formData.summary_en,
+          content_blocks_en: formData.content_blocks_en,
+          meta_title_en: formData.meta_title_en,
+          meta_description_en: formData.meta_description_en,
+          en_status: formData.en_status,
       };
 
       const result = await saveNewsData(dbPayload, true, id);
@@ -142,6 +164,50 @@ console.error(err);
       toast.error('Güncelleme Hatası: ' + err.message);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleGenerateENDraft = async () => {
+    if (!id) return toast.error("Taslak için önce haberi kaydetmelisiniz.");
+    
+    if (formData.title_en || formData.content_blocks_en) {
+      const confirmOverwrite = window.confirm("İngilizce içerik zaten mevcut. Üzerine yazarak yeni bir taslak oluşturmak istediğinize emin misiniz?");
+      if (!confirmOverwrite) return;
+    }
+
+    try {
+      setIsGeneratingEN(true);
+      const toastId = toast.loading('İngilizce taslak üretiliyor (Yapay Zeka devrede)...');
+      
+      const res = await fetch('/api/cto/generate-en-draft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity_type: 'news', entity_id: id })
+      });
+      
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.error || 'API Hatası');
+      
+      toast.success('İngilizce içerikler başarıyla oluşturuldu!', { id: toastId });
+      
+      if (resData.data) {
+        setFormData(prev => ({
+          ...prev,
+          slug_en: resData.data.slug_en || prev.slug_en,
+          title_en: resData.data.title_en || prev.title_en,
+          summary_en: resData.data.summary_en || prev.summary_en,
+          content_blocks_en: resData.data.content_blocks_en || prev.content_blocks_en,
+          meta_title_en: resData.data.meta_title_en || prev.meta_title_en,
+          meta_description_en: resData.data.meta_description_en || prev.meta_description_en,
+          en_status: 'draft',
+        }));
+      }
+      
+    } catch (err: any) {
+      console.error(err);
+      toast.error('Taslak oluşturulamadı: ' + err.message);
+    } finally {
+      setIsGeneratingEN(false);
     }
   };
 
@@ -158,6 +224,16 @@ console.error(err);
             <Link href="/cto/haberler" className="hover:text-black transition-colors">HABERLER</Link>
             <ChevronRight size={14} />
             <span className="text-black">HABERİ DÜZENLE: {formData.title}</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleGenerateENDraft}
+              disabled={isGeneratingEN}
+              className="bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300 transition-colors px-6 py-2.5 text-[11px] font-black tracking-widest uppercase rounded flex items-center gap-2 shadow-sm"
+            >
+              {isGeneratingEN ? <Loader2 size={14} className="animate-spin" /> : <Globe size={14} />}
+              Generate EN Draft 🇺🇸
+            </button>
           </div>
         </div>
       </div>
@@ -311,6 +387,67 @@ console.error(err);
                   />
                 </div>
               </div>
+            </div>
+
+            {/* =========================================
+                İNGİLİZCE SEO & İÇERİK
+            ========================================= */}
+            <div className="w-full bg-blue-50/50 p-6 rounded-md border border-blue-100 flex flex-col gap-6 mt-12">
+                 <div className="flex items-center justify-between border-b border-blue-200 pb-2 mb-2">
+                    <h3 className="text-[13px] font-black text-blue-800 uppercase tracking-widest flex items-center gap-2">
+                       <Globe size={16} /> İngilizce İçerik (Global)
+                    </h3>
+                    <div className="flex items-center gap-2">
+                       <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Çeviri Durumu:</span>
+                       <select 
+                         name="en_status" 
+                         value={formData.en_status} 
+                         onChange={handleChange} 
+                         className="bg-white border border-blue-200 text-blue-800 text-[11px] font-bold py-1 px-2 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                       >
+                         <option value="missing">Missing</option>
+                         <option value="draft">Draft</option>
+                         <option value="reviewed">Reviewed</option>
+                       </select>
+                    </div>
+                 </div>
+            
+            <div className="bg-white border border-gray-200 rounded-md shadow-sm mb-8 overflow-hidden">
+                <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Başlık (EN)</label></div>
+                    <div className="w-2/3 py-2"><input name="title_en" type="text" value={formData.title_en} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" /></div>
+                </div>
+
+                <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">URL Slug (EN)</label></div>
+                    <div className="w-2/3 py-2"><input name="slug_en" type="text" value={formData.slug_en} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" /></div>
+                </div>
+
+                <div className="flex border-b border-gray-100 items-start hover:bg-gray-50 transition-colors group">
+                    <div className="w-1/3 pt-6 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Özet (EN)</label></div>
+                    <div className="w-2/3 py-4"><textarea name="summary_en" rows={3} value={formData.summary_en} onChange={(e: any) => handleChange(e)} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold resize-y" /></div>
+                </div>
+
+                <div className="flex border-b border-gray-100 items-start hover:bg-gray-50 transition-colors group">
+                    <div className="w-1/3 pt-6 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">İçerik (EN)</label></div>
+                    <div className="w-2/3 py-4">
+                      <RichTextEditor
+                        value={formData.content_blocks_en}
+                        onChange={(val) => setFormData(prev => ({ ...prev, content_blocks_en: val }))}
+                        placeholder="English content here..."
+                      />
+                    </div>
+                </div>
+
+                <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Meta Title (EN)</label></div>
+                    <div className="w-2/3 py-2"><input name="meta_title_en" type="text" value={formData.meta_title_en} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" /></div>
+                </div>
+
+                <div className="flex border-b border-gray-100 items-start hover:bg-gray-50 transition-colors group">
+                    <div className="w-1/3 pt-6 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Meta Description (EN)</label></div>
+                    <div className="w-2/3 py-4"><textarea name="meta_description_en" rows={2} value={formData.meta_description_en} onChange={(e: any) => handleChange(e)} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold resize-y" /></div>
+                </div>
             </div>
 
             {/* Save Button */}

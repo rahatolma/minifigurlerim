@@ -4,6 +4,7 @@ import Link from 'next/link';
 import RichTextContent from '@/components/ui/RichTextContent';
 import { ChevronRight, Calendar, Eye, Share2 } from 'lucide-react';
 import ClientViewTracker from '@/components/ui/ClientViewTracker'; // View tracker (we assume it exists from figures, or I will write a simple one inline)
+import TranslationFallbackBadge from '@/components/ui/TranslationFallbackBadge';
 
 // Bu sayfa dinamik slug'lara cevap vereceği için ISR/SSR karışımı
 export const revalidate = 60;
@@ -26,23 +27,28 @@ export async function generateMetadata(
     return { title: t('NotFoundTitle') };
   }
 
-  const title = locale === 'en' && news.title_en ? news.title_en : news.title;
-  const descriptionText = locale === 'en' && news.meta_description_en ? news.meta_description_en : (news.summary || news.meta_description || '');
+  const isFallback = locale === 'en' && !news.title_en && !news.content_blocks_en;
+
+  const title = locale === 'en' && news.meta_title_en && !isFallback ? news.meta_title_en : (locale === 'en' && news.title_en && !isFallback ? news.title_en : news.title);
+  const descriptionText = locale === 'en' && news.meta_description_en && !isFallback ? news.meta_description_en : (news.summary || news.meta_description || '');
 
   const defaultImage = 'https://minifigurlerim.com/og-image.jpg';
   const newsImage = news.cover_image_url || defaultImage;
   const desc = descriptionText ? descriptionText.substring(0, 150) + '...' : `${title} ${t('NotFoundDesc')}`;
 
+  const canonicalUrl = isFallback ? `/tr/haberler/${news.slug}` : (locale === 'en' && news.slug_en ? `/en/news/${news.slug_en}` : `/tr/haberler/${news.slug}`);
+
   return {
-    title: `${title}${t('MetaTitleSuffix')}`,
+    title: news.meta_title_en && locale === 'en' && !isFallback ? title : `${title}${t('MetaTitleSuffix')}`,
     description: desc,
     alternates: {
-      canonical: locale === 'en' && news.slug_en ? `/en/news/${news.slug_en}` : `/tr/haberler/${news.slug}`,
+      canonical: canonicalUrl,
       languages: {
         'tr-TR': `/tr/haberler/${news.slug}`,
         'en-US': news.slug_en ? `/en/news/${news.slug_en}` : `/en/news/${news.slug}`
       }
     },
+    robots: isFallback ? { index: false, follow: true } : undefined,
     openGraph: {
       title: `${title}${t('MetaGraphSuffix')}`,
       description: desc,
@@ -97,6 +103,7 @@ export default async function NewsDetailPage({
 
   return (
     <div className="bg-[#fcfcfc] min-h-screen pb-24">
+      {isFallback && <TranslationFallbackBadge />}
       {/* Sunucu bazlı view takip işlemi için Client bileşeni (Figürlerdeki gibi) */}
       <ClientViewTracker table="news" id={news.id} />
 
@@ -121,13 +128,6 @@ export default async function NewsDetailPage({
           <h1 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight leading-[1.1] mb-6">
             {title}
           </h1>
-
-          {isFallback && (
-            <div className="mb-6 inline-flex items-center gap-2 px-3 py-1.5 bg-orange-50 border border-orange-100 rounded-md text-[11px] font-bold text-orange-700 tracking-wide shadow-sm">
-              <svg className="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-              {fallbackT('BadgeText')}
-            </div>
-          )}
         </div>
 
         {summary && (
