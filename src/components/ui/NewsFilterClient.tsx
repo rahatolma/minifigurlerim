@@ -36,7 +36,7 @@ export default function NewsFilterClient({
   return (
     <>
       <div className="hidden md:grid md:grid-cols-2 gap-5 w-full">
-        <div className="w-full">
+        <div className="w-full h-full flex items-center">
           <CustomDropdown 
             name="sort"
           options={[
@@ -48,7 +48,7 @@ export default function NewsFilterClient({
           onChange={(val: string) => handleFilterUpdate('sort', val)}
           placeholder="Sıralama"
           showSearch={false}
-          wrapperClass="w-full"
+          wrapperClass="w-full h-full flex items-center"
         />
         </div>
         
