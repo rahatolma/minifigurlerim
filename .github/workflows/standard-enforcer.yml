@@ -36,4 +36,7 @@ jobs:
         NEXT_PUBLIC_SUPABASE_URL: "https://dummy.supabase.co"
         NEXT_PUBLIC_SUPABASE_ANON_KEY: "dummy"
         OPENAI_API_KEY: "dummy"
+        SUPABASE_SERVICE_ROLE_KEY: "dummy"
+        CRON_SECRET: "dummy"
+
 
