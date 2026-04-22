@@ -5,8 +5,7 @@ import {
   getMarketplaceClicks, 
   getFunnelStats 
 } from '@/services/analytics';
-import { Package, Database, CheckCircle2, Eye, PlusCircle, ShoppingCart, Activity, TrendingUp } from 'lucide-react';
-import Link from 'next/link';
+import { Package, Database, CheckCircle2, Eye, PlusCircle, ShoppingCart, Activity, TrendingUp, Sparkles, AlertCircle } from 'lucide-react';
 
 export const revalidate = 0;
 
@@ -25,7 +24,7 @@ export default async function AdminDashboard() {
   const marketplaceClicks = await getMarketplaceClicks(7, 10);
   const funnelStats = await getFunnelStats(7);
 
-  // 3. Process Funnel & KPI Data (Using global totals from funnelStats)
+  // 3. Process Funnel & KPI Data
   const viewCount = funnelStats.find((f: any) => f.event === 'view_figure')?.total_count || 0;
   const addCount = funnelStats.find((f: any) => f.event === 'add_to_collection')?.total_count || 0;
   const clickCount = funnelStats.find((f: any) => f.event === 'click_marketplace')?.total_count || 0;
@@ -37,65 +36,140 @@ export default async function AdminDashboard() {
   const maxViewCount = topViewed.length > 0 ? Math.max(...topViewed.map((v: any) => v.view_count)) : 1;
   const maxMarketClick = marketplaceClicks.length > 0 ? Math.max(...marketplaceClicks.map((m: any) => m.click_count)) : 1;
 
+  // 4. Insight Engine (Karar Motoru)
+  const generateInsight = () => {
+    if (viewCount === 0) {
+      return {
+        title: "Veri Akışı Bekleniyor",
+        message: "Son 7 günde henüz etkileşim oluşmadı. İlk veriler geldikçe burada stratejik trendleri göreceksin. Dilersen platformda gezerek test verisi oluşturabilirsin.",
+        type: "neutral",
+        icon: <Activity className="w-6 h-6 text-gray-500" />
+      };
+    }
+    
+    if (viewCount > 0 && addCount === 0) {
+      return {
+        title: "Trafik Var, Sahiplenme Yok",
+        message: `Son 7 günde ${viewCount} inceleme yapıldı ancak koleksiyona ekleme oranı %0. Kullanıcıları aksiyona teşvik edecek "Ekle" butonlarını belirginleştirmeliyiz.`,
+        type: "warning",
+        icon: <AlertCircle className="w-6 h-6 text-orange-500" />
+      };
+    }
+
+    if (addCount > 0 && clickCount === 0) {
+      return {
+        title: "İlgi Yüksek, Gelir Dönüşümü Eksik",
+        message: `Kullanıcılar figürleri severek sahipleniyor (${addCount} ekleme) ancak pazaryeri butonlarına tıkla(ya)mıyor. Satın alma yönlendirmeleri gözden geçirilmeli.`,
+        type: "warning",
+        icon: <AlertCircle className="w-6 h-6 text-orange-500" />
+      };
+    }
+
+    if (parseFloat(conversionRate) > 15 && parseFloat(marketConversion) > 10) {
+      return {
+        title: "Sistem Kusursuz İşliyor",
+        message: `Kullanıcı yolculuğu çok sağlıklı! Görüntülemelerin %${conversionRate}'si koleksiyona, eklemelerin ise %${marketConversion}'si pazaryeri aksiyonuna (gelire) dönüşüyor.`,
+        type: "success",
+        icon: <Sparkles className="w-6 h-6 text-emerald-500" />
+      };
+    }
+
+    return {
+      title: "Standart Etkileşim İzleniyor",
+      message: `Kullanıcılar platformu inceliyor. Görüntülemelerin %${conversionRate}'si koleksiyona dönüşürken, eklemelerin %${marketConversion}'si pazaryerine gidiyor.`,
+      type: "neutral",
+      icon: <TrendingUp className="w-6 h-6 text-blue-500" />
+    };
+  };
+
+  const insight = generateInsight();
+
   // Render Functions for Empty States
-  const renderEmptyState = (message: string) => (
-    <div className="py-8 flex flex-col items-center justify-center text-center w-full">
-      <span className="text-gray-200 text-4xl mb-3"><Activity /></span>
-      <p className="text-sm font-bold text-gray-400">Henüz yeterli veri yok.</p>
-      <p className="text-xs text-gray-300 mt-1">{message}</p>
+  const renderEmptyState = (message: string, compact = false) => (
+    <div className={`${compact ? 'py-4' : 'py-8'} flex flex-col items-center justify-center text-center w-full`}>
+      {!compact && (
+        <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center mb-3">
+          <Activity className="w-4 h-4 text-gray-300" />
+        </div>
+      )}
+      <p className="text-xs font-semibold text-gray-400 max-w-[200px] leading-relaxed">{message}</p>
     </div>
   );
 
   return (
     <div className="w-full max-w-[1600px] mx-auto p-8 md:p-12 pb-24">
-      <div className="mb-12">
+      <div className="mb-8">
         <h1 className="text-4xl md:text-5xl font-black text-[#111] tracking-tight mb-2">
           Ürün <span className="text-[#D22B2B]">Davranışı</span>
         </h1>
         <p className="text-gray-500 font-semibold text-sm">Son 7 günün kullanıcı analizleri ve dönüşüm oranları</p>
+      </div>
+
+      {/* 0) INSIGHT LAYER (Karar Motoru Yorumu) */}
+      <div className={`mb-8 p-6 rounded-[28px] border bg-white/80 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] flex gap-5 items-center
+        ${insight.type === 'warning' ? 'border-orange-100' : insight.type === 'success' ? 'border-emerald-100' : 'border-gray-100'}
+      `}>
+        <div className={`w-14 h-14 shrink-0 rounded-[20px] flex items-center justify-center
+          ${insight.type === 'warning' ? 'bg-orange-50' : insight.type === 'success' ? 'bg-emerald-50' : 'bg-gray-50'}
+        `}>
+          {insight.icon}
+        </div>
+        <div>
+          <h3 className="text-gray-900 font-black text-lg tracking-tight mb-1">{insight.title}</h3>
+          <p className="text-gray-500 font-semibold text-sm">{insight.message}</p>
+        </div>
       </div>
       
       {/* 1) ÜST KPI SATIRI (4 Kart) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {/* KPI: Görüntüleme */}
         <div className="bg-white/80 backdrop-blur-xl rounded-[28px] p-6 lg:p-8 flex flex-col border border-white shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-          <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-[16px] flex items-center justify-center mb-4">
-            <Eye className="w-5 h-5" strokeWidth={2.5} />
+          <div className="flex justify-between items-start mb-4">
+            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-[16px] flex items-center justify-center">
+              <Eye className="w-5 h-5" strokeWidth={2.5} />
+            </div>
           </div>
           <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">TOPLAM GÖRÜNTÜLEME</p>
-          <p className="text-4xl font-black text-gray-900 tracking-tight">{viewCount}</p>
+          <p className="text-4xl font-black text-gray-900 tracking-tight">{viewCount > 0 ? viewCount : '—'}</p>
         </div>
 
         {/* KPI: Koleksiyona Ekleme */}
         <div className="bg-white/80 backdrop-blur-xl rounded-[28px] p-6 lg:p-8 flex flex-col border border-white shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-          <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-[16px] flex items-center justify-center mb-4">
-            <PlusCircle className="w-5 h-5" strokeWidth={2.5} />
+          <div className="flex justify-between items-start mb-4">
+            <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-[16px] flex items-center justify-center">
+              <PlusCircle className="w-5 h-5" strokeWidth={2.5} />
+            </div>
           </div>
           <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">KOLEKSİYONA EKLEME</p>
-          <p className="text-4xl font-black text-gray-900 tracking-tight">{addCount}</p>
+          <p className="text-4xl font-black text-gray-900 tracking-tight">{addCount > 0 ? addCount : '—'}</p>
         </div>
 
         {/* KPI: Pazaryeri Tıklama */}
         <div className="bg-white/80 backdrop-blur-xl rounded-[28px] p-6 lg:p-8 flex flex-col border border-white shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-          <div className="w-12 h-12 bg-orange-50 text-orange-600 rounded-[16px] flex items-center justify-center mb-4">
-            <ShoppingCart className="w-5 h-5" strokeWidth={2.5} />
+          <div className="flex justify-between items-start mb-4">
+            <div className="w-12 h-12 bg-orange-50 text-orange-600 rounded-[16px] flex items-center justify-center">
+              <ShoppingCart className="w-5 h-5" strokeWidth={2.5} />
+            </div>
           </div>
           <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">PAZARYERİ TIKLAMASI</p>
-          <p className="text-4xl font-black text-gray-900 tracking-tight">{clickCount}</p>
+          <p className="text-4xl font-black text-gray-900 tracking-tight">{clickCount > 0 ? clickCount : '—'}</p>
         </div>
 
         {/* KPI: Dönüşüm Oranı */}
         <div className="bg-white/80 backdrop-blur-xl rounded-[28px] p-6 lg:p-8 flex flex-col border border-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden group">
           <div className="absolute inset-0 bg-gradient-to-br from-[#D22B2B]/5 to-transparent opacity-100" />
-          <div className="w-12 h-12 bg-[#D22B2B]/10 text-[#D22B2B] rounded-[16px] flex items-center justify-center mb-4 z-10">
-            <TrendingUp className="w-5 h-5" strokeWidth={2.5} />
+          <div className="flex justify-between items-start mb-4 relative z-10">
+            <div className="w-12 h-12 bg-[#D22B2B]/10 text-[#D22B2B] rounded-[16px] flex items-center justify-center">
+              <TrendingUp className="w-5 h-5" strokeWidth={2.5} />
+            </div>
           </div>
-          <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2 z-10">GENEL DÖNÜŞÜM ORANI</p>
-          <div className="flex items-baseline gap-2 z-10">
-            <p className="text-4xl font-black text-[#D22B2B] tracking-tight">%{conversionRate}</p>
+          <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2 relative z-10">GENEL DÖNÜŞÜM ORANI</p>
+          <div className="flex items-baseline gap-2 relative z-10">
+            <p className="text-4xl font-black text-[#D22B2B] tracking-tight">{viewCount > 0 ? `%${conversionRate}` : '—'}</p>
           </div>
         </div>
       </div>
+
 
       {/* 2 & 3 & 4) ANA BLOKLAR (Grid 3 Cols) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
@@ -134,7 +208,7 @@ export default async function AdminDashboard() {
                   </div>
                 );
               })
-            ) : renderEmptyState("Görüntüleme verileri toplandıkça bu alan dolacak.")}
+            ) : renderEmptyState("Kullanıcılar figürleri inceledikçe liste şekillenecek. Test için vitrindeki figürlere tıklayabilirsin.")}
           </div>
         </div>
 
@@ -152,14 +226,14 @@ export default async function AdminDashboard() {
                   <div key={fig.figure_slug} className="flex justify-between items-center border-b border-gray-50 pb-2 last:border-0 last:pb-0">
                     <div className="flex items-center gap-3 overflow-hidden">
                       <span className="text-gray-300 font-bold text-xs">#{idx + 1}</span>
-                      <span className="text-sm font-bold text-gray-800 truncate" title={fig.figure_slug}>{fig.figure_slug}</span>
+                      <span className="text-sm font-bold text-gray-800 truncate" title={figToName.get(fig.figure_slug) || fig.figure_slug}>{figToName.get(fig.figure_slug) || fig.figure_slug}</span>
                     </div>
                     <span className="text-sm font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md shrink-0">
                       +{fig.add_count}
                     </span>
                   </div>
                 ))
-              ) : renderEmptyState("Kullanıcılar koleksiyon oluşturdukça listelenecek.")}
+              ) : renderEmptyState("Eklemeler başladıkça en popüler figürler burada belirecek.", true)}
             </div>
           </div>
 
@@ -187,7 +261,7 @@ export default async function AdminDashboard() {
                     </div>
                    );
                 })
-              ) : renderEmptyState("Harici linklere tıklandıkça platformlar görünecek.")}
+              ) : renderEmptyState("Kullanıcılar fiyat linklerine tıkladığında pasta dağılımı oluşacak.", true)}
             </div>
           </div>
 
@@ -203,13 +277,14 @@ export default async function AdminDashboard() {
           <p className="text-gray-400 text-sm font-semibold mt-1">İlgiden Satın Almaya: Kullanıcı yolculuğundaki kayıp noktaları</p>
         </div>
 
-        {viewCount > 0 ? (
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between relative z-10">
+        <div className="relative">
+          {/* Funnel Skeleton (Rendered even if empty, passive if viewCount == 0) */}
+          <div className={`flex flex-col md:flex-row gap-4 items-center justify-between relative z-10 ${viewCount === 0 ? 'opacity-30 grayscale pointer-events-none blur-[1px]' : ''}`}>
             {/* Step 1: Görüntüleme */}
             <div className="flex-1 w-full bg-white/10 rounded-2xl p-6 border border-white/5 backdrop-blur-md">
               <p className="text-gray-400 font-bold text-xs uppercase tracking-widest mb-1">Adım 1</p>
               <p className="text-white font-black text-lg mb-4">Figür İnceleme</p>
-              <p className="text-4xl font-black text-white">{viewCount}</p>
+              <p className="text-4xl font-black text-white">{viewCount > 0 ? viewCount : '—'}</p>
             </div>
             
             {/* Arrow & Conversion 1 */}
@@ -222,8 +297,8 @@ export default async function AdminDashboard() {
             <div className="flex-1 w-full bg-white/10 rounded-2xl p-6 border border-white/5 backdrop-blur-md">
               <p className="text-gray-400 font-bold text-xs uppercase tracking-widest mb-1">Adım 2</p>
               <p className="text-white font-black text-lg mb-4">Koleksiyona Ekleme</p>
-              <p className="text-4xl font-black text-white">{addCount}</p>
-              <p className="text-xs text-red-400 font-bold mt-2">Kayıp: %{(100 - parseFloat(conversionRate)).toFixed(1)}</p>
+              <p className="text-4xl font-black text-white">{viewCount > 0 ? addCount : '—'}</p>
+              {viewCount > 0 && <p className="text-xs text-red-400 font-bold mt-2">Kayıp: %{(100 - parseFloat(conversionRate)).toFixed(1)}</p>}
             </div>
 
             {/* Arrow & Conversion 2 */}
@@ -236,16 +311,21 @@ export default async function AdminDashboard() {
             <div className="flex-1 w-full bg-emerald-500/10 rounded-2xl p-6 border border-emerald-500/20 backdrop-blur-md">
               <p className="text-emerald-500 font-bold text-xs uppercase tracking-widest mb-1">Adım 3 (Hedef)</p>
               <p className="text-emerald-400 font-black text-lg mb-4">Pazaryerine Gidiş</p>
-              <p className="text-4xl font-black text-emerald-400">{clickCount}</p>
+              <p className="text-4xl font-black text-emerald-400">{viewCount > 0 ? clickCount : '—'}</p>
               {addCount > 0 && <p className="text-xs text-red-400 font-bold mt-2">Kayıp: %{(100 - parseFloat(marketConversion)).toFixed(1)}</p>}
             </div>
           </div>
-        ) : (
-          <div className="py-12 flex flex-col items-center justify-center border border-white/10 rounded-2xl border-dashed">
-             <span className="text-gray-600 text-4xl mb-3"><Activity /></span>
-             <p className="text-gray-400 font-bold">Huni verisi henüz oluşmadı.</p>
-          </div>
-        )}
+
+          {/* Empty State Overlay */}
+          {viewCount === 0 && (
+            <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+              <div className="bg-[#1a1a1a]/80 backdrop-blur-sm border border-white/5 px-4 py-3 rounded-xl flex items-center gap-3">
+                <Activity className="w-4 h-4 text-gray-400" />
+                <p className="text-gray-300 font-semibold text-xs">Yolculuk akışı veriler biriktikçe şekillenecek</p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* 6) SECONDARY BLOK: Sistem Durumu */}
@@ -271,6 +351,7 @@ export default async function AdminDashboard() {
           </div>
         </div>
       </div>
+
 
     </div>
   );
