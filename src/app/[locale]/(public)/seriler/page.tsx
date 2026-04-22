@@ -44,7 +44,7 @@ export default async function SeriesPage({
 
   // 1. Kategorileri Çek
   const catData = await getCategoriesByType(targetType);
-  const categoryFilters = (catData || []).map(c => ({ slug: c.slug, name: locale === 'en' && c.name_en ? c.name_en : c.name }));
+  const categoryFilters = (catData || []).map(c => ({ slug: c.slug, name: locale === 'en' && (c as any).name_en ? (c as any).name_en : c.name }));
 
   // 2. Tüm Serileri Çek (Sadece Dropdown Filter menüsü doldurmak için - Minimal payload)
   const allSeries = await getAllSeries();

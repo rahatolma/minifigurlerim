@@ -10,7 +10,7 @@ import { cache } from 'react';
 export const getSeriesList = cache(async () => {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from('series').select('id, name, slug_tr, slug_en, description, description_en, is_active, release_year, category, category_main, cover_image_url, banner_image_url, blocks, series_no, rarity, figure_count, is_published, total_views, title, title_en')
+    .from('series').select('id, created_at, title, description, category, series_no, brand, cover_image_url, figure_count, total_views, daily_views, release_month, release_year, description_2, hero_image_url, box_image_url, collector_image_url, collector_note, slug, general_image_url, rarity, content_blocks, title_en, description_blocks_en, slug_en, meta_title_en, meta_description_en, series_name, slug_tr, product_code, category_main, category_sub, release_date, release_month_tr, release_month_en, is_limited_production, is_special_production, summary_tr, summary_en, collector_comment_tr, collector_comment_en, is_active, is_published, meta_title, meta_description')
     .order('created_at', { ascending: false });
   
   if (error) throw error;
@@ -55,7 +55,7 @@ export const getAllMinifigures = cache(async () => {
 export const getAllSeries = cache(async () => {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from('series').select('id, name, slug_tr, slug_en, description, description_en, is_active, release_year, category, category_main, cover_image_url, banner_image_url, blocks, series_no, rarity, figure_count, is_published, total_views, title, title_en')
+    .from('series').select('id, created_at, title, description, category, series_no, brand, cover_image_url, figure_count, total_views, daily_views, release_month, release_year, description_2, hero_image_url, box_image_url, collector_image_url, collector_note, slug, general_image_url, rarity, content_blocks, title_en, description_blocks_en, slug_en, meta_title_en, meta_description_en, series_name, slug_tr, product_code, category_main, category_sub, release_date, release_month_tr, release_month_en, is_limited_production, is_special_production, summary_tr, summary_en, collector_comment_tr, collector_comment_en, is_active, is_published, meta_title, meta_description')
     .order('created_at', { ascending: false });
     
   if (error) throw error;
@@ -66,7 +66,7 @@ export const getAllSeries = cache(async () => {
 export const getLatestNews = cache(async () => {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from('news').select('id, title, slug, summary, content, cover_image_url, status, total_views, daily_views, min_read, created_at, cover_image_vertical_url, title_en, content_blocks_en')
+    .from('news').select('id, title, slug, slug_en, summary, content, cover_image_url, status, total_views, daily_views, min_read, created_at, cover_image_vertical_url, title_en, content_blocks_en, meta_title_en, meta_description_en, meta_title, meta_description')
     .eq('status', 'published')
     .order('created_at', { ascending: false })
     .limit(12);
@@ -92,7 +92,7 @@ export const getHomeSliders = cache(async () => {
 export const getLatestSeries = cache(async () => {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from('series').select('id, name, slug_tr, slug_en, description, description_en, is_active, release_year, category, category_main, cover_image_url, banner_image_url, blocks, series_no, rarity, figure_count, is_published, total_views, title, title_en')
+    .from('series').select('id, created_at, title, description, category, series_no, brand, cover_image_url, figure_count, total_views, daily_views, release_month, release_year, description_2, hero_image_url, box_image_url, collector_image_url, collector_note, slug, general_image_url, rarity, content_blocks, title_en, description_blocks_en, slug_en, meta_title_en, meta_description_en, series_name, slug_tr, product_code, category_main, category_sub, release_date, release_month_tr, release_month_en, is_limited_production, is_special_production, summary_tr, summary_en, collector_comment_tr, collector_comment_en, is_active, is_published, meta_title, meta_description')
     .order('created_at', { ascending: false })
     .limit(100); // Havuzu geniş tuttuk ki JS ile kronolojik dizebilelim
 
@@ -135,7 +135,7 @@ export const getLatestSeries = cache(async () => {
 export const getLatestFigures = cache(async () => {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from('minifigures').select('id, created_at, series_id, name, brand, category, series_name, series_no, figure_no, role, type, code, piece_count, body_material, rarity, value_usd, release_year, images, total_views, daily_views, custom_attributes, description, release_month, slug, affiliate_link, name_en, series_name_en, role_en, description_en, min_price, max_price, avg_price, rarity_score, series_score, view_count_30d, collection_count_30d, favorite_count_30d, rating_count, value_score, demand_score, figure_name, slug_tr, slug_en, figure_number, figure_code, character_name, short_description_tr, short_description_en, figure_role, figure_type, price_updated_at, rarity_level, accessory_count, main_color, thumbnail_url, is_featured, is_active, is_published, series(id, name, slug_tr, slug_en, title, title_en)')
+    .from('minifigures').select('id, created_at, series_id, name, brand, category, series_name, series_no, figure_no, role, type, code, piece_count, body_material, rarity, value_usd, release_year, images, total_views, daily_views, custom_attributes, description, release_month, slug, affiliate_link, name_en, series_name_en, role_en, description_en, min_price, max_price, avg_price, rarity_score, series_score, view_count_30d, collection_count_30d, favorite_count_30d, rating_count, value_score, demand_score, figure_name, slug_tr, slug_en, figure_number, figure_code, character_name, short_description_tr, short_description_en, figure_role, figure_type, price_updated_at, rarity_level, accessory_count, main_color, thumbnail_url, is_featured, is_active, is_published, series(id, title, slug, slug_tr, slug_en, title_en, category, series_no, release_year, created_at)')
     .order('created_at', { ascending: false })
     .limit(12);
 
@@ -147,7 +147,7 @@ export const getLatestFigures = cache(async () => {
 export const getTopDemandedFigures = cache(async (limit = 6) => {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from('minifigures').select('id, created_at, series_id, name, brand, category, series_name, series_no, figure_no, role, type, code, piece_count, body_material, rarity, value_usd, release_year, images, total_views, daily_views, custom_attributes, description, release_month, slug, affiliate_link, name_en, series_name_en, role_en, description_en, min_price, max_price, avg_price, rarity_score, series_score, view_count_30d, collection_count_30d, favorite_count_30d, rating_count, value_score, demand_score, figure_name, slug_tr, slug_en, figure_number, figure_code, character_name, short_description_tr, short_description_en, figure_role, figure_type, price_updated_at, rarity_level, accessory_count, main_color, thumbnail_url, is_featured, is_active, is_published, series(id, name, slug_tr, slug_en, title, title_en)')
+    .from('minifigures').select('id, created_at, series_id, name, brand, category, series_name, series_no, figure_no, role, type, code, piece_count, body_material, rarity, value_usd, release_year, images, total_views, daily_views, custom_attributes, description, release_month, slug, affiliate_link, name_en, series_name_en, role_en, description_en, min_price, max_price, avg_price, rarity_score, series_score, view_count_30d, collection_count_30d, favorite_count_30d, rating_count, value_score, demand_score, figure_name, slug_tr, slug_en, figure_number, figure_code, character_name, short_description_tr, short_description_en, figure_role, figure_type, price_updated_at, rarity_level, accessory_count, main_color, thumbnail_url, is_featured, is_active, is_published, series(id, title, slug, slug_tr, slug_en, title_en, category, series_no, release_year, created_at)')
     .not('demand_score', 'is', null) // Sadece skoru hesaplanmışlar
     .order('demand_score', { ascending: false })
     .order('view_count_30d', { ascending: false }) // Eşitlik durumunda etkileşime bak
@@ -161,7 +161,7 @@ export const getTopDemandedFigures = cache(async (limit = 6) => {
 export const getTopValuedFigures = cache(async (limit = 6) => {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from('minifigures').select('id, created_at, series_id, name, brand, category, series_name, series_no, figure_no, role, type, code, piece_count, body_material, rarity, value_usd, release_year, images, total_views, daily_views, custom_attributes, description, release_month, slug, affiliate_link, name_en, series_name_en, role_en, description_en, min_price, max_price, avg_price, rarity_score, series_score, view_count_30d, collection_count_30d, favorite_count_30d, rating_count, value_score, demand_score, figure_name, slug_tr, slug_en, figure_number, figure_code, character_name, short_description_tr, short_description_en, figure_role, figure_type, price_updated_at, rarity_level, accessory_count, main_color, thumbnail_url, is_featured, is_active, is_published, series(id, name, slug_tr, slug_en, title, title_en)')
+    .from('minifigures').select('id, created_at, series_id, name, brand, category, series_name, series_no, figure_no, role, type, code, piece_count, body_material, rarity, value_usd, release_year, images, total_views, daily_views, custom_attributes, description, release_month, slug, affiliate_link, name_en, series_name_en, role_en, description_en, min_price, max_price, avg_price, rarity_score, series_score, view_count_30d, collection_count_30d, favorite_count_30d, rating_count, value_score, demand_score, figure_name, slug_tr, slug_en, figure_number, figure_code, character_name, short_description_tr, short_description_en, figure_role, figure_type, price_updated_at, rarity_level, accessory_count, main_color, thumbnail_url, is_featured, is_active, is_published, series(id, title, slug, slug_tr, slug_en, title_en, category, series_no, release_year, created_at)')
     .not('value_score', 'is', null) // Sadece skoru hesaplanmışlar
     .order('value_score', { ascending: false })
     .limit(limit * 2); // Havuzu azıcık geniş tut, tekrarı önlemek için JS ile kırpacağız
@@ -175,7 +175,7 @@ export const getSeriesBySlug = cache(async (slug: string) => {
   const supabase = await createClient();
   const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
   
-  let query = supabase.from('series').select('id, name, slug_tr, slug_en, description, description_en, is_active, release_year, category, category_main, cover_image_url, banner_image_url, blocks, series_no, rarity, figure_count, is_published, total_views, title, title_en');
+  let query = supabase.from('series').select('id, created_at, title, description, category, series_no, brand, cover_image_url, figure_count, total_views, daily_views, release_month, release_year, description_2, hero_image_url, box_image_url, collector_image_url, collector_note, slug, general_image_url, rarity, content_blocks, title_en, description_blocks_en, slug_en, meta_title_en, meta_description_en, series_name, slug_tr, product_code, category_main, category_sub, release_date, release_month_tr, release_month_en, is_limited_production, is_special_production, summary_tr, summary_en, collector_comment_tr, collector_comment_en, is_active, is_published, meta_title, meta_description');
   if (isUUID) {
     query = query.eq('id', slug);
   } else {
@@ -211,7 +211,7 @@ export const getMinifigureBySlug = cache(async (slug: string) => {
   const queryCol = isUUID ? 'id' : 'slug';
 
   const { data, error } = await supabase
-    .from('minifigures').select('id, created_at, series_id, name, brand, category, series_name, series_no, figure_no, role, type, code, piece_count, body_material, rarity, value_usd, release_year, images, total_views, daily_views, custom_attributes, description, release_month, slug, affiliate_link, name_en, series_name_en, role_en, description_en, min_price, max_price, avg_price, rarity_score, series_score, view_count_30d, collection_count_30d, favorite_count_30d, rating_count, value_score, demand_score, figure_name, slug_tr, slug_en, figure_number, figure_code, character_name, short_description_tr, short_description_en, figure_role, figure_type, price_updated_at, rarity_level, accessory_count, main_color, thumbnail_url, is_featured, is_active, is_published, series(id, name, slug_tr, slug_en, title, title_en)')
+    .from('minifigures').select('id, created_at, series_id, name, brand, category, series_name, series_no, figure_no, role, type, code, piece_count, body_material, rarity, value_usd, release_year, images, total_views, daily_views, custom_attributes, description, release_month, slug, affiliate_link, name_en, series_name_en, role_en, description_en, min_price, max_price, avg_price, rarity_score, series_score, view_count_30d, collection_count_30d, favorite_count_30d, rating_count, value_score, demand_score, figure_name, slug_tr, slug_en, figure_number, figure_code, character_name, short_description_tr, short_description_en, figure_role, figure_type, price_updated_at, rarity_level, accessory_count, main_color, thumbnail_url, is_featured, is_active, is_published, series(id, title, slug, slug_tr, slug_en, title_en, category, series_no, release_year, created_at)')
     .eq(queryCol, slug)
     .single();
 
@@ -244,7 +244,7 @@ export const getFigurePriceHistory = cache(async (figureId: string) => {
 export const getNewsBySlug = cache(async (slug: string) => {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from('news').select('id, title, slug, summary, content, cover_image_url, status, total_views, daily_views, min_read, created_at, cover_image_vertical_url, title_en, content_blocks_en')
+    .from('news').select('id, title, slug, slug_en, summary, content, cover_image_url, status, total_views, daily_views, min_read, created_at, cover_image_vertical_url, title_en, content_blocks_en, meta_title_en, meta_description_en, meta_title, meta_description')
     .eq('slug', slug)
     .single();
 
@@ -256,7 +256,7 @@ export const getNewsBySlug = cache(async (slug: string) => {
 export const getAllNews = cache(async () => {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from('news').select('id, title, slug, summary, content, cover_image_url, status, total_views, daily_views, min_read, created_at, cover_image_vertical_url, title_en, content_blocks_en')
+    .from('news').select('id, title, slug, slug_en, summary, content, cover_image_url, status, total_views, daily_views, min_read, created_at, cover_image_vertical_url, title_en, content_blocks_en, meta_title_en, meta_description_en, meta_title, meta_description')
     .eq('status', 'published')
     .order('created_at', { ascending: false });
 
@@ -385,7 +385,7 @@ export const getMinifigurePriceHistoryBatch = cache(async (figureIds: string[]) 
 
 export const getSeriesListItems = cache(async (filters: { category?: string, series?: string } = {}, sortParam: string = 'newest') => {
   const supabase = await createClient();
-  let query = supabase.from('series').select('id, name, slug_tr, slug_en, description, description_en, is_active, release_year, category, category_main, cover_image_url, banner_image_url, blocks, series_no, rarity, figure_count, is_published, total_views, title, title_en');
+  let query = supabase.from('series').select('id, created_at, title, description, category, series_no, brand, cover_image_url, figure_count, total_views, daily_views, release_month, release_year, description_2, hero_image_url, box_image_url, collector_image_url, collector_note, slug, general_image_url, rarity, content_blocks, title_en, description_blocks_en, slug_en, meta_title_en, meta_description_en, series_name, slug_tr, product_code, category_main, category_sub, release_date, release_month_tr, release_month_en, is_limited_production, is_special_production, summary_tr, summary_en, collector_comment_tr, collector_comment_en, is_active, is_published, meta_title, meta_description');
 
   if (filters.category && filters.category !== 'all') {
     query = query.eq('category', filters.category);
@@ -404,7 +404,7 @@ export const getSeriesListItems = cache(async (filters: { category?: string, ser
 
 export const getMinifigureListItems = cache(async (filters: { series?: string; role?: string; type?: string; rarity?: string } = {}, limit: number = 1000, offset: number = 0) => {
   const supabase = await createClient();
-  let query = supabase.from('minifigures').select('id, created_at, series_id, name, brand, category, series_name, series_no, figure_no, role, type, code, piece_count, body_material, rarity, value_usd, release_year, images, total_views, daily_views, custom_attributes, description, release_month, slug, affiliate_link, name_en, series_name_en, role_en, description_en, min_price, max_price, avg_price, rarity_score, series_score, view_count_30d, collection_count_30d, favorite_count_30d, rating_count, value_score, demand_score, figure_name, slug_tr, slug_en, figure_number, figure_code, character_name, short_description_tr, short_description_en, figure_role, figure_type, price_updated_at, rarity_level, accessory_count, main_color, thumbnail_url, is_featured, is_active, is_published, series(id, name, slug_tr, slug_en, title, title_en)', { count: 'exact' });
+  let query = supabase.from('minifigures').select('id, created_at, series_id, name, brand, category, series_name, series_no, figure_no, role, type, code, piece_count, body_material, rarity, value_usd, release_year, images, total_views, daily_views, custom_attributes, description, release_month, slug, affiliate_link, name_en, series_name_en, role_en, description_en, min_price, max_price, avg_price, rarity_score, series_score, view_count_30d, collection_count_30d, favorite_count_30d, rating_count, value_score, demand_score, figure_name, slug_tr, slug_en, figure_number, figure_code, character_name, short_description_tr, short_description_en, figure_role, figure_type, price_updated_at, rarity_level, accessory_count, main_color, thumbnail_url, is_featured, is_active, is_published, series(id, title, slug, slug_tr, slug_en, title_en, category, series_no, release_year, created_at)', { count: 'exact' });
 
   if (filters.series && filters.series !== 'all') {
     query = query.eq('series_id', filters.series); 

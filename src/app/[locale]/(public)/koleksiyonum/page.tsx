@@ -82,7 +82,7 @@ export default async function KoleksiyonumPage({
   // Geliştirilmiş Progress datası: En üste en dolu olanlar gelir
   const activeSeriesProgress = (cachedStats || []).map(stat => ({
       seriesId: stat.series_id,
-      seriesTitle: stat.series_name || 'Bilinmeyen Seri',
+      seriesTitle: (stat as any).series_name || 'Bilinmeyen Seri',
       haveCount: stat.owned_count,
       maxCount: Math.max(1, stat.total_count),
       percent: Number(stat.completion_percent)
