@@ -22,7 +22,8 @@
     "MembershipAgreement": "Üyelik Sözleşmesi",
     "CopyrightViolation": "Hak İhlali Bildirimi",
     "CopyrightText": "© 2024 - 2026 • Tüm hakları saklıdır.",
-    "BrandText": "LEGO®, LEGO Grubu'nun tescilli ticari markasıdır. Minifigülerim sitesi bağımsız bir koleksiyoncu platformudur."
+    "BrandText": "LEGO®, LEGO Grubu'nun tescilli ticari markasıdır.",
+    "BrandSubText": "Minifigülerim sitesi bağımsız bir koleksiyoncu platformudur."
   },
   "Test": {
     "DenemeKey": "Bu bir deneme satırıdır. Yapay zeka bunu çeviriyordu.",

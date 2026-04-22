@@ -191,7 +191,6 @@ export default async function Home() {
                 </div>
                 <div className="flex flex-col">
                   <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">Haberler</h2>
-                  <span className="text-[9px] md:text-xs font-bold uppercase tracking-widest text-[#D22B2B] mt-0.5 md:mt-1">GÜNCEL BLOG</span>
                 </div>
               </div>
             }
