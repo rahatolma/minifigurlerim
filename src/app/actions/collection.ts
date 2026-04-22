@@ -14,13 +14,14 @@ async function targetedRevalidate(minifigureId: string) {
     const { data: fig } = await supabase.from('minifigures').select('slug_tr, slug_en, series(slug_tr, slug_en)').eq('id', minifigureId).single();
     
     if (fig) {
-        if (fig.series?.slug_tr && fig.slug_tr) {
-            revalidatePath(`/tr/figurler/${fig.series.slug_tr}/${fig.slug_tr}`);
-            revalidatePath(`/tr/figurler/${fig.series.slug_tr}`);
+        const seriesData: any = Array.isArray(fig.series) ? fig.series[0] : fig.series;
+        if (seriesData?.slug_tr && fig.slug_tr) {
+            revalidatePath(`/tr/figurler/${seriesData.slug_tr}/${fig.slug_tr}`);
+            revalidatePath(`/tr/figurler/${seriesData.slug_tr}`);
         }
-        if (fig.series?.slug_en && fig.slug_en) {
-            revalidatePath(`/en/figurler/${fig.series.slug_en}/${fig.slug_en}`);
-            revalidatePath(`/en/figurler/${fig.series.slug_en}`);
+        if (seriesData?.slug_en && fig.slug_en) {
+            revalidatePath(`/en/figurler/${seriesData.slug_en}/${fig.slug_en}`);
+            revalidatePath(`/en/figurler/${seriesData.slug_en}`);
         }
     }
   } catch (err) {
