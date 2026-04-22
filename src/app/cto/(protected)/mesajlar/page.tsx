@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabase } from '@/utils/supabase/client';
 import toast from 'react-hot-toast';
+import { getContactMessagesAdmin, deleteContactMessageAdmin } from '@/app/cto/actions/message';
 
 export default function MessagesAdminPage() {
   const [messages, setMessages] = useState<any[]>([]);
@@ -14,30 +14,23 @@ export default function MessagesAdminPage() {
 
   const fetchMessages = async () => {
     setLoading(true);
-    const { data: contactData, error } = await supabase
-      .from('contact_messages')
-      .select('*')
-      .order('created_at', { ascending: false });
+    const { data, error } = await getContactMessagesAdmin();
 
     if (error) {
-      toast.error('Mesajlar yüklenirken hata oluştu!');
-      console.error(error);
+      toast.error(error);
     } else {
-      setMessages(contactData || []);
+      setMessages(data || []);
     }
     setLoading(false);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: number | string) => {
     if (!confirm('Bu mesajı silmek istediğinize emin misiniz?')) return;
 
-    const { error } = await supabase
-      .from('contact_messages')
-      .delete()
-      .eq('id', id);
+    const { error } = await deleteContactMessageAdmin(id);
 
     if (error) {
-      toast.error('Silinirken hata oluştu');
+      toast.error(error);
     } else {
       toast.success('Mesaj silindi');
       setMessages(messages.filter(msg => msg.id !== id));
