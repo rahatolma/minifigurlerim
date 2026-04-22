@@ -25,26 +25,36 @@ export interface MarketplaceTrackingProps extends FigureTrackingProps {
 }
 
 // --- Best-Effort Client-Side Deduplication ---
-// Kullanıcının aynı figürü kısa süre içinde peş peşe görüntülemesini/tıklamasını engelleyerek spam oluşturmasını önler.
-const EVENT_CACHE = new Map<string, number>();
+// Kullanıcının aynı figürü kısa süre içinde peş peşe görüntülemesini/tıklamasını (F5 Spam dahil) engelleyerek spam oluşturmasını önler.
 const DEDUP_WINDOW_MS = 10000; // 10 saniye içinde aynı event aynı payload ile tekrar gönderilemez.
 
 function isDuplicate(eventName: AnalyticsEvent, dedupKey: string): boolean {
-    const key = `${eventName}_${dedupKey}`;
+    const key = `posthog_dedup_${eventName}_${dedupKey}`;
     const now = Date.now();
-    const lastFired = EVENT_CACHE.get(key);
     
-    if (lastFired && (now - lastFired) < DEDUP_WINDOW_MS) {
-        return true; // Duplicate caught
+    if (typeof window === 'undefined') return false; // Sadece client'ta çalışır
+
+    try {
+        const lastFiredStr = sessionStorage.getItem(key);
+        if (lastFiredStr) {
+            const lastFired = parseInt(lastFiredStr, 10);
+            if (now - lastFired < DEDUP_WINDOW_MS) {
+                return true; // Duplicate caught (Session bazlı)
+            }
+        }
+        
+        sessionStorage.setItem(key, now.toString());
+    } catch (e) {
+        // sessionStorage kullanılamıyorsa (örn. gizli sekme sınırları) dedup yapılamaz, evente izin ver
+        console.error('[Analytics] SessionStorage not available for deduplication', e);
     }
     
-    EVENT_CACHE.set(key, now);
     return false;
 }
 
 // --- Tracking Helpers ---
 
-export const trackViewFigure = (props: FigureTrackingProps) => {
+export const trackViewFigure = (props: FigureTrackingProps, posthogInstance?: any) => {
     // Dedup key: figure_id (Bir figür bir defa detay sayfası açıldığında sayılır)
     if (isDuplicate('view_figure', props.figure_id)) {
         console.debug('[Analytics] Deduplicated: view_figure', props.figure_id);
@@ -52,7 +62,8 @@ export const trackViewFigure = (props: FigureTrackingProps) => {
     }
     
     console.log('[Analytics] Fired: view_figure', props);
-    posthog.capture('view_figure', { ...props });
+    const ph = posthogInstance || posthog;
+    ph.capture('view_figure', { ...props });
 };
 
 export const trackAddToCollection = (props: FigureTrackingProps) => {
