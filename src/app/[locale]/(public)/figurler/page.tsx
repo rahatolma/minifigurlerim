@@ -1,9 +1,11 @@
-import { getAllMinifigures, getAllSeries } from '@/services/dal';
+import { getMinifigureListItems, getMinifigureFilterOptions, getAllSeries } from '@/services/dal';
 import FigureCard from '@/components/ui/FigureCard';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import Link from 'next/link';
 import FiguresFilterClient from '@/components/ui/FiguresFilterClient';
 import DragScrollContainer from '@/components/ui/DragScrollContainer';
+import { mapFigureForCard } from '@/utils/figureMapper';
+import FiguresListContainer from '@/components/ui/FiguresListContainer';
 
 
 const MINIFIGURE_EVOLUTION = [
@@ -32,36 +34,41 @@ export default async function FiguresPage({
   const selectedRole = (resolvedParams?.role as string) || 'all';
   const selectedType = (resolvedParams?.type as string) || 'all';
   const selectedRarity = (resolvedParams?.rarity as string) || 'all';
+  const currentPage = parseInt((resolvedParams?.page as string) || '1', 10);
+  const itemsPerPage = 36;
 
-  // 1. Verileri DAL Üzerinden Çek
-  const allFiguresData = await getAllMinifigures();
-  const seriesList = await getAllSeries();
+  // 1. Statik Kapsüler ve Filtre Verilerini Paralel Çek
+  const [seriesList, filterOptions] = await Promise.all([
+     getAllSeries(),
+     getMinifigureFilterOptions()
+  ]);
   
-  let allFigures = allFiguresData || [];
+  const { roles, types, rarities } = filterOptions;
 
-  // Dinamik Filtre Seçeneklerini Oluştur (null veya boş string eyle)
-  const roles = Array.from(new Set(allFigures.map(f => f.role).filter(Boolean))) as string[];
-  const types = Array.from(new Set(allFigures.map(f => f.type).filter(Boolean))) as string[];
-  const rarities = Array.from(new Set(allFigures.map(f => f.rarity).filter(Boolean))) as string[];
+  // 2. Data'yı DAL üzerinden Filtrelenmiş ve Projeksiyonlanmış Halde Dar Çek
+  const filtersToApply = {
+    series: selectedSeries,
+    role: selectedRole,
+    type: selectedType,
+    rarity: selectedRarity
+  };
+  
+  const fetchedFigures = await getMinifigureListItems(filtersToApply);
+  let allFigures = fetchedFigures?.data || [];
 
-  // Filtreleme (Client taraflı URL parametreleri ile)
-  allFigures = allFigures.filter(f => {
-    let match = true;
-    if (selectedSeries !== 'all' && f.series_id !== selectedSeries) match = false;
-    if (selectedRole !== 'all' && f.role !== selectedRole) match = false;
-    if (selectedType !== 'all' && f.type !== selectedType) match = false;
-    if (selectedRarity !== 'all' && f.rarity !== selectedRarity) match = false;
-    return match;
-  });
-
-  // Sıralama (Sort)
+  // Sıralama (Sort) hala Node JS katmanında yapılıyor ancak liste daraltıldığı için maliyetsizdir. İstenirse SQL Order da eklenebilir.
   if (sortParam === 'newest') {
       allFigures = allFigures.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   } else if (sortParam === 'oldest') {
       allFigures = allFigures.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
   } else if (sortParam === 'popular') {
-      allFigures = allFigures.sort((a, b) => (b.total_views || 0) - (a.total_views || 0));
+      allFigures = allFigures.sort((a, b) => ((b as any).total_views || 0) - ((a as any).total_views || 0));
   }
+
+  // Initial Server Rendered Batch for the Component (filtering out hard failures)
+  const initialClientFigures = allFigures
+     .map(row => mapFigureForCard(row))
+     .filter((fig): fig is NonNullable<typeof fig> => fig !== null);
 
   return (
     <div className="bg-[#fcfcfc] min-h-screen pb-32">
@@ -130,29 +137,11 @@ export default async function FiguresPage({
                     <p className="text-sm font-medium text-gray-500 max-w-sm">Mevcut filtrelere uyan bir LEGO figürü bulunmuyor. Diğer seçenekleri deneyebilirsin.</p>
                 </div>
             ) : (
-                <>
-                    {/* Görsel 1'deki gibi 3'lü kolon (lg:grid-cols-3), 20px gap (gap-5) */}
-                    <div className="flex flex-row snap-x snap-mandatory overflow-x-auto pb-8 -mx-8 px-8 gap-4 md:grid md:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 md:gap-5 md:overflow-visible md:snap-none md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                        {allFigures.map(fig => (
-                           <div key={fig.id} className="snap-center snap-always shrink-0 w-[90vw] md:w-auto flex flex-col justify-stretch">
-                                <FigureCard 
-                                    id={fig.id}
-                                    slug={fig.slug}
-                                    name={fig.name}
-                                    seriesName={fig.series_name || 'Bilinmeyen Seri'}
-                                    imageUrl={fig.images && fig.images.length > 0 ? fig.images[0] : 'https://via.placeholder.com/300x400.png?text=Görsel+Yok'}
-                                    year={fig.release_year}
-                                    rarity={fig.rarity}
-                                    price={fig.value_usd}
-                                    minPrice={fig.min_price}
-                                    maxPrice={fig.max_price}
-                                    valueScore={fig.value_score}
-                                    demandScore={fig.demand_score}
-                                />
-                           </div>
-                        ))}
-                    </div>
-                </>
+                <FiguresListContainer 
+                   initialFigures={initialClientFigures} 
+                   totalCount={fetchedFigures.count || 0} 
+                   filters={filtersToApply} 
+                />
             )}
 
 

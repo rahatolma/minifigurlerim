@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '@/utils/supabase/client';
+import { getUserCollectionStatus, getUserSeriesProgress } from '@/services/client_dal';
 import { useAuth } from './AuthProvider';
 
 interface SeriesProgress {
@@ -34,29 +34,22 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
     setLoading(true);
     
     // 1. Minifigure have/want durumları
-    const { data: collectData } = await supabase
-      .from('user_collections')
-      .select('status, minifigure_id')
-      .eq('user_id', userId);
-      
-    const statusMap: Record<string, 'have' | 'want'> = {};
-    if (collectData) {
-      collectData.forEach(c => {
-        if (c.minifigure_id && c.status) {
-          statusMap[c.minifigure_id] = c.status as 'have' | 'want';
-        }
-      });
-    }
-    setUserStatusMap(statusMap);
+    try {
+      const collectData = await getUserCollectionStatus(userId);
+      const statusMap: Record<string, 'have' | 'want'> = {};
+      if (collectData) {
+        collectData.forEach(c => {
+          if (c.minifigure_id && c.status) {
+            statusMap[c.minifigure_id] = c.status as 'have' | 'want';
+          }
+        });
+      }
+      setUserStatusMap(statusMap);
 
-    // 2. Seri tamamlanma oranları
-    const { data: statsData } = await supabase
-      .from('user_series_stats')
-      .select('*')
-      .eq('user_id', userId);
-      
-    const progressMap: Record<string, SeriesProgress> = {};
-    if (statsData) {
+      // 2. Seri tamamlanma oranları
+      const statsData = await getUserSeriesProgress(userId);
+      const progressMap: Record<string, SeriesProgress> = {};
+      if (statsData) {
       statsData.forEach(stat => {
         progressMap[stat.series_id] = {
           percent: Number(stat.completion_percent),
@@ -66,7 +59,9 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
       });
     }
     setUserSeriesProgressMap(progressMap);
-    
+    } catch (e) {
+      console.error("Failed fetching gamification data", e);
+    }
     setLoading(false);
   };
 

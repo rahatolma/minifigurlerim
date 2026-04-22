@@ -10,36 +10,16 @@ import Link from 'next/link';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import { LayoutGrid, Package, TrendingUp } from 'lucide-react';
 import AuthCTA from '@/components/ui/AuthCTA';
-import { getHomeSliders, getLatestSeries, getLatestFigures, getLatestNews, getPreviewFiguresForSeries, getTopDemandedFigures, getTopValuedFigures } from '@/services/dal';
+import { getHomepageData } from '@/services/homepageAggregation';
 
 export const revalidate = 86400; // Dinamik sayfa
 
 export default async function Home() {
-  const activeSliders = await getHomeSliders();
-  const latestSeries = await getLatestSeries() || [];
-  const latestFigures = await getLatestFigures() || [];
-  const latestNews = await getLatestNews() || [];
-
-  // VALUE & DEMAND ENGINE YÜKLEMELERİ
-  const rawTopDemanded = await getTopDemandedFigures(6) || [];
-  const rawTopValued = await getTopValuedFigures(6) || [];
-  
-  // Çeşitlilik kontrolü: Demanded'da çıkanlar Valued'da çıkmasın (eğer yetiyorsa)
-  const topValued = rawTopValued.filter((v: any) => !rawTopDemanded.find((d: any) => d.id === v.id)).slice(0, 6);
-  // Eğer filtre yüzünden hiç eleman kalmazsa veya 2'den az kalırsa (imkansız ama tedbir) ilk gelenleri direkt alalım.
-  const finalTopValued = topValued.length >= 2 ? topValued : rawTopValued.slice(0, 6);
-
-  // Series fig stats to display the counts correctly in the Series Carousel
-  const allFigs = await getPreviewFiguresForSeries();
-  const seriesFigStats: Record<string, { count: number, latestName: string | null }> = {};
-  if (allFigs) {
-     allFigs.forEach((f: any) => {
-         if (!seriesFigStats[f.series_id]) {
-             seriesFigStats[f.series_id] = { count: 0, latestName: f.name };
-         }
-         seriesFigStats[f.series_id].count += 1;
-     });
-  }
+  const {
+    activeSliders, latestSeries, latestFigures: mappedLatestFigures,
+    topDemanded: mappedTopDemanded, topValued: finalTopValued,
+    news: latestNews, seriesFigStats, degradedBlocks
+  } = await getHomepageData();
 
   return (
     <div className="w-full flex-col overflow-hidden">
@@ -102,17 +82,17 @@ export default async function Home() {
             }
           >
             {latestSeries.map(series => (
-              <SeriesCard  
+              <SeriesCard 
                 key={series.id}
                 id={series.slug || series.id}
                 title={series.title}
                 imageUrl={series.cover_image_url || 'https://via.placeholder.com/400x300.png?text=Görsel+Yok'}
-                year={series.release_year || (series.created_at ? new Date(series.created_at).getFullYear() : '2010')}
+                year={series.release_year || '2024'}
                 seriesNo={series.series_no}
-                category={series.category || 'CMF'}
-                totalFigures={series.figure_count || seriesFigStats[series.id]?.count || 0}
+                category={series.category || 'Minifigures'}
+                totalFigures={series.figure_count || (seriesFigStats ? seriesFigStats[series.id]?.count : 0) || 0}
                 rarity={series.rarity || 'Yaygın'}
-                latestFigureName={seriesFigStats[series.id]?.latestName || null}
+                latestFigureName={seriesFigStats ? seriesFigStats[series.id]?.latestName : null}
               />
             ))}
             {latestSeries.length === 0 && (
@@ -136,24 +116,13 @@ export default async function Home() {
               <Link href="/figurler" className="bg-[#D22B2B] text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">Tüm Figürler</Link>
             }
           >
-            {latestFigures.map(fig => (
+            {mappedLatestFigures.map(fig => (
               <FigureCard  
                 key={fig.id}
-                id={fig.id}
-                slug={fig.slug}
-                name={fig.name}
-                seriesName={(fig as any).series?.title || 'Bilinmeyen Seri'}
-                imageUrl={(fig.images && fig.images.length > 0) ? fig.images[0] : 'https://via.placeholder.com/300x400.png?text=Görsel+Yok'}
-                year={fig.release_year}
-                rarity={fig.rarity}
-                price={fig.value_usd}
-                minPrice={fig.min_price}
-                maxPrice={fig.max_price}
-                valueScore={fig.value_score}
-                demandScore={fig.demand_score}
+                {...fig}
               />
             ))}
-            {latestFigures.length === 0 && (
+            {mappedLatestFigures.length === 0 && (
               <p className="text-gray-400 font-bold px-8 mt-8 w-full text-center">Henüz sistemde hiç figür yok.</p>
             )}
           </ItemCarousel>
@@ -173,24 +142,13 @@ export default async function Home() {
                <Link href="/figurler" className="bg-[#D22B2B] text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">Hepsini Keşfet</Link>
              }
           >
-             {rawTopDemanded.map((fig: any) => (
+             {mappedTopDemanded.map(fig => (
                 <FigureCard  
                   key={fig.id}
-                  id={fig.id}
-                  slug={fig.slug}
-                  name={fig.name}
-                  seriesName={fig.series?.title || 'Bilinmeyen Seri'}
-                  imageUrl={(fig.images && fig.images.length > 0) ? fig.images[0] : 'https://via.placeholder.com/300x400.png?text=Görsel+Yok'}
-                  year={fig.release_year}
-                  rarity={fig.rarity}
-                  price={fig.value_usd}
-                  minPrice={fig.min_price}
-                  maxPrice={fig.max_price}
-                  valueScore={fig.value_score}
-                  demandScore={fig.demand_score}
+                  {...fig}
                 />
              ))}
-             {rawTopDemanded.length === 0 && (
+             {mappedTopDemanded.length === 0 && (
                 <p className="text-gray-400 font-bold px-8 mt-8 w-full text-center">Henüz talep verisi hesaplanmadı.</p>
              )}
           </ItemCarousel>
@@ -211,21 +169,10 @@ export default async function Home() {
                <Link href="/figurler" className="bg-[#D22B2B] text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">Hepsini Keşfet</Link>
              }
           >
-             {finalTopValued.map((fig: any) => (
+             {finalTopValued.map(fig => (
                 <FigureCard  
                   key={fig.id}
-                  id={fig.id}
-                  slug={fig.slug}
-                  name={fig.name}
-                  seriesName={fig.series?.title || 'Bilinmeyen Seri'}
-                  imageUrl={(fig.images && fig.images.length > 0) ? fig.images[0] : 'https://via.placeholder.com/300x400.png?text=Görsel+Yok'}
-                  year={fig.release_year}
-                  rarity={fig.rarity}
-                  price={fig.value_usd}
-                  minPrice={fig.min_price}
-                  maxPrice={fig.max_price}
-                  valueScore={fig.value_score}
-                  demandScore={fig.demand_score}
+                  {...fig}
                 />
              ))}
              {finalTopValued.length === 0 && (

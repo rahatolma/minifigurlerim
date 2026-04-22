@@ -1,0 +1,69 @@
+SERIES.csv -> series tablosu
+- series_name -> series_name
+- series_slug_tr -> slug_tr
+- series_slug_en -> slug_en
+- series_number -> series_number
+- product_code -> product_code
+- category_main -> category_main
+- category_sub -> category_sub
+- release_date -> release_date
+- release_year -> release_year
+- release_month_tr -> release_month_tr
+- figure_count -> figure_count
+- manual_rarity -> manual_rarity
+- computed_rarity -> computed_rarity
+- final_rarity -> final_rarity
+- is_limited_production -> is_limited_production
+- is_special_production -> is_special_production
+- summary_tr -> summary_tr
+- summary_en -> summary_en
+- collector_comment_tr -> collector_comment_tr
+- collector_comment_en -> collector_comment_en
+- hero_image_url -> hero_image_url
+- cover_image_url -> cover_image_url
+- is_active -> is_active
+- is_published -> is_published
+
+MINIFIGURES.csv -> minifigures tablosu
+- series_name -> sadece kontrol alanı, import sonrası opsiyonel
+- series_slug_tr -> series eşleşmesi için kullanılabilir
+- series_slug_en -> series eşleşmesi için kullanılabilir
+- release_date -> opsiyonel kontrol alanı
+- figure_name -> figure_name
+- figure_slug_tr -> slug_tr
+- figure_slug_en -> slug_en
+- figure_number -> figure_number
+- figure_code -> figure_code
+- character_name -> character_name
+- short_description_tr -> short_description_tr
+- short_description_en -> short_description_en
+- figure_role -> figure_role
+- figure_type -> figure_type
+- min_price -> min_price
+- max_price -> max_price
+- avg_price -> avg_price
+- price_updated_at -> price_updated_at
+- rarity_level -> rarity_level
+- rarity_score -> rarity_score
+- series_score -> series_score
+- value_score -> value_score
+- demand_score -> demand_score
+- view_count_30d -> view_count_30d
+- collection_count_30d -> collection_count_30d
+- favorite_count_30d -> favorite_count_30d
+- rating_count -> rating_count
+- piece_count -> piece_count
+- accessory_count -> accessory_count
+- main_color -> main_color
+- image_url -> image_url
+- thumbnail_url -> thumbnail_url
+- is_featured -> is_featured
+- is_active -> is_active
+- is_published -> is_published
+
+NOTLAR
+1. CSV dosyaları UTF-8 BOM ile kaydedildi; Excel Türkçe karakterleri düzgün açar.
+2. Mevcut tek fiyat kolonundan min_price=max_price=avg_price üretildi.
+3. Boş figure_code alanları 'gen-URUNKODU-FIGURNO' formatında üretildi.
+4. Rarity serilerde boş bırakıldı; mevcut hibrit rarity motoru sonradan beslesin.
+5. series_name ve slug alanları kontrol için dosyada bırakıldı; import sırasında foreign key eşleşmesi için kullanılabilir.

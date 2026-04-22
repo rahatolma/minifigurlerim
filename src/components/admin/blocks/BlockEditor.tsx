@@ -12,7 +12,7 @@ import {
   SeriesShowcaseBlock
 } from '@/types/content-blocks';
 import RichTextEditor from '@/components/admin/RichTextEditor';
-import { supabase } from '@/utils/supabase/client';
+import { uploadImageClient } from '@/services/client_dal';
 import toast from 'react-hot-toast';
 import { Loader2, ImagePlus, Trash2, ArrowUp, ArrowDown, Plus } from 'lucide-react';
 
@@ -96,13 +96,8 @@ export default function BlockEditor({ blocks, onChange }: Props) {
       const fileName = `${generateId()}.${fileExt}`;
       const filePath = `series/blocks/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from('minifigure-images')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
+      const { publicUrl } = await uploadImageClient('minifigure-images', filePath, file);
       
-      const { data: { publicUrl } } = supabase.storage.from('minifigure-images').getPublicUrl(filePath);
       
       updateBlockData(blockId, { [dataKey]: publicUrl });
       toast.success('Görsel başarıyla yüklendi.');

@@ -11,6 +11,7 @@ import BlockRenderer from '@/components/blocks/BlockRenderer';
 import { formatBrandText } from '@/utils/textFormatting';
 import FloatingSeriesNav from '@/components/ui/FloatingSeriesNav';
 import HeroImage from '@/components/ui/HeroImage';
+import { mapFigureForCard } from '@/utils/figureMapper';
 
 // ... (code omitted for brevity to apply changes via multiple replacements, wait, I can just replace specific lines)
 
@@ -96,9 +97,9 @@ export default async function SeriesDetail({
   }
 
   const title = locale === 'en' && series.title_en ? series.title_en : series.title;
-  const content_blocks = locale === 'en' && series.content_blocks_en ? series.content_blocks_en : series.content_blocks;
+  const content_blocks = locale === 'en' && series.description_blocks_en ? series.description_blocks_en : series.content_blocks;
   
-  const isFallback = locale === 'en' && !series.title_en && !series.content_blocks_en;
+  const isFallback = locale === 'en' && !series.title_en && !series.description_blocks_en;
   const fallbackT = await getTranslations('Fallback');
   
   // Bu seriye ait figürleri çek
@@ -261,24 +262,11 @@ export default async function SeriesDetail({
         
         {figures && figures.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                {figures.map((fig: any) => (
-                    <FigureCard 
-                        key={fig.id} 
-                        id={fig.id}
-                        slug={fig.slug}
-                        name={fig.name}
-                        seriesName={title}
-                        seriesSlug={locale === 'en' && series.slug_en ? series.slug_en : series.slug}
-                        imageUrl={(fig.images && fig.images.length > 0) && fig.images[0] ? fig.images[0] : ''}
-                        year={fig.release_year}
-                        rarity={fig.rarity}
-                        price={fig.value_usd}
-                        minPrice={fig.min_price}
-                        maxPrice={fig.max_price}
-                        valueScore={fig.value_score}
-                        demandScore={fig.demand_score}
-                    />
-                ))}
+                {figures.map((rawFig: any) => mapFigureForCard(rawFig))
+                        .filter((mappedCard): mappedCard is NonNullable<typeof mappedCard> => mappedCard !== null)
+                        .map((mappedCard) => (
+                          <FigureCard key={mappedCard.id} {...mappedCard} />
+                        ))}
             </div>
         ) : (
             <div className="flex flex-col items-center justify-center p-24 border-2 border-dashed border-gray-200 rounded-2xl bg-gray-50 text-center w-full shadow-sm mt-4">

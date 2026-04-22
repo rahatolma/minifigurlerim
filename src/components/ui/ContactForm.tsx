@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { supabase } from '@/utils/supabase/client';
+import { submitContactFormClient } from '@/services/client_dal';
 import toast from 'react-hot-toast';
 
 export default function ContactForm() {
@@ -23,8 +23,7 @@ export default function ContactForm() {
     };
 
     try {
-      const { error } = await supabase.from('contact_messages').insert([data]);
-      if (error) throw error;
+      await submitContactFormClient(data);
       
       toast.success('Mesajınız başarıyla iletildi. En kısa sürede dönüş yapacağız!');
       

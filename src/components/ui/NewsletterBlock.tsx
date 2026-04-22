@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { supabase } from '@/utils/supabase/client';
+import { subscribeNewsletterClient } from '@/services/client_dal';
 import toast from 'react-hot-toast';
 
 export default function NewsletterBlock() {
@@ -14,22 +14,15 @@ export default function NewsletterBlock() {
 
     setLoading(true);
     try {
-      const { error } = await supabase
-        .from('newsletter_subscribers')
-        .insert([{ email }]);
-
-      if (error) {
-        if (error.code === '23505') {
-          toast.success('Zaten abonelik kaydınız bulunuyor! Yeniden göndermenize gerek yok 🚀');
-        } else {
-          throw error;
-        }
-      } else {
-        toast.success('Bültene başarıyla abone oldunuz! Sizi bilgilendirmeye devam edeceğiz.');
-        setEmail('');
-      }
+      await subscribeNewsletterClient(email);
+      toast.success('Bültene başarıyla abone oldunuz! Sizi bilgilendirmeye devam edeceğiz.');
+      setEmail('');
     } catch (err: any) {
-      toast.error('Kayıt olurken bir hata oluştu: ' + err.message);
+      if (err.code === '23505') {
+        toast.success('Zaten abonelik kaydınız bulunuyor! Yeniden göndermenize gerek yok 🚀');
+      } else {
+        toast.error('Kayıt olurken bir hata oluştu: ' + err.message);
+      }
     } finally {
       setLoading(false);
     }

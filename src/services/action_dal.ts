@@ -143,7 +143,7 @@ export const toggleUserCollectionDal = async (userId: string, minifigureId: stri
              let ownedCount = 0;
              if (figIds.length > 0) {
                  const { count } = await supabaseAdmin.from('user_collections')
-                     .select('*', { count: 'exact', head: true })
+                     .select(String('id'), { count: 'exact', head: true })
                      .eq('user_id', userId)
                      .eq('status', 'have')
                      .in('minifigure_id', figIds);
@@ -287,8 +287,7 @@ export const getAdminBorsaFiguresDal = async () => {
 export const getAdminFaqDal = async (id: string) => {
   const supabaseAdmin = getAdminClient();
   const { data } = await supabaseAdmin
-    .from('faqs')
-    .select('*')
+    .from('faqs').select(String('id, question, answer, sort_order, is_active, created_at, question_en, answer_en, order_num'))
     .eq('id', id)
     .single();
   return data || null;
@@ -302,9 +301,9 @@ export const getAdminDashboardMetricsDal = async () => {
     { count: totalFigures },
     { count: totalCollections }
   ] = await Promise.all([
-    supabaseAdmin.from('series').select('*', { count: 'exact', head: true }),
-    supabaseAdmin.from('minifigures').select('*', { count: 'exact', head: true }),
-    supabaseAdmin.from('user_collections').select('*', { count: 'exact', head: true })
+    supabaseAdmin.from('series').select(String('id'), { count: 'exact', head: true }),
+    supabaseAdmin.from('minifigures').select(String('id'), { count: 'exact', head: true }),
+    supabaseAdmin.from('user_collections').select(String('id'), { count: 'exact', head: true })
   ]);
 
   const thirtyDaysAgo = new Date();
@@ -340,7 +339,7 @@ export const deleteUserFromDBAdminDal = async (userId: string) => {
 
 export const getUserDetailedInfoAdminDal = async (userId: string) => {
   const supabaseAdmin = getAdminClient();
-  const { data: profile, error: profileErr } = await supabaseAdmin.from('profiles').select('*').eq('id', userId).single();
+  const { data: profile, error: profileErr } = await supabaseAdmin.from('profiles').select(String('id, username, avatar_url, created_at, is_approved, role, full_name, age, email, is_admin')).eq('id', userId).single();
   if (profileErr) throw new Error(profileErr.message);
 
   const { data: collections } = await supabaseAdmin.from('user_collections')

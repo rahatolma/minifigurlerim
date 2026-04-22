@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { supabase } from '@/utils/supabase/client';
+import { getApprovedCommentsClient, submitCommentClient } from '@/services/client_dal';
 import { User, MessageSquare, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -23,15 +23,8 @@ export default function CommentsBlock({ entityType, entityId }: { entityType: st
 
   const fetchComments = async () => {
     try {
-      const { data, error } = await supabase
-        .from('comments')
-        .select('*')
-        .eq('entity_type', entityType)
-        .eq('entity_id', entityId)
-        .eq('status', 'approved') // Sadece onaylıları getir
-        .order('created_at', { ascending: false });
-
-      if (!error && data) {
+      const data = await getApprovedCommentsClient(entityType, entityId);
+      if (data) {
         setComments(data);
       }
     } catch (err) {
@@ -55,15 +48,8 @@ export default function CommentsBlock({ entityType, entityId }: { entityType: st
     setSubmitting(true);
     try {
       // Şimdilik test amaçlı otomatik 'approved' kaydediyoruz (İleride 'pending' yapılabilir)
-      const { error } = await supabase.from('comments').insert([{
-        entity_type: entityType,
-        entity_id: entityId,
-        user_name: form.user_name,
-        content: form.content,
-        status: 'approved'
-      }]);
+      await submitCommentClient(entityType, entityId, form.user_name, form.content);
 
-      if (error) throw error;
       
       toast.success('Yorumunuz başarıyla gönderildi!');
       setForm({ user_name: '', content: '' });
