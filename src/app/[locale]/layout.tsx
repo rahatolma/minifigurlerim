@@ -7,6 +7,7 @@ import "../globals.css";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { GamificationProvider } from "@/components/providers/GamificationProvider";
 import { Suspense } from "react";
+import { Analytics } from "@vercel/analytics/next";
 
 const sen = Sen({
   variable: "--font-sen",
@@ -69,6 +70,7 @@ export default async function RootLayout({
               }} 
             />
             {children}
+            <Analytics />
           </PostHogProvider>
           </GamificationProvider>
         </AuthProvider>
