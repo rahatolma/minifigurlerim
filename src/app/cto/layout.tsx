@@ -1,6 +1,7 @@
 
 import { Toaster } from 'react-hot-toast';
 import { Sen } from 'next/font/google';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import '../globals.css';
 
 const sen = Sen({
@@ -25,6 +26,7 @@ export default function AdminRootLayout({ children }: { children: React.ReactNod
           }} 
         />
         {children}
+        <SpeedInsights />
       </body>
     </html>
   );
