@@ -109,8 +109,10 @@ export default function FiguresListPage() {
         <div className="space-y-4">
           {Object.entries(groupedFigures)
             .sort((a, b) => {
-               const sampleA = a[1][0];
-               const sampleB = b[1][0];
+               const figsA = a[1] as any[];
+               const figsB = b[1] as any[];
+               const sampleA = figsA[0];
+               const sampleB = figsB[0];
                
                // Tarih Bilgilerini Al
                const yearA = Number(sampleA.series?.release_year || sampleA.release_year || 0);

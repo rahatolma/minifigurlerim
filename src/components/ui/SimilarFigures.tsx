@@ -4,10 +4,12 @@ import ItemCarousel from '@/components/ui/ItemCarousel';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import { mapFigureForCard } from '@/utils/figureMapper';
 
+import { FigureCardData } from '@/utils/figureMapper';
+
 export default function SimilarFigures({ figures, locale }: { figures: any[], locale: string }) {
     if (!figures || figures.length === 0) return null;
 
-    const mappedFigures = figures.map(mapFigureForCard).filter(Boolean);
+    const mappedFigures = figures.map(mapFigureForCard).filter((fig): fig is FigureCardData => fig !== null);
 
     return (
         <section className="bg-transparent py-[40px] border-t border-gray-100 mt-12 mb-12 relative">

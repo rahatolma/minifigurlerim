@@ -11,7 +11,7 @@ export function PostHogPageView() {
 
   useEffect(() => {
     // Sadece browser ortamında çalışır ve eğer init edildiyse event atar.
-    if (pathname && window.posthog) {
+    if (pathname && typeof window !== 'undefined') {
       let url = window.origin + pathname
       if (searchParams.toString()) {
         url = url + `?${searchParams.toString()}`

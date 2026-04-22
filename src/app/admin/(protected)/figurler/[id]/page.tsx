@@ -25,7 +25,36 @@ export default function EditFigurePage() {
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [uploadingIdx, setUploadingIdx] = useState<number | null>(null);
 
-  const [formData, setFormData] = useState({
+interface FigureFormData {
+  series_id: string;
+  brand: string;
+  name: string;
+  slug_tr: string;
+  description: string;
+  figure_number: string;
+  code: string;
+  piece_count: string;
+  body_material: string;
+  value_usd: string;
+  min_price: string;
+  max_price: string;
+  avg_price: string;
+  release_month: string;
+  release_year: string;
+  rarity_score: string;
+  series_score: string;
+  view_count_30d: number;
+  collection_count_30d: number;
+  favorite_count_30d: number;
+  rating_count: number;
+  total_views: number;
+  daily_views: number;
+  figure_role_id: string;
+  figure_type_id: string;
+  rarity_id: string;
+}
+
+  const [formData, setFormData] = useState<FigureFormData>({
     series_id: '',
     brand: 'LEGO®',
     name: '',
@@ -48,7 +77,10 @@ export default function EditFigurePage() {
     favorite_count_30d: 0,
     rating_count: 0,
     total_views: 0,
-    daily_views: 0
+    daily_views: 0,
+    figure_role_id: '',
+    figure_type_id: '',
+    rarity_id: ''
   });
 
   const [customAttributes, setCustomAttributes] = useState<Record<string, string>>({});

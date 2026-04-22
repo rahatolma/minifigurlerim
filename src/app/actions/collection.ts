@@ -8,13 +8,25 @@ import { createClient } from '@/utils/supabase/server';
 // In-memory rate limiter cache to guard against UI-level rapid clicking (Spam guard)
 const softRateLimitCache = new Map<string, number>();
 
+interface SeriesRelation {
+  slug_tr: string | null;
+  slug_en: string | null;
+}
+
+interface MinifigureQueryResult {
+  slug_tr: string | null;
+  slug_en: string | null;
+  series: SeriesRelation | SeriesRelation[] | null;
+}
+
 async function targetedRevalidate(minifigureId: string) {
   try {
     const supabase = await createClient();
-    const { data: fig } = await supabase.from('minifigures').select('slug_tr, slug_en, series(slug_tr, slug_en)').eq('id', minifigureId).single();
+    const { data } = await supabase.from('minifigures').select('slug_tr, slug_en, series(slug_tr, slug_en)').eq('id', minifigureId).single();
     
-    if (fig) {
-        const seriesData: any = Array.isArray(fig.series) ? fig.series[0] : fig.series;
+    if (data) {
+        const fig = data as unknown as MinifigureQueryResult;
+        const seriesData = Array.isArray(fig.series) ? fig.series[0] : fig.series;
         if (seriesData?.slug_tr && fig.slug_tr) {
             revalidatePath(`/tr/figurler/${seriesData.slug_tr}/${fig.slug_tr}`);
             revalidatePath(`/tr/figurler/${seriesData.slug_tr}`);
