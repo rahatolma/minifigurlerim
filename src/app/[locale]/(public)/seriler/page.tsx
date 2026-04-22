@@ -95,7 +95,7 @@ export default async function SeriesPage({
       {/* 
         BLOK 3: Şablon Izgara Sistemi (Grid) 
       */}
-      <div className={`max-w-7xl mx-auto px-8 pt-6 md:pt-0 ${filteredSeries.length > 21 ? 'pb-0' : 'pb-24'}`}>
+      <div className={`max-w-7xl mx-auto px-8 pt-6 md:pt-0 ${filteredSeries.length > 21 ? 'pb-0' : 'pb-12'}`}>
         <div className="flex flex-row snap-x snap-mandatory overflow-x-auto pb-4 -mx-8 px-8 gap-4 md:grid md:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 md:gap-5 md:overflow-visible md:snap-none md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
            {filteredSeries.slice(0, 21).map(series => (
             <div key={series.id} className="snap-center snap-always shrink-0 w-[90vw] md:w-auto flex flex-col justify-stretch">
@@ -126,8 +126,8 @@ export default async function SeriesPage({
 
       {/* 21. Ürün Sonrası Geri Kalan Listeleme */}
       {filteredSeries.length > 21 && (
-          <div className="max-w-7xl mx-auto px-8 pb-24">
-            <div className="my-4">
+          <div className="max-w-7xl mx-auto px-8 pb-12">
+            <div className="mt-4 mb-8 md:mt-8 md:mb-6">
                <AuthCTA />
             </div>
             <div className="flex flex-row snap-x snap-mandatory overflow-x-auto pb-8 -mx-8 px-8 gap-4 md:grid md:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 md:gap-5 md:overflow-visible md:snap-none md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">

@@ -8,8 +8,14 @@
 export function formatBrandText(text: string | null | undefined): string {
     if (!text) return '';
     
-    // Regular expression:
+    // 1. Replaces occurrences of 'LEGO' with 'LEGO®' globally in a safe manner
     // \bLEGO\b matches exact word 'LEGO'
     // (?!\®) negative lookahead to ensure it isn't followed by '®'
-    return text.replace(/\bLEGO\b(?!\®)/g, 'LEGO®');
+    let formatted = text.replace(/\bLEGO\b(?!\®)/g, 'LEGO®');
+    
+    // 2. Standardize 'Figür' to 'Minifigür' (case-preserved, respecting prefixes)
+    // Matches 'Figür' or 'figür' with word boundaries at the start.
+    formatted = formatted.replace(/\bFigür/g, 'Minifigür').replace(/\bfigür/g, 'minifigür');
+    
+    return formatted;
 }

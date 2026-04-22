@@ -77,7 +77,7 @@ export default async function FiguresPage({
      .filter((fig): fig is NonNullable<typeof fig> => fig !== null);
 
   return (
-    <div className="bg-[#fcfcfc] min-h-screen pb-32">
+    <div className="bg-[#fcfcfc] min-h-screen pb-16">
       
 
       {/* MİNİFİGÜR EVRİMİ (HERO TIMELINE) - Client Component */}
@@ -101,7 +101,7 @@ export default async function FiguresPage({
       </div>
 
       {/* LİSTELEME KISMI */}
-      <div className="max-w-7xl mx-auto px-8 pb-32 pt-6 md:pt-0">
+      <div className="max-w-7xl mx-auto px-8 pb-16 pt-6 md:pt-0">
             {allFigures.length === 0 ? (
                 <div className="flex flex-col items-center justify-center p-24 border-2 border-dashed border-gray-200 rounded-2xl bg-white text-center w-full shadow-sm mt-4">
                     <LegoHeadIcon mode="search" className="w-24 h-24 mb-6" color="text-gray-200" />

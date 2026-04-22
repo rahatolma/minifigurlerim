@@ -16,7 +16,7 @@ export default function AuthCTA({ fullWidth = false }: AuthCTAProps) {
 
   const containerStyle = fullWidth
     ? "w-full relative overflow-hidden bg-gray-900 py-16 md:py-20 px-4 md:px-8 shadow-xl flex flex-col items-center justify-center text-center group border-y border-gray-800"
-    : "w-full relative overflow-hidden bg-gray-900 rounded-3xl p-8 md:p-12 shadow-[0_15px_40px_rgba(0,0,0,0.15)] flex flex-col items-center justify-center text-center group border border-gray-800";
+    : "w-full relative overflow-hidden bg-gray-900 rounded-3xl px-8 pt-8 pb-12 md:px-12 md:pt-10 md:pb-16 shadow-[0_15px_40px_rgba(0,0,0,0.15)] flex flex-col items-center justify-center text-center group border border-gray-800";
 
   return (
     <div className={containerStyle}>

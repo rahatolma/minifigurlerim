@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { Sen } from "next/font/google";
 import { Toaster } from "react-hot-toast";
-import { PostHogProvider } from "@/components/providers/PostHogProvider";
+import { PostHogProvider, PostHogPageView } from "@/components/providers/PostHogProvider";
 import AntiCopyShield from "@/components/utils/AntiCopyShield";
 import "../globals.css";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { GamificationProvider } from "@/components/providers/GamificationProvider";
+import { Suspense } from "react";
 
 const sen = Sen({
   variable: "--font-sen",
@@ -51,6 +52,9 @@ export default async function RootLayout({
           <AuthProvider>
             <GamificationProvider>
               <PostHogProvider>
+                <Suspense fallback={null}>
+                  <PostHogPageView />
+                </Suspense>
                 <AntiCopyShield />
             <Toaster 
               position="bottom-right" 

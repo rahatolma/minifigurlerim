@@ -134,12 +134,12 @@ export default function FiguresFilterClient({
           key={`rarity-desktop-${currentRarity}`}
           name="rarity"
           options={[
-            { value: 'all', label: 'Tüm Nadirlikler' },
+            { value: 'all', label: 'Tüm Değer Skorları' },
             ...rarities.map(r => ({ value: r, label: toRarityLabel(r, locale) }))
           ]}
           value={currentRarity}
           onChange={(val: string) => handleFilterUpdate('rarity', val)}
-          placeholder="Nadirlik"
+          placeholder="Değer Skoru"
           showSearch={false}
         />
 
@@ -247,7 +247,7 @@ export default function FiguresFilterClient({
             </div>
 
             <div className="flex flex-col gap-2">
-                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">Nadirlik</label>
+                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">Değer Skoru</label>
                 <select 
                   key={`rarity-mobile-${currentRarity}`}
                   name="rarity" 
@@ -255,7 +255,7 @@ export default function FiguresFilterClient({
                   onChange={handleChange}
                   className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
                 >
-                  <option value="all">Tüm Nadirlikler</option>
+                  <option value="all">Tüm Değer Skorları</option>
                   {rarities.map(r => <option key={r} value={r}>{toRarityLabel(r, locale)}</option>)}
                 </select>
             </div>

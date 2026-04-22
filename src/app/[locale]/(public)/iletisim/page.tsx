@@ -14,7 +14,7 @@ export default async function ContactPage() {
   const activeFaqs = faqs || [];
 
   return (
-    <div className="bg-[#fcfcfc] min-h-screen pb-32">
+    <div className="bg-[#fcfcfc] min-h-screen pb-16">
 
 
       <div className="max-w-4xl mx-auto px-6 md:px-8 mt-8 mb-24 flex flex-col gap-16">

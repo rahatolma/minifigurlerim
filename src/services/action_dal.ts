@@ -131,6 +131,40 @@ export const toggleUserCollectionDal = async (userId: string, minifigureId: stri
     if (error) throw new Error(error.message);
   }
 
+  // --- MİMARİ KOPUKLUK DÜZELTMESİ (Real-Time Metrics Sync) ---
+  try {
+      const { data: figStats } = await supabaseAdmin
+          .from('minifigures')
+          .select('collection_count_30d, favorite_count_30d')
+          .eq('id', minifigureId)
+          .single();
+
+      if (figStats) {
+          let colCount = figStats.collection_count_30d || 0;
+          let favCount = figStats.favorite_count_30d || 0;
+
+          if (currentStatus === newStatus) {
+              // SİLME (DELETE) İŞLEMİ
+              if (currentStatus === 'have') colCount = Math.max(0, colCount - 1);
+              if (currentStatus === 'want') favCount = Math.max(0, favCount - 1);
+          } else {
+              // GÜNCELLEME VEYA YENİ EKLEME (UPSERT)
+              if (currentStatus === 'have') colCount = Math.max(0, colCount - 1);
+              if (currentStatus === 'want') favCount = Math.max(0, favCount - 1);
+
+              if (newStatus === 'have') colCount += 1;
+              if (newStatus === 'want') favCount += 1;
+          }
+
+          await supabaseAdmin.from('minifigures').update({
+              collection_count_30d: colCount,
+              favorite_count_30d: favCount
+          }).eq('id', minifigureId);
+      }
+  } catch (metricsErr) {
+      console.error('[METRICS SYNC ERROR]', metricsErr);
+  }
+
   // Pre-Compute Series Progress Cache Mechanism
   if (currentStatus === 'have' || newStatus === 'have') {
      try {
@@ -365,4 +399,39 @@ export const updateBorsaDataAdminDal = async (minifigureId: string, valueUsd: nu
   }).eq('id', minifigureId);
   if (error) throw new Error(error.message);
   return { success: true };
+};
+
+export const getSimilarFiguresDal = async (seriesId: string, currentFigureId: string, limit: number = 4) => {
+  const supabaseAdmin = getAdminClient();
+  
+  // 1. Same series figures (excluding current)
+  const { data: seriesData, error: seriesError } = await supabaseAdmin
+    .from('minifigures')
+    .select('id, name, slug_tr, slug_en, series_name, rarity_level, thumbnail_url, images, series(id, title, title_en, slug_tr, slug_en)')
+    .eq('series_id', seriesId)
+    .not('id', 'eq', currentFigureId)
+    .limit(limit);
+    
+  if (seriesError) throw new Error(seriesError.message);
+  
+  let result = seriesData || [];
+  
+  // 2. Popular figures fallback (if not enough in series)
+  if (result.length < limit) {
+     const remaining = limit - result.length;
+     const excludeIds = [currentFigureId, ...result.map(f => f.id)];
+     
+     const { data: popularData, error: popularError } = await supabaseAdmin
+        .from('minifigures')
+        .select('id, name, slug_tr, slug_en, series_name, rarity_level, thumbnail_url, images, series(id, title, title_en, slug_tr, slug_en)')
+        .not('id', 'in', `(${excludeIds.join(',')})`)
+        .order('total_views', { ascending: false, nullsFirst: false })
+        .limit(remaining);
+        
+     if (!popularError && popularData) {
+        result = [...result, ...popularData];
+     }
+  }
+  
+  return result;
 };

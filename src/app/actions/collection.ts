@@ -3,9 +3,33 @@
 import { revalidatePath } from 'next/cache';
 import { getAuthUserProfile, toggleUserCollectionDal, saveUserRatingDal } from '@/services/action_dal';
 import { actionLog } from '@/utils/logger';
+import { createClient } from '@/utils/supabase/server';
 
 // In-memory rate limiter cache to guard against UI-level rapid clicking (Spam guard)
 const softRateLimitCache = new Map<string, number>();
+
+async function targetedRevalidate(minifigureId: string) {
+  try {
+    const supabase = await createClient();
+    const { data: fig } = await supabase.from('minifigures').select('slug_tr, slug_en, series(slug_tr, slug_en)').eq('id', minifigureId).single();
+    
+    if (fig) {
+        if (fig.series?.slug_tr && fig.slug_tr) {
+            revalidatePath(`/tr/figurler/${fig.series.slug_tr}/${fig.slug_tr}`);
+            revalidatePath(`/tr/figurler/${fig.series.slug_tr}`);
+        }
+        if (fig.series?.slug_en && fig.slug_en) {
+            revalidatePath(`/en/figurler/${fig.series.slug_en}/${fig.slug_en}`);
+            revalidatePath(`/en/figurler/${fig.series.slug_en}`);
+        }
+    }
+  } catch (err) {
+      console.error('[Targeted Revalidate Error]', err);
+  }
+  
+  // Koleksiyon sayfalarını revalidate et
+  revalidatePath('/[locale]/(public)/koleksiyonum', 'layout');
+}
 
 export async function toggleCollectionStatus(minifigureId: string, currentStatus: 'have' | 'want' | null, newStatus: 'have' | 'want') {
   const { user, profile } = await getAuthUserProfile();
@@ -35,7 +59,7 @@ export async function toggleCollectionStatus(minifigureId: string, currentStatus
     await Promise.race([operation, timeout]);
     
     actionLog('info', { action: 'toggleCollection', user_id: user.id, entity_id: minifigureId, success: true, message: `Changed from ${currentStatus} to ${newStatus}` });
-    revalidatePath('/figurler/[slug]', 'page');
+    await targetedRevalidate(minifigureId);
     return { success: true };
   } catch (err: any) {
     if (err.message === 'TIMEOUT') {
@@ -65,7 +89,7 @@ export async function saveRating(minifigureId: string, rating: number, comment?:
     await Promise.race([operation, timeout]);
     
     actionLog('info', { action: 'saveRating', user_id: user.id, entity_id: minifigureId, success: true, metadata: { rating }});
-    revalidatePath('/figurler/[slug]', 'page');
+    await targetedRevalidate(minifigureId);
     return { success: true };
   } catch (err: any) {
     if (err.message === 'TIMEOUT') {

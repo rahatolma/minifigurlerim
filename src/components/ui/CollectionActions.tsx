@@ -3,13 +3,15 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { toggleCollectionStatus, saveRating } from '@/app/actions/collection';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useGamification } from '@/components/providers/GamificationProvider';
 
 export default function CollectionActions({ minifigureId }: { minifigureId: string }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
   const { user } = useAuth();
   const { userStatusMap, updateStatus: setGlobalStatus } = useGamification();
   const isLoggedIn = !!user;
@@ -24,6 +26,19 @@ export default function CollectionActions({ minifigureId }: { minifigureId: stri
 
   // Sync with global gamification context
   useEffect(() => {
+     if (searchParams.get('rate') === 'true') {
+        setShowRatingModal(true);
+     }
+  }, [searchParams]);
+
+  const closeRatingModal = () => {
+     closeRatingModal();
+     if (searchParams.has('rate')) {
+        router.replace(pathname, { scroll: false });
+     }
+  };
+   
+   useEffect(() => {
     setStatus(userStatusMap[minifigureId] || null);
   }, [userStatusMap, minifigureId]);
 
@@ -87,7 +102,7 @@ export default function CollectionActions({ minifigureId }: { minifigureId: stri
       
       if (result?.success) {
          setRating(star);
-         setShowRatingModal(false);
+         closeRatingModal();
       } else {
          alert(result?.error || 'Puanlama yapılamadı.');
       }
@@ -113,7 +128,7 @@ export default function CollectionActions({ minifigureId }: { minifigureId: stri
                   </span>
               </div>
               <div className="w-full py-3 px-4 rounded-xl border border-gray-200 bg-white text-gray-700 flex items-center justify-center gap-2 font-bold text-sm">
-                  <span className="text-yellow-400 text-lg">★</span> Figüre Puan Ver
+                  <span className="text-yellow-400 text-lg">★</span> Minifigüre Puan Ver
               </div>
            </div>
 
@@ -141,7 +156,7 @@ export default function CollectionActions({ minifigureId }: { minifigureId: stri
                    </div>
                    <div>
                        <h4 className="text-green-800 font-black text-sm uppercase tracking-wider mb-0.5">Senin Koleksiyonunda</h4>
-                       <p className="text-green-700 font-medium text-[11px]">Bu figür kasana başarıyla eklendi.</p>
+                       <p className="text-green-700 font-medium text-[11px]">Bu minifigür kasana başarıyla eklendi.</p>
                    </div>
                </div>
            </div>
@@ -188,18 +203,18 @@ export default function CollectionActions({ minifigureId }: { minifigureId: stri
           className={`w-full py-3 px-4 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.04)] border flex items-center justify-center gap-2 font-bold text-sm transition-all duration-300 ${rating ? 'bg-yellow-50 border-yellow-200 text-yellow-800' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:-translate-y-1 hover:shadow-md'}`}
        >
           <span className="text-yellow-400 text-lg">★</span> 
-          {rating ? `${rating} Yıldız Puanı Verdin` : 'Figüre Puan Ver'}
+          {rating ? `${rating} Yıldız Puanı Verdin` : 'Minifigüre Puan Ver'}
        </button>
 
        {/* Puanlama Modalı (Portal) */}
        {mounted && showRatingModal && createPortal(
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
              <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl relative">
-                <button onClick={() => setShowRatingModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-black">
+                <button onClick={() => closeRatingModal()} className="absolute top-4 right-4 text-gray-400 hover:text-black">
                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
-                <h3 className="text-xl font-black text-center mb-2">Figürü Oyla</h3>
-                <p className="text-xs text-gray-500 font-medium text-center mb-6">Diğer koleksiyonerler için bu figürün kalitesini derecelendir.</p>
+                <h3 className="text-xl font-black text-center mb-2">Minifigürü Oyla</h3>
+                <p className="text-xs text-gray-500 font-medium text-center mb-6">Diğer koleksiyonerler için bu minifigürün kalitesini derecelendir.</p>
                 
                 <form onSubmit={submitRating} className="flex flex-col gap-6">
                    <div className="flex justify-center gap-2 flex-row-reverse star-rating-group mb-4">

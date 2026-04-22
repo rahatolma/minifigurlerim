@@ -127,7 +127,7 @@ console.error(err);
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.series_id || !formData.code || (!formData.figure_number && formData.figure_number !== "0") || (!formData.piece_count && formData.piece_count !== "0")) {
-      toast.error("Validasyon Hatası: 'Seri', 'Figür Adı', 'Figür Kodu', 'Figür Sıra No' ve 'Parça Sayısı' zorunludur.");
+      toast.error("Validasyon Hatası: 'Seri', 'Minifigür Adı', 'Minifigür Kodu', 'Minifigür Sıra No' ve 'Parça Sayısı' zorunludur.");
       return;
     }
     
@@ -141,7 +141,7 @@ console.error(err);
     const finalCustomAttr = { ...customAttributes };
 
     const selectedSeries = seriesList.find(s => s.id === formData.series_id);
-    const generatedSlug = slugify(`${formData.name} ${selectedSeries?.title || ''} ${formData.code || ''}`);
+    const generatedSlug = slugify(formData.name);
 
     try {
       const dbPayload = {
@@ -315,28 +315,17 @@ console.error(err);
                     <div className="w-2/3 py-2 px-3 text-gray-500 font-semibold">{selectedSeries?.category || '-'}</div>
                 </div>
 
-                {/* FİGÜR ADI */}
+                {/* MİNİFİGÜR ADI */}
                 <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
-                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Figür Adı <span className="text-[#D22B2B]">*</span></label></div>
+                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Minifigür Adı <span className="text-[#D22B2B]">*</span></label></div>
                     <div className="w-2/3 py-2"><input name="name" type="text" value={formData.name} onChange={handleChange} required className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" /></div>
-                </div>
-
-                {/* URL SLUG */}
-                <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
-                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
-                        <label className="text-gray-900 block font-black">URL Uzantısı (Slug) <span className="text-[#D22B2B]">*</span></label>
-                        <span className="block text-[10px] text-gray-500 font-medium">Manuel düzenlenebilir</span>
-                    </div>
-                    <div className="w-2/3 py-2">
-                        <input name="slug_tr" type="text" value={formData.slug_tr} onChange={handleChange} required className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold text-blue-600" />
-                    </div>
                 </div>
 
                 {/* FİGÜR AÇIKLAMASI */}
                 <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
                     <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors self-start mt-2">
                         <label className="text-gray-900 block truncate font-black tracking-wide">
-                            Figür Açıklaması
+                            Minifigür Açıklaması
                         </label>
                     </div>
                     <div className="w-2/3 py-2">
@@ -351,15 +340,15 @@ console.error(err);
                     </div>
                 </div>
 
-                {/* FİGÜR SIRA NO */}
+                {/* MİNİFİGÜR SIRA NO */}
                 <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
-                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Figür Sıra No <span className="text-[#D22B2B]">*</span></label></div>
+                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Minifigür Sıra No <span className="text-[#D22B2B]">*</span></label></div>
                     <div className="w-2/3 py-2"><input name="figure_number" type="text" value={formData.figure_number} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" /></div>
                 </div>
 
-                {/* FİGÜR ROLÜ */}
+                {/* MİNİFİGÜR ROLÜ */}
                 <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
-                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Figür Rolü</label></div>
+                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Minifigür Rolü</label></div>
                     <div className="w-2/3 py-2">
                         <select name="figure_role_id" value={formData.figure_role_id} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold appearance-none cursor-pointer">
                             <option value="">Seçim Yapılmadı</option>
@@ -368,9 +357,9 @@ console.error(err);
                     </div>
                 </div>
 
-                {/* FİGÜR TİPİ */}
+                {/* MİNİFİGÜR TİPİ */}
                 <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
-                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Figür Tipi</label></div>
+                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Minifigür Tipi</label></div>
                     <div className="w-2/3 py-2">
                         <select name="figure_type_id" value={formData.figure_type_id} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold appearance-none cursor-pointer">
                             <option value="">Seçim Yapılmadı</option>
@@ -379,9 +368,9 @@ console.error(err);
                     </div>
                 </div>
 
-                {/* FİGÜR KODU */}
+                {/* MİNİFİGÜR KODU */}
                 <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
-                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Figür Kodu <span className="text-[#D22B2B]">*</span></label></div>
+                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Minifigür Kodu <span className="text-[#D22B2B]">*</span></label></div>
                     <div className="w-2/3 py-2"><input name="code" type="text" value={formData.code} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" /></div>
                 </div>
 
@@ -485,8 +474,18 @@ console.error(err);
                 </div>
 
                 <div className="flex border-b border-gray-100 items-center bg-gray-50/80">
+                    <div className="w-1/3 py-3 pr-4 pl-6"><label className="text-gray-500 block font-bold text-[13px]">Toplam Görüntülenme</label></div>
+                    <div className="w-2/3 py-2 px-3 text-green-700 font-bold">0</div>
+                </div>
+
+                <div className="flex border-b border-gray-100 items-center bg-gray-50/80">
+                    <div className="w-1/3 py-3 pr-4 pl-6"><label className="text-gray-500 block font-bold text-[13px]">Günlük Görüntülenme</label></div>
+                    <div className="w-2/3 py-2 px-3 text-green-600 font-bold">0</div>
+                </div>
+
+                <div className="flex border-b border-gray-100 items-center bg-gray-50/80">
                     <div className="w-1/3 py-3 pr-4 pl-6"><label className="text-gray-500 block font-bold text-[13px]">30g Görüntülenme</label></div>
-                    <div className="w-2/3 py-2 px-3 text-gray-900 font-bold">0</div>
+                    <div className="w-2/3 py-2 px-3 text-gray-900 font-bold">{formData.view_count_30d || '0'}</div>
                 </div>
                 
                 <div className="flex border-b border-gray-100 items-center bg-gray-50/80">

@@ -30,7 +30,7 @@ export interface SeriesDTO {
   description_en: string;
   is_active: boolean;
   is_published: boolean;
-  release_year: string ;
+  release_year: string;
   blocks: any;
   [key: string]: any;
 }
@@ -55,13 +55,13 @@ const extractYearMonthScore = (item: any) => {
     year = new Date(item.created_at).getFullYear();
   }
 
-  let month = 1; 
+  let month = 1;
   if (item.release_month) {
-     const m = String(item.release_month).trim().toLowerCase();
-     const months = ['ocak','şubat','mart','nisan','mayıs','haziran','temmuz','ağustos','eylül','ekim','kasım','aralık'];
-     const index = months.indexOf(m);
+    const m = String(item.release_month).trim().toLowerCase();
+    const months = ['ocak', 'şubat', 'mart', 'nisan', 'mayıs', 'haziran', 'temmuz', 'ağustos', 'eylül', 'ekim', 'kasım', 'aralık'];
+    const index = months.indexOf(m);
   }
-  return (year * 100) + month; 
+  return (year * 100) + month;
 };
 
 import { MINIFIGURES_SELECT_FIELDS } from '@/utils/queries';
@@ -72,7 +72,7 @@ export const getSeriesList = cache(async () => {
   const { data, error } = await supabase
     .from('series').select('id, title, slug_tr, slug_en, description, description_blocks_en, is_active, release_year, category, category_main, cover_image_url, hero_image_url, content_blocks, series_no, rarity, figure_count, is_published, total_views, title_en')
     .order('created_at', { ascending: false });
-  
+
   if (error) throw error;
   return data as any;
 });
@@ -83,7 +83,7 @@ export const getPreviewFiguresForSeries = cache(async () => {
   const { data, error } = await supabase
     .from('minifigures').select(MINIFIGURES_SELECT_FIELDS)
     .order('created_at', { ascending: false });
-  
+
   if (error) throw error;
   return data as any;
 });
@@ -106,7 +106,7 @@ export const getAllMinifigures = cache(async (): Promise<RawListFigureDTO[]> => 
   const { data, error } = await supabase
     .from('minifigures').select(MINIFIGURES_SELECT_FIELDS)
     .order('created_at', { ascending: false });
-    
+
   if (error) throw error;
   return data as any;
 });
@@ -117,19 +117,19 @@ export const getAllSeries = cache(async (): Promise<SeriesDTO[]> => {
   const { data, error } = await supabase
     .from('series').select('id, title, slug_tr, slug_en, description, description_blocks_en, is_active, release_year, category, category_main, cover_image_url, hero_image_url, content_blocks, series_no, rarity, figure_count, is_published, total_views, title_en')
     .order('created_at', { ascending: false });
-    
+
   if (error) throw error;
-  
+
   let sortedData = [...(data as any[])];
-  sortedData.sort((a,b) => {
-      const scoreA = extractYearMonthScore(a);
-      const scoreB = extractYearMonthScore(b);
-      if (scoreB !== scoreA) return scoreB - scoreA;
-      const _noA = parseInt(a.series_no) || 0;
-      const _noB = parseInt(b.series_no) || 0;
-      return _noB - _noA; 
+  sortedData.sort((a, b) => {
+    const scoreA = extractYearMonthScore(a);
+    const scoreB = extractYearMonthScore(b);
+    if (scoreB !== scoreA) return scoreB - scoreA;
+    const _noA = parseInt(a.series_no) || 0;
+    const _noB = parseInt(b.series_no) || 0;
+    return _noB - _noA;
   });
-  
+
   return sortedData as any;
 });
 
@@ -168,7 +168,7 @@ export const getLatestSeries = cache(async (): Promise<SeriesDTO[]> => {
     .limit(100); // Havuzu geniş tuttuk ki JS ile kronolojik dizebilelim
 
   if (error) throw error;
-  
+
   if (!data) return [];
 
   const sortedData = [...(data as any[])].sort((a, b) => {
@@ -185,7 +185,10 @@ export const getLatestSeries = cache(async (): Promise<SeriesDTO[]> => {
 export const getLatestFigures = cache(async (): Promise<RawListFigureDTO[]> => {
   const supabase = createPublicClient();
   const { data, error } = await supabase
-    .from('minifigures').select(`${MINIFIGURES_SELECT_FIELDS}, series(id, slug_tr, slug_en, title, title_en, release_year, release_month)`)
+    .from('minifigures').select(`${MINIFIGURES_SELECT_FIELDS}, series(id, slug_tr, slug_en, title, title_en, release_year, release_month, series_no)`)
+    .eq('is_published', true)
+    .order('series(release_year)', { ascending: false, nullsFirst: false })
+    .order('series(series_no)', { ascending: false, nullsFirst: false })
     .order('created_at', { ascending: false })
     .limit(12);
 
@@ -198,8 +201,10 @@ export const getLatestFigures = cache(async (): Promise<RawListFigureDTO[]> => {
 export const getExploreFigures = cache(async (limit = 24): Promise<RawListFigureDTO[]> => {
   const supabase = createPublicClient();
   const { data, error } = await supabase
-    .from('minifigures').select(`${MINIFIGURES_SELECT_FIELDS}, series(id, slug_tr, slug_en, title, title_en, release_year, release_month)`)
+    .from('minifigures').select(`${MINIFIGURES_SELECT_FIELDS}, series(id, slug_tr, slug_en, title, title_en, release_year, release_month, series_no)`)
     .eq('is_published', true)
+    .order('series(release_year)', { ascending: false, nullsFirst: false })
+    .order('series(series_no)', { ascending: false, nullsFirst: false })
     .order('created_at', { ascending: false })
     .limit(limit);
 
@@ -238,7 +243,7 @@ export const getTopValuedFigures = cache(async (limit = 6) => {
 export const getSeriesBySlug = cache(async (slug: string, locale?: string) => {
   const supabase = createPublicClient();
   const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
-  
+
   let query = supabase.from('series').select('id, title, slug_tr, slug_en, description, description_blocks_en, is_active, release_year, category, category_main, cover_image_url, hero_image_url, content_blocks, series_no, rarity, figure_count, is_published, total_views, title_en');
   if (isUUID) {
     query = query.eq('id', slug);
@@ -251,9 +256,9 @@ export const getSeriesBySlug = cache(async (slug: string, locale?: string) => {
       query = query.or(`slug.eq.${slug},slug_tr.eq.${slug},slug_en.eq.${slug}`);
     }
   }
-  
+
   const { data, error } = await query.single();
-  
+
   // Return null if not found instead of throwing, so the page can handle notFound()
   if (error || !data) return null;
   return data as any;
@@ -263,21 +268,21 @@ export const getSeriesBySlug = cache(async (slug: string, locale?: string) => {
 export const getFiguresBySeries = cache(async (seriesIdOrName: string, isId: boolean = false) => {
   const supabase = createPublicClient();
   const filterCol = isId ? 'series_id' : 'series_name';
-  
+
   const { data, error } = await supabase
     .from('minifigures').select(`${MINIFIGURES_SELECT_FIELDS}, series(id, slug_tr, slug_en, title, title_en, release_year, release_month)`)
     .eq(filterCol, seriesIdOrName)
     .order('figure_number', { ascending: true })
     .order('created_at', { ascending: true });
-    
+
   if (error) return [];
-  
+
   const sortedData = data.sort((a: any, b: any) => {
     const numA = parseInt(a.figure_number || '0');
     const numB = parseInt(b.figure_number || '0');
     return numA - numB;
   });
-  
+
   return sortedData as any;
 });
 
@@ -288,7 +293,7 @@ export const getMinifigureBySlug = cache(async (slug: string, locale?: string, s
   const queryCol = isUUID ? 'id' : 'slug';
 
   let selectRaw = MINIFIGURES_SELECT_FIELDS;
-  
+
   if (seriesSlug) {
     selectRaw += ', series!inner(id, slug_tr, slug_en, title, title_en, series_no, category, category_main, release_year, release_month, release_month_tr, release_date)';
   } else {
@@ -296,7 +301,7 @@ export const getMinifigureBySlug = cache(async (slug: string, locale?: string, s
   }
 
   let query = supabase.from('minifigures').select(selectRaw);
-    
+
   if (isUUID) {
     query = query.eq('id', slug);
   } else {
@@ -318,7 +323,7 @@ export const getMinifigureBySlug = cache(async (slug: string, locale?: string, s
       }
     }
   }
-  
+
   const { data, error } = await query
     .order('is_published', { ascending: false })
     .order('created_at', { ascending: false })
@@ -344,7 +349,7 @@ export const getFigurePriceHistory = cache(async (figureId: string) => {
     .select('id, minifigure_id, value_usd, recorded_at')
     .eq('minifigure_id', figureId)
     .order('recorded_at', { ascending: true });
-    
+
   if (error) return [];
   return data as any;
 });
@@ -391,7 +396,7 @@ export const getAboutSettings = cache(async () => {
   const { data, error } = await supabase.from('about_settings').select('id, hero_image_url, quote_text, quote_author, boss_image_url, boss_title, boss_subtitle, boss_desc, main_title, main_text, mid_image_url, mid_title, mid_subtitle, mid_desc, small_image_url, small_title, small_subtitle, small_desc, join_image_url, join_title, join_text, join_btn_text, join_btn_link, created_at').eq('id', 1).single();
   if (error) {
     if (process.env.NODE_ENV === 'development') {
-        console.error("🔥 YUTULMUŞ DAL HATASI (getAboutSettings):", error.message, error.code);
+      console.error("🔥 YUTULMUŞ DAL HATASI (getAboutSettings):", error.message, error.code);
     }
     return null;
   }
@@ -413,7 +418,7 @@ export const getActiveFaqs = cache(async () => {
     .from('faqs').select('id, question, answer, sort_order, is_active, created_at, question_en, answer_en, order_num')
     .eq('is_active', true)
     .order('sort_order', { ascending: true });
-    
+
   if (error) return [];
   return data as any;
 });
@@ -472,7 +477,7 @@ export const getUserCollectionsWithDetails = cache(async (userId: string) => {
     `)
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
-    
+
   if (error) return [];
   return data as any;
 });
@@ -499,7 +504,7 @@ export const getMinifigurePriceHistoryBatch = cache(async (figureIds: string[]) 
     .select('minifigure_id, value_usd')
     .in('minifigure_id', figureIds)
     .order('recorded_at', { ascending: true });
-    
+
   if (error) return [];
   return data as any;
 });
@@ -540,7 +545,7 @@ export const getMinifigureListItems = cache(async (
 ): Promise<{ data: RawListFigureDTO[], count: number | null }> => {
   const supabase = createPublicClient();
   let query = supabase
-    .from('minifigures').select('id, created_at, series_id, name, brand, category, series_name, series_no, role, type, code, piece_count, body_material, rarity, value_usd, release_year, images, total_views, daily_views, custom_attributes, description, release_month, slug, affiliate_link, name_en, series_name_en, role_en, description_en, min_price, max_price, avg_price, rarity_score, series_score, view_count_30d, collection_count_30d, favorite_count_30d, rating_count, value_score, demand_score, figure_name, slug_tr, slug_en, figure_number, figure_code, character_name, short_description_tr, short_description_en, figure_role, figure_type, price_updated_at, rarity_level, accessory_count, main_color, thumbnail_url, is_featured, is_active, is_published, series(id, slug_tr, slug_en, title, title_en, release_year, release_month)', { count: "exact" });
+    .from('minifigures').select('id, created_at, series_id, name, brand, category, series_name, series_no, role, type, code, piece_count, body_material, rarity, value_usd, release_year, images, total_views, daily_views, custom_attributes, description, release_month, slug, affiliate_link, name_en, series_name_en, role_en, description_en, min_price, max_price, avg_price, rarity_score, series_score, view_count_30d, collection_count_30d, favorite_count_30d, rating_count, value_score, demand_score, figure_name, slug_tr, slug_en, figure_number, figure_code, character_name, short_description_tr, short_description_en, figure_role, figure_type, price_updated_at, rarity_level, accessory_count, main_color, thumbnail_url, is_featured, is_active, is_published, series(id, slug_tr, slug_en, title, title_en, release_year, release_month, series_no)', { count: "exact" });
 
   const safeSeries = sanitizeFilter(filters.series);
   if (safeSeries) {
@@ -550,14 +555,21 @@ export const getMinifigureListItems = cache(async (
   }
   const safeRole = sanitizeFilter(filters.role);
   if (safeRole) query = query.eq('role', safeRole);
-  
+
   const safeType = sanitizeFilter(filters.type);
   if (safeType) query = query.eq('type', safeType);
-  
+
   const safeRarity = sanitizeFilter(filters.rarity);
   if (safeRarity) {
-    // If the rarity filter is applied, check both potential fields in db (or whichever holds it)
-    query = query.or(`rarity.eq."${safeRarity}",rarity_level.eq."${safeRarity}"`);
+    const reverseRarityMap: Record<string, string[]> = {
+      'common': ['Yaygın', 'Yaygin', 'common'],
+      'rare': ['Nadir', 'rare'],
+      'epic': ['Çok Nadir', 'Cok Nadir', 'Destansı', 'Destansi', 'epic'],
+      'legendary': ['Efsanevi', 'legendary']
+    };
+    const mappedValues = reverseRarityMap[safeRarity.toLowerCase()] || [safeRarity];
+    const orConditions = mappedValues.flatMap(v => [`rarity.eq."${v}"`, `rarity_level.eq."${v}"`]);
+    query = query.or(orConditions.join(','));
   }
 
   query = query.eq('is_published', true);
@@ -565,19 +577,20 @@ export const getMinifigureListItems = cache(async (
   const sortParam = filters.sort || 'newest';
   switch (sortParam) {
     case 'popular':
-      // Deterministic sort: total_views DESC NULLS LAST, then created_at DESC, then id DESC
       query = query.order('total_views', { ascending: false, nullsFirst: false })
-                   .order('created_at', { ascending: false })
-                   .order('id', { ascending: false });
+        .order('series(release_year)', { ascending: false, nullsFirst: false })
+        .order('series(series_no)', { ascending: false, nullsFirst: false });
       break;
     case 'oldest':
-      query = query.order('created_at', { ascending: true })
-                   .order('id', { ascending: true });
+      query = query.order('series(release_year)', { ascending: true, nullsFirst: false })
+        .order('series(series_no)', { ascending: true, nullsFirst: false })
+        .order('created_at', { ascending: true });
       break;
     case 'newest':
     default:
-      query = query.order('created_at', { ascending: false })
-                   .order('id', { ascending: false });
+      query = query.order('series(release_year)', { ascending: false, nullsFirst: false })
+        .order('series(series_no)', { ascending: false, nullsFirst: false })
+        .order('created_at', { ascending: false });
       break;
   }
 
@@ -588,7 +601,7 @@ export const getMinifigureListItems = cache(async (
     captureDalError('getMinifigureListItems', error, { filters, limit, offset });
     throw error;
   }
-  
+
   return { data: data as any, count };
 });
 
@@ -596,85 +609,85 @@ export const getSeriesListItems = cache(async (
   filters: { category?: string; series?: string } = {},
   sortParam?: string
 ): Promise<SeriesDTO[]> => {
-    const supabase = createPublicClient();
-    let query = supabase
-        .from('series').select('id, title, slug_tr, slug_en, description, description_blocks_en, is_active, release_year, category, category_main, cover_image_url, hero_image_url, content_blocks, series_no, rarity, figure_count, is_published, total_views, title_en');
+  const supabase = createPublicClient();
+  let query = supabase
+    .from('series').select('id, title, slug_tr, slug_en, description, description_blocks_en, is_active, release_year, category, category_main, cover_image_url, hero_image_url, content_blocks, series_no, rarity, figure_count, is_published, total_views, title_en');
 
-    query = query.eq('is_published', true);
-    
-    const safeCategory = sanitizeFilter(filters.category);
-    if (safeCategory) query = query.eq('category', safeCategory);
-    
-    const safeSeries = sanitizeFilter(filters.series);
-    if (safeSeries) query = query.eq('slug_tr', safeSeries);
-    
-    // Uygulama sıralaması
-    switch (sortParam) {
-        case 'popular':
-            query = query
-                .order('total_views', { ascending: false })
-                .order('release_year', { ascending: false })
-                .order('series_no', { ascending: false, nullsFirst: false });
-            break;
-        case 'oldest':
-            query = query
-                .order('release_year', { ascending: true })
-                .order('series_no', { ascending: true, nullsFirst: false })
-                .order('created_at', { ascending: true });
-            break;
-        case 'newest':
-        default:
-            query = query
-                .order('release_year', { ascending: false })
-                .order('series_no', { ascending: false, nullsFirst: false })
-                .order('created_at', { ascending: false });
-            break;
-    }
+  query = query.eq('is_published', true);
 
-    const { data, error } = await query;
-    if (error) {
-      captureDalError('getSeriesListItems', error, { filters, sortParam });
-      throw error;
-    }
-    
-    // JS Sıralama (Database string number karşılaştırması hatalarını önlemek için)
-    let sortedData = [...(data as any[])];
-    
-    switch (sortParam) {
-        case 'popular':
-            sortedData.sort((a,b) => {
-                if (b.total_views !== a.total_views) return (b.total_views || 0) - (a.total_views || 0);
-                const scoreA = extractYearMonthScore(a);
-                const scoreB = extractYearMonthScore(b);
-                if (scoreB !== scoreA) return scoreB - scoreA;
-                const _noA = parseInt(a.series_no) || 0;
-                const _noB = parseInt(b.series_no) || 0;
-                return _noB - _noA; 
-            });
-            break;
-        case 'oldest':
-            sortedData.sort((a,b) => {
-                const scoreA = extractYearMonthScore(a);
-                const scoreB = extractYearMonthScore(b);
-                if (scoreA !== scoreB) return scoreA - scoreB;
-                const _noA = parseInt(a.series_no) || 0;
-                const _noB = parseInt(b.series_no) || 0;
-                return _noA - _noB;
-            });
-            break;
-        case 'newest':
-        default:
-            sortedData.sort((a,b) => {
-                const scoreA = extractYearMonthScore(a);
-                const scoreB = extractYearMonthScore(b);
-                if (scoreB !== scoreA) return scoreB - scoreA;
-                const _noA = parseInt(a.series_no) || 0;
-                const _noB = parseInt(b.series_no) || 0;
-                return _noB - _noA;
-            });
-            break;
-    }
+  const safeCategory = sanitizeFilter(filters.category);
+  if (safeCategory) query = query.eq('category', safeCategory);
 
-    return sortedData as any;
+  const safeSeries = sanitizeFilter(filters.series);
+  if (safeSeries) query = query.eq('slug_tr', safeSeries);
+
+  // Uygulama sıralaması
+  switch (sortParam) {
+    case 'popular':
+      query = query
+        .order('total_views', { ascending: false })
+        .order('release_year', { ascending: false })
+        .order('series_no', { ascending: false, nullsFirst: false });
+      break;
+    case 'oldest':
+      query = query
+        .order('release_year', { ascending: true })
+        .order('series_no', { ascending: true, nullsFirst: false })
+        .order('created_at', { ascending: true });
+      break;
+    case 'newest':
+    default:
+      query = query
+        .order('release_year', { ascending: false })
+        .order('series_no', { ascending: false, nullsFirst: false })
+        .order('created_at', { ascending: false });
+      break;
+  }
+
+  const { data, error } = await query;
+  if (error) {
+    captureDalError('getSeriesListItems', error, { filters, sortParam });
+    throw error;
+  }
+
+  // JS Sıralama (Database string number karşılaştırması hatalarını önlemek için)
+  let sortedData = [...(data as any[])];
+
+  switch (sortParam) {
+    case 'popular':
+      sortedData.sort((a, b) => {
+        if (b.total_views !== a.total_views) return (b.total_views || 0) - (a.total_views || 0);
+        const scoreA = extractYearMonthScore(a);
+        const scoreB = extractYearMonthScore(b);
+        if (scoreB !== scoreA) return scoreB - scoreA;
+        const _noA = parseInt(a.series_no) || 0;
+        const _noB = parseInt(b.series_no) || 0;
+        return _noB - _noA;
+      });
+      break;
+    case 'oldest':
+      sortedData.sort((a, b) => {
+        const scoreA = extractYearMonthScore(a);
+        const scoreB = extractYearMonthScore(b);
+        if (scoreA !== scoreB) return scoreA - scoreB;
+        const _noA = parseInt(a.series_no) || 0;
+        const _noB = parseInt(b.series_no) || 0;
+        return _noA - _noB;
+      });
+      break;
+    case 'newest':
+    default:
+      sortedData.sort((a, b) => {
+        const scoreA = extractYearMonthScore(a);
+        const scoreB = extractYearMonthScore(b);
+        if (scoreB !== scoreA) return scoreB - scoreA;
+        const _noA = parseInt(a.series_no) || 0;
+        const _noB = parseInt(b.series_no) || 0;
+        return _noB - _noA;
+      });
+      break;
+  }
+
+  return sortedData as any;
 });
 

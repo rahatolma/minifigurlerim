@@ -156,7 +156,7 @@ export function mapFigureForCard(row: RawListFigureDTO | any): FigureCardData | 
   
   // 5. SERIES MAPPING
   const series_id = series.id || row.series_id || '';
-  const series_name = series.series_name || series.title || 'Bilinmeyen Seri';
+  const series_name = series.series_name || series.title || row.series_name || 'Bilinmeyen Seri';
   const series_slug_tr = series.slug_tr || series.slug || '';
   const series_slug_en = series.slug_en || null;
   const series_number = series.series_number || series.series_no || series.number || null;

@@ -25,19 +25,19 @@ export default function MultiMarketButton({ customLink, amazonUrl, trendyolUrl, 
             <span className="text-[#FF9900] font-black text-[12px] uppercase tracking-widest group-hover:scale-105 transition-transform flex items-center gap-1.5">
                 Amazon TR <span className="text-lg leading-none">➚</span>
             </span>
-            <span className="text-gray-400 text-[9px] uppercase tracking-widest font-bold">Satın Al</span>
+            <span className="text-gray-400 text-[9px] uppercase tracking-widest font-bold">Ara</span>
         </a>
         <a href={trendyolUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center justify-center gap-1 px-4 py-3 bg-[#fcfcfc] border border-gray-200 rounded-xl hover:border-[#F27A1A] hover:bg-orange-50/30 hover:shadow-sm transition-all group">
             <span className="text-[#F27A1A] font-black text-[12px] uppercase tracking-widest group-hover:scale-105 transition-transform flex items-center gap-1.5">
                 Trendyol <span className="text-lg leading-none">➚</span>
             </span>
-            <span className="text-gray-400 text-[9px] uppercase tracking-widest font-bold">Satın Al</span>
+            <span className="text-gray-400 text-[9px] uppercase tracking-widest font-bold">Ara</span>
         </a>
         <a href={hepsiburadaUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center justify-center gap-1 px-4 py-3 bg-[#fcfcfc] border border-gray-200 rounded-xl hover:border-[#FF6000] hover:bg-orange-50/30 hover:shadow-sm transition-all group">
             <span className="text-[#FF6000] font-black text-[12px] uppercase tracking-widest group-hover:scale-105 transition-transform flex items-center gap-1.5">
                 Hepsiburada <span className="text-lg leading-none">➚</span>
             </span>
-            <span className="text-gray-400 text-[9px] uppercase tracking-widest font-bold">Satın Al</span>
+            <span className="text-gray-400 text-[9px] uppercase tracking-widest font-bold">Ara</span>
         </a>
     </div>
   );

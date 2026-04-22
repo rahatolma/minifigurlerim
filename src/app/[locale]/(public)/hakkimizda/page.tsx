@@ -35,7 +35,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
   const author = settings?.quote_author || 'Walt Disney';
 
   return (
-    <div className="bg-[#fcfcfc] min-h-screen pb-32">
+    <div className="bg-[#fcfcfc] min-h-screen pb-16">
       
 
 
