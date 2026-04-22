@@ -48,6 +48,7 @@ export default function NewsFilterClient({
           onChange={(val: string) => handleFilterUpdate('sort', val)}
           placeholder="Sıralama"
           showSearch={false}
+          wrapperClass="w-full"
         />
         </div>
         

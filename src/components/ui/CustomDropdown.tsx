@@ -10,7 +10,8 @@ export default function CustomDropdown({
   placeholder, 
   searchPlaceholder, 
   showSearch = false,
-  dropdownWidthClass = "w-full min-w-[200px]"
+  dropdownWidthClass = "w-full min-w-[200px]",
+  wrapperClass = "flex-1 sm:w-48 shrink-0"
 }: any) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -34,7 +35,7 @@ export default function CustomDropdown({
   const selectedOption = options.find((opt: any) => opt.value === value);
 
   return (
-    <div ref={wrapperRef} className="relative hidden md:block flex-1 sm:w-48 shrink-0">
+    <div ref={wrapperRef} className={`relative hidden md:block ${wrapperClass}`}>
       <div 
         onClick={() => setIsOpen(!isOpen)}
         className="w-full border border-gray-200 bg-white shadow-sm rounded-lg px-4 py-3 text-[13px] font-bold outline-none cursor-pointer text-black hover:border-black transition-all flex justify-between items-center group bg-no-repeat"
