@@ -47,12 +47,12 @@ export default function FigureCard(props: FigureCardData) {
   }, [userStatusMap, id]);
   const locale = useLocale();
 
-  const safeSeriesSlug = series_slug_tr || slugify(series_name);
-  const targetHref = getFigureUrl({
-    seriesSlug: safeSeriesSlug,
+  const hasValidSlugs = !!series_slug_tr && !!(figure_slug_tr || id);
+  const targetHref = hasValidSlugs ? getFigureUrl({
+    seriesSlug: series_slug_tr,
     figureSlug: figure_slug_tr || id,
     locale: locale as any
-  });
+  }) : '';
 
   const [imgSrc, setImgSrc] = useState(image_url || '/images/placeholder.svg');
 

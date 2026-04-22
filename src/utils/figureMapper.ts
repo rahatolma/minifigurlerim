@@ -129,11 +129,22 @@ function validateListFigureContract(row: any): boolean {
   return true;
 }
 
+// --- Relation Normalizer ---
+// Supabase bazen relations'ları array olarak döndürür (özellikle inner join olmayan durumlarda).
+// Bu fonksiyon array/obje karmaşasını çözer ve güvenli bir obje döndürür.
+function normalizeRelation(relation: any): any {
+  if (!relation) return {};
+  if (Array.isArray(relation)) {
+    return relation.length > 0 ? relation[0] : {};
+  }
+  return relation;
+}
+
 export function mapFigureForCard(row: RawListFigureDTO | any): FigureCardData | null {
   const isValid = validateListFigureContract(row);
   if (!isValid) return null; // Hard fail: Bozuk kayidi render etme
 
-  const series = row.series || {}; // Handle populated or potentially empty series cleanly
+  const series = normalizeRelation(row.series);
   
   // 1. Figure Name Fallbacks
   const figure_name = row.figure_name || row.name || 'İsimsiz Figür';
@@ -151,7 +162,8 @@ export function mapFigureForCard(row: RawListFigureDTO | any): FigureCardData | 
   
   // 4. Rarity levels (DUAL-READ)
   // Önce Supabase Migration A'dan gelen yeni Relation aranır, yoksa legacy string değerleri kullanılır.
-  const rarity_level = row.rarity_def?.name || row.rarity_level || row.rarity || 'Yaygın';
+  const rarity_def = normalizeRelation(row.rarity_def);
+  const rarity_level = rarity_def.name || row.rarity_level || row.rarity || 'Yaygın';
   
   
   // 5. SERIES MAPPING
@@ -217,7 +229,7 @@ export function mapFigureForDetail(row: any): FigureDetailData | null {
   const baseCard = mapFigureForCard(row);
   if (!baseCard) return null;
   
-  const series = row.series || {};
+  const series = normalizeRelation(row.series);
 
   const short_description_tr = row.short_description_tr || row.description || null;
   const release_date = series.release_date || null;
