@@ -12,7 +12,6 @@ import FiguresListContainer from '@/components/ui/FiguresListContainer';
 
 import EvolutionTimelineClient from '@/components/ui/EvolutionTimelineClient';
 
-export const revalidate = 3600; // Her zaman güncel
 
 export default async function FiguresPage({
   params,

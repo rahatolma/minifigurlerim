@@ -97,9 +97,9 @@ export default async function SeriesDetail({
   }
 
   const title = locale === 'en' && series.title_en ? series.title_en : series.title;
-  const content_blocks = locale === 'en' && series.content_blocks_en ? series.content_blocks_en : series.content_blocks;
+  const content_blocks = locale === 'en' && series.description_blocks_en ? series.description_blocks_en : series.content_blocks;
   
-  const isFallback = locale === 'en' && !series.title_en && !series.content_blocks_en;
+  const isFallback = locale === 'en' && !series.title_en && !series.description_blocks_en;
   const fallbackT = await getTranslations('Fallback');
   
   // Bu seriye ait figürleri çek

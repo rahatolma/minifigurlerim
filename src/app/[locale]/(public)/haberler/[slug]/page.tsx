@@ -82,10 +82,10 @@ export default async function NewsDetailPage({
   }
 
   const title = locale === 'en' && news.title_en ? news.title_en : news.title;
-  const summary = locale === 'en' && news.summary_en ? news.summary_en : news.summary;
-  const content = locale === 'en' && news.content_en ? news.content_en : news.content;
+  const summary = locale === 'en' && news.summary;
+  const content = locale === 'en' && news.content_blocks_en ? news.content_blocks_en : news.content;
 
-  const isFallback = locale === 'en' && !news.title_en && !news.content_en;
+  const isFallback = locale === 'en' && !news.title_en && !news.content_blocks_en;
   const fallbackT = await getTranslations('Fallback');
 
   // Tarihi Türkçe formatla
