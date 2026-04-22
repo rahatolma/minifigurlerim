@@ -6,6 +6,7 @@ import AntiCopyShield from "@/components/utils/AntiCopyShield";
 import "../globals.css";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { GamificationProvider } from "@/components/providers/GamificationProvider";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const sen = Sen({
   variable: "--font-sen",
@@ -69,6 +70,7 @@ export default async function RootLayout({
           </GamificationProvider>
         </AuthProvider>
       </NextIntlClientProvider>
+      <SpeedInsights />
     </body>
     </html>
   );
