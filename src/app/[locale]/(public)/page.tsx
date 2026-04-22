@@ -184,9 +184,10 @@ export default async function Home() {
       {/* 8. Güncel Haberler / Blog Section */}
       <section className="bg-white py-[40px] md:py-[64px] border-t border-gray-100">
           <ItemCarousel
+            itemsPerView={2}
             titleBlock={
               <div className="flex items-center gap-2 md:gap-4">
-                <div className="w-8 h-8 md:w-14 md:h-14 bg-black rounded-full flex items-center justify-center text-[#D22B2B] shadow-sm shrink-0">
+                <div className="w-8 h-8 md:w-14 h-14 bg-black rounded-full flex items-center justify-center text-[#D22B2B] shadow-sm shrink-0">
                     <LegoHeadIcon mode="search" className="w-[16px] h-[16px] md:w-[28px] md:h-[28px]" color="text-white" />
                 </div>
                 <div className="flex flex-col">
