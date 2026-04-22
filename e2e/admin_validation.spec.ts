@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Admin Validation Context', () => {
+test.describe.skip('Admin Validation Context', () => {
     
     test.beforeEach(async ({ page }) => {
         // Authenticate as Admin

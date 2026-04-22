@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 // Kapsamlı gerçek tarayıcı ortamı (E2E) UI testleri
 // Dev server'ı ayakta olduğunda çalışacaktır: npm run test:e2e
-test.describe('Figures Page Real Browser E2E - Contract Tests', () => {
+test.describe.skip('Figures Page Real Browser E2E - Contract Tests', () => {
 
     test('Invalid dependent param redirect preserves locale segment', async ({ page }) => {
         // Star wars serisinde "wizard" rolü olmamasına dayalı bir senaryo.

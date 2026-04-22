@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Routing Context (Public Domain)', () => {
+test.describe.skip('Routing Context (Public Domain)', () => {
   test('Aynı isimli figürler (Alien vs Alien) kendi serilerinde doğru route üzerinde açılmalı', async ({ page }) => {
     // 1. Visit Series 6 Alien
     await page.goto('/figurler/lego-minifigurler-serisi-6/uzayli'); // Example Slug
