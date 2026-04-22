@@ -43,6 +43,7 @@ export default function EditFigurePage() {
     release_year: '',
     rarity_score: '1',
     series_score: '1',
+    view_count_30d: 0,
     collection_count_30d: 0,
     favorite_count_30d: 0,
     rating_count: 0,
