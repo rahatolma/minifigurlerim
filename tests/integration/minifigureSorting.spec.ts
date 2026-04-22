@@ -17,24 +17,24 @@ test.describe('Minifigure Sorting & Pagination - Integration Tests', () => {
             const ranks = data.data.map(d => d.total_views);
             // Sıfırdan veya null'dan önce daima dolu views gelmelidir.
             */
-            test.skip('Requires Seeded DB Environment', () => true);
+            test.skip(true, 'Requires Seeded DB Environment');
         });
 
         test('same total_views applies created_at DESC correctly', async () => {
              // Mock data A(total_views: 100, created: today), B(total_views: 100, created: yesterday)
              // Expectation: A -> B
-             test.skip('Requires Seeded DB Environment', () => true);
+             test.skip(true, 'Requires Seeded DB Environment');
         });
 
         test('null created_at edge-case falls back to id DESC', async () => {
-             test.skip('Requires Seeded DB Environment', () => true);
+             test.skip(true, 'Requires Seeded DB Environment');
         });
         
         test('pagination batch split does not produce skipped or duplicate IDs', async () => {
              // Fetch Limit 36, offset 0 -> fetch 36 -> record IDs
              // Fetch Limit 36, offset 36 -> fetch 36 -> record IDs
              // Expectation: first_batch_ids_set intersected with second_batch_ids_set = 0.
-             test.skip('Requires Seeded DB Environment', () => true);
+             test.skip(true, 'Requires Seeded DB Environment');
         });
     });
 });
