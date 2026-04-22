@@ -55,6 +55,7 @@ export default function CommentsBlock({ entityType, entityId }: { entityType: st
       setForm({ user_name: '', content: '' });
       fetchComments(); // Listeyi yenile
     } catch (err: any) {
+console.error(err);
       toast.error('Yorum gönderilirken hata oluştu.');
     } finally {
       setSubmitting(false);

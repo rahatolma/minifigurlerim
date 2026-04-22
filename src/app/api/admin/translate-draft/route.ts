@@ -1,11 +1,10 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 export async function POST(req: Request) {
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
   try {
     const { textsToTranslate, seoData } = await req.json();
 
@@ -167,6 +166,7 @@ Elite EN: "Its structured detailing contributes to its recognition among collect
     }, { status: 200 });
     
   } catch (error: any) {
+console.error(error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

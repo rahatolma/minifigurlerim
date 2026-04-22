@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
+import CustomDropdown from './CustomDropdown';
 
 export default function VaultFilterClient({
   seriesList,
@@ -28,7 +29,10 @@ export default function VaultFilterClient({
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const name = e.target.name;
     const value = e.target.value;
+    handleFilterUpdate(name, value);
+  };
 
+  const handleFilterUpdate = (name: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
     
     if (value === 'all') {
@@ -72,57 +76,69 @@ export default function VaultFilterClient({
     <>
       <div className="hidden md:flex flex-nowrap md:flex-wrap items-center gap-2 md:gap-3 w-full">
 
-        {/* MASAÜSTÜ: Tümünü Göster */}
-        <select 
-          name="status" 
-          value={currentStatus} 
-          onChange={handleChange}
-          className="hidden md:block border border-gray-200 rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-48 flex-1 bg-white cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
-        >
-          <option value="all">Koleksiyon Filtresi</option>
-          <option value="have">Kasamda Olanlar</option>
-          <option value="want">Takip Ettiklerim</option>
-        </select>
+        {/* MASAÜSTÜ: Doğrudan Açılır Kutular */}
+        <CustomDropdown 
+          name="status"
+          options={[
+            { value: 'all', label: 'Tüm Koleksiyon' },
+            { value: 'have', label: 'Kasamda Olanlar' },
+            { value: 'want', label: 'Takip Ettiklerim' }
+          ]}
+          value={currentStatus}
+          onChange={(val: string) => handleFilterUpdate('status', val)}
+          placeholder="Durum"
+          showSearch={false}
+        />
         
-        <select 
-          name="series" 
-          value={currentSeries} 
-          onChange={handleChange}
-          className="hidden md:block border border-gray-200 rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-48 flex-1 bg-white cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
-        >
-          <option value="all">Tüm Seriler</option>
-          {seriesList.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
-        </select>
+        <CustomDropdown 
+          name="series"
+          options={[
+            { value: 'all', label: 'Tüm Seriler' },
+            ...seriesList.map(s => ({ value: s.id.toString(), label: s.title }))
+          ]}
+          value={currentSeries}
+          onChange={(val: string) => handleFilterUpdate('series', val)}
+          placeholder="Seriler"
+          searchPlaceholder="Seri ara..."
+          showSearch={true}
+          dropdownWidthClass="w-[450px]"
+        />
         
-        <select 
-          name="role" 
-          value={currentRole} 
-          onChange={handleChange}
-          className="hidden md:block border border-gray-200 rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-40 flex-1 bg-white cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
-        >
-          <option value="all">Figür Rolü</option>
-          {roles.map(r => <option key={r} value={r}>{r}</option>)}
-        </select>
+        <CustomDropdown 
+          name="role"
+          options={[
+            { value: 'all', label: 'Tüm Roller' },
+            ...roles.map(r => ({ value: r, label: r }))
+          ]}
+          value={currentRole}
+          onChange={(val: string) => handleFilterUpdate('role', val)}
+          placeholder="Figür Rolü"
+          showSearch={false}
+        />
         
-        <select 
-          name="type" 
-          value={currentType} 
-          onChange={handleChange}
-          className="hidden md:block border border-gray-200 rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-40 flex-1 bg-white cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
-        >
-          <option value="all">Figür Tipi</option>
-          {types.map(t => <option key={t} value={t}>{t}</option>)}
-        </select>
+        <CustomDropdown 
+          name="type"
+          options={[
+            { value: 'all', label: 'Tüm Tipler' },
+            ...types.map(t => ({ value: t, label: t }))
+          ]}
+          value={currentType}
+          onChange={(val: string) => handleFilterUpdate('type', val)}
+          placeholder="Figür Tipi"
+          showSearch={false}
+        />
 
-        <select 
-          name="rarity" 
-          value={currentRarity} 
-          onChange={handleChange}
-          className="hidden md:block border border-gray-200 rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-40 flex-1 bg-white cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
-        >
-          <option value="all">Nadirlik</option>
-          {rarities.map(r => <option key={r} value={r}>{r}</option>)}
-        </select>
+        <CustomDropdown 
+          name="rarity"
+          options={[
+            { value: 'all', label: 'Tüm Nadirlikler' },
+            ...rarities.map(r => ({ value: r, label: r }))
+          ]}
+          value={currentRarity}
+          onChange={(val: string) => handleFilterUpdate('rarity', val)}
+          placeholder="Nadirlik"
+          showSearch={false}
+        />
 
         {/* ORTAK: Rozet ve Temizle Butonu */}
         <div className="border border-gray-200 bg-gray-50 rounded-xl px-4 py-3 flex items-center justify-center flex-1 shrink-0 md:min-w-max">

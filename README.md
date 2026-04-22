@@ -1,4 +1,8 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+
+## ⚠️ Post-Launch Critical Tasks
+
+- **P1: Series Trend Metric (views_30d)** → *Referans: Issue #XX veya docs/operations/tech-debt-backlog.md*
 
 ## Getting Started
 
@@ -19,6 +23,19 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Documentation & Architecture Rules
+
+Projenin tüm mimari kararları, test senaryoları ve yazılım standartları `/docs` klasörü altında yönetilir:
+- **[Architecture](/docs/architecture)**: Rota envanterleri, SSR stratejileri.
+- **[Standards](/docs/standards)**: Naming conventions, marka ve dil bütünlüğü kopyaları.
+- **[Testing](/docs/testing)**: Smoke test ve QA checklistleri. (E2E Testler otonom koşar. Bkz: `npm run test:e2e`)
+- **[Operations](/docs/operations)**: Technical debt (teknik borç) ve build uyarıları backlog'u.
+
+**⚠️ ZORUNLU MİMARİ KURAL:**
+- Yeni mimari karar → `/docs` klasörüne yazılmadan geçerli sayılmaz.
+- Yeni kural → Lint veya Test ağlarıyla enforce edilmeden tamamlanmış sayılmaz.
+- `docs` dışında kalan ve ağızdan ağza dolaşan bilgi → "bilinmeyen bilgi" kabul edilir ve PR süreçlerinde referans alınamaz.
 
 ## Learn More
 

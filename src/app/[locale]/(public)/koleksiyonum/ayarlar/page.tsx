@@ -18,7 +18,7 @@ export default async function AyarlarPage() {
   }
 
   return (
-    <div className="bg-[#fcfcfc] min-h-screen pb-32">
+    <div className="bg-[#fcfcfc] min-h-screen pb-16">
 
 
         <div className="max-w-7xl mx-auto px-8 pt-8 flex flex-col md:flex-row gap-8 lg:gap-12">

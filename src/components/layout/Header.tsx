@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, usePathname } from '@/i18n/routing';
 import { Search } from 'lucide-react';
 import { logOut } from '@/app/[locale]/(auth)/login/actions';
@@ -15,6 +15,24 @@ export default function Header() {
   const t = useTranslations('Navigation');
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isSticky, setIsSticky] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Üst logonun yüksekliği yaklaşık 75px (md:h-[75px])
+      if (window.scrollY > 75) {
+        setIsSticky(true);
+      } else {
+        setIsSticky(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    // İlk render'da kontrol
+    handleScroll();
+    
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Aktif sayfa link rengini belirlemek için yardımcı fonksiyon.
   const getLinkClass = (href: string) => {
@@ -25,10 +43,10 @@ export default function Header() {
       isActive = pathname?.startsWith(href) ?? false;
     }
     
-    // Yüksek kontrastlı profesyonel "aktif" sekme tasarımı (menü siyah arka plan / beyaz metin gibi veya tersi)
+    // Yüksek kontrastlı profesyonel "aktif" sekme tasarımı
     return isActive 
       ? 'bg-black text-white px-4 h-[40px] leading-[40px] rounded-sm shadow-inner' 
-      : 'hover:bg-black/10 hover:text-white px-4 h-[40px] leading-[40px] transition-colors text-white rounded-sm';
+      : `hover:bg-black/10 px-4 h-[40px] leading-[40px] transition-colors rounded-sm ${isSticky ? 'text-gray-900 hover:text-black font-extrabold' : 'text-white hover:text-white'}`;
   };
 
   return (
@@ -39,7 +57,7 @@ export default function Header() {
         {/* Logo Container (Always Visible) */}
         <div className="flex-1 md:flex-none">
             <Link href="/" className="inline-block flex items-center h-full">
-               <img src="/uploads/media__1774631571720.png" alt="Minifigürlerim Logo" className="h-[28px] md:h-[36px] w-auto" />
+               <img src="/images/site-logo.png" alt="Minifigürlerim Logo" className="h-[28px] md:h-[36px] w-auto" />
             </Link>
         </div>
         
@@ -89,7 +107,7 @@ export default function Header() {
     </header>
 
       {/* Bottom Tier: Navigation (SADECE MASAÜSTÜNDE GÖRÜNÜR MDC) */}
-      <nav className="hidden md:block bg-[var(--color-brand-red)] w-full shadow-md sticky top-0 z-[60]">
+      <nav className={`hidden md:block w-full shadow-md sticky top-0 z-[60] transition-colors duration-300 ${isSticky ? 'bg-[#F2CD37]' : 'bg-[var(--color-brand-red)]'}`}>
         <div className="mx-auto max-w-7xl flex items-center h-[75px] relative">
           {/* Nav Links */}
           <nav className="w-full h-full flex items-center justify-center px-8">

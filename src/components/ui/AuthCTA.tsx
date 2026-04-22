@@ -8,12 +8,15 @@ export interface AuthCTAProps {
 }
 
 export default function AuthCTA({ fullWidth = false }: AuthCTAProps) {
+  // Mimari kural 2 & 3 Revizyonu:
+  // useAuth() artık stricly tiplendi. Provider dışına çıkarsa anında sert hata (throw Error) fırlatacak.
+  // Bu yüzden kozmetik bir 'fallback' yapmıyoruz, doğrudan context'in gücüne ve hatasına güveniyoruz.
   const { user } = useAuth();
   const isLoggedIn = !!user;
 
   const containerStyle = fullWidth
     ? "w-full relative overflow-hidden bg-gray-900 py-16 md:py-20 px-4 md:px-8 shadow-xl flex flex-col items-center justify-center text-center group border-y border-gray-800"
-    : "w-full relative overflow-hidden bg-gray-900 rounded-3xl p-8 md:p-12 shadow-[0_15px_40px_rgba(0,0,0,0.15)] flex flex-col items-center justify-center text-center group border border-gray-800";
+    : "w-full relative overflow-hidden bg-gray-900 rounded-3xl px-8 pt-8 pb-12 md:px-12 md:pt-10 md:pb-16 shadow-[0_15px_40px_rgba(0,0,0,0.15)] flex flex-col items-center justify-center text-center group border border-gray-800";
 
   return (
     <div className={containerStyle}>
@@ -54,7 +57,7 @@ export default function AuthCTA({ fullWidth = false }: AuthCTAProps) {
       <div className="relative z-10 flex items-center justify-center gap-4 text-[11px] md:text-[13px] font-bold text-gray-400 tracking-wide">
         <span className="flex items-center gap-1.5">
           <svg className="w-4 h-4 text-[#D22B2B]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-          1000+ Figür
+          800+ Minifigür
         </span>
         <span className="text-gray-600">•</span>
         <span className="flex items-center gap-1.5">

@@ -1,12 +1,15 @@
 import { getAuthUser } from '@/services/action_dal';
 import { redirect } from 'next/navigation';
-import { getUserProfile, getUserCollectionsWithDetails, getAllSeries, getTotalMinifiguresCount, getUserSeriesStats, getMinifigurePriceHistoryBatch } from '@/services/dal';
+import { getUserProfile, getUserCollectionsWithDetails, getAllSeries, getTotalMinifiguresCount, getUserSeriesStats, getMinifigurePriceHistoryBatch, getMinifigureBySlug } from '@/services/dal';
 import { logOut } from '@/app/[locale]/(auth)/login/actions';
 import Link from 'next/link';
 import FigureCard from '@/components/ui/FigureCard';
 import { mapFigureForCard } from '@/utils/figureMapper';
 import VaultFilterClient from '@/components/ui/VaultFilterClient';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
+import { slugify } from '@/utils/helpers';
+import { cookies } from 'next/headers';
+import { getFigureUrl, getFiguresListUrl, getSeriesUrl } from '@/utils/routeBuilder';
 
 export const metadata = {
   title: 'Koleksiyonum - Minifigürlerim',
@@ -15,11 +18,14 @@ export const metadata = {
 
 export default async function KoleksiyonumPage({
   searchParams,
+  params,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  params: Promise<{ locale: string }>;
 }) {
   const user = await getAuthUser();
   const resolvedParams = await searchParams;
+  const locale = (await params).locale as any;
   
   const currentStatus = (resolvedParams.status as string) || 'have';
   const currentSeries = (resolvedParams.series as string) || 'all';
@@ -44,9 +50,9 @@ export default async function KoleksiyonumPage({
   const seriesList = sRes || [];
 
   // Dinamik Olarak Kasadaki Filtre Seçeneklerini Oluştur (Sadece kullanıcının sahip olduğu/istediği şeylerin kategorileri)
-  const roles = Array.from(new Set(rawCollections.map(c => (c.minifigures as any)?.role).filter(Boolean))) as string[];
-  const types = Array.from(new Set(rawCollections.map(c => (c.minifigures as any)?.type).filter(Boolean))) as string[];
-  const rarities = Array.from(new Set(rawCollections.map(c => (c.minifigures as any)?.rarity).filter(Boolean))) as string[];
+  const roles = Array.from(new Set(rawCollections.map((c: import("@/services/dal").UserCollectionDTO) => (c.minifigures as any)?.role).filter(Boolean))) as string[];
+  const types = Array.from(new Set(rawCollections.map((c: import("@/services/dal").UserCollectionDTO) => (c.minifigures as any)?.type).filter(Boolean))) as string[];
+  const rarities = Array.from(new Set(rawCollections.map((c: import("@/services/dal").UserCollectionDTO) => (c.minifigures as any)?.rarity).filter(Boolean))) as string[];
 
   // 4. İSTEMCİ FİLTRELEMESİNİ VERİYE UYGULA
   let filteredCollections = rawCollections.filter((c: any) => {
@@ -72,7 +78,8 @@ export default async function KoleksiyonumPage({
   const totalFiguresInWorld = totalFiguresInWorldRaw || 1;
 
   const totalHave = rawCollections.filter((c: any) => c.status === 'have').length;
-  const globalPercent = totalFiguresInWorld > 0 ? ((totalHave / totalFiguresInWorld) * 100).toFixed(1) : '0';
+  const rawGlobalPercent = totalFiguresInWorld > 0 ? ((totalHave / totalFiguresInWorld) * 100) : 0;
+  const globalPercentDisplay = rawGlobalPercent > 0 && rawGlobalPercent < 1 ? '<1' : rawGlobalPercent.toFixed(0);
 
   // ----------------------------------------
   // SERİ İLERLEME (PROGRESS) BARI HESAPLAMALARI (CACHE'DEN OKUMA)
@@ -80,15 +87,40 @@ export default async function KoleksiyonumPage({
   const cachedStats = await getUserSeriesStats(user.id);
 
   // Geliştirilmiş Progress datası: En üste en dolu olanlar gelir
-  const activeSeriesProgress = (cachedStats || []).map(stat => ({
-      seriesId: stat.series_id,
-      seriesTitle: (stat as any).series_name || 'Bilinmeyen Seri',
-      haveCount: stat.owned_count,
-      maxCount: Math.max(1, stat.total_count),
-      percent: Number(stat.completion_percent)
-  })).sort((a, b) => b.percent - a.percent);
+  const activeSeriesProgress = (cachedStats || [])
+      .filter((stat: any) => {
+         // Cross-Reference with real, live 'haveItems' to prove possession
+         const trueCount = haveItems.filter((c: any) => c.minifigures?.series_id === stat.series_id).length;
+         return trueCount > 0;
+      })
+      .map((stat: any) => {
+          const matchingItems = haveItems.filter((c: any) => c.minifigures?.series_id === stat.series_id);
+          const trueCount = matchingItems.length;
+          const maxCount = Math.max(1, stat.total_count);
+          const percent = Number(((trueCount / maxCount) * 100).toFixed(2));
+          
+          // Gerçek Seri Adını Bul: İlk figürün bağlı olduğu series entity'sini çöz
+          const sampleFig = matchingItems[0]?.minifigures;
+          let realTitle = 'Bilinmeyen Seri';
+          
+          if (sampleFig?.series) {
+             const s = sampleFig.series;
+             // Locale bazlı çekim için fallback (Sayfa Server Component, param olarak "locale" gelebilir ama basitçe title fallback'i veriyoruz)
+             realTitle = s.title || s.title_en || sampleFig.series_name || stat.series_name || 'Bilinmeyen Seri';
+          } else {
+             realTitle = sampleFig?.series_name || stat.series_name || 'Bilinmeyen Seri';
+          }
 
-  const completedSeriesCount = activeSeriesProgress.filter(sp => sp.haveCount >= sp.maxCount && sp.maxCount > 0).length;
+          return {
+              seriesId: stat.series_id,
+              seriesTitle: realTitle,
+              haveCount: trueCount,
+              maxCount: maxCount,
+              percent: percent
+          };
+      }).sort((a: { percent: number }, b: { percent: number }) => b.percent - a.percent);
+
+  const completedSeriesCount = activeSeriesProgress.filter((sp: { haveCount: number, maxCount: number }) => sp.haveCount >= sp.maxCount && sp.maxCount > 0).length;
 
   // Filtrelenmiş "Bende Olanlar"ın Toplam Değeri
   const portfolioValue = haveItems.reduce((acc: number, curr: any) => {
@@ -104,7 +136,7 @@ export default async function KoleksiyonumPage({
          
       if (historyData && historyData.length > 0) {
          const oldPricesLookup: Record<string, number> = {};
-         historyData.forEach(hd => {
+         historyData.forEach((hd: any) => {
              if (!oldPricesLookup[hd.minifigure_id]) {
                  oldPricesLookup[hd.minifigure_id] = Number(hd.value_usd);
              }
@@ -123,8 +155,36 @@ export default async function KoleksiyonumPage({
 
   const lastAddedFigure = haveItems.length > 0 ? haveItems[0].minifigures : null;
 
+  // SON İNCELENEN FİGÜR (Gerçek Tracking Cookies üzerinden)
+  const cookieStore = await cookies();
+  const lastViewedId = cookieStore.get('last_viewed_figure_id')?.value;
+  let lastWantedFigure = null; // "Son İncelediğin Figür" olarak yeniden isimlendireceğiz UI tarafında.
+  if (lastViewedId) {
+     const dbFigure = await getMinifigureBySlug(lastViewedId);
+     if (dbFigure) lastWantedFigure = dbFigure;
+  }
+
+  // YENİ STANDART: Güvenli Route Hesaplaması (Dinamik)
+  let lastAddedUrl = null;
+  if (lastAddedFigure) {
+     lastAddedUrl = getFigureUrl({
+        seriesSlug: (lastAddedFigure as any)?.series?.slug_tr || (lastAddedFigure as any)?.series_slug || slugify((lastAddedFigure as any)?.series?.title || (lastAddedFigure as any)?.series_name || 'seri-yok'),
+        figureSlug: (lastAddedFigure as any).slug || (lastAddedFigure as any).id,
+        locale: locale as any
+     });
+  }
+
+  let lastWantedUrl = null;
+  if (lastWantedFigure) {
+     lastWantedUrl = getFigureUrl({
+        seriesSlug: (lastWantedFigure as any)?.series?.slug_tr || (lastWantedFigure as any)?.series_slug || slugify((lastWantedFigure as any)?.series?.title || (lastWantedFigure as any)?.series_name || 'seri-yok'),
+        figureSlug: (lastWantedFigure as any).slug || (lastWantedFigure as any).id,
+        locale: locale as any
+     });
+  }
+
   return (
-    <div className="bg-[#fcfcfc] min-h-screen pb-32 lg:pb-72">
+    <div className="bg-[#fcfcfc] min-h-screen pb-16 lg:pb-24">
 
 
         <div className="max-w-7xl mx-auto px-8 pt-8">
@@ -143,7 +203,7 @@ export default async function KoleksiyonumPage({
                 </div>
                 <div className="flex flex-col md:items-end bg-white border border-gray-100 px-6 py-5 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.03)] group transition-all hover:border-[#D22B2B]/20 min-w-[200px]">
                     <div className="flex items-center gap-1">
-                        <span className="text-4xl md:text-5xl font-black text-[#D22B2B] tracking-tighter">%{parseFloat(globalPercent.toString()).toFixed(0)}</span>
+                        <span className="text-4xl md:text-5xl font-black text-[#D22B2B] tracking-tighter">%{globalPercentDisplay}</span>
                         <svg className="w-6 h-6 text-[#D22B2B] opacity-20 transform -translate-y-2 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
                     </div>
                     <span className="text-[10px] md:text-[11px] font-black text-gray-400 uppercase tracking-widest mt-1.5 group-hover:text-gray-600 transition-colors">
@@ -246,7 +306,22 @@ export default async function KoleksiyonumPage({
                                    <div className="absolute top-0 left-0 w-1.5 h-full bg-[#D22B2B] opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                    <div className="flex justify-between items-start mb-4">
                                        <Link href={`/seriler/${sp.seriesId}`} className="text-lg font-black text-gray-900 group-hover:text-[#D22B2B] transition-colors truncate pr-4 block">
-                                           {sp.seriesTitle}
+                                           {(() => {
+                                               const formatSeriesName = (name: string) => {
+                                                   const match = name.match(/^(.*?Seris[i|i]\s+)(.*)$/i);
+                                                   if (match && match[2].trim() !== '') {
+                                                       return { top: match[1].trim(), bottom: match[2].trim() };
+                                                   }
+                                                   return { top: '', bottom: name };
+                                               };
+                                               const format = formatSeriesName(sp.seriesTitle);
+                                               return format.top ? (
+                                                  <div className="flex flex-col">
+                                                     <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none mb-1">{format.top}</span>
+                                                     <span className="truncate">{format.bottom}</span>
+                                                  </div>
+                                               ) : sp.seriesTitle;
+                                           })()}
                                        </Link>
                                        <span className="text-sm font-black text-[#D22B2B] shrink-0 bg-white px-3 py-1 rounded-lg border border-gray-200 shadow-sm">
                                           {sp.haveCount} / {sp.maxCount}
@@ -288,7 +363,7 @@ export default async function KoleksiyonumPage({
                 <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-[0_10px_40px_rgba(0,0,0,0.02)] flex items-center gap-6 group hover:border-gray-200 hover:shadow-md transition-all h-[132px] relative z-20">
                    <div className="relative w-[84px] h-[84px] min-w-[84px] min-h-[84px] bg-gray-50 rounded-2xl border border-gray-100 p-2 shrink-0 overflow-hidden flex items-center justify-center group-hover:bg-red-50 transition-colors">
                       {lastAddedFigure ? (
-                         <img src={(lastAddedFigure as any)?.images?.[0] || 'https://via.placeholder.com/84'} alt="Son Eklenen" className="absolute inset-0 m-auto max-w-[68px] max-h-[68px] w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
+                         <img src={Array.isArray((lastAddedFigure as any)?.images) && (lastAddedFigure as any)?.images.length > 0 ? (lastAddedFigure as any)?.images[0] : (typeof (lastAddedFigure as any)?.images === 'string' ? (lastAddedFigure as any)?.images : '/images/placeholder.svg')} alt="Son Eklenen" className="absolute inset-0 m-auto max-w-[68px] max-h-[68px] w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
                       ) : (
                          <LegoHeadIcon mode="neutral" className="w-8 h-8 text-gray-300" />
                       )}
@@ -298,12 +373,12 @@ export default async function KoleksiyonumPage({
                          <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"></path></svg>
                          <span className="truncate">Son Eklediğin Figür</span>
                       </span>
-                      {lastAddedFigure ? (
+                      {lastAddedFigure && lastAddedUrl ? (
                          <>
-                            <Link href={`/figurler/${(lastAddedFigure as any).slug || (lastAddedFigure as any).id}`} className="text-[16px] font-black text-gray-900 group-hover:text-[#D22B2B] transition-colors line-clamp-1 flex-1">
+                            <Link href={lastAddedUrl} className="text-[16px] font-black text-gray-900 group-hover:text-[#D22B2B] transition-colors line-clamp-1 flex-1">
                                {(lastAddedFigure as any).name}
                             </Link>
-                            <span className="text-[13px] font-bold text-gray-400 mt-0.5 truncate flex-shrink-0">{(lastAddedFigure as any).series_name || 'Bilinmeyen Seri'}</span>
+                            <span className="text-[13px] font-bold text-gray-400 mt-0.5 truncate flex-shrink-0">{(lastAddedFigure as any)?.series?.title || (lastAddedFigure as any).series_name || 'Bilinmeyen Seri'}</span>
                             <span className="text-[10px] font-black text-[#5CB85C] uppercase tracking-widest mt-1.5 flex items-center gap-1 opacity-90">
                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
                                Koleksiyonuna Eklendi
@@ -315,20 +390,39 @@ export default async function KoleksiyonumPage({
                    </div>
                 </div>
 
-                {/* Son İncelenen (Geçmiş - Placeholder) */}
-                <Link href="/figurler" className="bg-white border border-gray-100 rounded-3xl p-6 shadow-[0_10px_40px_rgba(0,0,0,0.02)] flex items-center gap-6 group hover:border-gray-200 hover:shadow-md transition-all h-[132px] relative z-20 cursor-pointer">
+                {/* Son İstenen (Yakın Takibe Alınan) */}
+                <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-[0_10px_40px_rgba(0,0,0,0.02)] flex items-center gap-6 group hover:border-gray-200 hover:shadow-md transition-all h-[132px] relative z-20">
                    <div className="relative w-[84px] h-[84px] min-w-[84px] min-h-[84px] bg-gray-50 rounded-2xl border border-gray-100 p-2 shrink-0 overflow-hidden flex items-center justify-center group-hover:bg-blue-50 transition-colors">
-                      <svg className="w-8 h-8 text-gray-300 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                      {lastWantedFigure ? (
+                         <img src={Array.isArray((lastWantedFigure as any)?.images) && (lastWantedFigure as any)?.images.length > 0 ? (lastWantedFigure as any)?.images[0] : (typeof (lastWantedFigure as any)?.images === 'string' ? (lastWantedFigure as any)?.images : '/images/placeholder.svg')} alt="Yakın Takipteki Figür" className="absolute inset-0 m-auto max-w-[68px] max-h-[68px] w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
+                      ) : (
+                         <svg className="w-8 h-8 text-gray-300 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                      )}
                    </div>
                    <div className="flex flex-col flex-1 min-w-0">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-blue-500 mb-1.5 flex items-center gap-1.5">
-                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                         Son İncelediğin Figür
+                      <span className="text-[10px] font-black uppercase tracking-widest text-[#0052cc] mb-1.5 flex items-center gap-1.5">
+                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                         <span className="truncate">Son İncelediğin Figür</span>
                       </span>
-                      <span className="text-[16px] font-black text-gray-900 group-hover:text-blue-600 transition-colors">Henüz inceleme yapılmadı</span>
-                      <span className="text-[13px] font-bold text-gray-400 mt-0.5 group-hover:text-gray-500 transition-colors flex items-center gap-1">Figürleri keşfetmeye başla <span className="transform group-hover:translate-x-1 transition-transform">→</span></span>
+                      {lastWantedFigure && lastWantedUrl ? (
+                         <>
+                            <Link href={lastWantedUrl} className="text-[16px] font-black text-gray-900 group-hover:text-[#0052cc] transition-colors line-clamp-1 flex-1">
+                               {(lastWantedFigure as any).name || (lastWantedFigure as any).figure_name}
+                            </Link>
+                            <span className="text-[13px] font-bold text-gray-400 mt-0.5 truncate flex-shrink-0">{(lastWantedFigure as any)?.series?.title || (lastWantedFigure as any).series_name || 'Bilinmeyen Seri'}</span>
+                            
+                            <Link href={lastWantedUrl} className="text-[10px] font-black text-[#0052cc] uppercase tracking-widest mt-1.5 flex items-center gap-1 opacity-90 hover:underline">
+                               İncelemeye Devam Et →
+                            </Link>
+                         </>
+                      ) : (
+                         <>
+                            <span className="text-[16px] font-black text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">Henüz inceleme yapılmadı</span>
+                            <Link href="/figurler" className="text-[13px] font-bold text-gray-400 mt-0.5 group-hover:text-gray-500 transition-colors flex items-center gap-1">Figürleri keşfetmeye başla <span className="transform group-hover:translate-x-1 transition-transform">→</span></Link>
+                         </>
+                      )}
                    </div>
-                </Link>
+                </div>
             </div>
 
         </div>
@@ -350,7 +444,7 @@ export default async function KoleksiyonumPage({
         </div>
 
         {/* LİSTELEME KARTLARI (GRID) */}
-        <div className="max-w-7xl mx-auto px-8 mt-10 md:mt-10 pt-6 md:pt-0">
+        <div className="max-w-7xl mx-auto px-8 mt-6 md:mt-8 pt-6 md:pt-0">
             {filteredCollections.length === 0 ? (
                <div className="flex flex-col items-center justify-center p-24 border-2 border-dashed border-gray-200 rounded-2xl bg-white text-center w-full shadow-sm mt-4">
                    <LegoHeadIcon mode="search" className="w-24 h-24 mb-6" color="text-gray-200" />
@@ -379,8 +473,8 @@ export default async function KoleksiyonumPage({
                           value_score: fig.value_score,
                           demand_score: fig.demand_score,
                           series: {
-                              series_name: fig.series_name,
-                              slug_tr: fig.series_slug || fig.series_id // Placeholder
+                              series_name: fig.series?.title || fig.series?.title_en || fig.series_name,
+                              slug_tr: fig.series?.slug_tr || fig.series?.slug_en || fig.series_slug || fig.series_id
                           }
                       };
                       

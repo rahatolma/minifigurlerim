@@ -3,13 +3,11 @@ import FigureCard from '@/components/ui/FigureCard';
 import HeroSliderClient from '@/components/ui/HeroSliderClient';
 import ItemCarousel from '@/components/ui/ItemCarousel';
 import BeforeAfterSlider from '@/components/ui/BeforeAfterSlider';
-import InstagramBlock from '@/components/ui/InstagramBlock';
 import NewsCard from '@/components/ui/NewsCard';
 import { supabase } from '@/utils/supabase/client';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import { LayoutGrid, Package, TrendingUp } from 'lucide-react';
-import AuthCTA from '@/components/ui/AuthCTA';
 import { getHomepageData } from '@/services/homepageAggregation';
 
 
@@ -49,8 +47,8 @@ export default async function Home() {
                     <Package className="w-7 h-7" strokeWidth={2.5} />
                 </div>
                 <div className="flex flex-col text-left w-full">
-                    <h3 className="text-gray-900 text-[17px] font-black leading-snug">Her Figürü Yakından Tanı</h3>
-                    <p className="text-gray-500 font-medium text-[13px] mt-1 leading-snug">Her figürün parçaları, nadirliği ve koleksiyon değerine dair bilgileri inceleyin.</p>
+                    <h3 className="text-gray-900 text-[17px] font-black leading-snug">Her minifigürü yakından tanı</h3>
+                    <p className="text-gray-500 font-medium text-[13px] mt-1 leading-snug">Her minifigürün parçaları, nadirliği ve koleksiyon değerine dair bilgileri inceleyin.</p>
                 </div>
             </Link>
             
@@ -61,7 +59,7 @@ export default async function Home() {
                 </div>
                 <div className="flex flex-col text-left w-full">
                     <h3 className="text-gray-900 text-[17px] font-black leading-snug">Koleksiyonunu Bilinçli Büyüt</h3>
-                    <p className="text-gray-500 font-medium text-[13px] mt-1 leading-snug">Hangi figür değerli? Hangi seriler öne çıkıyor? Koleksiyon dünyasını öğrenin.</p>
+                    <p className="text-gray-500 font-medium text-[13px] mt-1 leading-snug">Hangi minifigür değerli? Hangi seriler öne çıkıyor? Koleksiyon dünyasını öğrenin.</p>
                 </div>
             </Link>
         </div>
@@ -75,7 +73,7 @@ export default async function Home() {
                 <div className="w-8 h-8 md:w-14 md:h-14 bg-[#D22B2B] rounded-full flex items-center justify-center text-white shadow-md border-2 md:border-4 border-red-100 shrink-0">
                     <LegoHeadIcon mode="search" className="w-[16px] h-[16px] md:w-[28px] md:h-[28px]" color="text-white" />
                 </div>
-                <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Yeni CMF Serileri</h2>
+                <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Yeni Seriler</h2>
               </div>
             }
             actionButton={
@@ -87,7 +85,7 @@ export default async function Home() {
                 key={series.id}
                 id={series.slug || series.id}
                 title={series.title}
-                imageUrl={series.cover_image_url || 'https://via.placeholder.com/400x300.png?text=Görsel+Yok'}
+                imageUrl={series.cover_image_url || '/images/placeholder.svg'}
                 year={series.release_year || '2024'}
                 seriesNo={series.series_no}
                 category={series.category || 'Minifigures'}
@@ -136,7 +134,7 @@ export default async function Home() {
                  <div className="w-8 h-8 md:w-14 md:h-14 bg-white border-2 border-[#D22B2B] text-[#D22B2B] rounded-full flex items-center justify-center shadow-sm shrink-0">
                      <TrendingUp className="w-[16px] h-[16px] md:w-[28px] md:h-[28px]" strokeWidth={2.5} />
                  </div>
-                 <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Çok Talep Gören Figürler</h2>
+                 <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Popüler Minifigürler</h2>
                </div>
              }
              actionButton={
@@ -163,7 +161,7 @@ export default async function Home() {
                  <div className="w-8 h-8 md:w-14 md:h-14 bg-white border-2 border-[#D22B2B] text-[#D22B2B] rounded-full flex items-center justify-center shadow-sm shrink-0">
                      <Package className="w-[16px] h-[16px] md:w-[28px] md:h-[28px]" strokeWidth={2.5} />
                  </div>
-                 <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Değerli Figürler</h2>
+                 <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Değerli Minifigürler</h2>
                </div>
              }
              actionButton={
@@ -182,22 +180,19 @@ export default async function Home() {
           </ItemCarousel>
       </section>
 
-      {/* 5. Erişime Aç / Koleksiyon Yönetimi (Full Width / Site Width) */}
-      <div className="hidden md:block snap-center snap-always w-full relative bg-gray-900 mt-0">
-         <AuthCTA fullWidth={true} />
-      </div>
+      {/* 7. [AuthCTA Layout'a Taşındı] Erişime Aç / Koleksiyon Yönetimi (Full Width) */}
 
       {/* 8. Güncel Haberler / Blog Section */}
       <section className="bg-white py-[40px] md:py-[64px] border-t border-gray-100">
           <ItemCarousel
+            itemsPerView={2}
             titleBlock={
               <div className="flex items-center gap-2 md:gap-4">
-                <div className="w-8 h-8 md:w-14 md:h-14 bg-black rounded-full flex items-center justify-center text-[#D22B2B] shadow-sm shrink-0">
+                <div className="w-8 h-8 md:w-14 h-14 bg-black rounded-full flex items-center justify-center text-[#D22B2B] shadow-sm shrink-0">
                     <LegoHeadIcon mode="search" className="w-[16px] h-[16px] md:w-[28px] md:h-[28px]" color="text-white" />
                 </div>
                 <div className="flex flex-col">
                   <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">Haberler</h2>
-                  <span className="text-[9px] md:text-xs font-bold uppercase tracking-widest text-[#D22B2B] mt-0.5 md:mt-1">GÜNCEL BLOG</span>
                 </div>
               </div>
             }
@@ -210,7 +205,7 @@ export default async function Home() {
                 key={newsItem.id}
                 slug={newsItem.slug || newsItem.id}
                 title={newsItem.title}
-                imageUrl={newsItem.cover_image_url || 'https://via.placeholder.com/400x300.png?text=Görsel+Yok'}
+                imageUrl={newsItem.cover_image_url || '/images/placeholder.svg'}
                 views={newsItem.total_views || 0}
                 dailyViews={newsItem.daily_views || 0}
                 minRead={newsItem.min_read || 1}
@@ -223,12 +218,7 @@ export default async function Home() {
           </ItemCarousel>
       </section>
 
-      {/* 9. Instagram Bloğu Section */}
-      <section className="hidden md:block snap-end snap-always bg-transparent py-[64px]">
-        <div className="max-w-7xl mx-auto px-8">
-           <InstagramBlock />
-        </div>
-      </section>
+
       
     </div>
   );

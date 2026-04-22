@@ -3,8 +3,9 @@ import { supabase } from '@/utils/supabase/client';
 export const getUserCollectionStatus = async (userId: string) => {
   const { data } = await supabase
     .from('user_collections')
-    .select('status, minifigure_id')
-    .eq('user_id', userId);
+    .select('status, minifigure_id, created_at, minifigures(name, series_id)')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
   return data || [];
 };
 

@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function HeroSliderClient({ sliders }: { sliders: any[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loadedIndices, setLoadedIndices] = useState<number[]>([0]); // Sadece ilk slayt baştan yüklü
+  const [failedImages, setFailedImages] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     if (sliders.length <= 1) return;
@@ -51,14 +52,17 @@ export default function HeroSliderClient({ sliders }: { sliders: any[] }) {
         >
           {/* Arkaplan Görseli Düzenlemesi: background-image iptal edildi, optimize next/Image kullanıldı */}
           <div className="absolute inset-0 bg-black">
-            {loadedIndices.includes(index) && (
+            {loadedIndices.includes(index) && slide.image_url && slide.image_url.trim() !== '' && slide.image_url !== 'null' && !failedImages[index] && (
               <Image 
-                src={slide.image_url || 'https://via.placeholder.com/1920x800.png?text=Gorsel+Yok'} 
+                src={slide.image_url} 
                 alt={slide.title || 'Hero Slider'}
                 fill
                 priority={index === 0} // İlk resim pre-load edilecek
                 sizes="100vw"
                 className="object-cover opacity-50 select-none"
+                onError={() => {
+                  setFailedImages(prev => ({ ...prev, [index]: true }));
+                }}
               />
             )}
           </div>
@@ -95,7 +99,7 @@ export default function HeroSliderClient({ sliders }: { sliders: any[] }) {
 
             {/* Alt Mini Güven Satırı (Trust Badge) */}
             <div className="flex items-center justify-center gap-3 md:gap-4 mt-8 text-[10px] md:text-sm font-bold tracking-widest uppercase text-white/70">
-              <span className="drop-shadow-md">1000+ FİGÜR</span>
+              <span className="drop-shadow-md">800+ MİNİFİGÜR</span>
               <span className="text-white/40">•</span>
               <span className="drop-shadow-md">25+ SERİ</span>
               <span className="text-white/40 hidden sm:inline-block">•</span>

@@ -18,7 +18,7 @@ export const getExplorePageData = async (): Promise<ExploreDataShape> => {
     if (Array.isArray(rawData)) {
       figures = rawData.slice(0, 24).map(mapFigureForCard).filter(Boolean) as FigureCardData[];
     }
-  } catch (err) {
+  } catch (err: any) {
     const duration = performance.now() - t0;
     console.error(`[Explore Aggregation] block 'explore_figures' failed after ${duration.toFixed(2)}ms:`, err);
     Sentry.withScope(scope => {

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
 import { signInWithPasswordDal, signUpDal, signOutDal, signInWithOAuthDal } from '@/services/action_dal';
 
 export async function login(formData: FormData) {
@@ -44,7 +45,9 @@ export async function logOut() {
 
 // Yeni Google OAuth Bağlantısı
 export async function signInWithGoogle() {
-  const origin = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3004';
+  const headersList = await headers();
+  const rawOrigin = headersList.get('origin') || headersList.get('host');
+  const origin = rawOrigin ? (rawOrigin.startsWith('http') ? rawOrigin : `https://${rawOrigin}`) : (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3004');
   const { data, error } = await signInWithOAuthDal('google', `${origin}/api/auth/callback`);
 
   if (error) {

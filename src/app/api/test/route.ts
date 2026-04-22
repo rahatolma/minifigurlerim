@@ -1,2 +1,9 @@
 import { NextResponse } from 'next/server';
-export function GET() { return NextResponse.json({ message: 'Hello from API!' }); }
+import { getAboutSettings } from '@/services/dal';
+
+export async function GET() {
+  const settings = await getAboutSettings();
+  return NextResponse.json({
+    settings
+  });
+}

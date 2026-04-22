@@ -2,8 +2,7 @@ import { getNewsBySlug } from '@/services/dal';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import RichTextContent from '@/components/ui/RichTextContent';
-import { ChevronRight, Calendar, Eye, Clock, Share2 } from 'lucide-react';
-import CommentsBlock from '@/components/ui/CommentsBlock';
+import { ChevronRight, Calendar, Eye, Share2 } from 'lucide-react';
 import ClientViewTracker from '@/components/ui/ClientViewTracker'; // View tracker (we assume it exists from figures, or I will write a simple one inline)
 
 // Bu sayfa dinamik slug'lara cevap vereceği için ISR/SSR karışımı
@@ -110,11 +109,7 @@ export default async function NewsDetailPage({
               <Calendar size={14} className="text-[#D22B2B]" />
               {formattedDate}
            </div>
-           <div className="w-1 h-1 rounded-full bg-gray-300"></div>
-           <div className="flex items-center gap-2">
-              <Clock size={14} className="text-[#D22B2B]" />
-              {news.min_read || 1}{t('ReadTime')}
-           </div>
+
            <div className="w-1 h-1 rounded-full bg-gray-300"></div>
            <div className="flex items-center gap-2">
               <Eye size={14} className="text-[#D22B2B]" />
@@ -123,7 +118,7 @@ export default async function NewsDetailPage({
         </div>
         
         <div className="flex flex-col items-start w-full">
-          <h1 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight leading-[1.1] mb-6">
+          <h1 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight leading-[1.1] mb-6">
             {title}
           </h1>
 
@@ -173,12 +168,7 @@ export default async function NewsDetailPage({
         <RichTextContent html={content || ''} className="prose-lg prose-red text-gray-800 font-medium leading-loose" />
       </div>
 
-      {/* YORUMLAR (Yeni Eklenen Özellik) */}
-      <div className="bg-white border-t border-gray-100 mt-16 pt-8">
-        <div className="max-w-7xl mx-auto px-8">
-          <CommentsBlock entityType="news" entityId={news.id} />
-        </div>
-      </div>
+
     </div>
   );
 }

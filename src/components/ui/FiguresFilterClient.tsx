@@ -2,22 +2,28 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
+import CustomDropdown from './CustomDropdown';
+import { useLocale } from 'next-intl';
+import { toRarityLabel } from '@/utils/filterHelpers';
 
 export default function FiguresFilterClient({
   seriesList,
   roles,
   types,
   rarities,
-  totalCount
+  totalCount,
+  absoluteTotalCount
 }: {
   seriesList: any[];
   roles: string[];
   types: string[];
   rarities: string[];
   totalCount: number;
+  absoluteTotalCount?: number;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const locale = useLocale();
 
   const currentSort = searchParams.get('sort') || 'newest';
   const currentSeries = searchParams.get('series') || 'all';
@@ -28,7 +34,10 @@ export default function FiguresFilterClient({
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const name = e.target.name;
     const value = e.target.value;
+    handleFilterUpdate(name, value);
+  };
 
+  const handleFilterUpdate = (name: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
     
     if (value === 'all' || value === 'newest') {
@@ -43,16 +52,13 @@ export default function FiguresFilterClient({
         params.set(name, value);
     }
 
-    router.push(`/figurler?${params.toString()}`, { scroll: false });
+    router.push(`/${locale}/figurler?${params.toString()}`, { scroll: false });
 
     // Sayfa zaten çok aşağıdaysa (örneğin eski sonuçlarda), yeni filtre sonrası tekrar filtre alanına hizala (snap)
     setTimeout(() => {
         const filterSection = document.getElementById('filter-section');
         if (filterSection) {
-            // Ekranda filtre barının üstünde kaldık (çok aşağıdayız), yukarı doğru yumuşak kaydır
             const box = filterSection.getBoundingClientRect();
-            // Eğer elementin viewport'a göre konumu eksiyse (yani yukarıda bir yerdeyse, biz aşağı scroll etmişiz demektir)
-            // Ya da sıfırdan çok farklıysa, o the scrollIntoView komutunu uygula
             if (box.top < 65 || box.top > 85) {
                  filterSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
@@ -61,7 +67,7 @@ export default function FiguresFilterClient({
   };
 
   const clearFilters = () => {
-    router.push('/figurler', { scroll: false });
+    router.push(`/${locale}/figurler`, { scroll: false });
     setTimeout(() => {
         const filterSection = document.getElementById('filter-section');
         if (filterSection) {
@@ -74,70 +80,82 @@ export default function FiguresFilterClient({
 
   const [drawerOpen, setDrawerOpen] = useState(false);
 
+  const sortedRoles = [...roles].sort((a,b) => a.localeCompare(b, locale));
+
   return (
     <>
       <div className="hidden md:flex flex-nowrap md:flex-wrap items-center gap-2 md:gap-3 w-full">
 
-        {/* MASAÜSTÜ: Tümünü Göster (Desktop) */}
-        <select 
-          name="sort" 
-          value={currentSort} 
-          onChange={handleChange}
-          className="hidden md:block border border-gray-200 rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-48 flex-1 bg-white cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
-        >
-          <option value="newest">En Yeniler</option>
-          <option value="oldest">En Eskiler</option>
-          <option value="popular">En Popüler</option>
-        </select>
+        {/* MASAÜSTÜ: Doğrudan Açılır Kutular */}
+        <CustomDropdown 
+          key={`sort-desktop-${currentSort}`}
+          name="sort"
+          options={[
+            { value: 'newest', label: 'En Yeniler' },
+            { value: 'oldest', label: 'En Eskiler' },
+            { value: 'popular', label: 'En Popüler' }
+          ]}
+          value={currentSort}
+          onChange={(val: string) => handleFilterUpdate('sort', val)}
+          placeholder="Sıralama"
+          showSearch={false}
+        />
         
-        <select 
-          name="series" 
-          value={currentSeries} 
-          onChange={handleChange}
-          className="hidden md:block border border-gray-200 rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-48 flex-1 bg-white cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
-        >
-          <option value="all">Seriler</option>
-          {seriesList.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
-        </select>
+        <CustomDropdown 
+          key={`series-desktop-${currentSeries}`}
+          name="series"
+          options={[
+            { value: 'all', label: 'Tüm Seriler' },
+            ...seriesList.map(s => ({ value: s.id.toString(), label: s.title }))
+          ]}
+          value={currentSeries}
+          onChange={(val: string) => handleFilterUpdate('series', val)}
+          placeholder="Seriler"
+          searchPlaceholder="Seri ara..."
+          showSearch={true}
+          dropdownWidthClass="w-[450px]"
+        />
         
-        <select 
-          name="role" 
-          value={currentRole} 
-          onChange={handleChange}
-          className="hidden md:block border border-gray-200 rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-40 flex-1 bg-white cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
-        >
-          <option value="all">Figür Rolü</option>
-          {roles.map(r => <option key={r} value={r}>{r}</option>)}
-        </select>
-        
-        <select 
-          name="type" 
-          value={currentType} 
-          onChange={handleChange}
-          className="hidden md:block border border-gray-200 rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-40 flex-1 bg-white cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
-        >
-          <option value="all">Figür Tipi</option>
-          {types.map(t => <option key={t} value={t}>{t}</option>)}
-        </select>
+        <CustomDropdown 
+          key={`role-desktop-${currentRole}`}
+          name="role"
+          options={[
+            { value: 'all', label: 'Tüm Roller' },
+            ...sortedRoles.map(r => ({ value: r, label: r }))
+          ]}
+          value={currentRole}
+          onChange={(val: string) => handleFilterUpdate('role', val)}
+          placeholder="Figür Rolü"
+          showSearch={true}
+          searchPlaceholder="Rol ara..."
+        />
 
-        <select 
-          name="rarity" 
-          value={currentRarity} 
-          onChange={handleChange}
-          className="hidden md:block border border-gray-200 rounded-lg px-4 py-3 text-[13px] font-bold outline-none sm:w-40 flex-1 bg-white cursor-pointer appearance-none text-black focus:ring-2 focus:ring-[#D22B2B] hover:border-black transition-all"
-        >
-          <option value="all">Nadirlik</option>
-          {rarities.map(r => <option key={r} value={r}>{r}</option>)}
-        </select>
+        <CustomDropdown 
+          key={`rarity-desktop-${currentRarity}`}
+          name="rarity"
+          options={[
+            { value: 'all', label: 'Tüm Değer Skorları' },
+            ...rarities.map(r => ({ value: r, label: toRarityLabel(r, locale) }))
+          ]}
+          value={currentRarity}
+          onChange={(val: string) => handleFilterUpdate('rarity', val)}
+          placeholder="Değer Skoru"
+          showSearch={false}
+        />
 
         {/* ORTAK: Rozet ve Temizle Butonu */}
         <div className="border border-gray-200 bg-gray-50 rounded-xl px-4 py-3 flex items-center justify-center flex-1 shrink-0 md:min-w-max">
-           <div className="flex items-center justify-center gap-4 md:gap-6 w-full">
+           <div className="flex items-center justify-center gap-2 md:gap-3 w-full">
               {/* Rakam */}
-              <span className="font-black leading-none -mt-0.5" style={{ color: '#D22B2B', fontSize: '18px' }}>{totalCount}</span> 
+              <div className="flex items-baseline gap-0">
+                  <span className="font-black leading-none text-[#D22B2B] text-[18px]">{totalCount}</span>
+                  {hasFilters && absoluteTotalCount && totalCount !== absoluteTotalCount ? (
+                      <span className="font-black leading-none text-gray-900 text-[18px]">/{absoluteTotalCount}</span>
+                  ) : null}
+              </div>
               
               {/* Yazı */}
-              <span className="text-[10px] md:text-[12px] font-black tracking-[0.15em] text-[#6b7280] mt-0.5 whitespace-nowrap">FİGÜR LİSTELENİYOR</span>
+              <span className="text-[10px] md:text-[12px] font-black tracking-[0.15em] text-[#6b7280] mt-0.5 whitespace-nowrap">KAYIT LİSTELENİYOR</span>
               
               {/* Temizle X İkonu */}
               <button onClick={clearFilters} className={`transition-colors flex items-center justify-center shrink-0 ${hasFilters ? 'visible' : 'invisible'}`} style={{ color: '#9ca3af' }} onMouseOver={(e) => e.currentTarget.style.color = '#D22B2B'} onMouseOut={(e) => e.currentTarget.style.color = '#9ca3af'} title="Tüm Filtreleri Temizle">
@@ -177,7 +195,7 @@ export default function FiguresFilterClient({
                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
                  Filtreler
               </h2>
-              <span className="text-[11px] font-bold text-[#D22B2B] whitespace-nowrap">{totalCount} Kayıt Listeleniyor</span>
+              <span className="text-[11px] font-bold text-[#D22B2B] whitespace-nowrap">{totalCount} {hasFilters && absoluteTotalCount && totalCount !== absoluteTotalCount ? `/ ${absoluteTotalCount}` : ''} Kayıt Listeleniyor</span>
           </div>
           <button onClick={() => setDrawerOpen(false)} className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full text-gray-600">
              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -188,6 +206,7 @@ export default function FiguresFilterClient({
             <div className="flex flex-col gap-2">
                 <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">Sıralama</label>
                 <select 
+                  key={`sort-mobile-${currentSort}`}
                   name="sort" 
                   value={currentSort} 
                   onChange={handleChange}
@@ -202,6 +221,7 @@ export default function FiguresFilterClient({
             <div className="flex flex-col gap-2">
                 <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">Seri Seçimi</label>
                 <select 
+                  key={`series-mobile-${currentSeries}`}
                   name="series" 
                   value={currentSeries} 
                   onChange={handleChange}
@@ -215,39 +235,28 @@ export default function FiguresFilterClient({
             <div className="flex flex-col gap-2">
                 <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">Figür Rolü</label>
                 <select 
+                  key={`role-mobile-${currentRole}`}
                   name="role" 
                   value={currentRole} 
                   onChange={handleChange}
                   className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
                 >
                   <option value="all">Tüm Roller</option>
-                  {roles.map(r => <option key={r} value={r}>{r}</option>)}
+                  {sortedRoles.map(r => <option key={r} value={r}>{r}</option>)}
                 </select>
             </div>
 
             <div className="flex flex-col gap-2">
-                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">Figür Tipi</label>
+                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">Değer Skoru</label>
                 <select 
-                  name="type" 
-                  value={currentType} 
-                  onChange={handleChange}
-                  className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
-                >
-                  <option value="all">Tüm Tipler</option>
-                  {types.map(t => <option key={t} value={t}>{t}</option>)}
-                </select>
-            </div>
-
-            <div className="flex flex-col gap-2">
-                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">Nadirlik</label>
-                <select 
+                  key={`rarity-mobile-${currentRarity}`}
                   name="rarity" 
                   value={currentRarity} 
                   onChange={handleChange}
                   className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
                 >
-                  <option value="all">Tüm Nadirlikler</option>
-                  {rarities.map(r => <option key={r} value={r}>{r}</option>)}
+                  <option value="all">Tüm Değer Skorları</option>
+                  {rarities.map(r => <option key={r} value={r}>{toRarityLabel(r, locale)}</option>)}
                 </select>
             </div>
         </div>

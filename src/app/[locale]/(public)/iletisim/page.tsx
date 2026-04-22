@@ -1,5 +1,7 @@
 import ContactForm from "@/components/ui/ContactForm";
+import FeedbackForm from "@/components/ui/FeedbackForm";
 import { getActiveFaqs } from "@/services/dal";
+import InstagramBlock from "@/components/ui/InstagramBlock";
 
 export const metadata = {
   title: 'İletişim | Minifigürlerim',
@@ -13,18 +15,29 @@ export default async function ContactPage() {
   const activeFaqs = faqs || [];
 
   return (
-    <div className="bg-[#fcfcfc] min-h-screen pb-32">
+    <div className="bg-[#fcfcfc] min-h-screen pb-16">
 
 
-      <div className="max-w-4xl mx-auto px-6 md:px-8 mt-8 mb-24 flex flex-col gap-16">
+      <div className="max-w-7xl mx-auto px-6 md:px-8 mt-8 mb-8 flex flex-col gap-8">
          
-         <div className="w-full">
-            <div className="bg-white border border-gray-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.06)] rounded-[32px] p-8 md:p-12">
-                <div className="text-center mb-10">
-                    <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight mb-4">Sorunuz Mu Var?</h1>
-                    <p className="text-gray-600 text-[15px] font-medium leading-relaxed max-w-2xl mx-auto">Her türlü soru, görüş ve öneri için bize aşağıdaki iletişim formundan ulaşabilirsiniz. En kısa sürede dönüş yapacağız.</p>
+         {/* 1/3 and 2/3 Layout for Forms */}
+         <div className="flex flex-col md:flex-row w-full gap-6 md:gap-10 items-stretch min-h-[500px]">
+            {/* SOL Taraf: Geri Bildirim Formu */}
+            <div className="w-full md:w-1/3 bg-white rounded-[32px] p-8 md:p-12 text-gray-900 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.06)] border border-gray-100 relative overflow-hidden flex flex-col justify-between">
+                <div className="relative z-10 flex-1 flex flex-col">
+                  <FeedbackForm />
                 </div>
-                <ContactForm />
+            </div>
+
+            {/* SAĞ Taraf: İletişim Formu */}
+            <div className="w-full md:w-2/3 bg-white rounded-[32px] p-8 md:p-12 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.06)] border border-gray-100 relative overflow-hidden flex flex-col">
+                <div className="mb-8">
+                    <h1 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight mb-3">Sorunuz Mu Var?</h1>
+                    <p className="text-gray-600 text-[13px] font-medium leading-relaxed max-w-xl">Her türlü soru, görüş ve öneri için bize aşağıdaki iletişim formundan ulaşabilirsiniz. En kısa sürede dönüş yapacağız.</p>
+                </div>
+                <div className="relative z-10 flex-1 flex flex-col">
+                  <ContactForm />
+                </div>
             </div>
          </div>
 
@@ -33,7 +46,7 @@ export default async function ContactPage() {
                <div className="bg-white border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] rounded-[32px] p-8 md:p-12 border-t-4 border-t-[#D22B2B]">
                   <h2 className="text-3xl font-black text-center text-gray-900 mb-10 tracking-tight">Sıkça Sorulan Sorular</h2>
                   <div className="space-y-3">
-                      {activeFaqs.map((faq, idx) => (
+                      {activeFaqs.map((faq: import("@/services/dal").FaqDTO, idx: number) => (
                           <details key={faq.id} className="group border border-gray-100 rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden">
                               <summary className="w-full text-left py-5 px-6 font-bold text-[15px] text-gray-900 flex justify-between items-center hover:bg-gray-50 transition-colors cursor-pointer select-none">
                                   <span className="flex gap-4 items-center">
@@ -52,6 +65,11 @@ export default async function ContactPage() {
             ) : null}
          </div>
 
+      </div>
+
+      {/* Instagram Bloğu (Full Width / Max-7xl) */}
+      <div className="max-w-7xl mx-auto px-6 md:px-8 mb-8">
+         <InstagramBlock />
       </div>
     </div>
   );

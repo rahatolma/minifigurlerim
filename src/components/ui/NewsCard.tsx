@@ -17,7 +17,7 @@ export default function NewsCard({ title, imageUrl, views, dailyViews, minRead, 
 
   return (
     <Link href={`/haberler/${slug}`} className="flex flex-col h-full bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all hover:-translate-y-2 duration-300">
-      <div className="relative w-full aspect-[4/3] bg-[#fafafa] flex items-center justify-center p-6 border-b border-gray-50 flex-none overflow-hidden group">
+      <div className="relative w-full aspect-video bg-[#fafafa] flex items-center justify-center p-6 border-b border-gray-50 flex-none overflow-hidden group">
         <Image 
           src={imageUrl} 
           alt={title} 
@@ -32,14 +32,6 @@ export default function NewsCard({ title, imageUrl, views, dailyViews, minRead, 
           {title}
         </h3>
         
-        <div className="w-full h-px bg-gray-100 mb-5"></div>
-        
-        <div className="flex flex-col items-center gap-1.5 text-[12px] font-bold">
-          <span className="text-green-700">{views || 0} {t('TotalViews')}</span>
-          <span className="text-green-700">{dailyViews || 0} {t('DailyViews')}</span>
-          <span className="text-red-500">{minRead > 0 ? `${minRead} ${t('MinRead')}` : `0 ${t('MinRead')}`}</span>
-          <span className={comments > 0 ? "text-red-500" : "text-green-700"}>{comments > 0 ? `${comments} ${t('Comments')}` : `0 ${t('Comments')}`}</span>
-        </div>
       </div>
     </Link>
   );

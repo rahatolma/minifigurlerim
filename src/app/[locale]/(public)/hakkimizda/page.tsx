@@ -2,23 +2,40 @@ import Link from 'next/link';
 import { getAboutSettings } from '@/services/dal';
 import RichTextContent from '@/components/ui/RichTextContent';
 
-export const revalidate = 86400; // Her zaman güncel veri
+export const revalidate = 60; // 1 dakika ISR cache
 
 export const metadata = {
   title: 'Hakkımızda | Minifigürlerim',
   description: 'Minifigür sevgisine sahip herkesin buluştuğu bir topluluk merkezi.',
 };
 
-export default async function AboutPage() {
+export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {
+  const resolvedParams = await params;
   const settings = await getAboutSettings();
+  
+  const finalSelectedValues = {
+    boss_image_url: settings?.boss_image_url || '/images/placeholder.svg',
+    hero_image_url: settings?.hero_image_url || '/images/placeholder.svg',
+    main_text: settings?.main_text ? settings.main_text.substring(0, 30) + '...' : null
+  };
+
+  console.log("🔥 TRACE 3 - PUBLIC PAGE QUERY & RENDER:", {
+    locale: resolvedParams?.locale,
+    hamDbSonucu: {
+      boss_image_url: settings?.boss_image_url,
+      hero_image_url: settings?.hero_image_url,
+      main_text: settings?.main_text ? settings.main_text.substring(0, 30) + '...' : null
+    },
+    finalRenderGidecekDegerler: finalSelectedValues
+  });
 
   // Varsayılan değerler
-  const bgImage = settings?.hero_image_url || '/uploads/hakkimizda-hero.jpg';
+  const bgImage = settings?.hero_image_url || '/images/placeholder.svg';
   const quote = settings?.quote_text || 'Peşinden gidecek cesaretiniz varsa bütün hayalleriniz gerçek olabilir.';
   const author = settings?.quote_author || 'Walt Disney';
 
   return (
-    <div className="bg-[#fcfcfc] min-h-screen pb-32">
+    <div className="bg-[#fcfcfc] min-h-screen pb-16">
       
 
 
@@ -55,7 +72,7 @@ export default async function AboutPage() {
                <div className="flex flex-col h-full bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all hover:-translate-y-2 duration-300 w-full">
                   <div className="relative w-full h-[300px] lg:h-[400px] flex items-center justify-center border-b border-gray-50 flex-none overflow-hidden">
                       <img 
-                          src={settings?.boss_image_url || '/uploads/buyuk-patron.jpg'}
+                          src={settings?.boss_image_url || '/images/placeholder.svg'}
                           alt={settings?.boss_title || "Büyük Patron"} 
                           className="w-full h-full object-cover"
                       />
@@ -99,7 +116,7 @@ export default async function AboutPage() {
              <div className="flex flex-col h-full bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all hover:-translate-y-2 duration-300 w-full">
                 <div className="relative w-full h-[300px] lg:h-[400px] flex items-center justify-center border-b border-gray-50 flex-none overflow-hidden">
                     <img 
-                        src={settings?.mid_image_url || '/uploads/ortanca-patron.jpg'}
+                        src={settings?.mid_image_url || '/images/placeholder.svg'}
                         alt={settings?.mid_title || "Ortanca Patron"} 
                         className="w-full h-full object-cover"
                     />
@@ -118,7 +135,7 @@ export default async function AboutPage() {
              <div className="flex flex-col h-full bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all hover:-translate-y-2 duration-300 w-full">
                 <div className="relative w-full h-[300px] lg:h-[400px] flex items-center justify-center border-b border-gray-50 flex-none overflow-hidden">
                     <img 
-                        src={settings?.small_image_url || '/uploads/kucuk-patron.jpg'}
+                        src={settings?.small_image_url || '/images/placeholder.svg'}
                         alt={settings?.small_title || "Küçük Patron"} 
                         className="w-full h-full object-cover"
                     />
@@ -137,7 +154,7 @@ export default async function AboutPage() {
              <div className="flex flex-col h-full bg-[#DA291C] rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all hover:-translate-y-2 duration-300 text-white w-full border border-[#b81d11]">
                 <div className="relative w-full h-[300px] lg:h-[400px] flex items-center justify-center border-b border-[#b81d11]/30 flex-none overflow-hidden">
                     <img 
-                        src={settings?.join_image_url || '/uploads/ekibimize-katilin.jpg'}
+                        src={settings?.join_image_url || '/images/placeholder.svg'}
                         alt={settings?.join_title || "Ekibimize Katılın"} 
                         className="w-full h-full object-cover"
                     />

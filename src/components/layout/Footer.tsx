@@ -17,7 +17,7 @@ export default function Footer() {
           {/* BLOK 1: Logo & Haber Bülteni */}
           <div className="flex flex-col items-start md:col-span-5 lg:col-span-4">
             <Link href="/" className="inline-block transform hover:scale-105 transition-transform mb-8">
-              <img src="/uploads/media__1774631571720.png" alt="Minifigürlerim Logo" className="h-[36px] w-auto" />
+              <img src="/images/site-logo.png" alt="Minifigürlerim Logo" className="h-[36px] w-auto" />
             </Link>
             <p className="text-[14px] text-gray-700 font-bold leading-relaxed pr-4">
               {tFooter('NewsletterText')}
@@ -67,7 +67,7 @@ export default function Footer() {
           {/* BLOK 4: Image - Only visible on lg+ screens for precise layout */}
           <div className="hidden lg:flex flex-col items-center justify-end lg:col-span-2 relative h-full">
             <img 
-              src="/uploads/footer-lego-guy.png" 
+              src="/images/footer-lego-guy.png" 
               alt="LEGO Contact Minifigure" 
               className="absolute bottom-[-16px] right-0 w-[240px] max-w-none object-contain drop-shadow-[0_15px_15px_rgba(0,0,0,0.15)] z-10"
               style={{ pointerEvents: "none" }}
@@ -79,7 +79,9 @@ export default function Footer() {
         {/* BOTTOM FOOTER GRID */}
         <div className="relative z-20 border-t border-gray-200 flex flex-col md:flex-row items-center justify-between pt-10 pb-4 gap-6">
           <p className="text-[#a0a0a0] text-center md:text-left text-[14px] font-semibold tracking-wide">
-            {tFooter('CopyrightText')} <br className="md:hidden"/> <span className="text-gray-900 font-black">Minifigürlerim</span> {tFooter('BrandText')}
+            {tFooter('CopyrightText')} <br className="md:hidden"/> <span className="text-gray-900 font-black">{tFooter('BrandText')}</span>
+           <br />
+           <span className="text-gray-600 font-semibold">{tFooter('BrandSubText')}</span>
           </p>
           <LegalNoticeButton className="bg-[#F2CD37] text-black border border-[#d4b32c] font-black py-4 px-8 rounded-xl shadow-[0_8px_20px_rgba(242,205,55,0.3)] hover:bg-[#e0bd31] hover:scale-105 hover:shadow-[0_12px_25px_rgba(242,205,55,0.4)] transition-all tracking-[0.2em] uppercase text-[11px]" />
         </div>

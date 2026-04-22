@@ -45,14 +45,14 @@ export default async function NewsPage({
       </div>
       
       {/* BLOK 3: Şablon Izgara Sistemi (Grid) */}
-      <div className="max-w-7xl mx-auto px-8 pb-32">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-5">
-           {newsList.map(news => (
+      <div className="max-w-7xl mx-auto px-8 pb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-5">
+           {newsList.map((news: import("@/services/dal").PostDTO) => (
             <NewsCard 
                 key={news.id} 
                 slug={locale === 'en' && news.slug_en ? news.slug_en : (news.slug || news.id)}
                 title={locale === 'en' && news.title_en ? news.title_en : news.title}
-                imageUrl={news.cover_image_url || 'https://via.placeholder.com/400x300.png?text=Görsel+Yok'}
+                imageUrl={news.cover_image_url || '/images/placeholder.svg'}
                 views={news.total_views || 0}
                 dailyViews={news.daily_views || 0}
                 minRead={news.min_read || 1}

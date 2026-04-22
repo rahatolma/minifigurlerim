@@ -101,7 +101,7 @@ const TIMELINE_EVENTS = [
 
 export default function LegoHakkindaPage() {
   return (
-    <div className="bg-[#fcfcfc] min-h-screen pb-32">
+    <div className="bg-[#fcfcfc] min-h-screen pb-16">
       
 
 

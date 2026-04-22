@@ -21,7 +21,7 @@ export default async function DynamicCMSPage({ params }: { params: Promise<{ slu
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-4xl mx-auto px-6 md:px-12 pt-24 pb-32">
+      <div className="max-w-4xl mx-auto px-6 md:px-12 pt-24 pb-16">
         <h1 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight leading-tight mb-16 px-4 md:px-0">
           {displayTitle}
         </h1>

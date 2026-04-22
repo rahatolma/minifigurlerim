@@ -30,7 +30,7 @@ async function safeFetch<T>(
       processedData = rawData.map(mapFn).filter(Boolean);
     }
     return { data: processedData as T, degraded: false };
-  } catch (err) {
+  } catch (err: any) {
     const t1 = performance.now();
     console.error(`[Homepage Aggregation] ${blockName} failed after ${(t1-t0).toFixed(2)}ms:`, err);
     Sentry.withScope(scope => {

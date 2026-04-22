@@ -1,0 +1,93 @@
+
+> temp_app@0.1.0 test:e2e
+> playwright test
+
+[1A[2K[2m[WebServer] [22m[33m[1m⚠[22m[39m The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+[1A[2K[2m[WebServer] [22mMiddleware Supabase Auth Error: Auth session missing!
+
+[1A[2K[2m[WebServer] [22mMiddleware Supabase Auth Error: Auth session missing!
+
+
+Running 7 tests using 5 workers
+
+[1A[2K[1/7] [chromium] › e2e/smoke.spec.ts:15:7 › Minifigürlerim Critical Path Smoke Tests › Locale Switcher toggles correctly from TR to EN
+[1A[2K[2/7] [chromium] › e2e/figures-page.contract.spec.ts:45:9 › Figures Page Real Browser E2E - Contract Tests › Filter UI reflects canonical state without zero-results death-loop
+[1A[2K[3/7] [chromium] › e2e/smoke.spec.ts:5:7 › Minifigürlerim Critical Path Smoke Tests › Guest homepage loads without crashing
+[1A[2K[4/7] [chromium] › e2e/figures-page.contract.spec.ts:22:9 › Figures Page Real Browser E2E - Contract Tests › Locale switch preserves parameters and normalizes correctly
+[1A[2K[5/7] [chromium] › e2e/figures-page.contract.spec.ts:7:9 › Figures Page Real Browser E2E - Contract Tests › Invalid dependent param redirect preserves locale segment
+[1A[2K[2m[WebServer] [22mMiddleware Supabase Auth Error: Auth session missing!
+
+[1A[2K[2m[WebServer] [22mMiddleware Supabase Auth Error: Auth session missing!
+
+[1A[2K[2m[WebServer] [22mMiddleware Supabase Auth Error: Auth session missing!
+
+[1A[2K[2m[WebServer] [22mMiddleware Supabase Auth Error: Auth session missing!
+
+[1A[2K[2m[WebServer] [22mMiddleware Supabase Auth Error: Auth session missing!
+
+[1A[2K[2m[WebServer] [22mMiddleware Supabase Auth Error: Auth session missing!
+
+[1A[2K[2m[WebServer] [22mMiddleware Supabase Auth Error: Auth session missing!
+
+[1A[2K[2m[WebServer] [22mMiddleware Supabase Auth Error: Auth session missing!
+
+[1A[2K[2m[WebServer] [22mMiddleware Supabase Auth Error: Auth session missing!
+
+[1A[2K[chromium] › e2e/figures-page.contract.spec.ts:22:9 › Figures Page Real Browser E2E - Contract Tests › Locale switch preserves parameters and normalizes correctly
+
+
+DIAGNOSTIC_CHAIN status=200 location=NONE finalUrl=http://localhost:3004/tr/figurler
+
+
+
+[1A[2K  1) [chromium] › e2e/figures-page.contract.spec.ts:22:9 › Figures Page Real Browser E2E - Contract Tests › Locale switch preserves parameters and normalizes correctly 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoContain[2m([22m[32mexpected[39m[2m) // indexOf[22m
+
+    Expected substring: [32m"rarity=rare"[39m
+    Received string:    [31m"http://localhost:3004/tr/figurler"[39m
+
+      25 |         console.log(`\n\nDIAGNOSTIC_CHAIN status=${initialResponse?.status()} location=${initialResponse?.headers()['location'] || 'NONE'} finalUrl=${page.url()}\n\n`);
+      26 |         
+    > 27 |         expect(page.url()).toContain('rarity=rare');
+         |                            ^
+      28 |
+      29 |         // 2. Dropdown'da Lokalize 'Nadir' etiketinin kontrolü (UI level)
+      30 |         // Normal şartlarda "select[name='rarity']" UI'da component rendererına bağlıdır.
+        at /Users/Gungor/Documents/GitHub/minifigurlerim/e2e/figures-page.contract.spec.ts:27:28
+
+    Error Context: test-results/figures-page.contract-Figu-63f00-rs-and-normalizes-correctly-chromium/error-context.md
+
+
+[1A[2K[2m[WebServer] [22mMiddleware Supabase Auth Error: Auth session missing!
+
+[1A[2K[6/7] [chromium] › e2e/smoke.spec.ts:32:7 › Minifigürlerim Critical Path Smoke Tests › Login page transition and Auth Boundaries
+[1A[2K[2m[WebServer] [22mMiddleware Supabase Auth Error: Auth session missing!
+
+[1A[2K[2m[WebServer] [22mMiddleware Supabase Auth Error: Auth session missing!
+
+[1A[2K[7/7] [chromium] › e2e/smoke.spec.ts:42:7 › Minifigürlerim Critical Path Smoke Tests › Invalid Routes show 404 instead of 500 boundary error
+[1A[2K[2m[WebServer] [22mMiddleware Supabase Auth Error: Auth session missing!
+
+[1A[2K[2m[WebServer] [22mMiddleware Supabase Auth Error: Auth session missing!
+
+[1A[2K[2m[WebServer] [22mMiddleware Supabase Auth Error: Auth session missing!
+
+[1A[2K[2m[WebServer] [22mMiddleware Supabase Auth Error: Auth session missing!
+
+[1A[2K[2m[WebServer] [22mMiddleware Supabase Auth Error: Auth session missing!
+
+[1A[2K[2m[WebServer] [22mMiddleware Supabase Auth Error: Auth session missing!
+
+[1A[2K[2m[WebServer] [22mMiddleware Supabase Auth Error: Auth session missing!
+
+[1A[2K[2m[WebServer] [22mMiddleware Supabase Auth Error: Auth session missing!
+
+[1A[2K[2m[WebServer] [22mMiddleware Supabase Auth Error: Auth session missing!
+
+[1A[2K  1 failed
+    [chromium] › e2e/figures-page.contract.spec.ts:22:9 › Figures Page Real Browser E2E - Contract Tests › Locale switch preserves parameters and normalizes correctly 
+  6 passed (16.0s)
+
+[36m  Serving HTML report at http://localhost:9323. Press Ctrl+C to quit.[39m

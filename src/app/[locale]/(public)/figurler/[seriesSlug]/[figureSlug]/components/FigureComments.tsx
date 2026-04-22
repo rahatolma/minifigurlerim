@@ -10,6 +10,7 @@ export default async function FigureComments({ minifigureId }: { minifigureId: s
    try {
       ratings = await getFigureRatings(minifigureId) || [];
    } catch (err: any) {
+console.error(err);
       errorMsg = err.message;
    }
 

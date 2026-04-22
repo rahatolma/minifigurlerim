@@ -18,6 +18,7 @@ export default function FooterNewsletterForm() {
       toast.success('Bültene başarıyla abone oldunuz! Sizi bilgilendirmeye devam edeceğiz.');
       setEmail('');
     } catch (err: any) {
+console.error(err);
       if (err.code === '23505') {
         toast.success('Zaten abonelik kaydınız bulunuyor! Yeniden göndermenize gerek yok 🚀');
       } else {

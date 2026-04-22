@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
+import { getSeriesUrl } from '@/utils/routeBuilder';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useGamification } from '@/components/providers/GamificationProvider';
 
@@ -13,7 +14,7 @@ interface SeriesCardProps {
   year?: string | number | null;
   seriesNo?: string | null;
   totalFigures?: number | null;
-  latestFigureName?: string | null;
+  latestFigureName?: string | null;  // deprecated (global mock)
   category?: string | null;
   rarity?: string | null;
   // Progress and Auth are no longer passed as props, they are read from client-side contexts
@@ -32,9 +33,10 @@ export default function SeriesCard({
   const t = useTranslations('SeriesCard');
   const locale = useLocale();
   const { user } = useAuth();
-  const { userSeriesProgressMap, loading } = useGamification();
+  const { userSeriesProgressMap, userLatestAddedFigureMap, loading } = useGamification();
   const isLoggedIn = !!user;
   const seriesProgress = userSeriesProgressMap[id] || null;
+  const actualLatestAddedText = userLatestAddedFigureMap[id] || null;
 
   const [imgSrc, setImgSrc] = useState(imageUrl || '/images/placeholder.svg');
 
@@ -51,31 +53,33 @@ export default function SeriesCard({
     if (title.startsWith(prefixFull) && title.length > prefixFull.length) {
       return (
         <>
-          <span className="block text-[15px] sm:text-[17px] text-gray-800 mb-0.5">{prefixFull}</span>
-          <span className="block line-clamp-2 leading-snug">{title.substring(prefixFull.length).trim()}</span>
+          <span className="block text-[14px] leading-[18px] font-semibold text-gray-800 mb-2">{prefixFull}</span>
+          <span className="block line-clamp-2 leading-snug group-hover/text:underline">{title.substring(prefixFull.length).trim()}</span>
         </>
       );
     } else if (title.startsWith(prefixShort) && title.length > prefixShort.length) {
       return (
         <>
-          <span className="block text-[15px] sm:text-[17px] text-gray-800 mb-0.5">{prefixShort}</span>
-          <span className="block line-clamp-2 leading-snug">{title.substring(prefixShort.length).trim()}</span>
+          <span className="block text-[14px] leading-[18px] font-semibold text-gray-800 mb-2">{prefixShort}</span>
+          <span className="block line-clamp-2 leading-snug group-hover/text:underline">{title.substring(prefixShort.length).trim()}</span>
         </>
       );
     }
-    return title;
+    return <span className="group-hover/text:underline">{title}</span>;
   })();
 
+  const targetHref = getSeriesUrl({ seriesSlug: id, locale: locale as any });
+
   return (
-    <div className="flex flex-col h-full bg-white rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 hover:shadow-[0_15px_30px_rgba(0,0,0,0.06)] hover:border-gray-200 hover:-translate-y-1 transition-all duration-300 relative group">
-       <Link href={`/seriler/${id}`} className="relative w-full aspect-[4/3] bg-[#fff] flex items-center justify-center border-b border-gray-50 flex-none group-hover:bg-[#fcfcfc] transition-colors">
-          <Image src={imgSrc} alt={title} fill className="object-contain px-6 py-4 mix-blend-multiply group-hover:scale-110 transition-transform duration-500" onError={() => setImgSrc('/images/placeholder.svg')} />
+    <div className="flex flex-col h-full bg-white rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 hover:shadow-[0_20px_40px_rgba(210,43,43,0.08)] hover:border-[#D22B2B]/20 hover:-translate-y-2 transition-all duration-400 ease-out relative group">
+       <Link href={targetHref || "#"} onClick={(e) => !targetHref && e.preventDefault()} aria-disabled={!targetHref} className={`relative w-full aspect-[4/3] bg-gradient-to-b from-gray-50/50 to-white flex items-center justify-center border-b border-gray-50 flex-none transition-all duration-500 ${targetHref ? 'group-hover:from-red-50/20 group-hover:to-white' : 'opacity-50 cursor-not-allowed'}`}>
+          <Image src={imgSrc} alt={title} fill className="object-contain px-6 py-4 mix-blend-multiply group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500 will-change-transform" onError={() => setImgSrc('/images/placeholder.svg')} />
        </Link>
 
-       <div className="px-6 pt-5 pb-6 flex flex-col flex-1 bg-white">
-          <Link href={`/seriler/${id}`} className="flex flex-col flex-1 cursor-pointer items-center text-center">
-              <h3 className="font-black text-[18px] sm:text-[20px] text-[#D22B2B] leading-tight tracking-tight hover:underline mb-1 w-full">{formattedTitle}</h3>
-              <p className="font-semibold text-[13px] text-gray-500 mb-4 w-full">{category || t('CategoryDefault')}</p>
+       <div className="px-6 pt-5 pb-6 flex flex-col flex-1 bg-white relative z-10">
+          <Link href={targetHref || "#"} onClick={(e) => !targetHref && e.preventDefault()} aria-disabled={!targetHref} className={`flex flex-col flex-1 items-center text-center group/text ${targetHref ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}>
+              <h3 className="font-black text-[18px] sm:text-[20px] text-[#D22B2B] leading-tight tracking-tight mb-2 w-full">{formattedTitle}</h3>
+              <p className="block text-[14px] leading-[18px] font-semibold text-gray-500 mb-4 w-full">{category || t('CategoryDefault')}</p>
           </Link>
           
           <div className="w-full h-px bg-gray-100 mb-4"></div>
@@ -118,16 +122,18 @@ export default function SeriesCard({
                     </div>
                 </div>
 
-                {/* LATEST ADDED (YENİ EKLEME) */}
-                <div className="w-full mt-4 bg-gray-50 border border-gray-100 rounded-lg p-2.5 flex items-center justify-between group-hover:bg-[#fcf8f8] group-hover:border-[#ffeaea] transition-colors">
-                    <span className="text-[10px] uppercase font-black tracking-widest text-[#D22B2B]">{t('LatestAdded')}</span>
-                    <span className="text-[11px] font-bold text-gray-800 line-clamp-1 truncate max-w-[140px] text-right">
-                        {latestFigureName || t('NoneYet')}
-                    </span>
-                </div>
+                {/* LATEST ADDED (YENİ EKLEME) - SADECƏ FIGUR EKLENDIYSE GÖSTER */}
+                {seriesProgress && seriesProgress.collected > 0 && actualLatestAddedText && (
+                  <div className="w-full mt-4 bg-gray-50 border border-gray-100 rounded-lg p-2.5 flex items-center justify-between group-hover:bg-[#fcf8f8] group-hover:border-[#ffeaea] transition-colors">
+                      <span className="text-[10px] uppercase font-black tracking-widest text-[#D22B2B]">{t('LatestAdded')}</span>
+                      <span className="text-[11px] font-bold text-gray-800 line-clamp-1 truncate max-w-[140px] text-right">
+                          {actualLatestAddedText}
+                      </span>
+                  </div>
+                )}
 
                 <div className="w-full mt-3">
-                    <Link href={`/seriler/${id}`} className="flex w-full items-center justify-center bg-gray-50 group-hover:bg-[#D22B2B] text-gray-500 group-hover:text-white rounded-md py-3 text-[11px] font-black tracking-widest uppercase transition-all duration-300">
+                    <Link href={targetHref || "#"} onClick={(e) => !targetHref && e.preventDefault()} aria-disabled={!targetHref} className={`flex w-full items-center justify-center rounded-md py-3 text-[11px] font-black tracking-widest uppercase transition-all duration-300 ${targetHref ? 'bg-gray-50 group-hover:bg-[#D22B2B] text-gray-500 group-hover:text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>
                         {t('CompleteSeries')}
                     </Link>
                 </div>

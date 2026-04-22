@@ -9,7 +9,23 @@ const eslintConfig = defineConfig([
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
       "@next/next/no-img-element": "off",
-      "prefer-const": "off"
+      "prefer-const": "off",
+      "no-restricted-imports": [
+        "error",
+        {
+          "patterns": [
+            {
+              "group": [
+                "./*Provider*", "../*Provider*", 
+                "./*Context*", "../*Context*",
+                "../services/*", "../../services/*",
+                "../utils/supabase/*", "../../utils/supabase/*"
+              ],
+              "message": "MİMARİ KURAL: Provider, Context, Supabase Client ve Core Service dosyaları için relative (./ veya ../) import KULLANILAMAZ. Bellekte çift instance ('Duplicate Module Identity') hata risklerine karşı HER ZAMAN absolute ('@/...') import yapın."
+            }
+          ]
+        }
+      ]
     }
   },
   // Override default ignores of eslint-config-next.

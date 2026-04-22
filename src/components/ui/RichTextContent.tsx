@@ -12,10 +12,8 @@ interface RichTextContentProps {
 export default function RichTextContent({ html, className = '' }: RichTextContentProps) {
     if (!html) return null;
 
-    // 1. Baştaki ve sondaki gereksiz boş paragrafları temizle
-    let cleanHtml = html
-        .replace(/^(?:<p[^>]*>(?:[\s\u200B-\u200D\uFEFF]|&nbsp;|<br\s*\/?>|<\/?(?:span|strong|em|u|b|i|font)[^>]*>)*<\/p>\s*)+/gi, '')
-        .replace(/(?:<p[^>]*>(?:[\s\u200B-\u200D\uFEFF]|&nbsp;|<br\s*\/?>|<\/?(?:span|strong|em|u|b|i|font)[^>]*>)*<\/p>\s*)+$/gi, '');
+    // Sadece trim yapıp geçelim, bazen regex aktif paragrafın içindeki stilleri boşluk zannedip siliyor
+    let cleanHtml = html.trim();
 
     // 2. Wrap sorununu yaratan &nbsp; (Non-breaking space) karakterlerini normal boşluğa çevir.
     cleanHtml = cleanHtml.replace(/&nbsp;|\u00A0/gi, ' ');

@@ -59,47 +59,54 @@ export interface FigureDetailData extends FigureCardData {
 // Type-Safe Contract Definition for DB projection mismatch safety
 export interface RawListFigureDTO {
   id: string;
-  name?: string;
-  figure_name?: string;
-  slug_tr?: string;
-  slug?: string;
-  slug_en?: string;
-  figure_code?: string;
-  code?: string;
-  figure_number?: string;
-  figure_no?: string;
-  thumbnail_url?: string;
-  image_url?: string;
-  images?: string[];
-  min_price?: number;
-  max_price?: number;
-  avg_price?: number;
-  value_usd?: number;
-  rarity_level?: string;
-  rarity?: string;
-  value_score?: number;
-  demand_score?: number;
-  figure_role?: string;
-  role?: string;
-  figure_type?: string;
-  type?: string;
-  is_featured?: boolean;
-  created_at?: string;
-  series_id?: string;
-  series?: {
-    id?: string;
-    series_name?: string;
-    title?: string;
-    slug_tr?: string;
-    slug?: string;
-    slug_en?: string;
-    series_no?: string;
-    category_main?: string;
-    category?: string;
-    manual_rarity?: string;
-    rarity?: string;
-    final_rarity?: string;
+  name: string;
+  figure_name: string;
+  slug_tr: string;
+  slug: string;
+  slug_en: string;
+  figure_code: string;
+  code: string;
+  figure_number: string;
+  thumbnail_url: string;
+  image_url: string;
+  images: string[];
+  min_price: number;
+  max_price: number;
+  avg_price: number;
+  value_usd: number;
+  rarity_level: string;
+  rarity: string;
+  value_score: number;
+  demand_score: number;
+  figure_role: string;
+  role: string;
+  figure_type: string;
+  type: string;
+  is_featured: boolean;
+  created_at: string;
+  series_id: string;
+  series: {
+    id: string;
+    series_name: string;
+    title: string;
+    slug_tr: string;
+    slug: string;
+    slug_en: string;
+    series_no: string;
+    category_main: string;
+    category: string;
+    manual_rarity: string;
+    rarity: string;
+    final_rarity: string;
   };
+  
+  // Dual-Read Fields from PostgREST Joins (Migration Phase)
+  figure_role_id?: string;
+  figure_type_id?: string;
+  rarity_id?: string;
+  role_def?: { name: string };
+  type_def?: { name: string };
+  rarity_def?: { name: string };
 }
 
 // Runtime Contract Guard (Strict Enterprise Validation)
@@ -122,11 +129,22 @@ function validateListFigureContract(row: any): boolean {
   return true;
 }
 
+// --- Relation Normalizer ---
+// Supabase bazen relations'ları array olarak döndürür (özellikle inner join olmayan durumlarda).
+// Bu fonksiyon array/obje karmaşasını çözer ve güvenli bir obje döndürür.
+function normalizeRelation(relation: any): any {
+  if (!relation) return {};
+  if (Array.isArray(relation)) {
+    return relation.length > 0 ? relation[0] : {};
+  }
+  return relation;
+}
+
 export function mapFigureForCard(row: RawListFigureDTO | any): FigureCardData | null {
   const isValid = validateListFigureContract(row);
   if (!isValid) return null; // Hard fail: Bozuk kayidi render etme
 
-  const series = row.series || {}; // Handle populated or potentially empty series cleanly
+  const series = normalizeRelation(row.series);
   
   // 1. Figure Name Fallbacks
   const figure_name = row.figure_name || row.name || 'İsimsiz Figür';
@@ -142,16 +160,19 @@ export function mapFigureForCard(row: RawListFigureDTO | any): FigureCardData | 
   }
   const figure_number = row.figure_number || null;
   
-  // 4. Rarity levels
-  const rarity_level = row.rarity_level || row.rarity || 'Yaygın';
+  // 4. Rarity levels (DUAL-READ)
+  // Önce Supabase Migration A'dan gelen yeni Relation aranır, yoksa legacy string değerleri kullanılır.
+  const rarity_def = normalizeRelation(row.rarity_def);
+  const rarity_level = rarity_def.name || row.rarity_level || row.rarity || 'Yaygın';
+  
   
   // 5. SERIES MAPPING
   const series_id = series.id || row.series_id || '';
-  const series_name = series.series_name || series.title || 'Bilinmeyen Seri';
+  const series_name = series.series_name || series.title || row.series_name || 'Bilinmeyen Seri';
   const series_slug_tr = series.slug_tr || series.slug || '';
   const series_slug_en = series.slug_en || null;
-  const series_number = series.series_number || series.number || null;
-  const category_main = series.category_main || series.category || 'Belirsiz';
+  const series_number = series.series_number || series.series_no || series.number || null;
+  const category_main = series.category_main || series.category || null;
   
   const manual_rarity = series.manual_rarity || series.rarity || null;
   const final_rarity = series.final_rarity || manual_rarity || null;
@@ -183,8 +204,11 @@ export function mapFigureForCard(row: RawListFigureDTO | any): FigureCardData | 
     rarity_level,
     value_score: row.value_score || null,
     demand_score: row.demand_score || null,
-    figure_role: row.figure_role || null,
-    figure_type: row.figure_type || null,
+    
+    // Dual-Read Fallbacks
+    figure_role: row.role_def?.name || row.figure_role || row.role || null,
+    figure_type: row.type_def?.name || row.figure_type || row.type || null,
+    
     is_featured: !!row.is_featured,
     
     // Extracted Series
@@ -205,7 +229,7 @@ export function mapFigureForDetail(row: any): FigureDetailData | null {
   const baseCard = mapFigureForCard(row);
   if (!baseCard) return null;
   
-  const series = row.series || {};
+  const series = normalizeRelation(row.series);
 
   const short_description_tr = row.short_description_tr || row.description || null;
   const release_date = series.release_date || null;

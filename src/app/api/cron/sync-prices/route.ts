@@ -39,6 +39,7 @@ export async function GET(req: Request) {
             updatedCount++;
          }
       } catch (err: any) {
+console.error(err);
          errors.push(`Failed to fetch API or update DB for ${fig.code}: ${err.message}`);
       }
     }
@@ -51,6 +52,7 @@ export async function GET(req: Request) {
     });
 
   } catch (err: any) {
+console.error(err);
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }

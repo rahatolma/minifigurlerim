@@ -8,15 +8,16 @@ type ItemCarouselProps = {
   titleBlock: React.ReactNode;
   actionButton?: React.ReactNode;
   children: React.ReactNode[];
+  itemsPerView?: 2 | 3;
 };
 
-export default function ItemCarousel({ titleBlock, actionButton, children }: ItemCarouselProps) {
+export default function ItemCarousel({ titleBlock, actionButton, children, itemsPerView = 3 }: ItemCarouselProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: 'start',
     slidesToScroll: 1,
     containScroll: 'trimSnaps',
     breakpoints: {
-      '(min-width: 1024px)': { slidesToScroll: 3 }
+      '(min-width: 1024px)': { slidesToScroll: itemsPerView }
     }
   });
 
@@ -78,7 +79,7 @@ export default function ItemCarousel({ titleBlock, actionButton, children }: Ite
             {React.Children.toArray(children).map((child, index) => (
               <div
                 key={index}
-                className="shrink-0 grow-0 min-w-0 w-full sm:w-1/2 lg:w-1/3"
+                className={`shrink-0 grow-0 min-w-0 w-full sm:w-1/2 ${itemsPerView === 2 ? 'lg:w-1/2' : 'lg:w-1/3'}`}
               >
                 <div className="w-full h-full pl-4 md:pl-8">
                   {child}

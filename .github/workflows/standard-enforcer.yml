@@ -22,7 +22,7 @@ jobs:
         cache: 'npm'
 
     - name: Install Dependencies
-      run: npm install
+      run: npm ci
 
     - name: Run Standart Enforcer AST & Regex Sweep
       run: node scripts/enforce-standards.mjs
@@ -31,12 +31,12 @@ jobs:
       run: npx tsc --noEmit
 
     - name: Verify Production Build
-      run: npm run build
-      env:
-        NEXT_PUBLIC_SUPABASE_URL: "https://dummy.supabase.co"
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: "dummy"
-        OPENAI_API_KEY: "dummy"
-        SUPABASE_SERVICE_ROLE_KEY: "dummy"
-        CRON_SECRET: "dummy"
+      run: |
+        touch .env.local
+        npm run build
 
-
+    - name: Runtime Validation (Post-Build Connectivity Verification)
+      run: |
+        npm start &
+        sleep 10
+        curl -f -s http://localhost:3000/ || exit 1

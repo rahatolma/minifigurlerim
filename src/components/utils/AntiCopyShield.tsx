@@ -7,7 +7,7 @@ export default function AntiCopyShield() {
 
   useEffect(() => {
     // Admin panelindeysek bu kısıtlamaları uygulama (kopyalama/yapıştırma lazım)
-    if (pathname?.startsWith('/admin')) {
+    if (pathname?.startsWith('/cto')) {
       document.body.style.userSelect = 'auto';
       document.body.style.webkitUserSelect = 'auto';
       return;
