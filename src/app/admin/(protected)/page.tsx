@@ -1,148 +1,277 @@
 import { getAdminDashboardMetricsDal } from '@/services/action_dal';
-import { Package, Users, Database, Box, PlayCircle } from 'lucide-react';
+import { 
+  getTopViewedFigures, 
+  getMostAddedToCollection, 
+  getMarketplaceClicks, 
+  getFunnelStats 
+} from '@/services/analytics';
+import { Package, Database, CheckCircle2, Eye, PlusCircle, ShoppingCart, Activity, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
-import DashboardCharts from '@/components/admin/analytics/DashboardCharts';
 
 export const revalidate = 0;
 
 export default async function AdminDashboard() {
+  // 1. Fetch Legacy System Metrics
   const metrics = await getAdminDashboardMetricsDal();
+  const totalSeries = metrics.totalSeries || 0;
+  const totalFigures = metrics.totalFigures || 0;
 
-  const totalSeries = metrics.totalSeries;
-  const totalFigures = metrics.totalFigures;
-  const totalCollections = metrics.totalCollections;
-  const rawCollections = metrics.rawCollections;
-  const allFigures = metrics.allFigures;
-  const allSeries = metrics.allSeries;
+  const allFigures = metrics.allFigures || [];
+  const figToName = new Map(allFigures.map((f: any) => [f.slug_tr, f.figure_name || f.name || f.slug_tr]));
 
-  const figToSeries = new Map(allFigures?.map(f => [f.id, f.series_id]) || []);
-  const seriesScores: Record<string, number> = {};
+  // 2. Fetch Product Insight Metrics from PostHog (7 Days)
+  const topViewed = await getTopViewedFigures(7, 10);
+  const mostAdded = await getMostAddedToCollection(7, 10);
+  const marketplaceClicks = await getMarketplaceClicks(7, 10);
+  const funnelStats = await getFunnelStats(7);
 
-  const timelineMap: Record<string, number> = {};
-  
-  for (let i = 29; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    const dateStr = d.toLocaleDateString('tr-TR', { day: '2-digit', month: 'short' });
-    timelineMap[dateStr] = 0;
-  }
+  // 3. Process Funnel & KPI Data (Using global totals from funnelStats)
+  const viewCount = funnelStats.find((f: any) => f.event === 'view_figure')?.total_count || 0;
+  const addCount = funnelStats.find((f: any) => f.event === 'add_to_collection')?.total_count || 0;
+  const clickCount = funnelStats.find((f: any) => f.event === 'click_marketplace')?.total_count || 0;
 
-  let haveCount = 0;
-  let wantCount = 0;
+  const conversionRate = viewCount > 0 ? ((addCount / viewCount) * 100).toFixed(1) : '0.0';
+  const marketConversion = addCount > 0 ? ((clickCount / addCount) * 100).toFixed(1) : '0.0';
 
-  if (rawCollections) {
-    rawCollections.forEach(log => {
-      if (log.created_at) {
-        const d = new Date(log.created_at);
-        const dateStr = d.toLocaleDateString('tr-TR', { day: '2-digit', month: 'short' });
-        if (timelineMap[dateStr] !== undefined) {
-          timelineMap[dateStr] += 1;
-        }
-      }
-      if (log.status === 'have') haveCount++;
-      if (log.status === 'want') wantCount++;
+  // Helper for max view to render CSS bars
+  const maxViewCount = topViewed.length > 0 ? Math.max(...topViewed.map((v: any) => v.view_count)) : 1;
+  const maxMarketClick = marketplaceClicks.length > 0 ? Math.max(...marketplaceClicks.map((m: any) => m.click_count)) : 1;
 
-      if (log.minifigure_id) {
-         const sId = figToSeries.get(log.minifigure_id);
-         if (sId) seriesScores[sId] = (seriesScores[sId] || 0) + 1;
-      }
-    });
-  }
-
-  // Final dönüştürmeler
-  const timelineData = Object.keys(timelineMap).map(key => ({
-    date: key,
-    count: timelineMap[key]
-  }));
-
-  const statusData = [
-    { name: 'Bende Var', value: haveCount },
-    { name: 'İstiyorum', value: wantCount }
-  ];
-
-  const topSeriesData = allSeries
-    ?.map(s => ({ ...s, count: seriesScores[s.id] || 0 }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 5)
-    .filter(s => s.count > 0) || [];
+  // Render Functions for Empty States
+  const renderEmptyState = (message: string) => (
+    <div className="py-8 flex flex-col items-center justify-center text-center w-full">
+      <span className="text-gray-200 text-4xl mb-3"><Activity /></span>
+      <p className="text-sm font-bold text-gray-400">Henüz yeterli veri yok.</p>
+      <p className="text-xs text-gray-300 mt-1">{message}</p>
+    </div>
+  );
 
   return (
     <div className="w-full max-w-[1600px] mx-auto p-8 md:p-12 pb-24">
       <div className="mb-12">
         <h1 className="text-4xl md:text-5xl font-black text-[#111] tracking-tight mb-2">
-          Sistem <span className="text-[#D22B2B]">Özeti</span>
+          Ürün <span className="text-[#D22B2B]">Davranışı</span>
         </h1>
+        <p className="text-gray-500 font-semibold text-sm">Son 7 günün kullanıcı analizleri ve dönüşüm oranları</p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* 1) ÜST KPI SATIRI (4 Kart) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {/* KPI: Görüntüleme */}
+        <div className="bg-white/80 backdrop-blur-xl rounded-[28px] p-6 lg:p-8 flex flex-col border border-white shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+          <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-[16px] flex items-center justify-center mb-4">
+            <Eye className="w-5 h-5" strokeWidth={2.5} />
+          </div>
+          <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">TOPLAM GÖRÜNTÜLEME</p>
+          <p className="text-4xl font-black text-gray-900 tracking-tight">{viewCount}</p>
+        </div>
+
+        {/* KPI: Koleksiyona Ekleme */}
+        <div className="bg-white/80 backdrop-blur-xl rounded-[28px] p-6 lg:p-8 flex flex-col border border-white shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+          <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-[16px] flex items-center justify-center mb-4">
+            <PlusCircle className="w-5 h-5" strokeWidth={2.5} />
+          </div>
+          <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">KOLEKSİYONA EKLEME</p>
+          <p className="text-4xl font-black text-gray-900 tracking-tight">{addCount}</p>
+        </div>
+
+        {/* KPI: Pazaryeri Tıklama */}
+        <div className="bg-white/80 backdrop-blur-xl rounded-[28px] p-6 lg:p-8 flex flex-col border border-white shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+          <div className="w-12 h-12 bg-orange-50 text-orange-600 rounded-[16px] flex items-center justify-center mb-4">
+            <ShoppingCart className="w-5 h-5" strokeWidth={2.5} />
+          </div>
+          <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">PAZARYERİ TIKLAMASI</p>
+          <p className="text-4xl font-black text-gray-900 tracking-tight">{clickCount}</p>
+        </div>
+
+        {/* KPI: Dönüşüm Oranı */}
+        <div className="bg-white/80 backdrop-blur-xl rounded-[28px] p-6 lg:p-8 flex flex-col border border-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#D22B2B]/5 to-transparent opacity-100" />
+          <div className="w-12 h-12 bg-[#D22B2B]/10 text-[#D22B2B] rounded-[16px] flex items-center justify-center mb-4 z-10">
+            <TrendingUp className="w-5 h-5" strokeWidth={2.5} />
+          </div>
+          <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2 z-10">GENEL DÖNÜŞÜM ORANI</p>
+          <div className="flex items-baseline gap-2 z-10">
+            <p className="text-4xl font-black text-[#D22B2B] tracking-tight">%{conversionRate}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* 2 & 3 & 4) ANA BLOKLAR (Grid 3 Cols) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         
-        {/* TOTAL SERIES */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-[28px] p-6 lg:p-8 flex flex-col justify-between border border-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden group hover:-translate-y-1 transition-all duration-300 min-h-[180px]">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <div className="flex items-center justify-between z-10 relative">
-             <div className="w-14 h-14 bg-blue-50 text-blue-600 flex items-center justify-center rounded-[20px] group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300 shadow-sm">
-               <Database className="w-6 h-6" strokeWidth={2.5} />
-             </div>
+        {/* SOL: En Çok Görüntülenen Figürler */}
+        <div className="lg:col-span-2 bg-white/80 backdrop-blur-xl rounded-[28px] p-6 lg:p-8 border border-white shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+          <div className="mb-6 flex justify-between items-end">
+            <div>
+              <h3 className="text-gray-900 text-xl font-black tracking-tight">En Çok Görüntülenen Figürler</h3>
+              <p className="text-gray-400 text-sm font-semibold mt-1">Hangi figürler kullanıcıların ilgisini daha çok çekiyor?</p>
+            </div>
           </div>
-          <div className="mt-6 z-10 relative">
-             <p className="text-[11px] sm:text-[12px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none mb-3">TANIMLI SERİLER</p>
-             <p className="text-4xl sm:text-5xl font-black text-gray-900 leading-none tracking-tight">{totalSeries || 0}</p>
-          </div>
-        </div>
-
-        {/* TOTAL FIGURES */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-[28px] p-6 lg:p-8 flex flex-col justify-between border border-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden group hover:-translate-y-1 transition-all duration-300 min-h-[180px]">
-          <div className="absolute inset-0 bg-gradient-to-br from-orange-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <div className="flex items-center justify-between z-10 relative">
-             <div className="w-14 h-14 bg-orange-50 text-orange-500 flex items-center justify-center rounded-[20px] group-hover:bg-orange-500 group-hover:text-white transition-colors duration-300 shadow-sm">
-               <Package className="w-6 h-6" strokeWidth={2.5} />
-             </div>
-          </div>
-          <div className="mt-6 z-10 relative">
-             <p className="text-[11px] sm:text-[12px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none mb-3">TANIMLI FİGÜRLER</p>
-             <p className="text-4xl sm:text-5xl font-black text-gray-900 leading-none tracking-tight">{totalFigures || 0}</p>
-          </div>
-        </div>
-
-        {/* TOTAL COLLECTIONS */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-[28px] p-6 lg:p-8 flex flex-col justify-between border border-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden group hover:-translate-y-1 transition-all duration-300 min-h-[180px]">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <div className="flex items-center justify-between z-10 relative">
-             <div className="w-14 h-14 bg-emerald-50 text-emerald-600 flex items-center justify-center rounded-[20px] group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-300 shadow-sm">
-               <Box className="w-6 h-6" strokeWidth={2.5} />
-             </div>
-          </div>
-          <div className="mt-6 z-10 relative">
-             <p className="text-[11px] sm:text-[12px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none mb-3">KOLEKSİYON EKLEMELERİ</p>
-             <p className="text-4xl sm:text-5xl font-black text-[#D22B2B] leading-none tracking-tight">{totalCollections || 0}</p>
+          <div className="flex flex-col gap-3">
+            {topViewed.length > 0 ? (
+              topViewed.map((fig: any, idx: number) => {
+                const percentage = Math.max(5, (fig.view_count / maxViewCount) * 100);
+                return (
+                  <div key={fig.figure_slug} className="flex items-center gap-4">
+                    <div className="w-6 h-6 shrink-0 rounded-md bg-gray-100 text-gray-500 font-bold text-xs flex items-center justify-center">
+                      {idx + 1}
+                    </div>
+                    <div className="flex-1 min-w-0 flex flex-col justify-center">
+                      <div className="flex justify-between items-end mb-1">
+                        <span className="text-sm font-bold text-gray-800 truncate" title={figToName.get(fig.figure_slug) || fig.figure_slug}>
+                          {figToName.get(fig.figure_slug) || fig.figure_slug}
+                        </span>
+                        <span className="text-sm font-black text-gray-900">{fig.view_count}</span>
+                      </div>
+                      <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                        <div 
+                          className="bg-blue-500 h-2.5 rounded-full" 
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            ) : renderEmptyState("Görüntüleme verileri toplandıkça bu alan dolacak.")}
           </div>
         </div>
 
-        {/* ACTIVE USERS (Placeholder/Hit) */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-[28px] p-6 lg:p-8 flex flex-col justify-between border border-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden group hover:-translate-y-1 transition-all duration-300 min-h-[180px]">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <div className="flex items-center justify-between z-10 relative">
-             <div className="w-14 h-14 bg-purple-50 text-purple-600 flex items-center justify-center rounded-[20px] group-hover:bg-purple-600 group-hover:text-white transition-colors duration-300 shadow-sm">
-               <Users className="w-6 h-6" strokeWidth={2.5} />
-             </div>
+        {/* SAĞ: İki Küçük Blok Alt Alta */}
+        <div className="lg:col-span-1 flex flex-col gap-6">
+          
+          {/* SAĞ ÜST: En Çok Eklenenler */}
+          <div className="bg-white/80 backdrop-blur-xl rounded-[28px] p-6 lg:p-8 border border-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] flex-1">
+            <h3 className="text-gray-900 text-xl font-black tracking-tight mb-1">En Çok Sahiplenilenler</h3>
+            <p className="text-gray-400 text-sm font-semibold mb-6">Koleksiyona eklenen favoriler</p>
+            
+            <div className="flex flex-col gap-3">
+              {mostAdded.length > 0 ? (
+                mostAdded.map((fig: any, idx: number) => (
+                  <div key={fig.figure_slug} className="flex justify-between items-center border-b border-gray-50 pb-2 last:border-0 last:pb-0">
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      <span className="text-gray-300 font-bold text-xs">#{idx + 1}</span>
+                      <span className="text-sm font-bold text-gray-800 truncate" title={fig.figure_slug}>{fig.figure_slug}</span>
+                    </div>
+                    <span className="text-sm font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md shrink-0">
+                      +{fig.add_count}
+                    </span>
+                  </div>
+                ))
+              ) : renderEmptyState("Kullanıcılar koleksiyon oluşturdukça listelenecek.")}
+            </div>
           </div>
-          <div className="mt-6 z-10 relative">
-             <p className="text-[11px] sm:text-[12px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none mb-3">SİSTEM DURUMU</p>
-             <div className="flex items-center">
-               <span className="w-3 h-3 rounded-full bg-emerald-500 mr-2 animate-pulse" />
-               <p className="text-4xl sm:text-5xl font-black text-gray-900 leading-none tracking-tight">Aktif</p>
-             </div>
-          </div>
-        </div>
 
+          {/* SAĞ ALT: Pazaryeri Tıklamaları */}
+          <div className="bg-white/80 backdrop-blur-xl rounded-[28px] p-6 lg:p-8 border border-white shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+            <h3 className="text-gray-900 text-xl font-black tracking-tight mb-1">Pazaryeri Dağılımı</h3>
+            <p className="text-gray-400 text-sm font-semibold mb-6">Gelir potansiyeli nereden geliyor?</p>
+            
+            <div className="flex flex-col gap-4">
+              {marketplaceClicks.length > 0 ? (
+                marketplaceClicks.map((market: any, idx: number) => {
+                   const mPercent = Math.max(5, (market.click_count / maxMarketClick) * 100);
+                   const isAmazon = market.marketplace.toLowerCase().includes('amazon');
+                   const isTrendyol = market.marketplace.toLowerCase().includes('trendyol');
+                   const colorClass = isAmazon ? 'bg-orange-500' : isTrendyol ? 'bg-orange-600' : 'bg-gray-800';
+                   return (
+                    <div key={market.marketplace} className="flex flex-col">
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="font-bold text-gray-800 capitalize">{market.marketplace.replace('_', ' ')}</span>
+                        <span className="font-black text-gray-900">{market.click_count} <span className="text-xs text-gray-400 font-semibold">Tık</span></span>
+                      </div>
+                      <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                        <div className={`${colorClass} h-2 rounded-full`} style={{ width: `${mPercent}%` }} />
+                      </div>
+                    </div>
+                   );
+                })
+              ) : renderEmptyState("Harici linklere tıklandıkça platformlar görünecek.")}
+            </div>
+          </div>
+
+        </div>
       </div>
-      
-      <DashboardCharts 
-        timelineData={timelineData} 
-        statusData={statusData} 
-        topSeriesData={topSeriesData}
-      />
-      
+
+      {/* 5) ALT GENİŞ BLOK: Dönüşüm Hunisi (Funnel) */}
+      <div className="w-full bg-[#111] rounded-[28px] p-8 lg:p-12 shadow-2xl mb-12 relative overflow-hidden">
+        <div className="absolute right-0 top-0 w-1/2 h-full bg-gradient-to-l from-[#D22B2B]/10 to-transparent pointer-events-none" />
+        
+        <div className="mb-8">
+          <h3 className="text-white text-2xl font-black tracking-tight">Dönüşüm Hunisi (Funnel)</h3>
+          <p className="text-gray-400 text-sm font-semibold mt-1">İlgiden Satın Almaya: Kullanıcı yolculuğundaki kayıp noktaları</p>
+        </div>
+
+        {viewCount > 0 ? (
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-between relative z-10">
+            {/* Step 1: Görüntüleme */}
+            <div className="flex-1 w-full bg-white/10 rounded-2xl p-6 border border-white/5 backdrop-blur-md">
+              <p className="text-gray-400 font-bold text-xs uppercase tracking-widest mb-1">Adım 1</p>
+              <p className="text-white font-black text-lg mb-4">Figür İnceleme</p>
+              <p className="text-4xl font-black text-white">{viewCount}</p>
+            </div>
+            
+            {/* Arrow & Conversion 1 */}
+            <div className="flex flex-col items-center shrink-0 w-24">
+              <div className="text-[#D22B2B] font-black text-xl mb-1">%{conversionRate}</div>
+              <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#D22B2B] to-transparent" />
+            </div>
+
+            {/* Step 2: Koleksiyona Ekleme */}
+            <div className="flex-1 w-full bg-white/10 rounded-2xl p-6 border border-white/5 backdrop-blur-md">
+              <p className="text-gray-400 font-bold text-xs uppercase tracking-widest mb-1">Adım 2</p>
+              <p className="text-white font-black text-lg mb-4">Koleksiyona Ekleme</p>
+              <p className="text-4xl font-black text-white">{addCount}</p>
+              <p className="text-xs text-red-400 font-bold mt-2">Kayıp: %{(100 - parseFloat(conversionRate)).toFixed(1)}</p>
+            </div>
+
+            {/* Arrow & Conversion 2 */}
+            <div className="flex flex-col items-center shrink-0 w-24">
+              <div className="text-emerald-400 font-black text-xl mb-1">%{marketConversion}</div>
+              <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-emerald-400 to-transparent" />
+            </div>
+
+            {/* Step 3: Pazaryeri */}
+            <div className="flex-1 w-full bg-emerald-500/10 rounded-2xl p-6 border border-emerald-500/20 backdrop-blur-md">
+              <p className="text-emerald-500 font-bold text-xs uppercase tracking-widest mb-1">Adım 3 (Hedef)</p>
+              <p className="text-emerald-400 font-black text-lg mb-4">Pazaryerine Gidiş</p>
+              <p className="text-4xl font-black text-emerald-400">{clickCount}</p>
+              {addCount > 0 && <p className="text-xs text-red-400 font-bold mt-2">Kayıp: %{(100 - parseFloat(marketConversion)).toFixed(1)}</p>}
+            </div>
+          </div>
+        ) : (
+          <div className="py-12 flex flex-col items-center justify-center border border-white/10 rounded-2xl border-dashed">
+             <span className="text-gray-600 text-4xl mb-3"><Activity /></span>
+             <p className="text-gray-400 font-bold">Huni verisi henüz oluşmadı.</p>
+          </div>
+        )}
+      </div>
+
+      {/* 6) SECONDARY BLOK: Sistem Durumu */}
+      <div className="pt-8 border-t border-gray-100 flex flex-wrap gap-8 items-center justify-between">
+        <div>
+          <h4 className="text-gray-900 font-black tracking-tight text-lg">Sistem Durumu</h4>
+          <p className="text-gray-400 text-xs font-semibold mt-1">Veritabanındaki yapısal metrikler</p>
+        </div>
+        <div className="flex gap-6">
+          <div className="flex items-center gap-2">
+            <Database className="w-4 h-4 text-gray-400" />
+            <span className="text-gray-500 font-bold text-sm">Seriler:</span>
+            <span className="text-gray-900 font-black">{totalSeries}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Package className="w-4 h-4 text-gray-400" />
+            <span className="text-gray-500 font-bold text-sm">Figürler:</span>
+            <span className="text-gray-900 font-black">{totalFigures}</span>
+          </div>
+          <div className="flex items-center gap-2 bg-emerald-50 px-3 py-1 rounded-full">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <span className="text-emerald-700 font-bold text-sm tracking-tight">Sistem Aktif</span>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }
