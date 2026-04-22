@@ -5,7 +5,7 @@ import path from 'path';
 // --- CONFIGURATION ---
 const ROOT_DIR = path.resolve('./src');
 const IGNORE_LIST = ['scripts', 'supabase', 'tests', 'docs', 'node_modules', 'dist'];
-const ALLOWED_DB_LAYERS = ['/services', '/actions', '/lib/db', '/app/api', '/components/admin', '/app/admin'];
+const ALLOWED_DB_LAYERS = ['/services', '/actions', '/lib/db', '/app/api', '/components/cto', '/app/cto'];
 
 let hasFailures = false;
 let hasWarnings = false;
@@ -61,7 +61,7 @@ function processFile(filePath) {
     // RULE 1: select('*') and wildcard permutations
     // KURAL 1: Projection Güvenliği (select * yasak)
     // İstisna: Admin paneli bu kuraldan muaf tutulabilir çünkü performans bottleneck'i oluşturmaz ve tüm alanlara ihtiyaç duyar.
-    if (!filePath.includes('/admin/')) {
+    if (!filePath.includes('/cto/')) {
       const hasWildcardSelect = /\.select\s*\(\s*(['"`])(.*?)\1\s*\)/.exec(line);
       if (hasWildcardSelect) {
          const selectInnerArg = hasWildcardSelect[2];

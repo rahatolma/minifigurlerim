@@ -79,7 +79,7 @@ export default function Footer() {
         {/* BOTTOM FOOTER GRID */}
         <div className="relative z-20 border-t border-gray-200 flex flex-col md:flex-row items-center justify-between pt-10 pb-4 gap-6">
           <p className="text-[#a0a0a0] text-center md:text-left text-[14px] font-semibold tracking-wide">
-            {tFooter('CopyrightText')} <br className="md:hidden"/> <span className="text-gray-900 font-black">Minifigürlerim</span> {tFooter('BrandText')}
+            {tFooter('CopyrightText')} <br className="md:hidden"/> <span className="text-gray-900 font-black">{tFooter('BrandText')}</span>
           </p>
           <LegalNoticeButton className="bg-[#F2CD37] text-black border border-[#d4b32c] font-black py-4 px-8 rounded-xl shadow-[0_8px_20px_rgba(242,205,55,0.3)] hover:bg-[#e0bd31] hover:scale-105 hover:shadow-[0_12px_25px_rgba(242,205,55,0.4)] transition-all tracking-[0.2em] uppercase text-[11px]" />
         </div>

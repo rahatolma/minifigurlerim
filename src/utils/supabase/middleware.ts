@@ -7,9 +7,23 @@ const handleI18nRouting = createIntlMiddleware(routing)
 
 export async function updateSession(request: NextRequest) {
   const isAdminOrApi = 
-    request.nextUrl.pathname.startsWith('/admin') ||
+    request.nextUrl.pathname.startsWith('/cto') ||
     request.nextUrl.pathname.startsWith('/api') || 
-    request.nextUrl.pathname.startsWith('/uploads')
+    request.nextUrl.pathname.startsWith('/uploads') ||
+    request.nextUrl.pathname.startsWith('/maintenance')
+
+  // MAINTENANCE MODE LOGIC (Vercel üzerinden MAINTENANCE_MODE=true yapılarak açılıp kapanabilir)
+  const isMaintenanceModeActive = process.env.MAINTENANCE_MODE === 'true'
+  const isMaintenancePage = request.nextUrl.pathname.startsWith('/maintenance')
+  const isStaticFile = request.nextUrl.pathname.match(/\.(png|jpg|jpeg|gif|webp|svg|ico)$/) || request.nextUrl.pathname.startsWith('/images')
+  
+  // Sadece Maintenance modu aktifse ve admin değilse yönlendir
+  if (isMaintenanceModeActive && !isAdminOrApi && !isMaintenancePage && !isStaticFile) {
+    // Redirect all public traffic to maintenance page
+    const url = request.nextUrl.clone()
+    url.pathname = '/maintenance'
+    return NextResponse.redirect(url)
+  }
 
   let supabaseResponse = isAdminOrApi 
     ? NextResponse.next({ request }) 
@@ -63,13 +77,13 @@ export async function updateSession(request: NextRequest) {
 
     if (
       !user &&
-      request.nextUrl.pathname.match(/^\/(tr|en)\/admin/) &&
-      !request.nextUrl.pathname.match(/^\/(tr|en)\/admin\/login/)
+      request.nextUrl.pathname.match(/^\/(tr|en)\/cto/) &&
+      !request.nextUrl.pathname.match(/^\/(tr|en)\/cto\/login/)
     ) {
       // no user, potentially respond by redirecting the user to the login page
       // GEÇİCİ İPTAL: Kullanıcının yerelde geliştirme yapabilmesi için şifre duvarı (middleware redirect) kapatıldı.
       // const url = request.nextUrl.clone()
-      // url.pathname = `/${request.nextUrl.pathname.split('/')[1]}/admin/login`
+      // url.pathname = `/${request.nextUrl.pathname.split('/')[1]}/cto/login`
       // return NextResponse.redirect(url)
     }
 
