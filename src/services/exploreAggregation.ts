@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/nextjs';
-import { getExploreFigures } from '@/services/dal';
+import { getAllMinifigures } from '@/services/dal';
 import { mapFigureForCard, FigureCardData } from '@/utils/figureMapper';
 
 export interface ExploreDataShape {
@@ -14,9 +14,9 @@ export const getExplorePageData = async (): Promise<ExploreDataShape> => {
   let figures: FigureCardData[] = [];
 
   try {
-    const rawData = await getExploreFigures(24);
+    const rawData = await getAllMinifigures();
     if (Array.isArray(rawData)) {
-      figures = rawData.map(mapFigureForCard).filter(Boolean) as FigureCardData[];
+      figures = rawData.slice(0, 24).map(mapFigureForCard).filter(Boolean) as FigureCardData[];
     }
   } catch (err) {
     const duration = performance.now() - t0;
