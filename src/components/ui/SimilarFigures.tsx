@@ -1,9 +1,11 @@
+'use client';
+
 import React from 'react';
 import FigureCard from '@/components/ui/FigureCard';
 import ItemCarousel from '@/components/ui/ItemCarousel';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import { mapFigureForCard } from '@/utils/figureMapper';
-
+import { trackClickSimilarFigure } from '@/lib/analytics';
 import { FigureCardData } from '@/utils/figureMapper';
 
 export default function SimilarFigures({ figures, locale }: { figures: any[], locale: string }) {
@@ -26,7 +28,18 @@ export default function SimilarFigures({ figures, locale }: { figures: any[], lo
               }
             >
               {mappedFigures.map((fig) => (
-                  <FigureCard key={fig.id} {...fig} />
+                  <div key={fig.id} onClick={() => {
+                      trackClickSimilarFigure({
+                          figure_id: fig.id,
+                          figure_slug: fig.figure_slug_tr || '',
+                          series_id: fig.series_id || '',
+                          series_slug: fig.series_slug_tr || '',
+                          locale: locale,
+                          source_area: 'similar_figures'
+                      });
+                  }}>
+                      <FigureCard {...fig} />
+                  </div>
               ))}
             </ItemCarousel>
         </section>

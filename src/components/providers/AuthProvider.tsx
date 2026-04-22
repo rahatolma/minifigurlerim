@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/utils/supabase/client';
 import * as Sentry from '@sentry/nextjs';
+import posthog from 'posthog-js';
 import { User, Session } from '@supabase/supabase-js';
 
 interface AuthContextType {
@@ -19,11 +20,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const syncSentryUser = (sessionUser: User | null) => {
+    const syncSentryAndPostHog = (sessionUser: User | null) => {
       if (sessionUser) {
         Sentry.setUser({ id: sessionUser.id, email: sessionUser.email });
+        posthog.identify(sessionUser.id, { email: sessionUser.email });
       } else {
         Sentry.setUser(null);
+        posthog.reset();
       }
     };
 
@@ -31,7 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      syncSentryUser(session?.user ?? null);
+      syncSentryAndPostHog(session?.user ?? null);
       setLoading(false);
     });
 
@@ -39,7 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
-      syncSentryUser(session?.user ?? null);
+      syncSentryAndPostHog(session?.user ?? null);
       setLoading(false);
     });
 

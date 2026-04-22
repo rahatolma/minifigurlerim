@@ -5,6 +5,7 @@ import Link from 'next/link';
 import FigureGallery from '@/components/ui/FigureGallery';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import ClientViewTracker from '@/components/ui/ClientViewTracker';
+import AnalyticsViewTracker from '@/components/ui/AnalyticsViewTracker';
 import CollectionActions from '@/components/ui/CollectionActions';
 import CollectorPodium from '@/components/ui/CollectorPodium';
 import SimilarFigures from '@/components/ui/SimilarFigures';
@@ -178,6 +179,14 @@ export default async function FigureDetail({
     <div className="bg-[#fcfcfc] min-h-screen w-full pb-16">
       <FloatingFigureNav prev={prevFigure} next={nextFigure} />
       <ClientViewTracker table="minifigures" id={figure.id} />
+      <AnalyticsViewTracker figure={{
+          figure_id: figure.id,
+          figure_slug: figure.figure_slug_tr || '',
+          series_id: figure.series_id || '',
+          series_slug: figure.series_slug_tr || '',
+          locale: locale,
+          source_area: 'figure_detail'
+      }} />
 
 
       <div className="max-w-7xl mx-auto px-4 sm:px-8 mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative">
@@ -191,7 +200,14 @@ export default async function FigureDetail({
             </div>
 
             {/* 2- KOLEKSİYON VE PUANLAMA BUTONLARI */}
-            <CollectionActions minifigureId={figure.id} />
+            <CollectionActions minifigureId={figure.id} trackingProps={{
+                figure_id: figure.id,
+                figure_slug: figure.figure_slug_tr || '',
+                series_id: figure.series_id || '',
+                series_slug: figure.series_slug_tr || '',
+                locale: locale,
+                source_area: 'figure_detail'
+            }} />
 
         </div>
 
@@ -417,7 +433,15 @@ export default async function FigureDetail({
                             customLink={undefined}
                             amazonUrl={amazonUrl} 
                             trendyolUrl={trendyolUrl} 
-                            hepsiburadaUrl={hepsiburadaUrl} 
+                            hepsiburadaUrl={hepsiburadaUrl}
+                            trackingProps={{
+                                figure_id: figure.id,
+                                figure_slug: figure.figure_slug_tr || '',
+                                series_id: figure.series_id || '',
+                                series_slug: figure.series_slug_tr || '',
+                                locale: locale,
+                                source_area: 'market_block'
+                            }}
                          />
                          <p className="mt-6 text-center text-[9px] sm:text-[10px] text-gray-400 font-bold tracking-wide">
                             Bu bağlantılar üzerinden yapılan alışverişler platforma destek sağlar.

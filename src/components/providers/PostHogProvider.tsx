@@ -31,8 +31,20 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
             posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY as string, {
                 api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST as string || "https://eu.i.posthog.com",
                 person_profiles: 'always', 
-                capture_pageview: false // Next.js App Router için kapalı tutulup, özel komponent ile manuel atılır.
-            })
+                // Next.js App Router için capture_pageview kapalı, özel component (PostHogPageView) ile manuel atılıyor ki duplicate olmasın.
+                capture_pageview: false, 
+                autocapture: true, // Kullanıcı veri girişleri (şifre vb.) PostHog tarafından varsayılan olarak maskelenir/kaydedilmez.
+                sanitize_properties: (properties: any) => {
+                    // URL üzerinden gelebilecek session id vb hassas parametreleri engelle
+                    if (properties.$current_url) {
+                        const url = new URL(properties.$current_url);
+                        url.searchParams.delete('token');
+                        url.searchParams.delete('session');
+                        properties.$current_url = url.toString();
+                    }
+                    return properties;
+                }
+            });
         }
     }, [])
 

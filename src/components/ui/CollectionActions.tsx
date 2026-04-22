@@ -7,8 +7,9 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useGamification } from '@/components/providers/GamificationProvider';
+import { trackAddToCollection, trackRemoveFromCollection, trackAddToWatchlist, trackRemoveFromWatchlist, FigureTrackingProps } from '@/lib/analytics';
 
-export default function CollectionActions({ minifigureId }: { minifigureId: string }) {
+export default function CollectionActions({ minifigureId, trackingProps }: { minifigureId: string, trackingProps: FigureTrackingProps }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -81,6 +82,15 @@ export default function CollectionActions({ minifigureId }: { minifigureId: stri
        setStatus(previousStatus);
        setGlobalStatus(minifigureId, previousStatus);
        alert(result.error);
+    } else {
+       // ANALYTICS TRACKING ON SUCCESS
+       if (type === 'have') {
+           if (optimisticStatus === 'have') trackAddToCollection(trackingProps);
+           else trackRemoveFromCollection(trackingProps);
+       } else if (type === 'want') {
+           if (optimisticStatus === 'want') trackAddToWatchlist(trackingProps);
+           else trackRemoveFromWatchlist(trackingProps);
+       }
     }
     setLoading(false);
   };
