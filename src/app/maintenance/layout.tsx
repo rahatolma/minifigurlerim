@@ -1,5 +1,6 @@
 import { Sen } from "next/font/google";
 import "../globals.css";
+import { Analytics } from "@vercel/analytics/react";
 
 const sen = Sen({
   variable: "--font-sen",
@@ -20,6 +21,7 @@ export default function MaintenanceLayout({
     <html lang="tr" className={`${sen.variable} h-full antialiased`}>
       <body className={`${sen.className} min-h-full flex flex-col bg-[#111] m-0 p-0`}>
         {children}
+        <Analytics />
       </body>
     </html>
   );
