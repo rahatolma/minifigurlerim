@@ -8,6 +8,8 @@ import { mapFigureForCard } from '@/utils/figureMapper';
 import FiguresListContainer from '@/components/ui/FiguresListContainer';
 
 
+
+export const dynamic = 'force-dynamic';
 const MINIFIGURE_EVOLUTION = [
   { year: '1978', title: 'Klasik Yüz', desc: 'Legoland Town ile klasik sarı gülümseme doğdu.', icon: 'happy', color: 'text-[#F2CD37]' },
   { year: '1989', title: 'Korsan Çağı', desc: 'Sakal, bıyık ve göz bantları eklendi.', icon: 'neutral', color: 'text-[#F2CD37]' },
@@ -21,7 +23,6 @@ const MINIFIGURE_EVOLUTION = [
   { year: '2024', title: 'Modern Dönem', desc: 'Detay seviyesi film stüdyolarındaki kaliteye ulaştı.', icon: 'search', color: 'text-[#F2CD37]' },
 ];
 
-export const revalidate = 3600; // Her zaman güncel
 
 export default async function FiguresPage({
   searchParams,

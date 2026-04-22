@@ -12,8 +12,9 @@ import { LayoutGrid, Package, TrendingUp } from 'lucide-react';
 import AuthCTA from '@/components/ui/AuthCTA';
 import { getHomepageData } from '@/services/homepageAggregation';
 
-export const revalidate = 86400; // Dinamik sayfa
 
+
+export const dynamic = 'force-dynamic';
 export default async function Home() {
   const {
     activeSliders, latestSeries, latestFigures: mappedLatestFigures,

@@ -8,6 +8,8 @@ import AuthCTA from '@/components/ui/AuthCTA';
 import DragScrollContainer from '@/components/ui/DragScrollContainer';
 import { getTranslations, getLocale } from 'next-intl/server';
 
+
+export const dynamic = 'force-dynamic';
 const CMF_HISTORY = [
   { year: '2010', date: 'Mayıs 2010', title: 'Seri 1', desc: 'Sarı kafalar ve 16 figürlük kör paketlerle tüm dünyanın peşinden koşacağı efsane doğdu.' },
   { year: '2012', date: 'Temmuz 2012', title: 'Team GB', desc: 'İngiltere Olimpiyat Takımı ile ülkeler ve özel lisans konseptine ilk eşsiz adım atıldı.' },
@@ -21,8 +23,6 @@ const CMF_HISTORY = [
   { year: 'Bugün', date: 'Gelecek', title: 'Minifigürlerim Platformu', desc: 'Türkiye merkezli bu premium koleksiyon takip platformuyla AFOL kültürünü yaşatmak için harika bir sayfa açıldı!', color: 'bg-[#D22B2B]' }
 ];
 
-export const revalidate = 0; // GEÇİCİ OLARAK 0 (Anında yansısın diye önbelleği kapattım)
-export const dynamic = 'force-dynamic'; // Tamamen dinamik render zorlaması (Client Router Cache bile yoksayılır)
 
 export default async function SeriesPage({
   searchParams,

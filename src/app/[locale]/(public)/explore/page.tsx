@@ -1,8 +1,9 @@
 import { getExplorePageData } from '@/services/exploreAggregation';
 import FigureCard from '@/components/ui/FigureCard';
 
-export const revalidate = 86400; // Statik jenerasyon opsiyonel, fallback ile
 
+
+export const dynamic = 'force-dynamic';
 export default async function ExplorePage() {
   const { figures, degradedBlocks } = await getExplorePageData();
   const isFiguresDegraded = degradedBlocks.includes('explore_figures');
