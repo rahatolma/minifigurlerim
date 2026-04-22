@@ -24,9 +24,6 @@ export default async function ContactPage() {
          <div className="flex flex-col md:flex-row w-full gap-6 md:gap-10 items-stretch min-h-[500px]">
             {/* SOL Taraf: Geri Bildirim Formu */}
             <div className="w-full md:w-1/3 bg-white rounded-[32px] p-8 md:p-12 text-gray-900 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.06)] border border-gray-100 relative overflow-hidden flex flex-col justify-between">
-                <div className="absolute -left-12 -bottom-12 opacity-5 scale-150 -rotate-[15deg] transition-all duration-700 ease-out pointer-events-none">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1"><path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
-                </div>
                 <div className="relative z-10 flex-1 flex flex-col">
                   <FeedbackForm />
                 </div>
