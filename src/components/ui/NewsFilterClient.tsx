@@ -35,9 +35,10 @@ export default function NewsFilterClient({
 
   return (
     <>
-      <div className="hidden md:flex flex-nowrap md:flex-wrap items-center gap-2 md:gap-3 w-full">
-        <CustomDropdown 
-          name="sort"
+      <div className="hidden md:grid md:grid-cols-2 gap-5 w-full">
+        <div className="w-full">
+          <CustomDropdown 
+            name="sort"
           options={[
             { value: 'newest', label: 'En Yeniler' },
             { value: 'oldest', label: 'En Eskiler' },
@@ -48,9 +49,10 @@ export default function NewsFilterClient({
           placeholder="Sıralama"
           showSearch={false}
         />
+        </div>
         
         {/* ORTAK: Rozet ve Temizle Butonu */}
-        <div className="border border-gray-200 bg-gray-50 rounded-xl px-4 py-3 flex items-center justify-center flex-1 shrink-0 md:min-w-[200px]">
+        <div className="border border-gray-200 bg-gray-50 rounded-xl px-4 py-3 flex items-center justify-center w-full h-full">
            <div className="flex items-center justify-center gap-4 md:gap-6 w-full">
               {/* Rakam */}
               <span className="font-black leading-none -mt-0.5" style={{ color: '#D22B2B', fontSize: '18px' }}>{totalCount}</span> 
