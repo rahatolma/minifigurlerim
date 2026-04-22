@@ -39,38 +39,38 @@ console.error(err);
   };
 
   return (
-    <form className="space-y-6" onSubmit={handleSubmit}>
+    <form className="flex flex-col flex-1 gap-6" onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex flex-col gap-2">
-                <label className="text-[14px] font-bold text-gray-900">Adınız <span className="text-[#D22B2B]">*</span></label>
-                <input required type="text" name="cf_fname" autoComplete="new-password" data-lpignore="true" data-1p-ignore="true" className="w-full px-4 py-3 bg-white text-gray-900 font-medium border border-gray-200 rounded-sm focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-colors shadow-sm" />
+                <label className="text-[13px] font-bold text-white/90">Adınız <span className="text-[#D22B2B]">*</span></label>
+                <input required type="text" name="cf_fname" autoComplete="new-password" data-lpignore="true" data-1p-ignore="true" className="w-full px-4 py-3 bg-[#1A1A1A] text-white font-medium border border-gray-800 rounded-md focus:outline-none focus:border-gray-500 focus:bg-[#222] transition-colors shadow-inner text-[13px]" />
             </div>
             <div className="flex flex-col gap-2">
-                <label className="text-[14px] font-bold text-gray-900">Soyadınız <span className="text-[#D22B2B]">*</span></label>
-                <input required type="text" name="cf_lname" autoComplete="new-password" data-lpignore="true" data-1p-ignore="true" className="w-full px-4 py-3 bg-white text-gray-900 font-medium border border-gray-200 rounded-sm focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-colors shadow-sm" />
+                <label className="text-[13px] font-bold text-white/90">Soyadınız <span className="text-[#D22B2B]">*</span></label>
+                <input required type="text" name="cf_lname" autoComplete="new-password" data-lpignore="true" data-1p-ignore="true" className="w-full px-4 py-3 bg-[#1A1A1A] text-white font-medium border border-gray-800 rounded-md focus:outline-none focus:border-gray-500 focus:bg-[#222] transition-colors shadow-inner text-[13px]" />
             </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex flex-col gap-2">
-                <label className="text-[14px] font-bold text-gray-900">E-Posta Adresiniz <span className="text-[#D22B2B]">*</span></label>
-                <input required type="email" name="cf_mail" autoComplete="new-password" data-lpignore="true" data-1p-ignore="true" className="w-full px-4 py-3 bg-white text-gray-900 font-medium border border-gray-200 rounded-sm focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-colors shadow-sm" />
+                <label className="text-[13px] font-bold text-white/90">E-Posta Adresiniz <span className="text-[#D22B2B]">*</span></label>
+                <input required type="email" name="cf_mail" autoComplete="new-password" data-lpignore="true" data-1p-ignore="true" className="w-full px-4 py-3 bg-[#1A1A1A] text-white font-medium border border-gray-800 rounded-md focus:outline-none focus:border-gray-500 focus:bg-[#222] transition-colors shadow-inner text-[13px]" />
             </div>
             <div className="flex flex-col gap-2">
-                <label className="text-[14px] font-bold text-gray-900">Konu</label>
-                <input type="text" name="cf_subj" autoComplete="new-password" data-lpignore="true" data-1p-ignore="true" className="w-full px-4 py-3 bg-white text-gray-900 font-medium border border-gray-200 rounded-sm focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-colors shadow-sm" />
+                <label className="text-[13px] font-bold text-white/90">Konu</label>
+                <input type="text" name="cf_subj" autoComplete="new-password" data-lpignore="true" data-1p-ignore="true" className="w-full px-4 py-3 bg-[#1A1A1A] text-white font-medium border border-gray-800 rounded-md focus:outline-none focus:border-gray-500 focus:bg-[#222] transition-colors shadow-inner text-[13px]" />
             </div>
         </div>
 
-        <div className="flex flex-col gap-2">
-            <label className="text-[14px] font-bold text-gray-900">Mesajınız <span className="text-[#D22B2B]">*</span></label>
-            <textarea required rows={6} name="cf_msg" className="w-full px-4 py-3 bg-white text-gray-900 font-medium border border-gray-200 rounded-sm focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-colors shadow-sm resize-y" />
+        <div className="flex flex-col gap-2 flex-1">
+            <label className="text-[13px] font-bold text-white/90">Mesajınız <span className="text-[#D22B2B]">*</span></label>
+            <textarea required rows={7} name="cf_msg" className="w-full flex-1 px-4 py-3 bg-[#1A1A1A] text-white font-medium border border-gray-800 rounded-md focus:outline-none focus:border-gray-500 focus:bg-[#222] transition-colors shadow-inner resize-none text-[13px]" />
         </div>
 
         <button 
           type="submit" 
           disabled={isSubmitting}
-          className="w-full bg-[#fce01a] hover:bg-[#eacc0b] disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-black font-black text-[13px] tracking-widest uppercase py-4 rounded-sm transition-colors mt-6 shadow-sm"
+          className="w-full bg-[#fce01a] hover:bg-[#eacc0b] disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed text-black font-black text-[13px] tracking-widest uppercase py-4 rounded-md transition-colors mt-2 shadow-[0_8px_20px_rgba(252,224,26,0.2)]"
         >
             {isSubmitting ? 'GÖNDERİLİYOR...' : 'GÖNDER'}
         </button>

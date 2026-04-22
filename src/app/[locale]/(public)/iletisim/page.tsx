@@ -1,4 +1,5 @@
 import ContactForm from "@/components/ui/ContactForm";
+import FeedbackForm from "@/components/ui/FeedbackForm";
 import { getActiveFaqs } from "@/services/dal";
 import InstagramBlock from "@/components/ui/InstagramBlock";
 
@@ -17,15 +18,29 @@ export default async function ContactPage() {
     <div className="bg-[#fcfcfc] min-h-screen pb-16">
 
 
-      <div className="max-w-4xl mx-auto px-6 md:px-8 mt-8 mb-24 flex flex-col gap-16">
+      <div className="max-w-7xl mx-auto px-6 md:px-8 mt-8 mb-24 flex flex-col gap-16">
          
-         <div className="w-full">
-            <div className="bg-white border border-gray-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.06)] rounded-[32px] p-8 md:p-12">
-                <div className="text-center mb-10">
-                    <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight mb-4">Sorunuz Mu Var?</h1>
-                    <p className="text-gray-600 text-[15px] font-medium leading-relaxed max-w-2xl mx-auto">Her türlü soru, görüş ve öneri için bize aşağıdaki iletişim formundan ulaşabilirsiniz. En kısa sürede dönüş yapacağız.</p>
+         {/* 1/3 and 2/3 Layout for Forms */}
+         <div className="flex flex-col md:flex-row w-full gap-6 md:gap-10 items-stretch min-h-[500px]">
+            {/* SOL Taraf: Geri Bildirim Formu (Kırmızı) */}
+            <div className="w-full md:w-1/3 bg-[#D22B2B] rounded-[32px] p-8 md:p-12 text-white shadow-[0_10px_40px_rgba(210,43,43,0.3)] relative overflow-hidden group flex flex-col justify-between">
+                <div className="absolute -left-12 -bottom-12 opacity-10 scale-150 -rotate-[15deg] transition-all duration-700 ease-out group-hover:rotate-0 group-hover:scale-110 pointer-events-none">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1"><path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
                 </div>
-                <ContactForm />
+                <div className="relative z-10 flex-1 flex flex-col">
+                  <FeedbackForm />
+                </div>
+            </div>
+
+            {/* SAĞ Taraf: İletişim Formu (Siyah) */}
+            <div className="w-full md:w-2/3 bg-black rounded-[32px] p-8 md:p-12 shadow-2xl relative overflow-hidden flex flex-col">
+                <div className="mb-8">
+                    <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight mb-3">Sorunuz Mu Var?</h1>
+                    <p className="text-gray-400 text-[13px] font-medium leading-relaxed max-w-xl">Her türlü soru, görüş ve öneri için bize aşağıdaki iletişim formundan ulaşabilirsiniz. En kısa sürede dönüş yapacağız.</p>
+                </div>
+                <div className="relative z-10 flex-1 flex flex-col">
+                  <ContactForm />
+                </div>
             </div>
          </div>
 
