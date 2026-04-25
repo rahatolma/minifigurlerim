@@ -52,7 +52,7 @@ export async function signInWithGoogle() {
   const { data, error } = await signInWithOAuthDal('google', `${origin}/api/auth/callback`);
 
   if (error) {
-    return redirect({ href: '/login?error=oauth_failed', locale: 'tr' });
+    return redirect({ href: '/login?error=oauth_failed' as any, locale: 'tr' });
   }
 
   if (data?.url) {

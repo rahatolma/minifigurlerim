@@ -112,7 +112,7 @@ export default async function LoginPage({
               />
               {!isRegister && (
                   <div className="text-right mt-2">
-                       <Link href="#" className="text-[11px] font-bold text-gray-500 hover:text-black transition-colors">{t('ForgotPassword')}</Link>
+                       <Link href={"#" as any} className="text-[11px] font-bold text-gray-500 hover:text-black transition-colors">{t('ForgotPassword')}</Link>
                   </div>
               )}
             </div>
@@ -155,7 +155,7 @@ export default async function LoginPage({
               {isRegister ? t('AlreadyHaveAccount') : t('DontHaveCollection')}
             </p>
             <Link 
-              href={isRegister ? '/login' : '/login?type=register'} 
+              href={(isRegister ? '/login' : '/login?type=register') as any} 
               className="inline-flex items-center gap-2 px-6 py-3 bg-gray-50 hover:bg-gray-100 text-[#D22B2B] text-sm font-black rounded-xl transition-all shadow-sm border border-gray-200"
             >
               {isRegister ? t('LoginAction') : t('RegisterAction')}
@@ -236,7 +236,7 @@ export default async function LoginPage({
           </Link>
 
           <Link 
-            href="/login"
+            href={"/login" as any}
             className={`flex flex-col items-center justify-center gap-1.5 p-2 py-3 w-1/4 transition-colors ${currentView === 'login' ? 'text-[#D22B2B]' : 'text-gray-400 hover:text-gray-600'}`}
           >
              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
@@ -244,7 +244,7 @@ export default async function LoginPage({
           </Link>
 
           <Link 
-            href="/login?type=register"
+            href={"/login?type=register" as any}
             className={`flex flex-col items-center justify-center gap-1.5 p-2 py-3 w-1/4 transition-colors ${currentView === 'register' ? 'text-[#D22B2B]' : 'text-gray-400 hover:text-gray-600'}`}
           >
              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
@@ -252,7 +252,7 @@ export default async function LoginPage({
           </Link>
 
           <Link 
-             href="/login?type=social"
+             href={"/login?type=social" as any}
              className={`flex flex-col items-center justify-center gap-1.5 p-2 py-3 w-1/4 transition-colors ${currentView === 'social' ? 'text-[#D22B2B]' : 'text-gray-400 hover:text-gray-600'}`}
           >
              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
