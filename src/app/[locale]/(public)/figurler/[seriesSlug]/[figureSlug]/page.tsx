@@ -245,7 +245,7 @@ export default async function FigureDetail({
             {/* Etiketler (Seri & Kategori) */}
             <div className="flex flex-wrap gap-2 items-start w-full mb-6">
                 {figure.series_name && (
-                    <Link href={figure.series_slug_tr ? `/seriler/${figure.series_slug_tr}` : `/seriler`} className="bg-red-50 text-[#D22B2B] hover:bg-[#D22B2B] hover:text-white transition-colors font-black uppercase tracking-widest text-[9px] sm:text-[10px] px-3.5 py-1.5 rounded-sm flex flex-col items-start text-left">
+                    <Link href={(figure.series_slug_tr ? `/seriler/${figure.series_slug_tr}` : `/seriler`) as any} className="bg-red-50 text-[#D22B2B] hover:bg-[#D22B2B] hover:text-white transition-colors font-black uppercase tracking-widest text-[9px] sm:text-[10px] px-3.5 py-1.5 rounded-sm flex flex-col items-start text-left">
                         <span>{t('SeriesPrefix')}</span>
                         <span className="mt-0.5">
                             {figure.series_name.replace(/LEGO®?/i, '').replace(/Minifigürler/i, '').replace(/Serisi/i, '').trim()}
@@ -253,7 +253,7 @@ export default async function FigureDetail({
                     </Link>
                 )}
                 {figure.category_main ? (
-                    <Link href={`/seriler?category=${slugify(figure.category_main)}`} className="bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors font-black uppercase tracking-widest text-[9px] sm:text-[10px] px-3.5 py-1.5 rounded-sm">
+                    <Link href={`/seriler?category=${slugify(figure.category_main)}` as any} className="bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors font-black uppercase tracking-widest text-[9px] sm:text-[10px] px-3.5 py-1.5 rounded-sm">
                         {getLocalizedCategory(figure.category_main, tTax)}
                     </Link>
                 ) : (

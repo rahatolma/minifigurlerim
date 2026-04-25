@@ -25,7 +25,7 @@ export default function InstagramBlock() {
               </p>
               <div>
                 <Link 
-                  href="https://instagram.com/minifigurlerim" 
+                  href={"https://instagram.com/minifigurlerim" as any} 
                   target="_blank" 
                   className="inline-flex items-center justify-center bg-black text-white px-8 py-5 font-black rounded text-[13px] uppercase tracking-widest hover:-translate-y-1 hover:shadow-2xl hover:bg-[#111] transition-all duration-300"
                 >

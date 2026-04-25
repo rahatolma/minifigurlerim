@@ -22,7 +22,7 @@ export default function FilterTabs({ tabs, activeTab, basePath }: FilterTabsProp
           return (
             <li key={tab.id}>
               <Link 
-                href={tab.id === 'all' ? basePath : `${basePath}?cat=${tab.id}`}
+                href={(tab.id === 'all' ? basePath : `${basePath}?cat=${tab.id}`) as any}
                 className={`transition-colors py-2 block ${isActive ? 'text-[#D22B2B]' : 'text-gray-600 hover:text-black'}`}
               >
                 {tab.label}

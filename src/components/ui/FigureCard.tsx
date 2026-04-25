@@ -98,7 +98,7 @@ export default function FigureCard(props: FigureCardData) {
   return (
     <div className="flex flex-col h-full bg-white rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 hover:shadow-[0_20px_40px_rgba(210,43,43,0.08)] hover:border-[#D22B2B]/20 hover:-translate-y-2 transition-all duration-400 ease-out relative group">
        
-       <Link href={targetHref || "#"} onClick={(e) => !targetHref && e.preventDefault()} aria-disabled={!targetHref} className={`relative w-full aspect-square bg-[#fff] flex items-center justify-center p-8 border-b border-gray-50 flex-none transition-colors ${targetHref ? 'group-hover:bg-[#fcfcfc]' : 'opacity-50 cursor-not-allowed'}`}>
+       <Link href={(targetHref || "#") as any} onClick={(e) => !targetHref && e.preventDefault()} aria-disabled={!targetHref} className={`relative w-full aspect-square bg-[#fff] flex items-center justify-center p-8 border-b border-gray-50 flex-none transition-colors ${targetHref ? 'group-hover:bg-[#fcfcfc]' : 'opacity-50 cursor-not-allowed'}`}>
           {(status === 'have') && (
              <div className="absolute top-4 left-4 z-10 bg-[#5CB85C] text-white text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded shadow-sm flex items-center gap-1">
                 <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
@@ -130,7 +130,7 @@ export default function FigureCard(props: FigureCardData) {
        </Link>
 
        <div className="px-6 pt-5 pb-6 flex flex-col flex-1 bg-white relative z-10">
-          <Link href={targetHref || "#"} onClick={(e) => !targetHref && e.preventDefault()} aria-disabled={!targetHref} className={`flex flex-col flex-1 items-center text-center ${targetHref ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}>
+          <Link href={(targetHref || "#") as any} onClick={(e) => !targetHref && e.preventDefault()} aria-disabled={!targetHref} className={`flex flex-col flex-1 items-center text-center ${targetHref ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}>
               
               {/* 1. Figure Name (Top) */}
               <div className="h-[56px] w-full overflow-hidden mb-2 flex flex-col items-center justify-start">

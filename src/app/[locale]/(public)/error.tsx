@@ -48,7 +48,7 @@ export default function PublicError({
             {isEn ? "Try Again" : "Tekrar Dene"}
           </button>
           <Link
-            href={isEn ? "/en" : "/"}
+            href={(isEn ? "/en" : "/") as any}
             className="w-full sm:w-auto bg-white border border-gray-200 text-gray-700 font-bold py-3 px-8 rounded-xl shadow-sm hover:bg-gray-50 transition-colors"
           >
             {isEn ? "Back to Home" : "Ana Sayfaya Dön"}

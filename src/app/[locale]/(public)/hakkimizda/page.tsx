@@ -175,7 +175,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
                       {getField('join_text', 'JoinDesc')}
                     </p>
                     <div className="mt-auto">
-                        <Link href={getField('join_btn_link', '/iletisim')} className="w-full block bg-black hover:bg-gray-800 text-white font-black text-[11px] py-4 rounded-md transition-colors uppercase tracking-widest shadow-md">
+                        <Link href={getField('join_btn_link', '/iletisim') as any} className="w-full block bg-black hover:bg-gray-800 text-white font-black text-[11px] py-4 rounded-md transition-colors uppercase tracking-widest shadow-md">
                             {getField('join_btn_text', 'JoinBtn')}
                         </Link>
                     </div>

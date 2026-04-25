@@ -79,12 +79,12 @@ export default function SeriesCard({
 
   return (
     <div className="flex flex-col h-full bg-white rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 hover:shadow-[0_20px_40px_rgba(210,43,43,0.08)] hover:border-[#D22B2B]/20 hover:-translate-y-2 transition-all duration-400 ease-out relative group">
-       <Link href={targetHref || "#"} onClick={(e) => !targetHref && e.preventDefault()} aria-disabled={!targetHref} className={`relative w-full aspect-[4/3] bg-gradient-to-b from-gray-50/50 to-white flex items-center justify-center border-b border-gray-50 flex-none transition-all duration-500 ${targetHref ? 'group-hover:from-red-50/20 group-hover:to-white' : 'opacity-50 cursor-not-allowed'}`}>
+       <Link href={(targetHref || "#") as any} onClick={(e) => !targetHref && e.preventDefault()} aria-disabled={!targetHref} className={`relative w-full aspect-[4/3] bg-gradient-to-b from-gray-50/50 to-white flex items-center justify-center border-b border-gray-50 flex-none transition-all duration-500 ${targetHref ? 'group-hover:from-red-50/20 group-hover:to-white' : 'opacity-50 cursor-not-allowed'}`}>
           <Image src={imgSrc} alt={title} fill className="object-contain px-6 py-4 mix-blend-multiply group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500 will-change-transform" onError={() => setImgSrc(defaultImage)} />
        </Link>
 
        <div className="px-6 pt-5 pb-6 flex flex-col flex-1 bg-white relative z-10">
-          <Link href={targetHref || "#"} onClick={(e) => !targetHref && e.preventDefault()} aria-disabled={!targetHref} className={`flex flex-col flex-1 items-center text-center group/text ${targetHref ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}>
+          <Link href={(targetHref || "#") as any} onClick={(e) => !targetHref && e.preventDefault()} aria-disabled={!targetHref} className={`flex flex-col flex-1 items-center text-center group/text ${targetHref ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}>
               <div className="h-[76px] w-full mb-0 sm:mb-1 overflow-hidden flex flex-col items-center justify-start">
                   <h3 className="font-black text-[18px] sm:text-[20px] text-[#D22B2B] leading-tight tracking-tight w-full">
                       {formattedTitle}
@@ -150,7 +150,7 @@ export default function SeriesCard({
                 )}
 
                 <div className="w-full mt-3">
-                    <Link href={targetHref || "#"} onClick={(e) => !targetHref && e.preventDefault()} aria-disabled={!targetHref} className={`flex w-full items-center justify-center rounded-md py-3 text-[11px] font-black tracking-widest uppercase transition-all duration-300 ${targetHref ? 'bg-gray-50 group-hover:bg-[#D22B2B] text-gray-500 group-hover:text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>
+                    <Link href={(targetHref || "#") as any} onClick={(e) => !targetHref && e.preventDefault()} aria-disabled={!targetHref} className={`flex w-full items-center justify-center rounded-md py-3 text-[11px] font-black tracking-widest uppercase transition-all duration-300 ${targetHref ? 'bg-gray-50 group-hover:bg-[#D22B2B] text-gray-500 group-hover:text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>
                         {t('CompleteSeries')}
                     </Link>
                 </div>

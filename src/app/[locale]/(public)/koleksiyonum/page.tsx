@@ -307,7 +307,7 @@ export default async function KoleksiyonumPage({
                                <div key={idx} className="bg-gray-50 rounded-2xl p-6 md:p-8 border border-gray-100 hover:border-[#D22B2B]/30 hover:shadow-lg hover:shadow-red-500/5 transition-all group relative overflow-hidden">
                                    <div className="absolute top-0 left-0 w-1.5 h-full bg-[#D22B2B] opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                    <div className="flex justify-between items-start mb-4">
-                                       <Link href={`/${locale}/seriler/${sp.seriesId}`} className="text-lg font-black text-gray-900 group-hover:text-[#D22B2B] transition-colors truncate pr-4 block">
+                                       <Link href={`/${locale}/seriler/${sp.seriesId}` as any} className="text-lg font-black text-gray-900 group-hover:text-[#D22B2B] transition-colors truncate pr-4 block">
                                            {(() => {
                                                const formatSeriesName = (name: string) => {
                                                    const match = name.match(/^(.*?Seris[i|i]\s+)(.*)$/i);
@@ -377,7 +377,7 @@ export default async function KoleksiyonumPage({
                       </span>
                       {lastAddedFigure && lastAddedUrl ? (
                          <>
-                            <Link href={lastAddedUrl} className="text-[16px] font-black text-gray-900 group-hover:text-[#D22B2B] transition-colors line-clamp-1 flex-1">
+                            <Link href={lastAddedUrl as any} className="text-[16px] font-black text-gray-900 group-hover:text-[#D22B2B] transition-colors line-clamp-1 flex-1">
                                {(lastAddedFigure as any).name}
                             </Link>
                             <span className="text-[13px] font-bold text-gray-400 mt-0.5 truncate flex-shrink-0">{(lastAddedFigure as any)?.series?.title || (lastAddedFigure as any).series_name || t('UnknownSeries')}</span>
@@ -408,19 +408,19 @@ export default async function KoleksiyonumPage({
                       </span>
                       {lastWantedFigure && lastWantedUrl ? (
                          <>
-                            <Link href={lastWantedUrl} className="text-[16px] font-black text-gray-900 group-hover:text-[#0052cc] transition-colors line-clamp-1 flex-1">
+                            <Link href={lastWantedUrl as any} className="text-[16px] font-black text-gray-900 group-hover:text-[#0052cc] transition-colors line-clamp-1 flex-1">
                                {(lastWantedFigure as any).name || (lastWantedFigure as any).figure_name}
                             </Link>
                             <span className="text-[13px] font-bold text-gray-400 mt-0.5 truncate flex-shrink-0">{(lastWantedFigure as any)?.series?.title || (lastWantedFigure as any).series_name || t('UnknownSeries')}</span>
                             
-                            <Link href={lastWantedUrl} className="text-[10px] font-black text-[#0052cc] uppercase tracking-widest mt-1.5 flex items-center gap-1 opacity-90 hover:underline">
+                            <Link href={lastWantedUrl as any} className="text-[10px] font-black text-[#0052cc] uppercase tracking-widest mt-1.5 flex items-center gap-1 opacity-90 hover:underline">
                                {t('ContinueReviewing')}
                             </Link>
                          </>
                       ) : (
                          <>
                             <span className="text-[16px] font-black text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">{t('NoReviewYet')}</span>
-                            <Link href={`/${locale}/figurler`} className="text-[13px] font-bold text-gray-400 mt-0.5 group-hover:text-gray-500 transition-colors flex items-center gap-1">{t('StartExploring')} <span className="transform group-hover:translate-x-1 transition-transform">→</span></Link>
+                            <Link href={`/${locale}/figurler` as any} className="text-[13px] font-bold text-gray-400 mt-0.5 group-hover:text-gray-500 transition-colors flex items-center gap-1">{t('StartExploring')} <span className="transform group-hover:translate-x-1 transition-transform">→</span></Link>
                          </>
                       )}
                    </div>
@@ -453,7 +453,7 @@ export default async function KoleksiyonumPage({
                    <h2 className="text-xl font-black text-gray-800 uppercase tracking-widest mb-2">{t('EmptyStateTitle')}</h2>
                    <p className="text-sm font-medium text-gray-500 max-w-sm mx-auto">{t('EmptyStateDesc')}</p>
                    {rawCollections.length === 0 && (
-                      <Link href={`/${locale}/figurler`} className="mt-6 inline-block bg-[#D22B2B] text-white font-black py-3 px-8 rounded-xl hover:bg-red-700 transition-colors shadow-md text-sm">
+                      <Link href={`/${locale}/figurler` as any} className="mt-6 inline-block bg-[#D22B2B] text-white font-black py-3 px-8 rounded-xl hover:bg-red-700 transition-colors shadow-md text-sm">
                           {t('BrowseFigures')}
                       </Link>
                    )}

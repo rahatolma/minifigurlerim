@@ -24,7 +24,7 @@ export default function FloatingSeriesNav({ prev, next }: Props) {
       {prev && (
         <div className="fixed left-0 top-1/2 -translate-y-1/2 z-[90] hidden md:flex">
           <Link 
-            href={`/seriler/${prev.slug}`}
+            href={`/seriler/${prev.slug}` as any}
             className="group flex items-center bg-white/90 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.1)] py-4 px-2 rounded-r-2xl border border-l-0 border-gray-200 transition-all hover:pr-6 hover:bg-white"
           >
             <ChevronLeft size={24} className="text-gray-400 group-hover:text-[#D22B2B] shrink-0" strokeWidth={2.5} />
@@ -40,7 +40,7 @@ export default function FloatingSeriesNav({ prev, next }: Props) {
       {next && (
         <div className="fixed right-0 top-1/2 -translate-y-1/2 z-[90] hidden md:flex">
           <Link 
-            href={`/seriler/${next.slug}`}
+            href={`/seriler/${next.slug}` as any}
             className="group flex items-center flex-row-reverse bg-white/90 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.1)] py-4 px-2 rounded-l-2xl border border-r-0 border-gray-200 transition-all hover:pl-6 hover:bg-white"
           >
             <ChevronRight size={24} className="text-gray-400 group-hover:text-[#D22B2B] shrink-0" strokeWidth={2.5} />
