@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { slugify } from "@/utils/helpers";

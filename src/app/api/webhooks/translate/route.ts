@@ -1,11 +1,19 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 import { updateTranslationAdminDal } from '@/services/action_dal';
 
 export async function POST(req: Request) {
-  const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
+  let openai: OpenAI;
+  try {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) throw new Error("OPENAI_API_KEY is missing");
+    openai = new OpenAI({ apiKey });
+  } catch (envErr: any) {
+    return NextResponse.json({ error: "Config Error", details: envErr.message }, { status: 500 });
+  }
   try {
     const payload = await req.json();
 
