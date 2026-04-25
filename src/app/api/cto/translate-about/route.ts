@@ -1,12 +1,22 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+function getOpenAIClient() {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error("OPENAI_API_KEY is not configured");
+  }
+  return new OpenAI({ apiKey });
+}
 
 export async function POST(request: Request) {
   try {
+    let openai: OpenAI;
+    try {
+      openai = getOpenAIClient();
+    } catch (envError: any) {
+      return NextResponse.json({ error: "Configuration Error", message: envError.message }, { status: 500 });
+    }
     const body = await request.json();
     
     // Yalnızca TR alanlarını al

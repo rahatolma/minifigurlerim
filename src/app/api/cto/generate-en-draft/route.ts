@@ -4,9 +4,13 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { slugify } from "@/utils/helpers";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+function getOpenAIClient() {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error("OPENAI_API_KEY is not configured");
+  }
+  return new OpenAI({ apiKey });
+}
 
 export async function POST(request: Request) {
   try {
@@ -44,6 +48,13 @@ export async function POST(request: Request) {
 
     // Optional: Check if user has admin role (if applicable in this project)
     // For now, having a valid session on this /cto route is our primary check.
+
+    let openai: OpenAI;
+    try {
+      openai = getOpenAIClient();
+    } catch (envError: any) {
+      return NextResponse.json({ error: "Configuration Error", message: envError.message }, { status: 500 });
+    }
 
     // 2. Parse Request
     const body = await request.json();
