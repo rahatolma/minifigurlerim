@@ -40,7 +40,7 @@ export async function getTaxonomyMessages(locale: string) {
     DemandSignal: {}
   };
 
-  terms.forEach((term: any) => {
+  terms.forEach(term => {
     // Map the database 'type' to the dictionary namespace
     let namespace = '';
     if (term.type === 'figure_role') namespace = 'Role';
