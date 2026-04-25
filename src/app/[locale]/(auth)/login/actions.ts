@@ -13,7 +13,7 @@ export async function login(locale: string, formData: FormData) {
   const { error } = await signInWithPasswordDal(email, password);
 
   if (error) {
-    return redirect({ href: '/login?error=invalid_credentials', locale });
+    return redirect({ href: '/login?error=invalid_credentials' as any, locale });
   }
 
   revalidatePath('/', 'layout');
@@ -26,16 +26,16 @@ export async function signup(locale: string, formData: FormData) {
   const terms = formData.get('terms');
 
   if (!terms) {
-    return redirect({ href: '/login?error=terms_required&type=register', locale });
+    return redirect({ href: '/login?error=terms_required&type=register' as any, locale });
   }
 
   const { error } = await signUpDal(email, password, true);
 
   if (error) {
-    return redirect({ href: '/login?error=registration_failed&type=register', locale });
+    return redirect({ href: '/login?error=registration_failed&type=register' as any, locale });
   }
 
-  return redirect({ href: '/login?message=registration_success', locale });
+  return redirect({ href: '/login?message=registration_success' as any, locale });
 }
 
 export async function logOut(locale: string = 'tr') {
