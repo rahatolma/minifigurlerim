@@ -44,3 +44,44 @@ next-env.d.ts
 
 # Dev Scratch Files
 scripts/scratches/
+
+# Auto-Generated Ignore for Dev Scratch & Temporary Scripts
+_scratch/
+_scratch_db*.mjs
+scratch_*.js
+scratch_*.ts
+tmp_*.js
+tmp_*.md
+test_*.js
+test_*.mjs
+test-*.js
+test-*.mjs
+*.py
+*.log
+docs/
+e2e/
+playwright-report/
+test-results/
+audit_dump*.json
+qa-report.json
+roles_output.json
+sample_data*.json
+schema_check*.json
+selected*.json
+user_collections*.json
+user_series_stats*.json
+db_row*.json
+*.sql
+public/import/
+qa-*.js
+test*.js
+trace_db*.js
+verify*.js
+fix-*.js
+fix_*.js
+cookies.txt
+error.html
+setup_ui_test.mjs
+rename_admin_to_cto*.js
+create-verified-user.js
+tmp_*.js

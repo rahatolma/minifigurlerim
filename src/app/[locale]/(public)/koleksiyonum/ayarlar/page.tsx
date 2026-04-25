@@ -1,6 +1,6 @@
 import { getAuthUserProfile } from '@/services/action_dal';
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import SettingsForm from './SettingsForm';
 import AvatarUploader from './AvatarUploader';
 import { UserCircle, Settings } from 'lucide-react';

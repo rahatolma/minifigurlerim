@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 
 export default function TranslationFallbackBadge() {
-  const t = useTranslations('common');
+  const t = useTranslations('Fallback');
   
   return (
     <div className="w-full bg-yellow-50 border-b border-yellow-200">
@@ -11,7 +11,7 @@ export default function TranslationFallbackBadge() {
           <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
         </svg>
         <p className="text-xs sm:text-sm text-yellow-800 font-medium">
-          {t('translationFallback') || "This content is currently available in Turkish."}
+          {t('BadgeText')}
         </p>
       </div>
     </div>

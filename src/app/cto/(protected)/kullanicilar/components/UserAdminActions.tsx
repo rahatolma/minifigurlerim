@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { toggleUserApproval, deleteUserFromDB } from '@/app/cto/actions/user_admin';
 import UserReviewModal from './UserReviewModal';
 
-export default function UserAdminActions({ userId, isApproved, role }: { userId: string, isApproved: boolean, role: string }) {
+export default function UserAdminActions({ userId, isApproved, role, currentUserId }: { userId: string, isApproved: boolean, role: string, currentUserId?: string }) {
    const [loading, setLoading] = useState(false);
    const [showModal, setShowModal] = useState(false);
 
@@ -24,9 +24,33 @@ export default function UserAdminActions({ userId, isApproved, role }: { userId:
 
    const isBanned = role === 'banned';
    const isAdmin = role === 'admin';
+   const isSelf = userId === currentUserId;
 
    if (isAdmin && isApproved) {
-       return <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Sistem Yöneticisi</span>
+       return (
+           <div className="flex justify-end gap-2 items-center">
+               <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mr-2">Sistem Yöneticisi</span>
+               <button 
+                   onClick={() => setShowModal(true)} 
+                   className="py-2 px-3 rounded text-[10px] font-black tracking-widest uppercase bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors flex items-center gap-1"
+                   title="Kullanıcı Detayları"
+               >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                  İNCELE
+               </button>
+               {showModal && (
+                   <UserReviewModal 
+                      userId={userId}
+                      role={role}
+                      isApproved={isApproved}
+                      onClose={() => setShowModal(false)}
+                      loadingAction={loading}
+                      onApprove={handleApprove}
+                      onBan={handleBan}
+                   />
+                )}
+           </div>
+       )
    }
 
    return (
@@ -42,7 +66,7 @@ export default function UserAdminActions({ userId, isApproved, role }: { userId:
          </button>
 
          {/* ONAYLA BUTONU */}
-         {!isBanned && (
+         {!isBanned && !isSelf && (
             <button 
                 disabled={loading}
                 onClick={handleApprove} 
@@ -55,7 +79,7 @@ export default function UserAdminActions({ userId, isApproved, role }: { userId:
          )}
 
          {/* BAN BUTONU */}
-         {!isBanned && (
+         {!isBanned && !isSelf && (
             <button 
                 disabled={loading}
                 onClick={handleBan}

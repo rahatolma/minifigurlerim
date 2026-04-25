@@ -1,19 +1,37 @@
 import { login, signup, signInWithGoogle } from './actions';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
+import { getTranslations } from 'next-intl/server';
 
-export const metadata = {
-  title: 'Giriş Yap - Minifigürlerim',
-  description: 'Koleksiyonunuzu yönetmek için Minifigürlerim\'e giriş yapın.',
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const resolvedParams = await params;
+  const t = await getTranslations({ locale: resolvedParams.locale, namespace: 'Auth' });
+  
+  return {
+    title: `${t('LoginBtn')} - Minifigurlerim`,
+    description: t('LoginDesc'),
+  };
+}
 
 export default async function LoginPage({
   searchParams,
+  params,
 }: {
-  searchParams: Promise<{ [key: string]: string | undefined }>
+  searchParams: Promise<{ [key: string]: string | undefined }>;
+  params: Promise<{ locale: string }>;
 }) {
   const resolvedParams = await searchParams;
-  const errorMsg = resolvedParams?.error;
-  const successMsg = resolvedParams?.message;
+  const resolvedParams2 = await params;
+  const locale = resolvedParams2.locale;
+  const t = await getTranslations('Auth');
+  
+  const loginWithLocale = login.bind(null, locale);
+  const signupWithLocale = signup.bind(null, locale);
+
+  const errorMsgKey = resolvedParams?.error;
+  const successMsgKey = resolvedParams?.message;
+
+  const errorMsg = errorMsgKey && t.has(`Error_${errorMsgKey}`) ? t(`Error_${errorMsgKey}`) : errorMsgKey;
+  const successMsg = successMsgKey && t.has(`Message_${successMsgKey}`) ? t(`Message_${successMsgKey}`) : successMsgKey;
   
   const isRegister = resolvedParams?.type === 'register';
   const isSocial = resolvedParams?.type === 'social';
@@ -28,7 +46,7 @@ export default async function LoginPage({
       {/* Misafir Olarak Dön Butonu */}
       <Link href="/" className="hidden md:flex absolute top-8 left-8 items-center gap-2 text-gray-500 hover:text-black transition-colors text-sm font-bold z-10 group bg-white/50 backdrop-blur-md px-4 py-2 rounded-full shadow-sm border border-gray-200">
          <svg className="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-         Siteye Dön
+         {t('BackToSite')}
       </Link>
 
       <div className="w-full max-w-5xl flex flex-col items-center z-10 gap-5 sm:gap-6 mt-2 sm:mt-0">
@@ -48,12 +66,10 @@ export default async function LoginPage({
         <div className={`w-full md:w-1/2 p-6 sm:p-14 border-b-0 md:border-r border-gray-100 flex-col justify-center ${currentView === 'social' ? 'hidden md:flex' : 'flex'}`}>
           <div className="mb-6 sm:mb-8">
             <h1 className="text-2xl sm:text-3xl font-black tracking-tighter text-gray-900 mb-1.5 sm:mb-2">
-              {isRegister ? 'Koleksiyonunu Oluştur' : 'Hesabına Giriş Yap'}
+              {isRegister ? t('RegisterTitle') : t('LoginTitle')}
             </h1>
             <p className="text-gray-500 text-[15px] font-medium leading-relaxed">
-              {isRegister 
-                ? 'Minifigürlerini ekle, ilerlemeni takip et, favorilerini kaydet.' 
-                : 'Koleksiyonuna erişmek için giriş yap.'}
+              {isRegister ? t('RegisterDesc') : t('LoginDesc')}
             </p>
           </div>
 
@@ -69,22 +85,22 @@ export default async function LoginPage({
             </div>
           )}
 
-          <form className="space-y-5" action={isRegister ? signup : login}>
+          <form className="space-y-5" action={isRegister ? signupWithLocale : loginWithLocale}>
             <div>
-              <label className="block text-[11px] font-black text-gray-700 mb-1.5 uppercase tracking-widest" htmlFor="email">E-Posta Adresi</label>
+              <label className="block text-[11px] font-black text-gray-700 mb-1.5 uppercase tracking-widest" htmlFor="email">{t('EmailLabel')}</label>
               <input
                 id="email"
                 type="email"
                 name="email"
                 className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-medium outline-none focus:border-[#D22B2B] focus:ring-1 focus:ring-[#D22B2B] transition-all text-black placeholder:text-gray-400"
-                placeholder="koleksiyoner@mail.com"
+                placeholder={t('EmailPlaceholder')}
                 required
               />
             </div>
             
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-[11px] font-black text-gray-700 uppercase tracking-widest" htmlFor="password">Şifre</label>
+                  <label className="block text-[11px] font-black text-gray-700 uppercase tracking-widest" htmlFor="password">{t('PasswordLabel')}</label>
               </div>
               <input
                 id="password"
@@ -96,7 +112,7 @@ export default async function LoginPage({
               />
               {!isRegister && (
                   <div className="text-right mt-2">
-                       <Link href="#" className="text-[11px] font-bold text-gray-500 hover:text-black transition-colors">Şifremi Unuttum</Link>
+                       <Link href="#" className="text-[11px] font-bold text-gray-500 hover:text-black transition-colors">{t('ForgotPassword')}</Link>
                   </div>
               )}
             </div>
@@ -106,20 +122,21 @@ export default async function LoginPage({
                 <label className="flex items-start gap-3 cursor-pointer group">
                   <input type="checkbox" name="terms" required className="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#D22B2B] focus:ring-[#D22B2B] transition-colors cursor-pointer" />
                   <span className="text-[12px] text-gray-600 font-medium leading-snug">
-                    <Link href="/yasal/kullanim-kosullari" className="text-[#D22B2B] font-bold hover:underline" target="_blank">Kullanım Koşulları</Link>, <Link href="/yasal/gizlilik-politikasi" className="text-[#D22B2B] font-bold hover:underline" target="_blank">Gizlilik Politikası</Link> ve <Link href="/yasal/uyelik-sozlesmesi" className="text-[#D22B2B] font-bold hover:underline" target="_blank">Üyelik Sözleşmesi</Link>'ni okudum, kabul ediyorum.
+                    {t.rich('TermsAgreement', {
+                      terms: (chunks) => <Link href="/yasal/kullanim-kosullari" className="text-[#D22B2B] font-bold hover:underline" target="_blank">{chunks}</Link>,
+                      privacy: (chunks) => <Link href="/yasal/gizlilik-politikasi" className="text-[#D22B2B] font-bold hover:underline" target="_blank">{chunks}</Link>,
+                      membership: (chunks) => <Link href="/yasal/uyelik-sozlesmesi" className="text-[#D22B2B] font-bold hover:underline" target="_blank">{chunks}</Link>
+                    })}
                   </span>
                 </label>
                 <p className="text-[10px] text-gray-400 font-bold tracking-wide pl-7">
-                  Üyeliğin ücretsizdir. Hesabını istediğin zaman silebilirsin.
+                  {t('FreeMembership')}
                 </p>
               </div>
             ) : null}
 
-            <button
-              type="submit"
-              className="w-full bg-[#1A2035] text-white font-black hover:bg-[#111526] py-3.5 rounded-xl transition-all shadow-[0_5px_20px_rgba(26,32,53,0.15)] mt-6 flex items-center justify-center gap-2 tracking-wide"
-            >
-              {isRegister ? 'Ücretsiz Hesap Oluştur' : 'Giriş Yap'}
+            <button type="submit" className="w-full bg-[#1A2035] text-white font-black hover:bg-[#111526] transition-colors py-4 px-6 rounded-xl shadow-[0_10px_30px_rgba(26,32,53,0.15)] hover:shadow-[0_15px_40px_rgba(26,32,53,0.25)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none flex items-center justify-center gap-2 group tracking-wide text-sm">
+                 {isRegister ? t('CreateAccountFree') : t('LoginBtn')}
             </button>
             
           </form>
@@ -128,20 +145,20 @@ export default async function LoginPage({
             <div className="mt-6 flex justify-center w-full">
               <p className="text-[11px] text-center text-gray-400 font-bold flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                Verilerin güvende tutulur ve üçüncü kişilerle paylaşılmaz.
+                {t('DataSafe')}
               </p>
             </div>
           ) : null}
 
           <div className="hidden md:flex mt-8 text-center pt-8 border-t border-gray-100 flex-col gap-3 items-center">
             <p className="text-[13px] font-bold text-gray-500">
-              {isRegister ? 'Zaten bir hesabınız var mı?' : 'Henüz koleksiyonun yok mu?'}
+              {isRegister ? t('AlreadyHaveAccount') : t('DontHaveCollection')}
             </p>
             <Link 
               href={isRegister ? '/login' : '/login?type=register'} 
               className="inline-flex items-center gap-2 px-6 py-3 bg-gray-50 hover:bg-gray-100 text-[#D22B2B] text-sm font-black rounded-xl transition-all shadow-sm border border-gray-200"
             >
-              {isRegister ? 'Giriş Yap' : 'Kayıt Ol'}
+              {isRegister ? t('LoginAction') : t('RegisterAction')}
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
             </Link>
           </div>
@@ -159,7 +176,7 @@ export default async function LoginPage({
             <div className="w-full max-w-sm">
                 <h3 className="text-center text-[10px] font-black text-gray-400 tracking-[0.2em] uppercase mb-8 flex items-center gap-4">
                     <div className="h-px flex-1 bg-gray-200"></div>
-                    HIZLI GİRİŞ
+                    {t('FastLogin')}
                     <div className="h-px flex-1 bg-gray-200"></div>
                 </h3>
                 
@@ -173,7 +190,7 @@ export default async function LoginPage({
                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                            </svg>
-                           Google ile Devam Et
+                           {t('ContinueWithGoogle')}
                        </button>
                    </form>
                    
@@ -182,26 +199,26 @@ export default async function LoginPage({
                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                            <path d="M16.48 11.2a4.43 4.43 0 01-2.12-3.8c0-2.45 2.15-3.7 2.25-3.76-1.12-1.58-2.87-1.8-3.48-1.83-1.48-.15-2.9.89-3.66.89-.78 0-1.93-.86-3.14-.84-1.57.02-3.03.9-3.84 2.28-1.63 2.78-.42 6.89 1.17 9.15.77 1.1 1.69 2.33 2.87 2.29 1.15-.04 1.58-.75 2.97-.75 1.37 0 1.77.75 2.97.73 1.22-.02 2-.14 2.76-1.25.88-1.27 1.24-2.49 1.26-2.55-.030-.02-2.39-.9-2.39-3.55zM14.72 4.44c.64-.76 1.07-1.82.95-2.88-0.93.04-2.07.63-2.73 1.4-.58.68-1.08 1.75-.95 2.8C13.02 5.86 14.08 5.2 14.72 4.44z"/>
                        </svg>
-                       Apple ile Devam Et
+                       {t('ContinueWithApple')}
                    </button>
                    
                 </div>
                 
                 
                   <div className="hidden sm:block mt-10 bg-blue-50/30 p-6 rounded-2xl border border-blue-100 text-center shadow-sm w-full">
-                      <p className="text-[12px] font-black text-gray-800 mb-4 tracking-wide uppercase text-left pl-2">Seni Neler Bekliyor?</p>
+                      <p className="text-[12px] font-black text-gray-800 mb-4 tracking-wide uppercase text-left pl-2">{t('WhatsWaitingForYou')}</p>
                       <ul className="text-[12.5px] text-gray-700 font-bold space-y-3 mt-2 text-left px-2 leading-relaxed">
                           <li className="flex items-start gap-2.5">
-                              <span className="text-emerald-500 font-black mt-0.5">✓</span> Koleksiyonundaki figürleri kaydet
+                              <span className="text-emerald-500 font-black mt-0.5">✓</span> {t('Feature1')}
                           </li>
                           <li className="flex items-start gap-2.5">
-                              <span className="text-emerald-500 font-black mt-0.5">✓</span> Eksik figürlerini takip et
+                              <span className="text-emerald-500 font-black mt-0.5">✓</span> {t('Feature2')}
                           </li>
                           <li className="flex items-start gap-2.5">
-                              <span className="text-emerald-500 font-black mt-0.5">✓</span> Serilerde ilerleme durumunu gör
+                              <span className="text-emerald-500 font-black mt-0.5">✓</span> {t('Feature3')}
                           </li>
                           <li className="flex items-start gap-2.5">
-                              <span className="text-emerald-500 font-black mt-0.5">✓</span> Favori figürlerini ve radar listeni oluştur
+                              <span className="text-emerald-500 font-black mt-0.5">✓</span> {t('Feature4')}
                           </li>
                       </ul>
                   </div>
@@ -211,35 +228,35 @@ export default async function LoginPage({
       {/* MOBİL: Alt Menü (Tab Bar) - Sadece Auth Sayfasına Özel */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] z-50 flex items-center justify-between pb-safe px-1">
           <Link 
-            href="/" 
+            href="/"
             className="flex flex-col items-center justify-center gap-1.5 p-2 py-3 w-1/4 transition-colors text-gray-400 hover:text-gray-600"
           >
              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
-             <span className="text-[9px] font-black uppercase tracking-wider mt-0.5 whitespace-nowrap">Ana Sayfa</span>
+             <span className="text-[9px] font-black uppercase tracking-wider mt-0.5 whitespace-nowrap">{t('Home')}</span>
           </Link>
 
           <Link 
-            href="/login" 
+            href="/login"
             className={`flex flex-col items-center justify-center gap-1.5 p-2 py-3 w-1/4 transition-colors ${currentView === 'login' ? 'text-[#D22B2B]' : 'text-gray-400 hover:text-gray-600'}`}
           >
              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
-             <span className="text-[9px] font-black uppercase tracking-wider mt-0.5 whitespace-nowrap">Giriş Yap</span>
+             <span className="text-[9px] font-black uppercase tracking-wider mt-0.5 whitespace-nowrap">{t('LoginAction')}</span>
           </Link>
 
           <Link 
-            href="/login?type=register" 
+            href="/login?type=register"
             className={`flex flex-col items-center justify-center gap-1.5 p-2 py-3 w-1/4 transition-colors ${currentView === 'register' ? 'text-[#D22B2B]' : 'text-gray-400 hover:text-gray-600'}`}
           >
              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
-             <span className="text-[9px] font-black uppercase tracking-wider mt-0.5 whitespace-nowrap">Kayıt Ol</span>
+             <span className="text-[9px] font-black uppercase tracking-wider mt-0.5 whitespace-nowrap">{t('RegisterAction')}</span>
           </Link>
 
           <Link 
-             href="/login?type=social" 
+             href="/login?type=social"
              className={`flex flex-col items-center justify-center gap-1.5 p-2 py-3 w-1/4 transition-colors ${currentView === 'social' ? 'text-[#D22B2B]' : 'text-gray-400 hover:text-gray-600'}`}
           >
              <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-             <span className="text-[9px] font-black uppercase tracking-wider mt-0.5 whitespace-nowrap">Hızlı Giriş</span>
+             <span className="text-[9px] font-black uppercase tracking-wider mt-0.5 whitespace-nowrap">{t('FastLogin')}</span>
           </Link>
       </div>
       

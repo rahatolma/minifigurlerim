@@ -2,13 +2,14 @@ import { getAuthUser } from '@/services/action_dal';
 import { redirect } from 'next/navigation';
 import { getUserProfile, getUserCollectionsWithDetails, getAllSeries, getTotalMinifiguresCount, getUserSeriesStats, getMinifigurePriceHistoryBatch, getMinifigureBySlug } from '@/services/dal';
 import { logOut } from '@/app/[locale]/(auth)/login/actions';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import FigureCard from '@/components/ui/FigureCard';
 import { mapFigureForCard } from '@/utils/figureMapper';
 import VaultFilterClient from '@/components/ui/VaultFilterClient';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import { slugify } from '@/utils/helpers';
 import { cookies } from 'next/headers';
+import { getTranslations } from 'next-intl/server';
 import { getFigureUrl, getFiguresListUrl, getSeriesUrl } from '@/utils/routeBuilder';
 
 export const metadata = {
@@ -26,6 +27,7 @@ export default async function KoleksiyonumPage({
   const user = await getAuthUser();
   const resolvedParams = await searchParams;
   const locale = (await params).locale as any;
+  const t = await getTranslations('Collection');
   
   const currentStatus = (resolvedParams.status as string) || 'have';
   const currentSeries = (resolvedParams.series as string) || 'all';
@@ -101,14 +103,14 @@ export default async function KoleksiyonumPage({
           
           // Gerçek Seri Adını Bul: İlk figürün bağlı olduğu series entity'sini çöz
           const sampleFig = matchingItems[0]?.minifigures;
-          let realTitle = 'Bilinmeyen Seri';
+          let realTitle = t('UnknownSeries');
           
           if (sampleFig?.series) {
              const s = sampleFig.series;
              // Locale bazlı çekim için fallback (Sayfa Server Component, param olarak "locale" gelebilir ama basitçe title fallback'i veriyoruz)
-             realTitle = s.title || s.title_en || sampleFig.series_name || stat.series_name || 'Bilinmeyen Seri';
+             realTitle = s.title || s.title_en || sampleFig.series_name || stat.series_name || t('UnknownSeries');
           } else {
-             realTitle = sampleFig?.series_name || stat.series_name || 'Bilinmeyen Seri';
+             realTitle = sampleFig?.series_name || stat.series_name || t('UnknownSeries');
           }
 
           return {
@@ -158,7 +160,7 @@ export default async function KoleksiyonumPage({
   // SON İNCELENEN FİGÜR (Gerçek Tracking Cookies üzerinden)
   const cookieStore = await cookies();
   const lastViewedId = cookieStore.get('last_viewed_figure_id')?.value;
-  let lastWantedFigure = null; // "Son İncelediğin Figür" olarak yeniden isimlendireceğiz UI tarafında.
+  let lastWantedFigure = null; // "{t('LastViewedTitle')}" olarak yeniden isimlendireceğiz UI tarafında.
   if (lastViewedId) {
      const dbFigure = await getMinifigureBySlug(lastViewedId);
      if (dbFigure) lastWantedFigure = dbFigure;
@@ -193,11 +195,11 @@ export default async function KoleksiyonumPage({
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
                 <div>
                   <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter mb-2">
-                    Koleksiyonunun <span className="text-[#D22B2B]">Özeti</span>
+                    {t('Title1')} <span className="text-[#D22B2B]">{t('Title2')}</span>
                   </h1>
                   <div className="mb-2 md:mb-0 max-w-2xl mt-4">
                       <p className="text-gray-900 font-black text-[15px] md:text-[18px] leading-relaxed tracking-tight">
-                          Koleksiyonun büyüyor. Şu anda <span className="text-[#D22B2B]">{totalHave}</span> figürün var ve <span className="text-[#D22B2B]">{activeSeriesProgress.length}</span> seriye başladın.
+                          {t.rich('Intro', { totalHave: totalHave, activeSeries: activeSeriesProgress.length, red: (chunks) => <span className="text-[#D22B2B]">{chunks}</span> })}
                       </p>
                   </div>
                 </div>
@@ -207,7 +209,7 @@ export default async function KoleksiyonumPage({
                         <svg className="w-6 h-6 text-[#D22B2B] opacity-20 transform -translate-y-2 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
                     </div>
                     <span className="text-[10px] md:text-[11px] font-black text-gray-400 uppercase tracking-widest mt-1.5 group-hover:text-gray-600 transition-colors">
-                        TAMAMLADIN. DEVAM ET
+                        {t('CompletedBadge')}
                     </span>
                 </div>
             </div>
@@ -222,7 +224,7 @@ export default async function KoleksiyonumPage({
                   <div className="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-6 z-10 relative">
                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                   </div>
-                  <h3 className="font-bold text-gray-400 text-[11px] uppercase tracking-widest mb-1 z-10 relative">Cüzdanın Gerçek Değeri (USD)</h3>
+                  <h3 className="font-bold text-gray-400 text-[11px] uppercase tracking-widest mb-1 z-10 relative">{t('WalletTitle')}</h3>
                   <p className="text-3xl font-black text-gray-900 z-10 relative">${portfolioValue.toFixed(2)}</p>
                   
                   {portfolioValue > 0 ? (
@@ -234,13 +236,13 @@ export default async function KoleksiyonumPage({
                             </p>
                         ) : (
                             <p className="text-gray-500 text-[9px] font-bold flex items-center gap-1 uppercase tracking-widest">
-                                API Veri Senkronizasyonu Bekleniyor
+                                {t('PendingApi')}
                             </p>
                         )}
                      </div>
                   ) : (
                      <p className="text-gray-400 text-[9px] font-bold mt-4 flex items-center gap-1 uppercase tracking-widest z-10 relative">
-                        Piyasa Verileri Bekleniyor
+                        {t('PendingMarket')}
                      </p>
                   )}
                </div>
@@ -253,11 +255,11 @@ export default async function KoleksiyonumPage({
                   <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 z-10 relative">
                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                   </div>
-                  <h3 className="font-bold text-gray-400 text-[11px] uppercase tracking-widest mb-1 z-10 relative">Kasamda Olan Figürler</h3>
-                  <p className="text-3xl font-black text-gray-900 z-10 relative">{haveItems.length} <span className="text-lg text-gray-300 font-medium">Adet</span></p>
+                  <h3 className="font-bold text-gray-400 text-[11px] uppercase tracking-widest mb-1 z-10 relative">{t('VaultTitle')}</h3>
+                  <p className="text-3xl font-black text-gray-900 z-10 relative">{haveItems.length} <span className="text-lg text-gray-300 font-medium">{t('VaultItems')}</span></p>
                </div>
                
-               {/* Tamamlanan Seriler */}
+               {/* {t('CompletedSeriesTitle')} */}
                <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.03)] relative overflow-hidden">
                   <div className="absolute -right-12 -bottom-12 opacity-[0.03]">
                       <svg className="w-48 h-48" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
@@ -265,11 +267,11 @@ export default async function KoleksiyonumPage({
                   <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mb-6 z-10 relative">
                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                   </div>
-                  <h3 className="font-bold text-gray-400 text-[11px] uppercase tracking-widest mb-1 z-10 relative">Tamamlanan Seriler</h3>
+                  <h3 className="font-bold text-gray-400 text-[11px] uppercase tracking-widest mb-1 z-10 relative">{t('CompletedSeriesTitle')}</h3>
                   {completedSeriesCount > 0 ? (
-                      <p className="text-3xl font-black text-gray-900 z-10 relative">{completedSeriesCount} <span className="text-lg text-gray-300 font-medium">Seri</span></p>
+                      <p className="text-3xl font-black text-gray-900 z-10 relative">{completedSeriesCount} <span className="text-lg text-gray-300 font-medium">{t('CompletedSeriesItems')}</span></p>
                   ) : (
-                      <p className="text-[14px] font-black text-gray-300 z-10 relative tracking-widest uppercase mt-2">Henüz tamamlanmadı</p>
+                      <p className="text-[14px] font-black text-gray-300 z-10 relative tracking-widest uppercase mt-2">{t('CompletedSeriesEmpty')}</p>
                   )}
                </div>
 
@@ -281,8 +283,8 @@ export default async function KoleksiyonumPage({
                   <div className="w-12 h-12 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mb-6 z-10 relative">
                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                   </div>
-                  <h3 className="font-bold text-gray-400 text-[11px] uppercase tracking-widest mb-1 z-10 relative">Takip Ettiklerim (İstek)</h3>
-                  <p className="text-3xl font-black text-gray-900 z-10 relative">{wantItems.length} <span className="text-lg text-gray-300 font-medium">Adet</span></p>
+                  <h3 className="font-bold text-gray-400 text-[11px] uppercase tracking-widest mb-1 z-10 relative">{t('WishlistTitle')}</h3>
+                  <p className="text-3xl font-black text-gray-900 z-10 relative">{wantItems.length} <span className="text-lg text-gray-300 font-medium">{t('VaultItems')}</span></p>
                </div>
             </div>
 
@@ -294,7 +296,7 @@ export default async function KoleksiyonumPage({
                    <div className="flex items-center justify-between pointer-events-none mb-8">
                        <h2 className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-3">
                            <svg className="w-6 h-6 text-[#D22B2B]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                           En Çok İlerlediğin Seri
+                           {t('ProgressTitle')}
                        </h2>
                    </div>
                    
@@ -305,7 +307,7 @@ export default async function KoleksiyonumPage({
                                <div key={idx} className="bg-gray-50 rounded-2xl p-6 md:p-8 border border-gray-100 hover:border-[#D22B2B]/30 hover:shadow-lg hover:shadow-red-500/5 transition-all group relative overflow-hidden">
                                    <div className="absolute top-0 left-0 w-1.5 h-full bg-[#D22B2B] opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                    <div className="flex justify-between items-start mb-4">
-                                       <Link href={`/seriler/${sp.seriesId}`} className="text-lg font-black text-gray-900 group-hover:text-[#D22B2B] transition-colors truncate pr-4 block">
+                                       <Link href={`/${locale}/seriler/${sp.seriesId}`} className="text-lg font-black text-gray-900 group-hover:text-[#D22B2B] transition-colors truncate pr-4 block">
                                            {(() => {
                                                const formatSeriesName = (name: string) => {
                                                    const match = name.match(/^(.*?Seris[i|i]\s+)(.*)$/i);
@@ -332,7 +334,7 @@ export default async function KoleksiyonumPage({
                                    </div>
                                    
                                    <div className="flex justify-between items-center text-[11px] uppercase font-bold tracking-widest mt-2 mb-4">
-                                       <span className="text-gray-400">{sp.percent === 100 ? 'TAMAMLANDI 🏆' : 'Koleksiyon İlerlemesi'}</span>
+                                       <span className="text-gray-400">{sp.percent === 100 ? t('ProgressCompleted') : t('ProgressText')}</span>
                                        <span className={sp.percent === 100 ? 'text-green-600' : 'text-gray-900'}>%{sp.percent.toFixed(0)}</span>
                                    </div>
 
@@ -341,12 +343,12 @@ export default async function KoleksiyonumPage({
                                        {remaining > 0 ? (
                                            <p className="text-[13px] font-bold text-gray-500 flex items-center gap-2">
                                               <svg className="w-4 h-4 text-[#D22B2B]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                              Bu seriyi tamamlamana sadece <span className="text-gray-900 font-black">{remaining} figür</span> kaldı.
+                                              {t('ProgressRemaining1')}<span className="text-gray-900 font-black">{remaining}{t('ProgressRemaining2')}</span>{t('ProgressRemaining3')}
                                            </p>
                                        ) : (
                                            <p className="text-[13px] font-black text-green-600 uppercase tracking-widest flex items-center gap-2">
                                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                              Tebrikler, seriyi tamamladın!
+                                              {t('ProgressCongrats')}
                                            </p>
                                        )}
                                    </div>
@@ -371,21 +373,21 @@ export default async function KoleksiyonumPage({
                    <div className="flex flex-col flex-1 min-w-0">
                       <span className="text-[10px] font-black uppercase tracking-widest text-[#D22B2B] mb-1.5 flex items-center gap-1.5">
                          <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"></path></svg>
-                         <span className="truncate">Son Eklediğin Figür</span>
+                         <span className="truncate">{t('LastAddedTitle')}</span>
                       </span>
                       {lastAddedFigure && lastAddedUrl ? (
                          <>
                             <Link href={lastAddedUrl} className="text-[16px] font-black text-gray-900 group-hover:text-[#D22B2B] transition-colors line-clamp-1 flex-1">
                                {(lastAddedFigure as any).name}
                             </Link>
-                            <span className="text-[13px] font-bold text-gray-400 mt-0.5 truncate flex-shrink-0">{(lastAddedFigure as any)?.series?.title || (lastAddedFigure as any).series_name || 'Bilinmeyen Seri'}</span>
+                            <span className="text-[13px] font-bold text-gray-400 mt-0.5 truncate flex-shrink-0">{(lastAddedFigure as any)?.series?.title || (lastAddedFigure as any).series_name || t('UnknownSeries')}</span>
                             <span className="text-[10px] font-black text-[#5CB85C] uppercase tracking-widest mt-1.5 flex items-center gap-1 opacity-90">
                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
-                               Koleksiyonuna Eklendi
+                               {t('AddedToCollection')}
                             </span>
                          </>
                       ) : (
-                         <span className="text-[14px] font-bold text-gray-500">Kasam Henüz Boş</span>
+                         <span className="text-[14px] font-bold text-gray-500">{t('VaultEmpty')}</span>
                       )}
                    </div>
                 </div>
@@ -402,23 +404,23 @@ export default async function KoleksiyonumPage({
                    <div className="flex flex-col flex-1 min-w-0">
                       <span className="text-[10px] font-black uppercase tracking-widest text-[#0052cc] mb-1.5 flex items-center gap-1.5">
                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                         <span className="truncate">Son İncelediğin Figür</span>
+                         <span className="truncate">{t('LastViewedTitle')}</span>
                       </span>
                       {lastWantedFigure && lastWantedUrl ? (
                          <>
                             <Link href={lastWantedUrl} className="text-[16px] font-black text-gray-900 group-hover:text-[#0052cc] transition-colors line-clamp-1 flex-1">
                                {(lastWantedFigure as any).name || (lastWantedFigure as any).figure_name}
                             </Link>
-                            <span className="text-[13px] font-bold text-gray-400 mt-0.5 truncate flex-shrink-0">{(lastWantedFigure as any)?.series?.title || (lastWantedFigure as any).series_name || 'Bilinmeyen Seri'}</span>
+                            <span className="text-[13px] font-bold text-gray-400 mt-0.5 truncate flex-shrink-0">{(lastWantedFigure as any)?.series?.title || (lastWantedFigure as any).series_name || t('UnknownSeries')}</span>
                             
                             <Link href={lastWantedUrl} className="text-[10px] font-black text-[#0052cc] uppercase tracking-widest mt-1.5 flex items-center gap-1 opacity-90 hover:underline">
-                               İncelemeye Devam Et →
+                               {t('ContinueReviewing')}
                             </Link>
                          </>
                       ) : (
                          <>
-                            <span className="text-[16px] font-black text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">Henüz inceleme yapılmadı</span>
-                            <Link href="/figurler" className="text-[13px] font-bold text-gray-400 mt-0.5 group-hover:text-gray-500 transition-colors flex items-center gap-1">Figürleri keşfetmeye başla <span className="transform group-hover:translate-x-1 transition-transform">→</span></Link>
+                            <span className="text-[16px] font-black text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">{t('NoReviewYet')}</span>
+                            <Link href={`/${locale}/figurler`} className="text-[13px] font-bold text-gray-400 mt-0.5 group-hover:text-gray-500 transition-colors flex items-center gap-1">{t('StartExploring')} <span className="transform group-hover:translate-x-1 transition-transform">→</span></Link>
                          </>
                       )}
                    </div>
@@ -448,11 +450,11 @@ export default async function KoleksiyonumPage({
             {filteredCollections.length === 0 ? (
                <div className="flex flex-col items-center justify-center p-24 border-2 border-dashed border-gray-200 rounded-2xl bg-white text-center w-full shadow-sm mt-4">
                    <LegoHeadIcon mode="search" className="w-24 h-24 mb-6" color="text-gray-200" />
-                   <h2 className="text-xl font-black text-gray-800 uppercase tracking-widest mb-2">Burası Çok Issız</h2>
-                   <p className="text-sm font-medium text-gray-500 max-w-sm mx-auto">Mevcut filtrelere uyan hiçbir figür bulunamadı ya da henüz kasana figür eklemedin.</p>
+                   <h2 className="text-xl font-black text-gray-800 uppercase tracking-widest mb-2">{t('EmptyStateTitle')}</h2>
+                   <p className="text-sm font-medium text-gray-500 max-w-sm mx-auto">{t('EmptyStateDesc')}</p>
                    {rawCollections.length === 0 && (
-                      <Link href="/figurler" className="mt-6 inline-block bg-[#D22B2B] text-white font-black py-3 px-8 rounded-xl hover:bg-red-700 transition-colors shadow-md text-sm">
-                          Figürlere Göz At
+                      <Link href={`/${locale}/figurler`} className="mt-6 inline-block bg-[#D22B2B] text-white font-black py-3 px-8 rounded-xl hover:bg-red-700 transition-colors shadow-md text-sm">
+                          {t('BrowseFigures')}
                       </Link>
                    )}
                </div>
@@ -478,7 +480,7 @@ export default async function KoleksiyonumPage({
                           }
                       };
                       
-                      const mappedFig = mapFigureForCard(rawDTO);
+                      const mappedFig = mapFigureForCard(rawDTO, locale);
                       if (!mappedFig) return null;
 
                       return (

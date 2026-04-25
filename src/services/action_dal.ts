@@ -366,13 +366,24 @@ export const getAdminDashboardMetricsDal = async () => {
 };
 
 export const toggleUserApprovalAdminDal = async (userId: string, currentStatus: boolean) => {
+  if (!userId) throw new Error("Kullanıcı ID'si geçersiz.");
+  
   const supabaseAdmin = getAdminClient();
-  const { error } = await supabaseAdmin.from('profiles').update({ is_approved: !currentStatus }).eq('id', userId);
+  const { data, error } = await supabaseAdmin
+    .from('profiles')
+    .update({ is_approved: !currentStatus })
+    .eq('id', userId)
+    .select();
+    
   if (error) throw new Error(error.message);
+  if (!data || data.length === 0) throw new Error("Belirtilen kullanıcı bulunamadı veya güncellenemedi.");
+  
   return { success: true };
 };
 
 export const deleteUserFromDBAdminDal = async (userId: string) => {
+  if (!userId) throw new Error("Kullanıcı ID'si geçersiz.");
+  
   const supabaseAdmin = getAdminClient();
   const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);
   if (error) throw new Error(error.message);

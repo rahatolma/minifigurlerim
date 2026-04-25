@@ -9,16 +9,20 @@ import { Link } from '@/i18n/routing';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import { LayoutGrid, Package, TrendingUp } from 'lucide-react';
 import { getHomepageData } from '@/services/homepageAggregation';
+import { getTranslations } from 'next-intl/server';
 
 
 
 export const dynamic = 'force-dynamic';
-export default async function Home() {
+export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'Homepage' });
+
   const {
     activeSliders, latestSeries, latestFigures: mappedLatestFigures,
     topDemanded: mappedTopDemanded, topValued: finalTopValued,
     news: latestNews, seriesFigStats, degradedBlocks
-  } = await getHomepageData();
+  } = await getHomepageData(locale);
 
   return (
     <div className="w-full flex-col overflow-hidden">
@@ -36,8 +40,8 @@ export default async function Home() {
                     <LayoutGrid className="w-7 h-7" strokeWidth={2.5} />
                 </div>
                 <div className="flex flex-col text-left w-full">
-                    <h3 className="text-gray-900 text-[17px] font-black leading-snug">Tüm Serileri Keşfet</h3>
-                    <p className="text-gray-500 font-medium text-[13px] mt-1 leading-snug">2010’dan günümüze çıkan tüm Collectible Minifigür serilerini kronolojik olarak keşfedin.</p>
+                    <h3 className="text-gray-900 text-[17px] font-black leading-snug">{t('DiscoverAllSeries')}</h3>
+                    <p className="text-gray-500 font-medium text-[13px] mt-1 leading-snug">{t('DiscoverAllSeriesDesc')}</p>
                 </div>
             </Link>
             
@@ -47,8 +51,8 @@ export default async function Home() {
                     <Package className="w-7 h-7" strokeWidth={2.5} />
                 </div>
                 <div className="flex flex-col text-left w-full">
-                    <h3 className="text-gray-900 text-[17px] font-black leading-snug">Her minifigürü yakından tanı</h3>
-                    <p className="text-gray-500 font-medium text-[13px] mt-1 leading-snug">Her minifigürün parçaları, nadirliği ve koleksiyon değerine dair bilgileri inceleyin.</p>
+                    <h3 className="text-gray-900 text-[17px] font-black leading-snug">{t('KnowEveryFigure')}</h3>
+                    <p className="text-gray-500 font-medium text-[13px] mt-1 leading-snug">{t('KnowEveryFigureDesc')}</p>
                 </div>
             </Link>
             
@@ -58,8 +62,8 @@ export default async function Home() {
                     <TrendingUp className="w-7 h-7" strokeWidth={2.5} />
                 </div>
                 <div className="flex flex-col text-left w-full">
-                    <h3 className="text-gray-900 text-[17px] font-black leading-snug">Koleksiyonunu Bilinçli Büyüt</h3>
-                    <p className="text-gray-500 font-medium text-[13px] mt-1 leading-snug">Hangi minifigür değerli? Hangi seriler öne çıkıyor? Koleksiyon dünyasını öğrenin.</p>
+                    <h3 className="text-gray-900 text-[17px] font-black leading-snug">{t('GrowWisely')}</h3>
+                    <p className="text-gray-500 font-medium text-[13px] mt-1 leading-snug">{t('GrowWiselyDesc')}</p>
                 </div>
             </Link>
         </div>
@@ -73,19 +77,20 @@ export default async function Home() {
                 <div className="w-8 h-8 md:w-14 md:h-14 bg-[#D22B2B] rounded-full flex items-center justify-center text-white shadow-md border-2 md:border-4 border-red-100 shrink-0">
                     <LegoHeadIcon mode="search" className="w-[16px] h-[16px] md:w-[28px] md:h-[28px]" color="text-white" />
                 </div>
-                <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Yeni Seriler</h2>
+                <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">{t('LatestSeries')}</h2>
               </div>
             }
             actionButton={
-              <Link href="/seriler" className="bg-[#D22B2B] text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">Tüm Seriler</Link>
+              <Link href="/seriler" className="bg-[#D22B2B] text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">{t('AllSeries')}</Link>
             }
           >
             {latestSeries.map(series => (
               <SeriesCard 
                 key={series.id}
                 id={series.slug || series.id}
+                seriesId={series.id}
                 title={series.title}
-                imageUrl={series.cover_image_url || '/images/placeholder.svg'}
+                imageUrl={series.cover_image_url || ''}
                 year={series.release_year || '2024'}
                 seriesNo={series.series_no}
                 category={series.category || 'Minifigures'}
@@ -95,7 +100,7 @@ export default async function Home() {
               />
             ))}
             {latestSeries.length === 0 && (
-              <p className="text-gray-400 font-bold px-8 mt-8 w-full text-center">Henüz sistemde hiç seri yok.</p>
+              <p className="text-gray-400 font-bold px-8 mt-8 w-full text-center">{t('NoSeries')}</p>
             )}
           </ItemCarousel>
       </section>
@@ -108,11 +113,11 @@ export default async function Home() {
                 <div className="w-8 h-8 md:w-14 md:h-14 bg-white border-2 border-[#D22B2B] text-[#D22B2B] rounded-full flex items-center justify-center shadow-sm shrink-0">
                     <LegoHeadIcon mode="happy" className="w-[16px] h-[16px] md:w-[32px] md:h-[32px]" color="text-[#D22B2B]" />
                 </div>
-                <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Yeni Minifigürler</h2>
+                <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">{t('LatestFigures')}</h2>
               </div>
             }
             actionButton={
-              <Link href="/figurler" className="bg-[#D22B2B] text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">Tüm Figürler</Link>
+              <Link href="/figurler" className="bg-[#D22B2B] text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">{t('AllFigures')}</Link>
             }
           >
             {mappedLatestFigures.map(fig => (
@@ -122,7 +127,7 @@ export default async function Home() {
               />
             ))}
             {mappedLatestFigures.length === 0 && (
-              <p className="text-gray-400 font-bold px-8 mt-8 w-full text-center">Henüz sistemde hiç figür yok.</p>
+              <p className="text-gray-400 font-bold px-8 mt-8 w-full text-center">{t('NoFigures')}</p>
             )}
           </ItemCarousel>
       </section>
@@ -134,11 +139,11 @@ export default async function Home() {
                  <div className="w-8 h-8 md:w-14 md:h-14 bg-white border-2 border-[#D22B2B] text-[#D22B2B] rounded-full flex items-center justify-center shadow-sm shrink-0">
                      <TrendingUp className="w-[16px] h-[16px] md:w-[28px] md:h-[28px]" strokeWidth={2.5} />
                  </div>
-                 <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Popüler Minifigürler</h2>
+                 <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">{t('PopularFigures')}</h2>
                </div>
              }
              actionButton={
-               <Link href="/figurler" className="bg-[#D22B2B] text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">Hepsini Keşfet</Link>
+               <Link href="/figurler" className="bg-[#D22B2B] text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">{t('DiscoverAll')}</Link>
              }
           >
              {mappedTopDemanded.map(fig => (
@@ -148,7 +153,7 @@ export default async function Home() {
                 />
              ))}
              {mappedTopDemanded.length === 0 && (
-                <p className="text-gray-400 font-bold px-8 mt-8 w-full text-center">Henüz talep verisi hesaplanmadı.</p>
+                <p className="text-gray-400 font-bold px-8 mt-8 w-full text-center">{t('NoDemandData')}</p>
              )}
           </ItemCarousel>
       </section>
@@ -161,11 +166,11 @@ export default async function Home() {
                  <div className="w-8 h-8 md:w-14 md:h-14 bg-white border-2 border-[#D22B2B] text-[#D22B2B] rounded-full flex items-center justify-center shadow-sm shrink-0">
                      <Package className="w-[16px] h-[16px] md:w-[28px] md:h-[28px]" strokeWidth={2.5} />
                  </div>
-                 <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">En Değerli Minifigürler</h2>
+                 <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">{t('ValuableFigures')}</h2>
                </div>
              }
              actionButton={
-               <Link href="/figurler" className="bg-[#D22B2B] text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">Hepsini Keşfet</Link>
+               <Link href="/figurler" className="bg-[#D22B2B] text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">{t('DiscoverAll')}</Link>
              }
           >
              {finalTopValued.map(fig => (
@@ -175,7 +180,7 @@ export default async function Home() {
                 />
              ))}
              {finalTopValued.length === 0 && (
-                <p className="text-gray-400 font-bold px-8 mt-8 w-full text-center">Henüz değer verisi hesaplanmadı.</p>
+                <p className="text-gray-400 font-bold px-8 mt-8 w-full text-center">{t('NoValueData')}</p>
              )}
           </ItemCarousel>
       </section>
@@ -192,12 +197,12 @@ export default async function Home() {
                     <LegoHeadIcon mode="search" className="w-[16px] h-[16px] md:w-[28px] md:h-[28px]" color="text-white" />
                 </div>
                 <div className="flex flex-col">
-                  <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">Haberler</h2>
+                  <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">{t('News')}</h2>
                 </div>
               </div>
             }
             actionButton={
-              <Link href="/haberler" className="bg-[#D22B2B] text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">Tüm Haberler</Link>
+              <Link href="/haberler" className="bg-[#D22B2B] text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">{t('AllNews')}</Link>
             }
           >
             {latestNews.map(newsItem => (
@@ -213,7 +218,7 @@ export default async function Home() {
               />
             ))}
             {latestNews.length === 0 && (
-              <p className="text-gray-400 font-bold px-8 mt-8 w-full text-center">Henüz yayınlanmış bir haber bulunmuyor.</p>
+              <p className="text-gray-400 font-bold px-8 mt-8 w-full text-center">{t('NoNews')}</p>
             )}
           </ItemCarousel>
       </section>

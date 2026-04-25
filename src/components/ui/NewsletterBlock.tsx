@@ -3,10 +3,12 @@
 import { useState } from 'react';
 import { subscribeNewsletterClient } from '@/services/client_dal';
 import toast from 'react-hot-toast';
+import { useTranslations } from 'next-intl';
 
 export default function NewsletterBlock() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const t = useTranslations('Newsletter');
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -15,14 +17,14 @@ export default function NewsletterBlock() {
     setLoading(true);
     try {
       await subscribeNewsletterClient(email);
-      toast.success('Bültene başarıyla abone oldunuz! Sizi bilgilendirmeye devam edeceğiz.');
+      toast.success(t('SuccessMsg'));
       setEmail('');
     } catch (err: any) {
-console.error(err);
+      console.error(err);
       if (err.code === '23505') {
-        toast.success('Zaten abonelik kaydınız bulunuyor! Yeniden göndermenize gerek yok 🚀');
+        toast.success(t('AlreadySubscribedMsg'));
       } else {
-        toast.error('Kayıt olurken bir hata oluştu: ' + err.message);
+        toast.error(t('ErrorMsg') + err.message);
       }
     } finally {
       setLoading(false);
@@ -33,7 +35,7 @@ console.error(err);
     <section className="bg-black text-white w-full rounded-lg overflow-hidden flex flex-col md:flex-row items-center justify-between p-10 md:p-16 gap-10">
       <div className="w-full md:w-2/3 space-y-8">
         <h3 className="text-xl md:text-3xl font-extrabold leading-tight tracking-tight">
-          Son çıkan mini figürleri ve güncel haberleri yakından takip etmek istiyorsanız e-mail haber grubuna abone olun!
+          {t('BlockTitle')}
         </h3>
         
         <form onSubmit={handleSubscribe} className="flex flex-col gap-4 max-w-xl">
@@ -41,7 +43,7 @@ console.error(err);
             type="email" 
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Lütfen e-posta adresinizi giriniz... *"
+            placeholder={t('Placeholder')}
             required
             className="w-full px-6 py-4 rounded bg-white text-gray-900 font-bold placeholder:text-gray-400 focus:outline-none"
           />
@@ -50,7 +52,7 @@ console.error(err);
             disabled={loading}
             className="w-full bg-[#D22B2B] text-white font-extrabold tracking-widest px-6 py-5 rounded uppercase hover:bg-[#B22222] transition-colors disabled:opacity-50"
           >
-            {loading ? 'KAYDEDİLİYOR...' : 'ABONE OLUN!'}
+            {loading ? t('LoadingBtn') : t('SubmitBtn')}
           </button>
         </form>
       </div>

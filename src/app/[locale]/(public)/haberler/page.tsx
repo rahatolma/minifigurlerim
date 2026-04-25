@@ -1,6 +1,6 @@
 import NewsCard from '@/components/ui/NewsCard';
 import NewsFilterClient from '@/components/ui/NewsFilterClient';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import { getAllNews } from '@/services/dal';
 export const revalidate = 300; // 5 dakikalık ISR cache

@@ -1,7 +1,8 @@
-'use client';
+"use client";
+
 import { useEffect, useState } from 'react';
 import { supabase } from '@/utils/supabase/client';
-import { Plus, Loader2, Trash2, ChevronRight, Tags } from 'lucide-react';
+import { Plus, Loader2, Trash2, ChevronRight, Tags, AlertTriangle, Check, Save } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function DefinitionsPage() {
@@ -9,6 +10,10 @@ export default function DefinitionsPage() {
   const [definitionGroups, setDefinitionGroups] = useState<any[]>([]);
   
   const [loading, setLoading] = useState(true);
+  const [missingTaxonomies, setMissingTaxonomies] = useState<any[]>([]);
+  const [updatingTaxId, setUpdatingTaxId] = useState<string | null>(null);
+  const [taxEnInput, setTaxEnInput] = useState<{ [key: string]: string }>({});
+
   const [newName, setNewName] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   
@@ -23,17 +28,20 @@ export default function DefinitionsPage() {
 
   const fetchData = async () => {
     try {
-      // Paralel veri çekimi (Hem Gruplar hem Alt Tanımlar)
-      const [groupsRes, catsRes] = await Promise.all([
+      // Paralel veri çekimi (Hem Gruplar hem Alt Tanımlar ve Eksik Çeviriler)
+      const [groupsRes, catsRes, taxRes] = await Promise.all([
          supabase.from('definition_groups').select('*').order('created_at', { ascending: true }),
-         supabase.from('categories').select('*').order('created_at', { ascending: false })
+         supabase.from('categories').select('*').order('created_at', { ascending: false }),
+         supabase.from('taxonomy_terms').select('*').or('label_en.is.null,label_en.eq.').eq('is_active', true)
       ]);
       
       if (groupsRes.error) throw groupsRes.error;
       if (catsRes.error) throw catsRes.error;
+      if (taxRes.error) throw taxRes.error;
 
       setDefinitionGroups(groupsRes.data || []);
       setCategories(catsRes.data || []);
+      setMissingTaxonomies(taxRes.data || []);
       
       // Herhangi bir grubu otomatik açmayı iptal ettik (Kullanıcı talebi: Kapalı gelsin)
     } catch (err: any) {
@@ -71,7 +79,6 @@ export default function DefinitionsPage() {
         fetchData();
         setOpenGroup(slug); // Yeni grubu otomatik aç
       } catch (err: any) {
-console.error(err);
         toast.error("Grup Eklenemedi: Şema güncellenirken bekleyin veya " + err.message);
       } finally {
         setIsAddingGroup(false);
@@ -91,7 +98,6 @@ console.error(err);
       toast.success("Alt Tanım başarıyla eklendi.");
       fetchData();
     } catch (err: any) {
-console.error(err);
       toast.error("Alt Tanım Eklenemedi: " + err.message);
     } finally {
       setIsAdding(false);
@@ -149,6 +155,25 @@ console.error(err);
       }
   }
 
+  const handleUpdateTaxonomy = async (id: string) => {
+    const newVal = taxEnInput[id]?.trim();
+    if (!newVal) {
+      toast.error('İngilizce çeviri boş olamaz!');
+      return;
+    }
+    setUpdatingTaxId(id);
+    try {
+      const { error } = await supabase.from('taxonomy_terms').update({ label_en: newVal }).eq('id', id);
+      if (error) throw error;
+      toast.success('Çeviri kaydedildi.');
+      setMissingTaxonomies(prev => prev.filter(t => t.id !== id));
+    } catch (err: any) {
+      toast.error('Çeviri kaydedilemedi: ' + err.message);
+    } finally {
+      setUpdatingTaxId(null);
+    }
+  };
+
   return (
     <div className="p-12 pb-24 max-w-[1600px] w-full mx-auto">
       <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -178,6 +203,50 @@ console.error(err);
             </button>
         </form>
       </div>
+
+      {/* YENİ: TAXONOMY ÇEVİRİ AUDIT MODÜLÜ */}
+      {!loading && missingTaxonomies.length > 0 && (
+        <div className="mb-12 bg-red-50/50 border border-red-200 rounded-2xl overflow-hidden shadow-sm">
+          <div className="bg-red-100/50 px-6 py-4 flex items-center justify-between border-b border-red-200">
+             <div className="flex items-center gap-3">
+               <div className="bg-red-500 text-white p-2 rounded-full shadow-sm"><AlertTriangle size={18} /></div>
+               <div>
+                  <h2 className="text-red-900 font-black text-lg tracking-tight">Eksik İngilizce Çeviriler ({missingTaxonomies.length})</h2>
+                  <p className="text-red-600/80 text-[11px] font-bold uppercase tracking-widest mt-0.5">Global UI Sızıntısı Tespiti</p>
+               </div>
+             </div>
+          </div>
+          <div className="p-6">
+             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+               {missingTaxonomies.map(tax => (
+                  <div key={tax.id} className="bg-white border border-red-100 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm hover:border-red-300 transition-colors">
+                     <div className="flex flex-col">
+                        <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest">{tax.type.replace('_', ' ')}</span>
+                        <span className="font-bold text-gray-900 mt-1">{tax.label_tr}</span>
+                        <span className="text-[10px] text-gray-500 font-mono mt-1">Key: {tax.key}</span>
+                     </div>
+                     <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <input 
+                           type="text"
+                           placeholder="İngilizce Karşılığı..."
+                           value={taxEnInput[tax.id] || ''}
+                           onChange={(e) => setTaxEnInput(prev => ({ ...prev, [tax.id]: e.target.value }))}
+                           className="border border-gray-200 rounded-lg px-3 py-2 text-[13px] font-medium outline-none focus:border-red-400 focus:ring-1 focus:ring-red-400 w-full sm:w-[200px]"
+                        />
+                        <button 
+                           onClick={() => handleUpdateTaxonomy(tax.id)}
+                           disabled={updatingTaxId === tax.id || !taxEnInput[tax.id]?.trim()}
+                           className="bg-black text-white p-2 rounded-lg hover:bg-[#D22B2B] disabled:bg-gray-200 disabled:text-gray-400 transition-colors shrink-0"
+                        >
+                           {updatingTaxId === tax.id ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                        </button>
+                     </div>
+                  </div>
+               ))}
+             </div>
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className="flex justify-center p-24"><Loader2 className="animate-spin text-gray-300" size={40} /></div>

@@ -134,7 +134,6 @@ console.error(err);
             figure_count: formData.figure_count ? parseInt(formData.figure_count) : null,
             release_month: formData.release_month,
             release_year: formData.release_year,
-            manual_rarity: formData.manual_rarity,
             cover_image_url: imageUrls.cover_image_url,
             hero_image_url: imageUrls.hero_image_url,
             content_blocks: formData.content_blocks,

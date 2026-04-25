@@ -449,7 +449,7 @@ console.error(err);
                     <div className="w-2/3 py-4"><textarea name="meta_description_en" rows={2} value={formData.meta_description_en} onChange={(e: any) => handleChange(e)} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold resize-y" /></div>
                 </div>
             </div>
-
+            </div>
             {/* Save Button */}
             <div className="mt-12 flex justify-end">
               <button 

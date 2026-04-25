@@ -54,9 +54,12 @@ function slugify(text) {
 }
 
 const failedItems = [];
+const successItems = [];
+const isTestMode = process.argv.includes('--test');
 
 async function callOpenAIWithRetry(prompt, expectedFormat, maxRetries = 3) {
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+  let attempt = 1;
+  for (; attempt <= maxRetries; attempt++) {
     try {
       const completion = await openai.chat.completions.create({
         model: "gpt-4o-mini",
@@ -67,10 +70,10 @@ async function callOpenAIWithRetry(prompt, expectedFormat, maxRetries = 3) {
         response_format: { type: "json_object" },
         temperature: 0.3,
       });
-      return JSON.parse(completion.choices[0].message.content);
+      return { data: JSON.parse(completion.choices[0].message.content), attempts: attempt };
     } catch (error) {
       console.warn(`[Attempt ${attempt}/${maxRetries}] OpenAI Error: ${error.message}`);
-      if (attempt === maxRetries) throw error;
+      if (attempt === maxRetries) throw new Error(`OpenAI Failed after ${maxRetries} attempts: ${error.message}`);
       await delay(attempt * 2000); // Exponential backoff
     }
   }
@@ -97,11 +100,14 @@ async function processEntityBatch(table, entityName, getPrompt, expectedFormat, 
   
   for (const item of data) {
     const identifier = item.title || item.name;
+    const oldSlug = item.slug_en || null;
     console.log(`\nProcessing: ${identifier} (${item.id})`);
     
     try {
       const userPrompt = getPrompt(item);
-      const parsedData = await callOpenAIWithRetry(userPrompt, expectedFormat);
+      const aiResponse = await callOpenAIWithRetry(userPrompt, expectedFormat);
+      const parsedData = aiResponse.data;
+      const retriesUsed = aiResponse.attempts - 1;
       
       // Some fields like description_blocks_en might need to be parsed to object if AI returned string
       if (typeof parsedData.description_blocks_en === 'string') {
@@ -109,7 +115,7 @@ async function processEntityBatch(table, entityName, getPrompt, expectedFormat, 
       }
 
       // Generate slug and check duplicates
-      const englishTitle = parsedData.title_en || parsedData.name_en;
+      const englishTitle = parsedData.editorial_slug_en || parsedData.title_en || parsedData.name_en;
       if (englishTitle) {
         let baseSlug = slugify(englishTitle);
         let duplicateCheck = await supabase
@@ -126,6 +132,7 @@ async function processEntityBatch(table, entityName, getPrompt, expectedFormat, 
       }
       
       parsedData.en_status = 'draft';
+      delete parsedData.editorial_slug_en; // Prevent DB schema error
       
       const { error: updateError } = await supabase
         .from(table)
@@ -134,14 +141,22 @@ async function processEntityBatch(table, entityName, getPrompt, expectedFormat, 
         
       if (updateError) {
         console.error(`Database Update failed for ${item.id}:`, updateError);
-        failedItems.push({ table, id: item.id, error: updateError.message });
+        failedItems.push({ table, id: item.id, old_slug: oldSlug, error: updateError.message });
       } else {
-        console.log(`Success: ${identifier} -> ${parsedData.slug_en}`);
+        console.log(`Success: ${identifier} -> ${parsedData.slug_en} (Retries: ${retriesUsed})`);
+        successItems.push({ 
+          table, 
+          id: item.id, 
+          old_slug: oldSlug, 
+          new_slug: parsedData.slug_en, 
+          retries: retriesUsed,
+          status: 'success'
+        });
       }
       
     } catch (e) {
       console.error(`Failed to process ${item.id}:`, e.message);
-      failedItems.push({ table, id: item.id, error: e.message });
+      failedItems.push({ table, id: item.id, old_slug: oldSlug, error: e.message });
     }
     
     await delay(1000); // Rate limit protection between items
@@ -149,7 +164,7 @@ async function processEntityBatch(table, entityName, getPrompt, expectedFormat, 
 }
 
 async function run() {
-  console.log("Starting bulk translation generation...");
+  console.log(`Starting bulk translation generation... ${isTestMode ? '[TEST MODE: Small Batch]' : '[FULL RUN]'}`);
   
   // 1. Minifigures
   await processEntityBatch(
@@ -168,7 +183,8 @@ Short Description: ${item.short_description_tr}`,
   "short_description_en": "Short English Description",
   "meta_title_en": "SEO Meta Title (Max 60 chars)",
   "meta_description_en": "SEO Meta Description (Max 160 chars)"
-}`
+}`,
+    isTestMode ? 5 : 100
   );
 
   // 2. Series
@@ -188,7 +204,8 @@ Collector Comment: ${item.collector_comment_tr}`,
   "meta_description_en": "SEO Meta Description (Max 160 chars)",
   "collector_comment_en": "English Collector Comment",
   "description_blocks_en": "English Description"
-}`
+}`,
+    isTestMode ? 3 : 50
   );
 
   // 3. News
@@ -201,15 +218,22 @@ Summary: ${item.summary}
 Content: ${item.content}`,
     `{
   "title_en": "English Title",
+  "editorial_slug_en": "Short SEO slug (max 3-4 words, NO stop words like 'a-guide-to', 'methods-for', 'how-to', 'between'). Keep it extremely concise and direct.",
   "summary_en": "English Summary",
   "meta_title_en": "SEO Meta Title (Max 60 chars)",
   "meta_description_en": "SEO Meta Description (Max 160 chars)",
   "content_blocks_en": "Full English Content HTML or blocks"
-}`
+}`,
+    isTestMode ? 2 : 50
   );
 
   console.log("\nFinished bulk processing.");
   
+  if (successItems.length > 0) {
+    console.log(`Writing ${successItems.length} successes to bulk-results.log...`);
+    fs.writeFileSync('bulk-results.log', JSON.stringify(successItems, null, 2));
+  }
+
   if (failedItems.length > 0) {
     console.log(`Encountered ${failedItems.length} errors. Writing to bulk-errors.log...`);
     fs.writeFileSync('bulk-errors.log', JSON.stringify(failedItems, null, 2));

@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { CTABlockData } from '@/types/content-blocks';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 

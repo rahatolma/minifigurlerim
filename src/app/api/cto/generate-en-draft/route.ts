@@ -11,7 +11,7 @@ const openai = new OpenAI({
 export async function POST(request: Request) {
   try {
     // 1. Auth Check (Must be CTO/Admin)
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -145,6 +145,7 @@ Content: ${entityData.content}
 `;
       expectedFormat = `{
   "title_en": "English Title",
+  "editorial_slug_en": "Short SEO slug (max 3-4 words, NO stop words like 'a-guide-to', 'methods-for', 'how-to', 'between'). Keep it extremely concise and direct.",
   "summary_en": "English Summary",
   "meta_title_en": "SEO Meta Title (Max 60 chars)",
   "meta_description_en": "SEO Meta Description (Max 160 chars)",
@@ -176,7 +177,7 @@ Content: ${entityData.content}
     const parsedData = JSON.parse(aiResponse);
 
     // Slugification & Duplicate Checking
-    const englishTitle = parsedData.title_en || parsedData.name_en;
+    const englishTitle = parsedData.editorial_slug_en || parsedData.title_en || parsedData.name_en;
     if (englishTitle) {
       let baseSlug = slugify(englishTitle);
       let duplicateCheck = await supabaseAdmin
@@ -194,6 +195,7 @@ Content: ${entityData.content}
     
     // Set Status
     parsedData.en_status = 'draft';
+    delete parsedData.editorial_slug_en; // Prevent DB schema error
 
     // 5. Save back to DB
     const { error: updateError } = await supabaseAdmin

@@ -1,14 +1,16 @@
 'use client';
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { useState, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { getSeriesUrl } from '@/utils/routeBuilder';
+import { getLocalizedCategory, getLocalizedRarity } from '@/utils/taxonomy';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useGamification } from '@/components/providers/GamificationProvider';
 
 interface SeriesCardProps {
   id: string;
+  seriesId?: string;
   title: string;
   imageUrl: string;
   year?: string | number | null;
@@ -28,44 +30,49 @@ interface SeriesCardProps {
 }
 
 export default function SeriesCard({ 
-  id, title, imageUrl, year, seriesNo, category, rarity, totalFigures, latestFigureName
+  id, seriesId, title, imageUrl, year, seriesNo, category, rarity, totalFigures, latestFigureName
 }: SeriesCardProps) {
   const t = useTranslations('SeriesCard');
+  const tTax = useTranslations('Taxonomy');
+  const tCommon = useTranslations('CommonTypes');
   const locale = useLocale();
   const { user } = useAuth();
   const { userSeriesProgressMap, userLatestAddedFigureMap, loading } = useGamification();
   const isLoggedIn = !!user;
-  const seriesProgress = userSeriesProgressMap[id] || null;
-  const actualLatestAddedText = userLatestAddedFigureMap[id] || null;
+  
+  const lookupId = seriesId || id;
+  const seriesProgress = userSeriesProgressMap[lookupId] || null;
+  const actualLatestAddedText = userLatestAddedFigureMap[lookupId] || null;
 
-  const [imgSrc, setImgSrc] = useState(imageUrl || '/images/placeholder.svg');
+  const defaultImage = locale === 'en' ? '/images/placeholder-en.svg' : '/images/placeholder.svg';
+  const [imgSrc, setImgSrc] = useState(imageUrl || defaultImage);
 
   useEffect(() => {
-    setImgSrc(imageUrl || '/images/placeholder.svg');
-  }, [imageUrl]);
+    setImgSrc(imageUrl || defaultImage);
+  }, [imageUrl, defaultImage]);
 
   // Başlıkta "LEGO® Minifigürler" markasını formatlamak için:
   const formattedTitle = (() => {
-    // Önce en uzun varsayılan kalıbı deniyoruz
-    const prefixFull = "LEGO® Minifigürler Serisi";
-    const prefixShort = "LEGO® Minifigürler";
+    // Regex to match "LEGO® Minifigürler Serisi", "LEGO® Minifigures Series", etc.
+    const match = title.match(/^(?:(?:\d+\.\s*)?LEGO.?\s*(?:Minifigürler|Minifigures)\s*(?:Serisi|Series)?[:\s-]*)/i);
     
-    if (title.startsWith(prefixFull) && title.length > prefixFull.length) {
+    if (match && title.length > match[0].length) {
+      // Strip any trailing colons/hyphens from the prefix for a cleaner look
+      const rawPrefix = title.substring(0, match[0].length).trim();
+      const cleanPrefix = rawPrefix.replace(/[:-]$/, '').trim();
+      
+      let suffix = title.substring(match[0].length).trim();
+      // Ensure suffix doesn't start with leftover punctuation
+      suffix = suffix.replace(/^[:-]\s*/, '');
+      
       return (
         <>
-          <span className="block text-[14px] leading-[18px] font-semibold text-gray-800 mb-2">{prefixFull}</span>
-          <span className="block line-clamp-2 leading-snug group-hover/text:underline">{title.substring(prefixFull.length).trim()}</span>
-        </>
-      );
-    } else if (title.startsWith(prefixShort) && title.length > prefixShort.length) {
-      return (
-        <>
-          <span className="block text-[14px] leading-[18px] font-semibold text-gray-800 mb-2">{prefixShort}</span>
-          <span className="block line-clamp-2 leading-snug group-hover/text:underline">{title.substring(prefixShort.length).trim()}</span>
+          <span className="block text-[14px] leading-[18px] font-semibold text-gray-800 mb-2 truncate max-w-[95%]">{cleanPrefix}</span>
+          <span className="block line-clamp-2 leading-snug group-hover/text:underline">{suffix}</span>
         </>
       );
     }
-    return <span className="group-hover/text:underline">{title}</span>;
+    return <span className="group-hover/text:underline line-clamp-3 leading-snug">{title}</span>;
   })();
 
   const targetHref = getSeriesUrl({ seriesSlug: id, locale: locale as any });
@@ -73,13 +80,19 @@ export default function SeriesCard({
   return (
     <div className="flex flex-col h-full bg-white rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 hover:shadow-[0_20px_40px_rgba(210,43,43,0.08)] hover:border-[#D22B2B]/20 hover:-translate-y-2 transition-all duration-400 ease-out relative group">
        <Link href={targetHref || "#"} onClick={(e) => !targetHref && e.preventDefault()} aria-disabled={!targetHref} className={`relative w-full aspect-[4/3] bg-gradient-to-b from-gray-50/50 to-white flex items-center justify-center border-b border-gray-50 flex-none transition-all duration-500 ${targetHref ? 'group-hover:from-red-50/20 group-hover:to-white' : 'opacity-50 cursor-not-allowed'}`}>
-          <Image src={imgSrc} alt={title} fill className="object-contain px-6 py-4 mix-blend-multiply group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500 will-change-transform" onError={() => setImgSrc('/images/placeholder.svg')} />
+          <Image src={imgSrc} alt={title} fill className="object-contain px-6 py-4 mix-blend-multiply group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500 will-change-transform" onError={() => setImgSrc(defaultImage)} />
        </Link>
 
        <div className="px-6 pt-5 pb-6 flex flex-col flex-1 bg-white relative z-10">
           <Link href={targetHref || "#"} onClick={(e) => !targetHref && e.preventDefault()} aria-disabled={!targetHref} className={`flex flex-col flex-1 items-center text-center group/text ${targetHref ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}>
-              <h3 className="font-black text-[18px] sm:text-[20px] text-[#D22B2B] leading-tight tracking-tight mb-2 w-full">{formattedTitle}</h3>
-              <p className="block text-[14px] leading-[18px] font-semibold text-gray-500 mb-4 w-full">{category || t('CategoryDefault')}</p>
+              <div className="h-[76px] w-full mb-0 sm:mb-1 overflow-hidden flex flex-col items-center justify-start">
+                  <h3 className="font-black text-[18px] sm:text-[20px] text-[#D22B2B] leading-tight tracking-tight w-full">
+                      {formattedTitle}
+                  </h3>
+              </div>
+              <p className="block text-[14px] leading-[18px] font-semibold text-gray-500 mb-4 w-full truncate">
+                 {category ? getLocalizedCategory(category, tTax) : t('CategoryDefault')}
+              </p>
           </Link>
           
           <div className="w-full h-px bg-gray-100 mb-4"></div>
@@ -99,10 +112,12 @@ export default function SeriesCard({
              )}
 
              <span className="text-gray-300 shrink-0">•</span>
-             <span className="font-black text-gray-900 whitespace-nowrap">{totalFigures !== undefined ? totalFigures : (seriesProgress?.total ?? 0)} {t('Figure')}</span>
+             <span className="font-black text-gray-900 whitespace-nowrap">{totalFigures ?? (seriesProgress?.total ?? 0)} {t('Figure')}</span>
              
              <span className="text-gray-300 shrink-0">•</span>
-             <span className="font-bold text-[#D22B2B] whitespace-nowrap">{rarity || t('CommonRarity')}</span>
+             <span className="font-bold text-[#D22B2B] whitespace-nowrap">
+                {rarity ? getLocalizedRarity(rarity, tTax) : tCommon('Yaygın')}
+             </span>
           </div>
 
           {/* SERIES PROGRESS VE ALT ALANLAR */}
@@ -111,14 +126,16 @@ export default function SeriesCard({
                 <div className="flex flex-col gap-1.5">
                     <div className="flex justify-between items-center text-[11px] font-bold text-[#555] tracking-wide">
                         <span>{t('Completion')}</span>
-                        <span className="text-gray-900">%{(seriesProgress?.percent ?? 0).toFixed(0)}</span>
+                        <span className="text-gray-900">
+                          {locale === 'en' ? `${(seriesProgress?.percent ?? 0).toFixed(0)}%` : `%${(seriesProgress?.percent ?? 0).toFixed(0)}`}
+                        </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                         <div className="bg-[#10b981] h-2 transition-all duration-1000" style={{ width: `${seriesProgress?.percent || 0}%` }}></div>
                     </div>
                     <div className="flex justify-between items-center mt-1">
-                        <div className="text-[10px] text-gray-500 font-medium">{(locale === 'en') ? `You have ${seriesProgress?.collected || 0} of ${totalFigures !== undefined ? totalFigures : (seriesProgress?.total ?? 0)} figures in this series` : `Bu seride ${totalFigures !== undefined ? totalFigures : (seriesProgress?.total ?? 0)} figürden ${seriesProgress?.collected || 0}'i sende`}</div>
-                        <div className="text-[10px] font-black text-gray-400 bg-gray-50 px-2 py-0.5 rounded-sm">{seriesProgress?.collected || 0} / {totalFigures !== undefined ? totalFigures : (seriesProgress?.total ?? 0)}</div>
+                        <div className="text-[10px] text-gray-500 font-medium">{t('ProgressText', { collected: seriesProgress?.collected || 0, total: totalFigures ?? (seriesProgress?.total ?? 0) })}</div>
+                        <div className="text-[10px] font-black text-gray-400 bg-gray-50 px-2 py-0.5 rounded-sm">{seriesProgress?.collected || 0} / {totalFigures ?? (seriesProgress?.total ?? 0)}</div>
                     </div>
                 </div>
 
@@ -156,12 +173,14 @@ export default function SeriesCard({
                     <div className="flex flex-col gap-1.5">
                         <div className="flex justify-between items-center text-[11px] font-bold text-[#555] tracking-wide">
                             <span>{t('Completion')}</span>
-                            <span className="text-gray-900">%0</span>
+                            <span className="text-gray-900">
+                              {locale === 'en' ? '0%' : '%0'}
+                            </span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden"></div>
                         <div className="flex justify-between items-center mt-1">
-                            <div className="text-[10px] text-gray-500 font-medium">{(locale === 'en') ? `You have 0 of ${totalFigures !== undefined ? totalFigures : (seriesProgress?.total ?? 0)} figures in this series` : `Bu seride ${totalFigures !== undefined ? totalFigures : (seriesProgress?.total ?? 0)} figürden 0'i sende`}</div>
-                            <div className="text-[10px] font-black text-gray-400 bg-gray-50 px-2 py-0.5 rounded-sm">0 / {totalFigures !== undefined ? totalFigures : (seriesProgress?.total ?? 0)}</div>
+                            <div className="text-[10px] text-gray-500 font-medium">{t('ProgressText', { collected: 0, total: totalFigures ?? (seriesProgress?.total ?? 0) })}</div>
+                            <div className="text-[10px] font-black text-gray-400 bg-gray-50 px-2 py-0.5 rounded-sm">0 / {totalFigures ?? (seriesProgress?.total ?? 0)}</div>
                         </div>
                     </div>
 

@@ -19,3 +19,36 @@ export function formatBrandText(text: string | null | undefined): string {
     
     return formatted;
 }
+
+/**
+ * Cleans the series display title by removing redundant taxonomy prefixes 
+ * (like "LEGO Minifigures Series") to ensure a clean UI display.
+ */
+export function cleanSeriesDisplayTitle(title: string, locale: string): { prefix: string | null, mainTitle: string } {
+    const rawTitle = formatBrandText(title);
+    
+    const prefixFullTR = "LEGO® Minifigürler Serisi";
+    const prefixShortTR = "LEGO® Minifigürler";
+    const prefixFullEN = "LEGO® Minifigures Series";
+    const prefixShortEN = "LEGO® Minifigures";
+
+    const prefixFull = locale === 'en' ? prefixFullEN : prefixFullTR;
+    const prefixShort = locale === 'en' ? prefixShortEN : prefixShortTR;
+
+    if (rawTitle.startsWith(prefixFull) && rawTitle.length > prefixFull.length) {
+        return {
+            prefix: prefixFull,
+            mainTitle: rawTitle.substring(prefixFull.length).trim()
+        };
+    } else if (rawTitle.startsWith(prefixShort) && rawTitle.length > prefixShort.length) {
+        return {
+            prefix: prefixShort,
+            mainTitle: rawTitle.substring(prefixShort.length).trim()
+        };
+    }
+
+    return {
+        prefix: null,
+        mainTitle: rawTitle
+    };
+}

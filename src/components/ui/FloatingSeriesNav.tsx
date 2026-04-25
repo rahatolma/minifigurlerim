@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface SeriesLight {
   slug: string;
@@ -15,6 +16,8 @@ interface Props {
 }
 
 export default function FloatingSeriesNav({ prev, next }: Props) {
+  const t = useTranslations('SeriesDetail');
+  
   return (
     <>
       {/* Önceki Seri (Sol Buton) */}
@@ -26,7 +29,7 @@ export default function FloatingSeriesNav({ prev, next }: Props) {
           >
             <ChevronLeft size={24} className="text-gray-400 group-hover:text-[#D22B2B] shrink-0" strokeWidth={2.5} />
             <div className="overflow-hidden w-0 opacity-0 group-hover:w-auto group-hover:opacity-100 transition-all duration-300 ml-1 whitespace-nowrap">
-               <span className="text-[10px] font-black text-gray-400 tracking-widest uppercase block leading-none mb-1">Önceki Seri</span>
+               <span className="text-[10px] font-black text-gray-400 tracking-widest uppercase block leading-none mb-1">{t('PreviousSeries')}</span>
                <span className="text-sm font-bold text-gray-900 leading-tight block">{prev.title}</span>
             </div>
           </Link>
@@ -42,7 +45,7 @@ export default function FloatingSeriesNav({ prev, next }: Props) {
           >
             <ChevronRight size={24} className="text-gray-400 group-hover:text-[#D22B2B] shrink-0" strokeWidth={2.5} />
             <div className="overflow-hidden w-0 opacity-0 group-hover:w-auto group-hover:opacity-100 transition-all duration-300 mr-1 text-right whitespace-nowrap">
-               <span className="text-[10px] font-black text-gray-400 tracking-widest uppercase block leading-none mb-1">Sonraki Seri</span>
+               <span className="text-[10px] font-black text-gray-400 tracking-widest uppercase block leading-none mb-1">{t('NextSeries')}</span>
                <span className="text-sm font-bold text-gray-900 leading-tight block">{next.title}</span>
             </div>
           </Link>

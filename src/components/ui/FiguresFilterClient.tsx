@@ -3,8 +3,8 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import CustomDropdown from './CustomDropdown';
-import { useLocale } from 'next-intl';
-import { toRarityLabel } from '@/utils/filterHelpers';
+import { useLocale, useTranslations } from 'next-intl';
+import { getLocalizedRole, getLocalizedRarity } from '@/utils/taxonomy';
 
 export default function FiguresFilterClient({
   seriesList,
@@ -24,6 +24,9 @@ export default function FiguresFilterClient({
   const router = useRouter();
   const searchParams = useSearchParams();
   const locale = useLocale();
+  const t = useTranslations('SeriesPage');
+  const tFilter = useTranslations('FiguresFilter');
+  const tTax = useTranslations('Taxonomy');
 
   const currentSort = searchParams.get('sort') || 'newest';
   const currentSeries = searchParams.get('series') || 'all';
@@ -91,13 +94,13 @@ export default function FiguresFilterClient({
           key={`sort-desktop-${currentSort}`}
           name="sort"
           options={[
-            { value: 'newest', label: 'En Yeniler' },
-            { value: 'oldest', label: 'En Eskiler' },
-            { value: 'popular', label: 'En Popüler' }
+            { value: 'newest', label: t('SortNewest') },
+            { value: 'oldest', label: t('SortOldest') },
+            { value: 'popular', label: t('SortPopular') }
           ]}
           value={currentSort}
           onChange={(val: string) => handleFilterUpdate('sort', val)}
-          placeholder="Sıralama"
+          placeholder={t('SortTitle')}
           showSearch={false}
         />
         
@@ -105,13 +108,13 @@ export default function FiguresFilterClient({
           key={`series-desktop-${currentSeries}`}
           name="series"
           options={[
-            { value: 'all', label: 'Tüm Seriler' },
+            { value: 'all', label: tFilter('AllSeries') },
             ...seriesList.map(s => ({ value: s.id.toString(), label: s.title }))
           ]}
           value={currentSeries}
           onChange={(val: string) => handleFilterUpdate('series', val)}
-          placeholder="Seriler"
-          searchPlaceholder="Seri ara..."
+          placeholder={t('BreadcrumbSeries')}
+          searchPlaceholder={tFilter('SearchSeries')}
           showSearch={true}
           dropdownWidthClass="w-[450px]"
         />
@@ -120,26 +123,26 @@ export default function FiguresFilterClient({
           key={`role-desktop-${currentRole}`}
           name="role"
           options={[
-            { value: 'all', label: 'Tüm Roller' },
-            ...sortedRoles.map(r => ({ value: r, label: r }))
+            { value: 'all', label: tFilter('AllRoles') }, // Keep as is since roles are dynamic
+            ...sortedRoles.map(r => ({ value: r, label: getLocalizedRole(r, tTax) }))
           ]}
           value={currentRole}
           onChange={(val: string) => handleFilterUpdate('role', val)}
-          placeholder="Figür Rolü"
+          placeholder={tFilter('FigureRole')}
           showSearch={true}
-          searchPlaceholder="Rol ara..."
+          searchPlaceholder={tFilter('SearchRole')}
         />
 
         <CustomDropdown 
           key={`rarity-desktop-${currentRarity}`}
           name="rarity"
           options={[
-            { value: 'all', label: 'Tüm Değer Skorları' },
-            ...rarities.map(r => ({ value: r, label: toRarityLabel(r, locale) }))
+            { value: 'all', label: tFilter('AllRarities') },
+            ...rarities.map(r => ({ value: r, label: getLocalizedRarity(r, tTax) }))
           ]}
           value={currentRarity}
           onChange={(val: string) => handleFilterUpdate('rarity', val)}
-          placeholder="Değer Skoru"
+          placeholder={tFilter('Rarity')}
           showSearch={false}
         />
 
@@ -155,10 +158,10 @@ export default function FiguresFilterClient({
               </div>
               
               {/* Yazı */}
-              <span className="text-[10px] md:text-[12px] font-black tracking-[0.15em] text-[#6b7280] mt-0.5 whitespace-nowrap">KAYIT LİSTELENİYOR</span>
+              <span className="text-[10px] md:text-[12px] font-black tracking-[0.15em] text-[#6b7280] mt-0.5 whitespace-nowrap">{tFilter('FiguresListed')}</span>
               
               {/* Temizle X İkonu */}
-              <button onClick={clearFilters} className={`transition-colors flex items-center justify-center shrink-0 ${hasFilters ? 'visible' : 'invisible'}`} style={{ color: '#9ca3af' }} onMouseOver={(e) => e.currentTarget.style.color = '#D22B2B'} onMouseOut={(e) => e.currentTarget.style.color = '#9ca3af'} title="Tüm Filtreleri Temizle">
+              <button onClick={clearFilters} className={`transition-colors flex items-center justify-center shrink-0 ${hasFilters ? 'visible' : 'invisible'}`} style={{ color: '#9ca3af' }} onMouseOver={(e) => e.currentTarget.style.color = '#D22B2B'} onMouseOut={(e) => e.currentTarget.style.color = '#9ca3af'} title={tFilter('ClearAllFilters')}>
                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="md:w-[22px] md:h-[22px]">
                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
                  </svg>
@@ -193,9 +196,9 @@ export default function FiguresFilterClient({
           <div className="flex flex-col gap-1">
               <h2 className="text-xl font-black text-gray-900 tracking-tighter flex items-center gap-2">
                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-                 Filtreler
+                 {t('FilterTitle').split(' ')[0]}
               </h2>
-              <span className="text-[11px] font-bold text-[#D22B2B] whitespace-nowrap">{totalCount} {hasFilters && absoluteTotalCount && totalCount !== absoluteTotalCount ? `/ ${absoluteTotalCount}` : ''} Kayıt Listeleniyor</span>
+              <span className="text-[11px] font-bold text-[#D22B2B] whitespace-nowrap">{totalCount} {hasFilters && absoluteTotalCount && totalCount !== absoluteTotalCount ? `/ ${absoluteTotalCount}` : ''} {tFilter('RecordsListed')}</span>
           </div>
           <button onClick={() => setDrawerOpen(false)} className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full text-gray-600">
              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -204,7 +207,7 @@ export default function FiguresFilterClient({
 
         <div className="flex flex-col gap-5 mb-8">
             <div className="flex flex-col gap-2">
-                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">Sıralama</label>
+                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">{t('SortTitle')}</label>
                 <select 
                   key={`sort-mobile-${currentSort}`}
                   name="sort" 
@@ -212,14 +215,14 @@ export default function FiguresFilterClient({
                   onChange={handleChange}
                   className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
                 >
-                  <option value="newest">En Yeniler</option>
-                  <option value="oldest">En Eskiler</option>
-                  <option value="popular">En Popüler</option>
+                  <option value="newest">{t('SortNewest')}</option>
+                  <option value="oldest">{t('SortOldest')}</option>
+                  <option value="popular">{t('SortPopular')}</option>
                 </select>
             </div>
 
             <div className="flex flex-col gap-2">
-                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">Seri Seçimi</label>
+                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">{t('BreadcrumbSeries')}</label>
                 <select 
                   key={`series-mobile-${currentSeries}`}
                   name="series" 
@@ -227,13 +230,13 @@ export default function FiguresFilterClient({
                   onChange={handleChange}
                   className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
                 >
-                  <option value="all">Tüm Seriler</option>
+                  <option value="all">{tFilter('AllSeries')}</option>
                   {seriesList.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
                 </select>
             </div>
 
             <div className="flex flex-col gap-2">
-                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">Figür Rolü</label>
+                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">{tFilter('FigureRole')}</label>
                 <select 
                   key={`role-mobile-${currentRole}`}
                   name="role" 
@@ -241,13 +244,13 @@ export default function FiguresFilterClient({
                   onChange={handleChange}
                   className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
                 >
-                  <option value="all">Tüm Roller</option>
-                  {sortedRoles.map(r => <option key={r} value={r}>{r}</option>)}
+                  <option value="all">{tFilter('AllRoles')}</option>
+                  {sortedRoles.map(r => <option key={r} value={r}>{getLocalizedRole(r, tTax)}</option>)}
                 </select>
             </div>
 
             <div className="flex flex-col gap-2">
-                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">Değer Skoru</label>
+                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">{tFilter('Rarity')}</label>
                 <select 
                   key={`rarity-mobile-${currentRarity}`}
                   name="rarity" 
@@ -255,8 +258,8 @@ export default function FiguresFilterClient({
                   onChange={handleChange}
                   className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
                 >
-                  <option value="all">Tüm Değer Skorları</option>
-                  {rarities.map(r => <option key={r} value={r}>{toRarityLabel(r, locale)}</option>)}
+                  <option value="all">{tFilter('AllRarities')}</option>
+                  {rarities.map(r => <option key={r} value={r}>{getLocalizedRarity(r, tTax)}</option>)}
                 </select>
             </div>
         </div>
@@ -267,14 +270,14 @@ export default function FiguresFilterClient({
                   onClick={() => { clearFilters(); setDrawerOpen(false); }} 
                   className="py-4 px-4 bg-gray-100 font-bold text-gray-700 rounded-xl whitespace-nowrap text-xs uppercase tracking-wider"
                 >
-                   Temizle
+                   {tFilter('Clear')}
                 </button>
             )}
             <button 
                onClick={() => setDrawerOpen(false)}
                className="w-full bg-[#1D2136] text-white font-black py-4 px-6 rounded-xl shadow-lg hover:bg-[#131627] tracking-widest uppercase text-xs"
             >
-               Uygula
+               {tFilter('Apply')}
             </button>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import SeriesCard from '@/components/ui/SeriesCard';
 import SeriesFilterClient from '@/components/ui/SeriesFilterClient';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import { getDefinitions, getCategoriesByType, getAllSeries, getPreviewFiguresForSeries, getSeriesListItems } from '@/services/dal';
 import ScrollDownHint from '@/components/ui/ScrollDownHint';
@@ -100,9 +100,10 @@ export default async function SeriesPage({
            {filteredSeries.slice(0, 21).map(series => (
             <div key={series.id} className="snap-center snap-always shrink-0 w-[90vw] md:w-auto flex flex-col justify-stretch">
               <SeriesCard 
-                  id={locale === 'en' && series.slug_en ? series.slug_en : (series.slug || series.id)}
-                  title={locale === 'en' && series.title_en ? series.title_en : series.title}
-                  imageUrl={series.cover_image_url || '/images/placeholder.svg'}
+                  id={(locale === 'en' && series.en_status !== 'missing' && series.slug_en) ? series.slug_en : (series.slug || series.id)}
+                  seriesId={series.id}
+                  title={(locale === 'en' && series.en_status !== 'missing' && series.title_en) ? series.title_en : series.title}
+                  imageUrl={series.cover_image_url || ''}
                   year={series.release_year || (series.created_at ? new Date(series.created_at).getFullYear() : '2010')}
                   seriesNo={series.series_no}
                   category={series.category || 'CMF'}
@@ -134,9 +135,10 @@ export default async function SeriesPage({
                {filteredSeries.slice(21).map(series => (
                 <div key={series.id} className="snap-center snap-always shrink-0 w-[85%] md:w-auto flex flex-col justify-stretch">
                   <SeriesCard 
-                      id={locale === 'en' && series.slug_en ? series.slug_en : (series.slug || series.id)}
-                      title={locale === 'en' && series.title_en ? series.title_en : series.title}
-                      imageUrl={series.cover_image_url || '/images/placeholder.svg'}
+                      id={(locale === 'en' && series.en_status !== 'missing' && series.slug_en) ? series.slug_en : (series.slug || series.id)}
+                      seriesId={series.id}
+                      title={(locale === 'en' && series.en_status !== 'missing' && series.title_en) ? series.title_en : series.title}
+                      imageUrl={series.cover_image_url || ''}
                       year={series.release_year || (series.created_at ? new Date(series.created_at).getFullYear() : '2010')}
                       seriesNo={series.series_no}
                       category={series.category || 'CMF'}

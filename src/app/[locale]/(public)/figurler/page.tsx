@@ -1,7 +1,7 @@
 import { getMinifigureListItems, getMinifigureFilterOptions, getAllSeries, getTotalMinifiguresCount } from '@/services/dal';
 import FigureCard from '@/components/ui/FigureCard';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { permanentRedirect } from 'next/navigation';
 import { getCanonicalQueryString } from '@/utils/filterHelpers';
 import FiguresFilterClient from '@/components/ui/FiguresFilterClient';
@@ -11,6 +11,7 @@ import FiguresListContainer from '@/components/ui/FiguresListContainer';
 
 
 import EvolutionTimelineClient from '@/components/ui/EvolutionTimelineClient';
+import { getTranslations } from 'next-intl/server';
 
 
 export default async function FiguresPage({
@@ -27,9 +28,10 @@ export default async function FiguresPage({
   let selectedSeries = (resolvedParams?.series as string) || 'all';
   let selectedRole = (resolvedParams?.role as string) || 'all';
   let selectedType = (resolvedParams?.type as string) || 'all';
-  let selectedRarity = (resolvedParams?.rarity as string) || 'all';
+  const selectedRarity = (resolvedParams?.rarity as string) || 'all';
   const currentPage = parseInt((resolvedParams?.page as string) || '1', 10);
   const itemsPerPage = 36;
+  const t = await getTranslations('FiguresPage');
 
   // 1. Statik Kapsüler ve Filtre Verilerini Paralel Çek
   const [seriesList, filterOptions, absoluteTotalCount] = await Promise.all([
@@ -72,7 +74,7 @@ export default async function FiguresPage({
 
   // Initial Server Rendered Batch for the Component (filtering out hard failures)
   const initialClientFigures = allFigures
-     .map(row => mapFigureForCard(row))
+     .map(row => mapFigureForCard(row, locale))
      .filter((fig): fig is NonNullable<typeof fig> => fig !== null);
 
   return (
@@ -104,14 +106,15 @@ export default async function FiguresPage({
             {allFigures.length === 0 ? (
                 <div className="flex flex-col items-center justify-center p-24 border-2 border-dashed border-gray-200 rounded-2xl bg-white text-center w-full shadow-sm mt-4">
                     <LegoHeadIcon mode="search" className="w-24 h-24 mb-6" color="text-gray-200" />
-                    <h2 className="text-xl font-black text-gray-800 uppercase tracking-widest mb-2">Bulunamadı</h2>
-                    <p className="text-sm font-medium text-gray-500 max-w-sm">Mevcut filtrelere uyan bir LEGO figürü bulunmuyor. Diğer seçenekleri deneyebilirsin.</p>
+                    <h2 className="text-xl font-black text-gray-800 uppercase tracking-widest mb-2">{t('EmptyStateTitle')}</h2>
+                    <p className="text-sm font-medium text-gray-500 max-w-sm">{t('EmptyStateDesc')}</p>
                 </div>
             ) : (
                 <FiguresListContainer 
                    initialFigures={initialClientFigures} 
                    totalCount={fetchedFigures.count || 0} 
-                   filters={filtersToApply} 
+                   filters={filtersToApply}
+                   locale={locale} 
                 />
             )}
 

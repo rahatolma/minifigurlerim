@@ -1,5 +1,6 @@
 import { getRequestConfig } from 'next-intl/server';
 import { routing } from './routing';
+import { getTaxonomyMessages } from '../services/taxonomy';
 
 export default getRequestConfig(async ({ requestLocale }) => {
   // This typically corresponds to the `[locale]` segment
@@ -10,8 +11,20 @@ export default getRequestConfig(async ({ requestLocale }) => {
     locale = routing.defaultLocale;
   }
 
+  // Load static messages from JSON
+  const messages = (await import(`../../messages/${locale}.json`)).default;
+  
+  // Load dynamic taxonomy messages from Database
+  const dbTaxonomy = await getTaxonomyMessages(locale);
+  
+  // Merge dynamic DB translations into the static Taxonomy namespace
+  messages.Taxonomy = {
+    ...messages.Taxonomy, // Preserve any static taxonomy values (if any)
+    ...dbTaxonomy
+  };
+
   return {
     locale,
-    messages: (await import(`../../messages/${locale}.json`)).default
+    messages
   };
 });

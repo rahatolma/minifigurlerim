@@ -1,6 +1,6 @@
 import { getNewsBySlug } from '@/services/dal';
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import RichTextContent from '@/components/ui/RichTextContent';
 import { ChevronRight, Calendar, Eye, Share2 } from 'lucide-react';
 import ClientViewTracker from '@/components/ui/ClientViewTracker'; // View tracker (we assume it exists from figures, or I will write a simple one inline)
@@ -27,8 +27,7 @@ export async function generateMetadata(
     return { title: t('NotFoundTitle') };
   }
 
-  const isFallback = locale === 'en' && !news.title_en && !news.content_blocks_en;
-
+  const isFallback = locale === 'en' && !news.title_en && !news.content_en;
   const title = locale === 'en' && news.meta_title_en && !isFallback ? news.meta_title_en : (locale === 'en' && news.title_en && !isFallback ? news.title_en : news.title);
   const descriptionText = locale === 'en' && news.meta_description_en && !isFallback ? news.meta_description_en : (news.summary || news.meta_description || '');
 
@@ -89,13 +88,13 @@ export default async function NewsDetailPage({
 
   const title = locale === 'en' && news.title_en ? news.title_en : news.title;
   const summary = locale === 'en' && news.summary;
-  const content = locale === 'en' && news.content_blocks_en ? news.content_blocks_en : news.content;
+  const content = locale === 'en' && news.content_en ? news.content_en : news.content;
 
-  const isFallback = locale === 'en' && !news.title_en && !news.content_blocks_en;
+  const isFallback = locale === 'en' && !news.title_en && !news.content_en;
   const fallbackT = await getTranslations('Fallback');
 
-  // Tarihi Türkçe formatla
-  const formattedDate = new Date(news.created_at).toLocaleDateString('tr-TR', {
+  // Tarihi locale'e göre formatla
+  const formattedDate = new Date(news.created_at).toLocaleDateString(locale === 'en' ? 'en-US' : 'tr-TR', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
