@@ -4,11 +4,13 @@ import { useState, useEffect } from 'react';
 import { Link } from '@/i18n/routing';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function HeroSliderClient({ sliders }: { sliders: any[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loadedIndices, setLoadedIndices] = useState<number[]>([0]); // Sadece ilk slayt baştan yüklü
   const [failedImages, setFailedImages] = useState<Record<number, boolean>>({});
+  const t = useTranslations('Hero');
 
   useEffect(() => {
     if (sliders.length <= 1) return;
@@ -70,13 +72,13 @@ export default function HeroSliderClient({ sliders }: { sliders: any[] }) {
           {/* İçerik */}
           <div className="relative z-20 w-full max-w-5xl mx-auto h-full flex flex-col items-center justify-center space-y-6 px-4">
             <h1 className="text-yellow-400 text-3xl sm:text-4xl md:text-5xl lg:text-[48px] font-black tracking-tight drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] text-center" style={{ whiteSpace: 'nowrap' }}>
-              {slide.title ? slide.title.replace(/<[^>]*>?/gm, '').replace(/\n/g, ' ').replace(/\r/g, '').trim() : ''}
+              {t('HeroTitle') || (slide.title ? slide.title.replace(/<[^>]*>?/gm, '').replace(/\n/g, ' ').replace(/\r/g, '').trim() : '')}
             </h1>
             {slide.subtitle && (
               <p 
                 className="text-xl md:text-2xl font-medium tracking-wide drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] text-center leading-relaxed mt-2 text-white/95"
                 dangerouslySetInnerHTML={{
-                  __html: slide.subtitle
+                  __html: (t('HeroSubtitle') || slide.subtitle || '')
                             .replace(/<[^>]*>?/gm, '')
                             .replace(/\n|\r/g, ' ')
                             .replace('kapılarını aralayın', 'kapılarını <br className="hidden sm:block" /> aralayın')
@@ -86,24 +88,24 @@ export default function HeroSliderClient({ sliders }: { sliders: any[] }) {
             )}
             <div className="flex gap-4 justify-center mt-10">
               {slide.button1_text && (
-                <Link href={slide.button1_link || '#'} className="bg-[#D22B2B] border-2 border-[#D22B2B] text-white font-bold py-4 px-12 rounded-sm shadow-[0_4px_14px_rgba(210,43,43,0.4)] hover:bg-white hover:text-[#111] hover:border-white transition-colors uppercase tracking-widest text-sm inline-block">
-                  {slide.button1_text}
+                <Link href={(slide.button1_link || '#') as any} className="bg-[#D22B2B] border-2 border-[#D22B2B] text-white font-bold py-4 px-12 rounded-sm shadow-[0_4px_14px_rgba(210,43,43,0.4)] hover:bg-white hover:text-[#111] hover:border-white transition-colors uppercase tracking-widest text-sm inline-block">
+                  {t('HeroBtn1') || slide.button1_text}
                 </Link>
               )}
               {slide.button2_text && (
-                <Link href={slide.button2_link || '#'} className="bg-transparent border-2 border-white text-white font-bold py-4 px-12 rounded-sm hover:bg-[#D22B2B] hover:border-[#D22B2B] transition-colors uppercase tracking-widest text-sm inline-block">
-                  {slide.button2_text}
+                <Link href={(slide.button2_link || '#') as any} className="bg-transparent border-2 border-white text-white font-bold py-4 px-12 rounded-sm hover:bg-[#D22B2B] hover:border-[#D22B2B] transition-colors uppercase tracking-widest text-sm inline-block">
+                  {t('HeroBtn2') || slide.button2_text}
                 </Link>
               )}
             </div>
 
             {/* Alt Mini Güven Satırı (Trust Badge) */}
             <div className="flex items-center justify-center gap-3 md:gap-4 mt-8 text-[10px] md:text-sm font-bold tracking-widest uppercase text-white/70">
-              <span className="drop-shadow-md">800+ MİNİFİGÜR</span>
+              <span className="drop-shadow-md">{t('Badge1')}</span>
               <span className="text-white/40">•</span>
-              <span className="drop-shadow-md">25+ SERİ</span>
+              <span className="drop-shadow-md">{t('Badge2')}</span>
               <span className="text-white/40 hidden sm:inline-block">•</span>
-              <span className="drop-shadow-md hidden sm:inline-block">SÜREKLİ GÜNCELLENEN İÇERİK</span>
+              <span className="drop-shadow-md hidden sm:inline-block">{t('Badge3')}</span>
             </div>
           </div>
         </div>

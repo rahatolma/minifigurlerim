@@ -22,8 +22,14 @@ export const routing = defineRouting({
       en: '/figures/[seriesSlug]/[figureSlug]'
     },
     '/': '/',
-    '/koleksiyonum': '/koleksiyonum',
-    '/koleksiyonum/ayarlar': '/koleksiyonum/ayarlar',
+    '/koleksiyonum': {
+      tr: '/koleksiyonum',
+      en: '/collection'
+    },
+    '/koleksiyonum/ayarlar': {
+      tr: '/koleksiyonum/ayarlar',
+      en: '/collection/settings'
+    },
     '/login': '/login',
     '/lego-hakkinda': {
       tr: '/lego-hakkinda',
@@ -55,7 +61,11 @@ export const routing = defineRouting({
     },
     '/yasal/hak-ihlali': {
       tr: '/yasal/hak-ihlali',
-      en: '/legal/copyright-notice'
+      en: '/legal/rights-violation'
+    },
+    '/yasal/cerez-politikasi': {
+      tr: '/yasal/cerez-politikasi',
+      en: '/legal/cookie-policy'
     }
   }
 });

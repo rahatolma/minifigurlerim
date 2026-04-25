@@ -1,21 +1,26 @@
 'use client';
 import { Link, usePathname } from '@/i18n/routing';
+import { useLocale } from 'next-intl';
+import { legalContent } from '@/content/legal/legalContent';
 
 export default function LegalSidebar() {
   const pathname = usePathname();
+  const locale = useLocale();
+  const content = legalContent[locale] || legalContent['tr'];
 
   const links = [
-    { title: 'Gizlilik Politikası', href: '/yasal/gizlilik-politikasi' },
-    { title: 'Kullanım Koşulları', href: '/yasal/kullanim-kosullari' },
-    { title: 'Üyelik Sözleşmesi', href: '/yasal/uyelik-sozlesmesi' },
-    { title: 'Hak İhlali Bildirimi', href: '/yasal/hak-ihlali' },
+    { title: content['gizlilik-politikasi'].title, href: '/yasal/gizlilik-politikasi' },
+    { title: content['kullanim-kosullari'].title, href: '/yasal/kullanim-kosullari' },
+    { title: content['uyelik-sozlesmesi'].title, href: '/yasal/uyelik-sozlesmesi' },
+    { title: content['cerez-politikasi'].title, href: '/yasal/cerez-politikasi' },
+    { title: content['hak-ihlali'].title, href: '/yasal/hak-ihlali' },
   ] as const;
 
   return (
     <div className="bg-white rounded-[24px] shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 p-6 hidden lg:block">
       <h3 className="text-[13px] font-black tracking-widest text-[#D22B2B] mb-6 uppercase flex items-center gap-2">
         <span className="w-2 h-2 rounded-full bg-[#D22B2B]"></span>
-        Yasal Sayfalar
+        {locale === 'en' ? 'Legal Pages' : 'Yasal Sayfalar'}
       </h3>
       <nav className="flex flex-col gap-2">
         {links.map((link) => {

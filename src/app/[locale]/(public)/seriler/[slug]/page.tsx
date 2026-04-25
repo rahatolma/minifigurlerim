@@ -1,17 +1,18 @@
 import FigureCard from '@/components/ui/FigureCard';
 import { getSeriesBySlug, getFiguresBySeries, getAllSeries } from '@/services/dal';
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import RichTextContent from '@/components/ui/RichTextContent';
 import { Package, Grid3X3, CalendarDays } from 'lucide-react';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import ClientViewTracker from '@/components/ui/ClientViewTracker';
 import AuthCTA from '@/components/ui/AuthCTA';
 import BlockRenderer from '@/components/blocks/BlockRenderer';
-import { formatBrandText } from '@/utils/textFormatting';
+import { formatBrandText, cleanSeriesDisplayTitle } from '@/utils/textFormatting';
 import FloatingSeriesNav from '@/components/ui/FloatingSeriesNav';
 import HeroImage from '@/components/ui/HeroImage';
 import { mapFigureForCard } from '@/utils/figureMapper';
+import TranslationFallbackBadge from '@/components/ui/TranslationFallbackBadge';
 
 // ... (code omitted for brevity to apply changes via multiple replacements, wait, I can just replace specific lines)
 
@@ -40,23 +41,28 @@ export async function generateMetadata(
     return { title: t('NotFoundTitle') };
   }
 
-  const title = locale === 'en' && series.title_en ? series.title_en : series.title;
-  const descriptionText = locale === 'en' && series.meta_description_en ? series.meta_description_en : (series.description || '');
+  const isFallback = locale === 'en' && !series.title_en && !series.description_blocks_en;
+
+  const title = locale === 'en' && series.meta_title_en && !isFallback ? series.meta_title_en : (locale === 'en' && series.title_en && !isFallback ? series.title_en : series.title);
+  const descriptionText = locale === 'en' && series.meta_description_en && !isFallback ? series.meta_description_en : (series.description || '');
 
   const defaultImage = 'https://minifigurlerim.com/og-image.jpg';
   const seriesImage = series.cover_image_url || defaultImage;
   const desc = descriptionText ? descriptionText.substring(0, 150) + '...' : `${title} ${t('NotFoundDesc')}`;
 
+  const canonicalUrl = isFallback ? `/tr/seriler/${series.slug}` : (locale === 'en' && series.slug_en ? `/en/series/${series.slug_en}` : `/tr/seriler/${series.slug}`);
+
   return {
-    title: `${title}${t('MetaTitleSuffix')}`,
+    title: series.meta_title_en && locale === 'en' && !isFallback ? title : `${title}${t('MetaTitleSuffix')}`,
     description: desc,
     alternates: {
-      canonical: locale === 'en' && series.slug_en ? `/en/series/${series.slug_en}` : `/tr/seriler/${series.slug}`,
+      canonical: canonicalUrl,
       languages: {
         'tr-TR': `/tr/seriler/${series.slug}`,
         'en-US': series.slug_en ? `/en/series/${series.slug_en}` : `/en/series/${series.slug}`
       }
     },
+    robots: isFallback ? { index: false, follow: true } : undefined,
     openGraph: {
       title: `${title}${t('MetaGraphSuffix')}`,
       description: desc,
@@ -135,6 +141,7 @@ export default async function SeriesDetail({
 
   return (
     <div className="bg-white min-h-screen pb-20 w-full">
+      {isFallback && <TranslationFallbackBadge />}
       <FloatingSeriesNav prev={prevSeries} next={nextSeries} />
 
       <ClientViewTracker table="series" id={series.id} />
@@ -150,27 +157,18 @@ export default async function SeriesDetail({
          
          {/* Başlık (Hero Text) */}
          <div className="relative z-10 pt-4 pb-6 flex flex-col items-center max-w-7xl px-4 w-full">
-           <h1 className="text-3xl md:text-[45px] text-[#111] font-black text-center leading-tight tracking-tight mb-4">
+            <h1 className="text-3xl md:text-[45px] text-[#111] font-black text-center leading-tight tracking-tight mb-4">
               {(() => {
-                const prefixFull = "LEGO® Minifigürler Serisi";
-                const prefixShort = "LEGO® Minifigürler";
-                const rawTitle = formatBrandText(title);
-                if (rawTitle.startsWith(prefixFull) && rawTitle.length > prefixFull.length) {
-                  return (
-                    <>
-                      <span className="block text-lg md:text-xl text-gray-500 font-black tracking-[0.1em] uppercase mb-1 md:mb-2">{prefixFull}</span>
-                      <span className="block">{rawTitle.substring(prefixFull.length).trim()}</span>
-                    </>
-                  );
-                } else if (rawTitle.startsWith(prefixShort) && rawTitle.length > prefixShort.length) {
-                  return (
-                    <>
-                      <span className="block text-lg md:text-xl text-gray-500 font-black tracking-[0.1em] uppercase mb-1 md:mb-2">{prefixShort}</span>
-                      <span className="block">{rawTitle.substring(prefixShort.length).trim()}</span>
-                    </>
-                  );
+                const { prefix, mainTitle } = cleanSeriesDisplayTitle(title, locale);
+                if (prefix) {
+                   return (
+                     <>
+                       <span className="block text-lg md:text-xl text-gray-500 font-black tracking-[0.1em] uppercase mb-1 md:mb-2">{prefix}</span>
+                       <span className="block">{mainTitle}</span>
+                     </>
+                   )
                 }
-                return rawTitle;
+                return mainTitle;
               })()}
            </h1>
            {isFallback && (
@@ -237,22 +235,16 @@ export default async function SeriesDetail({
         <h3 className="text-sm font-black mb-2 text-gray-300 tracking-[0.2em] uppercase">{t('DiscoverSeries')}</h3>
         <h2 className="text-3xl md:text-5xl font-black text-gray-900 mb-8 tracking-tighter">
             {(() => {
-                const prefixFull = "LEGO® Minifigürler Serisi";
-                const prefixShort = "LEGO® Minifigürler";
-                const fullText = `${t('FiguresPrefix')}${formatBrandText(title)}${t('FiguresSuffix')}`.trim();
+                const { prefix, mainTitle } = cleanSeriesDisplayTitle(title, locale);
+                if (locale === 'en') return t('FiguresInThisSeries');
                 
-                if (fullText.startsWith(prefixFull) && fullText.length > prefixFull.length) {
+                const fullText = `${t('FiguresPrefix')}${mainTitle}${t('FiguresSuffix')}`.trim();
+                
+                if (prefix) {
                   return (
                     <>
-                      <span className="block text-base md:text-xl text-gray-400 opacity-80 font-black tracking-[0.1em] uppercase mb-1 md:mb-2">{prefixFull}</span>
-                      <span className="block">{fullText.substring(prefixFull.length).trim()}</span>
-                    </>
-                  );
-                } else if (fullText.startsWith(prefixShort) && fullText.length > prefixShort.length) {
-                  return (
-                    <>
-                      <span className="block text-base md:text-xl text-gray-400 opacity-80 font-black tracking-[0.1em] uppercase mb-1 md:mb-2">{prefixShort}</span>
-                      <span className="block">{fullText.substring(prefixShort.length).trim()}</span>
+                      <span className="block text-base md:text-xl text-gray-400 opacity-80 font-black tracking-[0.1em] uppercase mb-1 md:mb-2">{prefix}</span>
+                      <span className="block">{fullText}</span>
                     </>
                   );
                 }

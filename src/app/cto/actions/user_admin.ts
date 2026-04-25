@@ -14,9 +14,14 @@ export async function toggleUserApproval(userId: string, currentStatus: boolean)
     return { error: 'Bu işlemi yapmak için yetkiniz yok!' };
   }
 
+  if (user.id === userId) {
+    return { error: 'Kendi hesabınızın yetkisini değiştiremezsiniz.' };
+  }
+
   try {
     await toggleUserApprovalAdminDal(userId, currentStatus);
-    revalidatePath('/cto/kullanicilar');
+    revalidatePath('/cto/kullanicilar', 'page');
+    revalidatePath('/admin/kullanicilar', 'page');
     return { success: true };
   } catch (err: any) {
 console.error(err);
@@ -30,9 +35,14 @@ export async function deleteUserFromDB(userId: string) {
     return { error: 'Yetkisiz İşlem' };
   }
 
+  if (user.id === userId) {
+    return { error: 'Kendi hesabınızı silemez/banlayamazsınız.' };
+  }
+
   try {
     await deleteUserFromDBAdminDal(userId);
-    revalidatePath('/cto/kullanicilar');
+    revalidatePath('/cto/kullanicilar', 'page');
+    revalidatePath('/admin/kullanicilar', 'page');
     return { success: true };
   } catch (err: any) {
 console.error(err);

@@ -1,0 +1,19 @@
+echo "============================================================"
+echo "🛡  Minifigürlerim Docs Enforcement Check"
+echo "============================================================"
+
+# List modified files
+MODIFIED_SRC=$(git diff --name-only origin/main...HEAD | grep '^src/' || true)
+MODIFIED_DOCS=$(git diff --name-only origin/main...HEAD | grep '^docs/' || true)
+
+if [ -n "$MODIFIED_SRC" ] && [ -z "$MODIFIED_DOCS" ]; then
+  echo "⚠️ UYARI: 'src/' içerisindeki kodları değiştirdin ama '/docs' klasöründe veya README.md dosyasında hiçbir mimari kayıt (Architecture/Standards) güncellemedin."
+  echo "👉 Kural: 'Yeni mimari karar docs’a yazılmadan tamamlandı sayılmaz.'"
+  echo "Eğer bu kod sadece bir hotfix/refactor ise devam edebilirsin ancak mimari etki yaratıyorsa lütfen dokümantasyonu güncelle!"
+  echo "============================================================"
+  sleep 2
+else
+  echo "✅ Dokümantasyon senkronizasyonu geçerli."
+fi
+
+exit 0

@@ -13,7 +13,8 @@
     "prepare": "husky",
     "predev": "node scripts/verify-env.mjs",
     "prebuild": "node scripts/verify-env.mjs",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "preflight": "npm ci && npx tsc --noEmit && NEXT_PUBLIC_SUPABASE_URL=https://dummy.supabase.co NEXT_PUBLIC_SUPABASE_ANON_KEY=dummy-anon-key npm run build"
   },
   "dependencies": {
     "@marsidev/react-turnstile": "^1.5.0",

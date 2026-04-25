@@ -4,6 +4,7 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import CustomDropdown from './CustomDropdown';
+import { getLocalizedCategory } from '@/utils/taxonomy';
 
 export default function SeriesFilterClient({
   categories,
@@ -18,6 +19,8 @@ export default function SeriesFilterClient({
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const t = useTranslations('SeriesPage');
+  const tFilter = useTranslations('SeriesFilter');
+  const tTax = useTranslations('Taxonomy');
 
   const currentSort = searchParams.get('sort') || 'newest';
   const currentCategory = searchParams.get('category') || 'all';
@@ -88,13 +91,13 @@ export default function SeriesFilterClient({
         <CustomDropdown 
           name="series"
           options={[
-            { value: 'all', label: 'Tüm Seriler' },
+            { value: 'all', label: tFilter('AllSeries') },
             ...seriesList.map(s => ({ value: s.slug, label: s.title }))
           ]}
           value={currentSeries}
           onChange={(val: string) => handleFilterUpdate('series', val)}
           placeholder={t('BreadcrumbSeries')}
-          searchPlaceholder="Seri ara..."
+          searchPlaceholder={tFilter('SearchSeries')}
           showSearch={true}
           dropdownWidthClass="w-[450px]"
         />
@@ -102,12 +105,12 @@ export default function SeriesFilterClient({
         <CustomDropdown 
           name="category"
           options={[
-            { value: 'all', label: 'Tüm Kategoriler' },
-            ...categories.map(c => ({ value: c.slug, label: c.name }))
+            { value: 'all', label: tFilter('AllCategories') },
+            ...categories.map(c => ({ value: c.slug, label: getLocalizedCategory(c.name, tTax) }))
           ]}
           value={currentCategory}
           onChange={(val: string) => handleFilterUpdate('category', val)}
-          placeholder="Kategoriler"
+          placeholder={tFilter('Categories')}
           showSearch={false}
         />
         
@@ -122,7 +125,7 @@ export default function SeriesFilterClient({
               </div>
               
               <span className="text-[10px] md:text-[12px] font-black tracking-[0.15em] text-[#6b7280] mt-0.5 whitespace-nowrap ml-2">
-                  SERİ LİSTELENİYOR
+                  {tFilter('SeriesListed')}
               </span>
               
               {/* Temizle X İkonu (Her zaman DOM'da, boşluk kaplaması için gizlenir) */}
@@ -132,7 +135,7 @@ export default function SeriesFilterClient({
                 style={{ color: '#9ca3af' }} 
                 onMouseOver={(e) => e.currentTarget.style.color = '#D22B2B'} 
                 onMouseOut={(e) => e.currentTarget.style.color = '#9ca3af'} 
-                title="Tüm Filtreleri Temizle"
+                title={tFilter('ClearAllFilters')}
               >
                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="md:w-[22px] md:h-[22px]">
                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
@@ -170,7 +173,7 @@ export default function SeriesFilterClient({
                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
                  {t('FilterTitle').split(' ')[0]}
               </h2>
-              <span className="text-[11px] font-bold text-[#D22B2B] whitespace-nowrap">{totalCount} Kayıt Listeleniyor</span>
+              <span className="text-[11px] font-bold text-[#D22B2B] whitespace-nowrap">{totalCount} {tFilter('RecordsListed')}</span>
           </div>
           <button onClick={() => setDrawerOpen(false)} className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full text-gray-600">
              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -206,15 +209,15 @@ export default function SeriesFilterClient({
             </div>
 
             <div className="flex flex-col gap-2">
-                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">Kategori</label>
+                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">{tFilter('Category')}</label>
                 <select 
                   name="category" 
                   value={currentCategory} 
                   onChange={handleChange}
                   className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
                 >
-                  <option value="all">Tüm Kategoriler</option>
-                  {categories.map(c => <option key={c.slug} value={c.slug}>{c.name}</option>)}
+                  <option value="all">{tFilter('AllCategories')}</option>
+                  {categories.map(c => <option key={c.slug} value={c.slug}>{getLocalizedCategory(c.name, tTax)}</option>)}
                 </select>
             </div>
         </div>
@@ -225,14 +228,14 @@ export default function SeriesFilterClient({
                   onClick={() => { clearFilters(); setDrawerOpen(false); }} 
                   className="py-4 px-4 bg-gray-100 font-bold text-gray-700 rounded-xl whitespace-nowrap text-xs uppercase tracking-wider"
                 >
-                   Temizle
+                   {tFilter('Clear')}
                 </button>
             )}
             <button 
                onClick={() => setDrawerOpen(false)}
                className="w-full bg-[#1D2136] text-white font-black py-4 px-6 rounded-xl shadow-lg hover:bg-[#131627] tracking-widest uppercase text-xs"
             >
-               Uygula
+               {tFilter('Apply')}
             </button>
         </div>
       </div>

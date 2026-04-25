@@ -8,10 +8,13 @@ import { mapFigureForCard } from '@/utils/figureMapper';
 import { trackClickSimilarFigure } from '@/lib/analytics';
 import { FigureCardData } from '@/utils/figureMapper';
 
+import { useTranslations } from 'next-intl';
+
 export default function SimilarFigures({ figures, locale }: { figures: any[], locale: string }) {
+    const t = useTranslations('SimilarFigures');
     if (!figures || figures.length === 0) return null;
 
-    const mappedFigures = figures.map(mapFigureForCard).filter((fig): fig is FigureCardData => fig !== null);
+    const mappedFigures = figures.map(row => mapFigureForCard(row, locale)).filter((fig): fig is FigureCardData => fig !== null);
 
     return (
         <section className="bg-transparent py-[40px] border-t border-gray-100 mt-12 mb-12 relative">
@@ -22,7 +25,7 @@ export default function SimilarFigures({ figures, locale }: { figures: any[], lo
                       <LegoHeadIcon mode="happy" className="w-[16px] h-[16px] md:w-[32px] md:h-[32px]" color="text-[#D22B2B]" />
                   </div>
                   <div className="flex flex-col">
-                     <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">Benzer Minifigürler</h2>
+                     <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">{t('Title')}</h2>
                   </div>
                 </div>
               }

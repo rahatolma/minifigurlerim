@@ -45,6 +45,7 @@ export default function Footer() {
               <li><Link href="/yasal/gizlilik-politikasi" className="hover:text-black hover:underline transition-all">{tFooter('PrivacyPolicy')}</Link></li>
               <li><Link href="/yasal/kullanim-kosullari" className="hover:text-black hover:underline transition-all">{tFooter('TermsOfUse')}</Link></li>
               <li><Link href="/yasal/uyelik-sozlesmesi" className="hover:text-black hover:underline transition-all">{tFooter('MembershipAgreement')}</Link></li>
+              <li><Link href="/yasal/cerez-politikasi" className="hover:text-black hover:underline transition-all">{tFooter('CookiePolicy')}</Link></li>
               <li><Link href="/yasal/hak-ihlali" className="hover:text-black hover:underline transition-all">{tFooter('CopyrightViolation')}</Link></li>
             </ul>
             

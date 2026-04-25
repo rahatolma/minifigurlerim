@@ -140,17 +140,20 @@ function normalizeRelation(relation: any): any {
   return relation;
 }
 
-export function mapFigureForCard(row: RawListFigureDTO | any): FigureCardData | null {
+export function mapFigureForCard(row: RawListFigureDTO | any, locale: string = 'tr'): FigureCardData | null {
   const isValid = validateListFigureContract(row);
   if (!isValid) return null; // Hard fail: Bozuk kayidi render etme
 
   const series = normalizeRelation(row.series);
   
+  // Determine if we should show English content
+  const isEn = locale === 'en' && row.en_status !== 'missing';
+
   // 1. Figure Name Fallbacks
-  const figure_name = row.figure_name || row.name || 'İsimsiz Figür';
+  const figure_name = isEn && row.name_en ? row.name_en : (row.figure_name || row.name || 'İsimsiz Figür');
   
   // 2. Slug Fallbacks
-  const figure_slug_tr = row.slug_tr || row.slug || '';
+  const figure_slug_tr = isEn && row.slug_en ? row.slug_en : (row.slug_tr || row.slug || '');
   const figure_slug_en = row.slug_en || null;
   
   // 3. Code & Number
@@ -168,8 +171,10 @@ export function mapFigureForCard(row: RawListFigureDTO | any): FigureCardData | 
   
   // 5. SERIES MAPPING
   const series_id = series.id || row.series_id || '';
-  const series_name = series.series_name || series.title || row.series_name || 'Bilinmeyen Seri';
-  const series_slug_tr = series.slug_tr || series.slug || '';
+  
+  const isSeriesEn = locale === 'en' && series.en_status !== 'missing';
+  const series_name = isSeriesEn && series.title_en ? series.title_en : (series.series_name || series.title || row.series_name || 'Bilinmeyen Seri');
+  const series_slug_tr = isSeriesEn && series.slug_en ? series.slug_en : (series.slug_tr || series.slug || '');
   const series_slug_en = series.slug_en || null;
   const series_number = series.series_number || series.series_no || series.number || null;
   const category_main = series.category_main || series.category || null;
@@ -225,13 +230,14 @@ export function mapFigureForCard(row: RawListFigureDTO | any): FigureCardData | 
 /**
  * Normalizes a raw database row (minifigures joined with series) into the strict FigureDetailData contract.
  */
-export function mapFigureForDetail(row: any): FigureDetailData | null {
-  const baseCard = mapFigureForCard(row);
+export function mapFigureForDetail(row: any, locale: string = 'tr'): FigureDetailData | null {
+  const baseCard = mapFigureForCard(row, locale);
   if (!baseCard) return null;
   
   const series = normalizeRelation(row.series);
 
-  const short_description_tr = row.short_description_tr || row.description || null;
+  const isEn = locale === 'en' && row.en_status !== 'missing';
+  const short_description_tr = isEn && row.short_description_en ? row.short_description_en : (row.short_description_tr || row.description || null);
   const release_date = series.release_date || null;
   const release_year = series.release_year || (release_date ? release_date.substring(0, 4) : null);
   const manual_rarity = series.manual_rarity || series.rarity || null;

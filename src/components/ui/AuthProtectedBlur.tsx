@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/components/providers/AuthProvider';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 
 export default function AuthProtectedBlur({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();

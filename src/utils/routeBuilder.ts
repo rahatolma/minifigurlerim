@@ -8,27 +8,15 @@
 type Locale = 'tr' | 'en';
 const DEFAULT_LOCALE: Locale = 'tr';
 
-// Define routing segment dictionary for localization
-const SEGMENTS: Record<Locale, Record<string, string>> = {
-  tr: {
-    figures: 'figurler',
-    series: 'seriler',
-    about: 'hakkimizda',
-    collection: 'koleksiyonum',
-  },
-  en: {
-    figures: 'figures',
-    series: 'series',
-    about: 'about',
-    collection: 'my-collection',
-  }
+const SEGMENTS = {
+  figures: 'figurler',
+  series: 'seriler',
+  about: 'hakkimizda',
+  collection: 'koleksiyonum',
 };
 
-/**
- * Get route translation segments
- */
-export const getRouteSegments = (locale: Locale = DEFAULT_LOCALE) => {
-  return SEGMENTS[locale] || SEGMENTS[DEFAULT_LOCALE];
+export const getRouteSegments = () => {
+  return SEGMENTS;
 };
 
 export interface FigureRouteParams {
@@ -46,7 +34,7 @@ export interface SeriesRouteParams {
  * Ensures strict generation of Figure Detail URLs.
  * Throws an error immediately during development if required parameters are missing.
  */
-export const getFigureUrl = (params: FigureRouteParams): string | null => {
+export const getFigureUrl = (params: FigureRouteParams): any => {
   const { seriesSlug, figureSlug, locale = DEFAULT_LOCALE } = params;
 
   if (!seriesSlug || !figureSlug) {
@@ -57,14 +45,16 @@ export const getFigureUrl = (params: FigureRouteParams): string | null => {
     return null; 
   }
 
-  const segments = getRouteSegments(locale as Locale);
-  return `/${locale}/${segments.figures}/${seriesSlug}/${figureSlug}`;
+  return {
+    pathname: '/figurler/[seriesSlug]/[figureSlug]',
+    params: { seriesSlug, figureSlug }
+  };
 };
 
 /**
  * Ensures strict generation of Series Detail URLs.
  */
-export const getSeriesUrl = (params: SeriesRouteParams): string | null => {
+export const getSeriesUrl = (params: SeriesRouteParams): any => {
   const { seriesSlug, locale = DEFAULT_LOCALE } = params;
 
   if (!seriesSlug) {
@@ -74,26 +64,24 @@ export const getSeriesUrl = (params: SeriesRouteParams): string | null => {
     return null;
   }
 
-  const segments = getRouteSegments(locale as Locale);
-  return `/${locale}/${segments.series}/${seriesSlug}`;
+  return {
+    pathname: '/seriler/[slug]',
+    params: { slug: seriesSlug }
+  };
 };
 
-export const getFiguresListUrl = (locale: Locale = DEFAULT_LOCALE): string => {
-  const segments = getRouteSegments(locale);
-  return `/${locale}/${segments.figures}`;
+export const getFiguresListUrl = (): string => {
+  return `/${SEGMENTS.figures}`;
 };
 
-export const getSeriesListUrl = (locale: Locale = DEFAULT_LOCALE): string => {
-  const segments = getRouteSegments(locale);
-  return `/${locale}/${segments.series}`;
+export const getSeriesListUrl = (): string => {
+  return `/${SEGMENTS.series}`;
 };
 
-export const getCollectionUrl = (locale: Locale = DEFAULT_LOCALE): string => {
-  const segments = getRouteSegments(locale);
-  return `/${locale}/${segments.collection}`;
+export const getCollectionUrl = (): string => {
+  return `/${SEGMENTS.collection}`;
 };
 
-export const getAboutUrl = (locale: Locale = DEFAULT_LOCALE): string => {
-  const segments = getRouteSegments(locale);
-  return `/${locale}/${segments.about}`;
+export const getAboutUrl = (): string => {
+  return `/${SEGMENTS.about}`;
 };

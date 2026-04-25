@@ -7,15 +7,25 @@ import { logOut } from '@/app/[locale]/(auth)/login/actions';
 import LegalNoticeButton from '@/components/ui/LegalNoticeButton';
 import LegalNoticeModal from '@/components/ui/LegalNoticeModal';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { useAuth } from '@/components/providers/AuthProvider';
+import { useTransition } from 'react';
 
 export default function Header() {
   const { user, loading } = useAuth();
   const t = useTranslations('Navigation');
+  const locale = useLocale();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
+
+  const [isPending, startTransition] = useTransition();
+
+  const handleLogout = () => {
+      startTransition(async () => {
+         await logOut(locale);
+      });
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -75,7 +85,7 @@ export default function Header() {
               ) : user ? (
                 <div className="relative">
                    <button onClick={() => setMenuOpen(!menuOpen)} className="bg-gray-100 text-gray-800 font-black py-2.5 px-6 rounded-sm shadow-sm hover:bg-gray-200 border border-gray-200 transition-colors tracking-widest uppercase text-[10px] flex items-center gap-2">
-                      {user.email?.split('@')[0] || 'Hesabım'} ▼
+                      {user.email?.split('@')[0] || t('MyAccount')} ▼
                    </button>
                    
                    {menuOpen && (
@@ -86,11 +96,9 @@ export default function Header() {
                               <Link onClick={() => setMenuOpen(false)} href="/koleksiyonum" className="px-4 py-2 hover:bg-gray-50 text-xs font-bold text-gray-700">{t('MyCollection')}</Link>
                               <Link onClick={() => setMenuOpen(false)} href="/koleksiyonum/ayarlar" className="px-4 py-2 hover:bg-gray-50 text-xs font-bold text-gray-700">{t('Settings')}</Link>
                               <div className="w-full h-px bg-gray-100 my-1"></div>
-                              <form action={logOut}>
-                                 <button type="submit" className="w-full text-left px-4 py-2 hover:bg-red-50 text-xs font-bold text-red-600 cursor-pointer">
-                                    {t('SafeLogout')}
-                                 </button>
-                              </form>
+                              <button onClick={handleLogout} className="w-full text-left px-4 py-2 hover:bg-red-50 text-xs font-bold text-red-600 cursor-pointer">
+                                 {t('SafeLogout')}
+                              </button>
                           </div>
                        </div>
                      </>

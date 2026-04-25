@@ -32,8 +32,8 @@ async function targetedRevalidate(minifigureId: string) {
             revalidatePath(`/tr/figurler/${seriesData.slug_tr}`);
         }
         if (seriesData?.slug_en && fig.slug_en) {
-            revalidatePath(`/en/figurler/${seriesData.slug_en}/${fig.slug_en}`);
-            revalidatePath(`/en/figurler/${seriesData.slug_en}`);
+            revalidatePath(`/en/figures/${seriesData.slug_en}/${fig.slug_en}`);
+            revalidatePath(`/en/figures/${seriesData.slug_en}`);
         }
     }
   } catch (err) {
@@ -41,7 +41,8 @@ async function targetedRevalidate(minifigureId: string) {
   }
   
   // Koleksiyon sayfalarını revalidate et
-  revalidatePath('/[locale]/(public)/koleksiyonum', 'layout');
+  revalidatePath('/tr/koleksiyonum');
+  revalidatePath('/en/collection');
 }
 
 export async function toggleCollectionStatus(minifigureId: string, currentStatus: 'have' | 'want' | null, newStatus: 'have' | 'want') {
@@ -53,7 +54,7 @@ export async function toggleCollectionStatus(minifigureId: string, currentStatus
 
   if (profile?.role === 'banned') return { error: 'Hesabınız yasaklanmıştır.' };
   if (!profile?.is_approved && profile?.role !== 'admin') {
-    return { error: 'Koleksiyon işlemleri için hesabınızın yönetici tarafından onaylanması bekleniyor.' };
+    return { error: 'Koleksiyon işlemleri için hesabınızın yönetici tarafından onaylanması bekleniyor.', code: 'UNAPPROVED_USER' };
   }
 
   // Rate Limiting (1.5 seconds)

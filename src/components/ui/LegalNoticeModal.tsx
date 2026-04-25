@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 // Custom Event tetikleyicisi
 export const triggerLegalModal = () => {
@@ -12,6 +13,7 @@ export const triggerLegalModal = () => {
 
 export default function LegalNoticeModal() {
     const [isOpen, setIsOpen] = useState(false);
+    const t = useTranslations('LegalNotice');
 
     useEffect(() => {
         const handleOpen = () => {
@@ -48,10 +50,8 @@ export default function LegalNoticeModal() {
                 {/* Başlık ve İkon */}
                 <div className="bg-[#D22B2B] px-8 sm:px-12 py-10 flex flex-col sm:flex-row items-center sm:items-start gap-8 relative overflow-hidden shrink-0">
 
-                    <h2 className="text-2xl sm:text-4xl lg:text-[40px] font-black text-white tracking-widest uppercase z-10 text-center sm:text-left leading-[1.2] mt-2">
-                        TELİF HAKKI,<br />
-                        MARKA VE DİJİTAL<br />
-                        KULLANIM UYARISI
+                    <h2 className="text-2xl sm:text-4xl lg:text-[40px] font-black text-white tracking-widest uppercase z-10 text-center sm:text-left leading-[1.2] mt-2 whitespace-pre-line">
+                        {t('Title').replace(', ', ',\n')}
                     </h2>
                     {/* Arka plan deseni - noktalı pattern */}
                     <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #fff 3px, transparent 3px)', backgroundSize: '24px 24px' }}></div>
@@ -61,34 +61,20 @@ export default function LegalNoticeModal() {
 
                 {/* İçerik Gövdesi - Düz Paragraflar halinde */}
                 <div className="p-8 sm:p-12 overflow-y-auto w-full text-[#999999] text-sm sm:text-base lg:text-lg font-medium space-y-6 flex-1 tracking-wide leading-relaxed">
-                    <p>
-                        “LEGO” ve “LEGO Minifigures” markaları, LEGO Group’un tescilli markalarıdır. Bu site, LEGO Group ile doğrudan bir ortaklık veya resmi bağlantı içerisinde değildir.
-                    </p>
-
-                    <p>
-                        Bu sitede kullanılan bazı ürün görselleri, tanıtım materyalleri ve içerikler LEGO Group’a aittir ve yalnızca bilgilendirme, inceleme ve hobi amacıyla sunulmaktadır. Site içerisinde yer alan, koleksiyon sahibine ait fotoğraflar, açıklamalar ve yazılar ise “Minifigürlerim” markasına ve site sahibine aittir.
-                    </p>
-
-                    <p>
-                        Ziyaretçiler, sitede yer alan içerikleri yalnızca kişisel inceleme amacıyla görüntüleyebilir. İçeriklerin herhangi bir şekilde ticari amaçla kopyalanması, çoğaltılması veya dağıtılması, ilgili telif hakkı sahiplerinin yazılı onayı olmadan yasaktır.
-                    </p>
-
-                    <p>
-                        Bu site, Türkiye Cumhuriyeti Fikir ve Sanat Eserleri Kanunu, Digital Millennium Copyright Act (DMCA) ve uluslararası telif hakları mevzuatına uygun olarak hazırlanmıştır. İzinsiz kullanım, hukuki sorumluluk doğurabilir.
-                    </p>
-
-                    <p>
-                        Site sahipleri, hem LEGO Group’un hem de kendi markası olan Minifigürlerim’in mülkiyet haklarına saygı göstermektedir. Amaç yalnızca koleksiyon meraklılarına bilgi ve keyifli bir paylaşım alanı sunmaktır.
-                    </p>
+                    <p>{t('P1')}</p>
+                    <p>{t('P2')}</p>
+                    <p>{t('P3')}</p>
+                    <p>{t('P4')}</p>
+                    <p>{t('P5')}</p>
                 </div>
 
                 {/* Alt Bar / Onay */}
                 <div className="bg-[#FAFAFA] border-t border-gray-100 p-6 sm:p-8 flex justify-end shrink-0 rounded-b-[24px]">
                     <button 
                         onClick={handleClose}
-                        className="bg-black text-white font-bold py-4 px-10 rounded-lg hover:bg-gray-800 shadow-lg tracking-wide transition-all hover:-translate-y-1"
+                        className="bg-black text-white font-bold py-4 px-10 rounded-lg hover:bg-gray-800 shadow-lg tracking-wide transition-all hover:-translate-y-1 uppercase"
                     >
-                        OKUDUM & ANLADIM
+                        {t('Understood')}
                     </button>
                 </div>
             </div>

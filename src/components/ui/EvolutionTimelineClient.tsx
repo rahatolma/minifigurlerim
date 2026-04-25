@@ -2,32 +2,21 @@
 
 import React, { useState } from 'react';
 import DragScrollContainer from '@/components/ui/DragScrollContainer';
-
-const MINIFIGURE_EVOLUTION = [
-  { year: '1978', title: 'Klasik Yüz', desc: 'Legoland Town ile klasik sarı gülümseme doğdu.', icon: 'happy', color: 'text-[#F2CD37]' },
-  { year: '1989', title: 'Korsan Çağı', desc: 'Sakal, bıyık ve göz bantları eklendi.', icon: 'neutral', color: 'text-[#F2CD37]' },
-  { year: '1990', title: 'Uzaylılar', desc: 'Bambaşka ve asimetrik yüzler üretildi.', icon: 'eye', color: 'text-[#F2CD37]' },
-  { year: '1992', title: 'Çil ve Detay', desc: 'Paradisa temasıyla çiller ve dudak izleri geldi.', icon: 'happy', color: 'text-[#F2CD37]' },
-  { year: '1996', title: 'Alevin Ruhu', desc: 'Kafanın içinden dışarı saçılan efektler tasarlandı.', icon: 'fire', color: 'text-[#F2CD37]' },
-  { year: '2001', title: 'Büyüteçli', desc: 'Tasarım teknolojisinin zirvesindeki yüzler.', icon: 'search', color: 'text-[#F2CD37]' },
-  { year: '2010', title: 'CMF Dönemi', desc: 'Kör paket devrimi ile eşsiz koleksiyon yüzleri.', icon: 'happy', color: 'text-[#F2CD37]' },
-  { year: '2014', title: 'Lisanslı Yüzler', desc: 'Simpsons gibi IP kalıplarına özel yüzler yapıldı.', icon: 'neutral', color: 'text-[#F2CD37]' },
-  { year: '2018', title: 'Altın Çağ', desc: '20. yılına özel çok nadide baskılar kullanıldı.', icon: 'fire', color: 'text-[#F2CD37]' },
-  { year: '2024', title: 'Modern Dönem', desc: 'Detay seviyesi film stüdyolarındaki kaliteye ulaştı.', icon: 'search', color: 'text-[#F2CD37]' },
-];
+import { useTranslations } from 'next-intl';
 
 export default function EvolutionTimelineClient() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const t = useTranslations('EvolutionTimeline');
+  const items: Array<{year: string, title: string, desc: string}> = t.raw('Items');
 
   return (
     <div className="hidden md:block w-full bg-[#fcfcfc] pt-12 pb-16 overflow-hidden relative border-b border-gray-100 z-10">
        <div className="max-w-7xl mx-auto px-8 mb-16 text-center">
           <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter mb-4">
-            Minifigürlerin <span className="text-[#D22B2B]">Evrimi</span>
+            {t('TitleFirst')}<span className="text-[#D22B2B]">{t('TitleSecond')}</span>
           </h2>
-          <p className="text-gray-500 font-bold max-w-2xl mx-auto text-sm md:text-base">
-            Koleksiyonluk figürlerin 1978'den günümüze yüz değişimlerine tanık ol.<br />
-            Tarihsel evrimi incelemek için noktalara tıkla.
+          <p className="text-gray-500 font-bold max-w-2xl mx-auto text-sm md:text-base whitespace-pre-line">
+            {t('Subtitle')}
           </p>
        </div>
 
@@ -37,7 +26,7 @@ export default function EvolutionTimelineClient() {
              {/* Arka plan bağlayıcı çizgisi (Dot'ların tam ortasından geçer: h-24+mb-2+h-12 = 44px) */}
              <div className="absolute top-[44px] left-0 right-0 h-px bg-gray-200 -z-10"></div>
           
-             {MINIFIGURE_EVOLUTION.map((item, index) => {
+             {items.map((item, index) => {
                 const isActive = index === activeIndex;
                 return (
                 <div 

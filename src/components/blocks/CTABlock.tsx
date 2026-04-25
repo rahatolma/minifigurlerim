@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { CTABlockData } from '@/types/content-blocks';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 
@@ -36,7 +36,7 @@ export default function CTABlock({ data }: Props) {
       {data.buttonText && data.buttonAction && (
         <div className="relative z-10 mt-2 mb-4 w-full md:w-auto">
           <Link 
-            href={data.buttonAction}
+            href={data.buttonAction as any}
             className="relative overflow-hidden inline-flex items-center justify-center font-black text-[13px] tracking-[0.15em] uppercase py-4 px-12 rounded-xl transition-all duration-300 shadow-[0_0_20px_rgba(210,43,43,0.4)] group/btn w-full md:w-auto transform hover:-translate-y-1 bg-[#D22B2B] text-white hover:bg-red-600 hover:shadow-[0_0_30px_rgba(210,43,43,0.6)]"
           >
             <span className="relative z-10">{data.buttonText}</span>

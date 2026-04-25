@@ -1,7 +1,9 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useRouter } from '@/i18n/routing';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import CustomDropdown from './CustomDropdown';
 
 export default function VaultFilterClient({
@@ -25,6 +27,7 @@ export default function VaultFilterClient({
   const currentRole = searchParams.get('role') || 'all';
   const currentType = searchParams.get('type') || 'all';
   const currentRarity = searchParams.get('rarity') || 'all';
+  const t = useTranslations('Collection');
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const name = e.target.name;
@@ -45,7 +48,7 @@ export default function VaultFilterClient({
         params.set(name, value);
     }
 
-    router.push(`/koleksiyonum?${params.toString()}`, { scroll: false });
+    router.push(`/koleksiyonum?${params.toString()}` as any, { scroll: false });
 
     setTimeout(() => {
         const filterSection = document.getElementById('filter-section');
@@ -80,26 +83,26 @@ export default function VaultFilterClient({
         <CustomDropdown 
           name="status"
           options={[
-            { value: 'all', label: 'Tüm Koleksiyon' },
-            { value: 'have', label: 'Kasamda Olanlar' },
-            { value: 'want', label: 'Takip Ettiklerim' }
+            { value: 'all', label: t('FilterAll') },
+            { value: 'have', label: t('FilterHave') },
+            { value: 'want', label: t('FilterWant') }
           ]}
           value={currentStatus}
           onChange={(val: string) => handleFilterUpdate('status', val)}
-          placeholder="Durum"
+          placeholder={t('FilterStatus')}
           showSearch={false}
         />
         
         <CustomDropdown 
           name="series"
           options={[
-            { value: 'all', label: 'Tüm Seriler' },
+            { value: 'all', label: t('FilterSeries') },
             ...seriesList.map(s => ({ value: s.id.toString(), label: s.title }))
           ]}
           value={currentSeries}
           onChange={(val: string) => handleFilterUpdate('series', val)}
-          placeholder="Seriler"
-          searchPlaceholder="Seri ara..."
+          placeholder={t('CompletedSeriesItems')}
+          searchPlaceholder={t('SearchSeries')}
           showSearch={true}
           dropdownWidthClass="w-[450px]"
         />
@@ -107,36 +110,36 @@ export default function VaultFilterClient({
         <CustomDropdown 
           name="role"
           options={[
-            { value: 'all', label: 'Tüm Roller' },
+            { value: 'all', label: t('FilterRoles') },
             ...roles.map(r => ({ value: r, label: r }))
           ]}
           value={currentRole}
           onChange={(val: string) => handleFilterUpdate('role', val)}
-          placeholder="Figür Rolü"
+          placeholder={t('FilterRoleLabel')}
           showSearch={false}
         />
         
         <CustomDropdown 
           name="type"
           options={[
-            { value: 'all', label: 'Tüm Tipler' },
+            { value: 'all', label: t('FilterTypes') },
             ...types.map(t => ({ value: t, label: t }))
           ]}
           value={currentType}
           onChange={(val: string) => handleFilterUpdate('type', val)}
-          placeholder="Figür Tipi"
+          placeholder={t('FilterTypeLabel')}
           showSearch={false}
         />
 
         <CustomDropdown 
           name="rarity"
           options={[
-            { value: 'all', label: 'Tüm Nadirlikler' },
+            { value: 'all', label: t('FilterRarities') },
             ...rarities.map(r => ({ value: r, label: r }))
           ]}
           value={currentRarity}
           onChange={(val: string) => handleFilterUpdate('rarity', val)}
-          placeholder="Nadirlik"
+          placeholder={t('FilterRarityLabel')}
           showSearch={false}
         />
 
@@ -147,10 +150,10 @@ export default function VaultFilterClient({
               <span className="font-black leading-none -mt-0.5" style={{ color: '#D22B2B', fontSize: '18px' }}>{totalCount}</span> 
               
               {/* Yazı */}
-              <span className="text-[10px] md:text-[12px] font-black tracking-[0.15em] text-[#6b7280] mt-0.5 whitespace-nowrap">FİGÜR LİSTELENİYOR</span>
+              <span className="text-[10px] md:text-[12px] font-black tracking-[0.15em] text-[#6b7280] mt-0.5 whitespace-nowrap">{t('ListingText')}</span>
               
               {/* Temizle X İkonu */}
-              <button onClick={clearFilters} className={`transition-colors flex items-center justify-center shrink-0 ${hasFilters ? 'visible' : 'invisible'}`} style={{ color: '#9ca3af' }} onMouseOver={(e) => e.currentTarget.style.color = '#D22B2B'} onMouseOut={(e) => e.currentTarget.style.color = '#9ca3af'} title="Tüm Filtreleri Temizle">
+              <button onClick={clearFilters} className={`transition-colors flex items-center justify-center shrink-0 ${hasFilters ? 'visible' : 'invisible'}`} style={{ color: '#9ca3af' }} onMouseOver={(e) => e.currentTarget.style.color = '#D22B2B'} onMouseOut={(e) => e.currentTarget.style.color = '#9ca3af'} title="{t('Clear')}">
                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="md:w-[22px] md:h-[22px]">
                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
                  </svg>
@@ -187,7 +190,7 @@ export default function VaultFilterClient({
                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
                  Filtreler
               </h2>
-              <span className="text-[11px] font-bold text-[#D22B2B] whitespace-nowrap">{totalCount} Kayıt Listeleniyor</span>
+              <span className="text-[11px] font-bold text-[#D22B2B] whitespace-nowrap">{totalCount} {t('ListingText')}</span>
           </div>
           <button onClick={() => setDrawerOpen(false)} className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full text-gray-600">
              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -196,67 +199,67 @@ export default function VaultFilterClient({
 
         <div className="flex flex-col gap-5 mb-8">
             <div className="flex flex-col gap-2">
-                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">Durum</label>
+                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">{t('FilterStatus')}</label>
                 <select 
                   name="status" 
                   value={currentStatus} 
                   onChange={handleChange}
                   className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
                 >
-                  <option value="all">Koleksiyon Filtresi Yok</option>
-                  <option value="have">Kasamda Olanlar</option>
-                  <option value="want">Takip Ettiklerim</option>
+                  <option value="all">{t('NoFilter')}</option>
+                  <option value="have">{t('FilterHave')}</option>
+                  <option value="want">{t('FilterWant')}</option>
                 </select>
             </div>
 
             <div className="flex flex-col gap-2">
-                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">Seri Seçimi</label>
+                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">{t('CompletedSeriesItems')}</label>
                 <select 
                   name="series" 
                   value={currentSeries} 
                   onChange={handleChange}
                   className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
                 >
-                  <option value="all">Tüm Seriler</option>
+                  <option value="all">{t('FilterSeries')}</option>
                   {seriesList.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
                 </select>
             </div>
 
             <div className="flex flex-col gap-2">
-                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">Figür Rolü</label>
+                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">{t('FilterRoleLabel')}</label>
                 <select 
                   name="role" 
                   value={currentRole} 
                   onChange={handleChange}
                   className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
                 >
-                  <option value="all">Tüm Roller</option>
+                  <option value="all">{t('FilterRoles')}</option>
                   {roles.map(r => <option key={r} value={r}>{r}</option>)}
                 </select>
             </div>
 
             <div className="flex flex-col gap-2">
-                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">Figür Tipi</label>
+                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">{t('FilterTypeLabel')}</label>
                 <select 
                   name="type" 
                   value={currentType} 
                   onChange={handleChange}
                   className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
                 >
-                  <option value="all">Tüm Tipler</option>
+                  <option value="all">{t('FilterTypes')}</option>
                   {types.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
             </div>
 
             <div className="flex flex-col gap-2">
-                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">Nadirlik</label>
+                <label className="text-[11px] font-black tracking-widest text-[#D22B2B] uppercase">{t('FilterRarityLabel')}</label>
                 <select 
                   name="rarity" 
                   value={currentRarity} 
                   onChange={handleChange}
                   className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
                 >
-                  <option value="all">Tüm Nadirlikler</option>
+                  <option value="all">{t('FilterRarities')}</option>
                   {rarities.map(r => <option key={r} value={r}>{r}</option>)}
                 </select>
             </div>
@@ -267,16 +270,12 @@ export default function VaultFilterClient({
                 <button 
                   onClick={() => { clearFilters(); setDrawerOpen(false); }} 
                   className="py-4 px-4 bg-gray-100 font-bold text-gray-700 rounded-xl whitespace-nowrap text-xs uppercase tracking-wider"
-                >
-                   Temizle
-                </button>
+                >{t('Clear')}</button>
             )}
             <button 
                onClick={() => setDrawerOpen(false)}
                className="w-full bg-[#1D2136] text-white font-black py-4 px-6 rounded-xl shadow-lg hover:bg-[#131627] tracking-widest uppercase text-xs"
-            >
-               Uygula
-            </button>
+            >{t('Apply')}</button>
         </div>
       </div>
     </>

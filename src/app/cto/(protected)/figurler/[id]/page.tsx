@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
-import { ChevronRight, ImagePlus, Wand2, Loader2, Save } from 'lucide-react';
+import { ChevronRight, ImagePlus, Wand2, Loader2, Save, Globe } from 'lucide-react';
 import { supabase } from '@/utils/supabase/client';
 import toast from 'react-hot-toast';
 import { slugify } from '@/utils/helpers';
@@ -16,6 +16,7 @@ export default function EditFigurePage() {
   const figureId = params.id as string;
   const [magicEraser, setMagicEraser] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGeneratingEN, setIsGeneratingEN] = useState(false);
 
   // Data sources
   const [seriesList, setSeriesList] = useState<any[]>([]);
@@ -52,6 +53,14 @@ interface FigureFormData {
   figure_role_id: string;
   figure_type_id: string;
   rarity_id: string;
+  slug_en: string;
+  name_en: string;
+  role_en: string;
+  description_en: string;
+  short_description_en: string;
+  meta_title_en: string;
+  meta_description_en: string;
+  en_status: string;
 }
 
   const [formData, setFormData] = useState<FigureFormData>({
@@ -80,7 +89,15 @@ interface FigureFormData {
     daily_views: 0,
     figure_role_id: '',
     figure_type_id: '',
-    rarity_id: ''
+    rarity_id: '',
+    slug_en: '',
+    name_en: '',
+    role_en: '',
+    description_en: '',
+    short_description_en: '',
+    meta_title_en: '',
+    meta_description_en: '',
+    en_status: 'missing'
   });
 
   const [customAttributes, setCustomAttributes] = useState<Record<string, string>>({});
@@ -147,7 +164,15 @@ interface FigureFormData {
           daily_views: fig.daily_views || 0,
           figure_role_id: fallbackRoleId,
           figure_type_id: fallbackTypeId,
-          rarity_id: fallbackRarityId
+          rarity_id: fallbackRarityId,
+          slug_en: fig.slug_en || '',
+          name_en: fig.name_en || '',
+          role_en: fig.role_en || '',
+          description_en: fig.description_en || '',
+          short_description_en: fig.short_description_en || '',
+          meta_title_en: fig.meta_title_en || '',
+          meta_description_en: fig.meta_description_en || '',
+          en_status: fig.en_status || 'missing'
         });
 
         const attrs = fig.custom_attributes || {};
@@ -169,7 +194,7 @@ interface FigureFormData {
     loadData();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
@@ -281,7 +306,15 @@ console.error(err);
         release_month: formData.release_month,
         release_year: formData.release_year,
         images: uploadedImages.filter(Boolean),
-        custom_attributes: finalCustomAttr
+        custom_attributes: finalCustomAttr,
+        slug_en: formData.slug_en,
+        name_en: formData.name_en,
+        role_en: formData.role_en,
+        description_en: formData.description_en,
+        short_description_en: formData.short_description_en,
+        meta_title_en: formData.meta_title_en,
+        meta_description_en: formData.meta_description_en,
+        en_status: formData.en_status
       };
       
       console.log('--- DB PAYLOAD ---', dbPayload);
@@ -300,6 +333,50 @@ console.error(err);
 
   const selectedSeries = seriesList.find(s => s.id === formData.series_id);
 
+  const handleGenerateENDraft = async () => {
+    if (!figureId) return;
+
+    const confirmOverwrite = window.confirm("İngilizce içerik zaten mevcut olabilir. Yapay zeka ile güncellenmesini istiyor musunuz?");
+    if (!confirmOverwrite) return;
+
+    try {
+      setIsGeneratingEN(true);
+      const toastId = toast.loading('İngilizce taslak üretiliyor (Yapay Zeka devrede)...');
+      
+      const res = await fetch('/api/cto/generate-en-draft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity_type: 'minifigures', entity_id: figureId })
+      });
+      
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.error || 'API Hatası');
+      
+      toast.success('İngilizce içerikler başarıyla oluşturuldu!', { id: toastId });
+      
+      // Update form directly with generated data so user doesn't lose other edits
+      if (resData.data) {
+        setFormData(prev => ({
+          ...prev,
+          slug_en: resData.data.slug_en || prev.slug_en,
+          name_en: resData.data.name_en || prev.name_en,
+          role_en: resData.data.role_en || prev.role_en,
+          description_en: resData.data.description_en || prev.description_en,
+          short_description_en: resData.data.short_description_en || prev.short_description_en,
+          meta_title_en: resData.data.meta_title_en || prev.meta_title_en,
+          meta_description_en: resData.data.meta_description_en || prev.meta_description_en,
+          en_status: 'draft',
+        }));
+      }
+      
+    } catch (err: any) {
+      console.error(err);
+      toast.error('Taslak oluşturulamadı: ' + err.message);
+    } finally {
+      setIsGeneratingEN(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F8F9FA] text-black pb-24">
       {/* Header */}
@@ -309,6 +386,16 @@ console.error(err);
             <Link href="/cto/figurler" className="hover:text-black transition-colors">FİGÜRLER</Link>
             <ChevronRight size={14} />
             <span className="text-black">FİGÜRÜ DÜZENLE</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleGenerateENDraft}
+              disabled={isGeneratingEN}
+              className="bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300 transition-colors px-6 py-2.5 text-[11px] font-black tracking-widest uppercase rounded flex items-center gap-2 shadow-sm"
+            >
+              {isGeneratingEN ? <Loader2 size={14} className="animate-spin" /> : <Globe size={14} />}
+              Generate EN Draft 🇺🇸
+            </button>
           </div>
         </div>
       </div>
@@ -643,6 +730,72 @@ console.error(err);
                     })}
                 </div>
             )}
+
+            {/* =========================================
+                4. İNGİLİZCE SEO & İÇERİK
+            ========================================= */}
+            <div className="bg-blue-50 py-3 px-6 border-y border-blue-200 mt-8 mb-2 flex items-center justify-between">
+                <span className="text-[10px] font-black tracking-widest uppercase text-blue-800 flex items-center gap-2">
+                   <Globe size={14} /> 4. İNGİLİZCE İÇERİK & SEO (GLOBAL YAYIN)
+                </span>
+                <div className="flex items-center gap-2">
+                   <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Durum:</span>
+                   <select 
+                     name="en_status" 
+                     value={formData.en_status} 
+                     onChange={handleChange} 
+                     className="bg-white border border-blue-200 text-blue-800 text-[11px] font-bold py-1 px-2 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                   >
+                     <option value="missing">Missing</option>
+                     <option value="draft">Draft</option>
+                     <option value="reviewed">Reviewed</option>
+                   </select>
+                </div>
+            </div>
+            
+            <div className="bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden mb-8">
+                {/* EN ADI */}
+                <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Figür Adı (EN)</label></div>
+                    <div className="w-2/3 py-2"><input name="name_en" type="text" value={formData.name_en} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" /></div>
+                </div>
+
+                {/* EN SLUG */}
+                <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">URL Slug (EN)</label></div>
+                    <div className="w-2/3 py-2"><input name="slug_en" type="text" value={formData.slug_en} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" /></div>
+                </div>
+
+                {/* EN ROL */}
+                <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Figür Rolü (EN)</label></div>
+                    <div className="w-2/3 py-2"><input name="role_en" type="text" value={formData.role_en} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" /></div>
+                </div>
+
+                {/* EN KISA AÇIKLAMA */}
+                <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Kısa Açıklama (EN)</label></div>
+                    <div className="w-2/3 py-2"><textarea name="short_description_en" rows={2} value={formData.short_description_en} onChange={(e: any) => handleChange(e)} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold resize-y" /></div>
+                </div>
+
+                {/* EN AÇIKLAMA */}
+                <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors self-start mt-2"><label className="text-gray-900 block font-black">Tam Açıklama (EN)</label></div>
+                    <div className="w-2/3 py-2"><textarea name="description_en" rows={4} value={formData.description_en} onChange={(e: any) => handleChange(e)} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold resize-y" /></div>
+                </div>
+
+                {/* EN META TITLE */}
+                <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Meta Title (EN)</label></div>
+                    <div className="w-2/3 py-2"><input name="meta_title_en" type="text" value={formData.meta_title_en} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" /></div>
+                </div>
+
+                {/* EN META DESCRIPTION */}
+                <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Meta Description (EN)</label></div>
+                    <div className="w-2/3 py-2"><textarea name="meta_description_en" rows={2} value={formData.meta_description_en} onChange={(e: any) => handleChange(e)} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold resize-y" /></div>
+                </div>
+            </div>
 
             <div className="mt-12 flex justify-end">
               <button 

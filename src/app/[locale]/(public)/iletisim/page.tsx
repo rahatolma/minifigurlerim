@@ -2,6 +2,7 @@ import ContactForm from "@/components/ui/ContactForm";
 import FeedbackForm from "@/components/ui/FeedbackForm";
 import { getActiveFaqs } from "@/services/dal";
 import InstagramBlock from "@/components/ui/InstagramBlock";
+import { getTranslations, getLocale } from 'next-intl/server';
 
 export const metadata = {
   title: 'İletişim | Minifigürlerim',
@@ -13,6 +14,8 @@ export const revalidate = 86400; // FAQs can change dynamically
 export default async function ContactPage() {
   const faqs = await getActiveFaqs();
   const activeFaqs = faqs || [];
+  const locale = await getLocale();
+  const t = await getTranslations('ContactPage');
 
   return (
     <div className="bg-[#fcfcfc] min-h-screen pb-16">
@@ -32,8 +35,8 @@ export default async function ContactPage() {
             {/* SAĞ Taraf: İletişim Formu */}
             <div className="w-full md:w-2/3 bg-white rounded-[32px] p-8 md:p-12 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.06)] border border-gray-100 relative overflow-hidden flex flex-col">
                 <div className="mb-8">
-                    <h1 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight mb-3">Sorunuz Mu Var?</h1>
-                    <p className="text-gray-600 text-[13px] font-medium leading-relaxed max-w-xl">Her türlü soru, görüş ve öneri için bize aşağıdaki iletişim formundan ulaşabilirsiniz. En kısa sürede dönüş yapacağız.</p>
+                    <h1 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight mb-3">{t('HaveQuestion')}</h1>
+                    <p className="text-gray-600 text-[13px] font-medium leading-relaxed max-w-xl">{t('HaveQuestionDesc')}</p>
                 </div>
                 <div className="relative z-10 flex-1 flex flex-col">
                   <ContactForm />
@@ -44,19 +47,19 @@ export default async function ContactPage() {
          <div className="w-full">
             {activeFaqs.length > 0 ? (
                <div className="bg-white border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] rounded-[32px] p-8 md:p-12 border-t-4 border-t-[#D22B2B]">
-                  <h2 className="text-3xl font-black text-center text-gray-900 mb-10 tracking-tight">Sıkça Sorulan Sorular</h2>
+                  <h2 className="text-3xl font-black text-center text-gray-900 mb-10 tracking-tight">{t('FAQ')}</h2>
                   <div className="space-y-3">
                       {activeFaqs.map((faq: import("@/services/dal").FaqDTO, idx: number) => (
                           <details key={faq.id} className="group border border-gray-100 rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden">
                               <summary className="w-full text-left py-5 px-6 font-bold text-[15px] text-gray-900 flex justify-between items-center hover:bg-gray-50 transition-colors cursor-pointer select-none">
                                   <span className="flex gap-4 items-center">
                                      <span className="text-[12px] font-black text-gray-400">{(idx + 1).toString().padStart(2, '0')}</span>
-                                     <span className="leading-snug pr-4">{faq.question}</span>
+                                     <span className="leading-snug pr-4">{locale === 'en' ? (faq.question_en || faq.question) : faq.question}</span>
                                   </span>
                                   <span className="text-2xl text-gray-300 font-light group-open:rotate-45 group-hover:text-[#D22B2B] transition-all duration-300 shrink-0 flex justify-end">+</span>
                               </summary>
                               <div className="py-5 bg-gray-50/50 text-gray-600 font-medium text-[14px] leading-relaxed px-6 border-t border-gray-100">
-                                  {faq.answer}
+                                  {locale === 'en' ? (faq.answer_en || faq.answer) : faq.answer}
                               </div>
                           </details>
                       ))}

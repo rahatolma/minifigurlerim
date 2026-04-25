@@ -2,19 +2,7 @@
 
 import React, { useState } from 'react';
 import DragScrollContainer from '@/components/ui/DragScrollContainer';
-
-const CMF_HISTORY = [
-  { year: '2010', date: 'Mayıs 2010', title: 'Seri 1', desc: 'Sarı kafalar ve 16 figürlük kör paketlerle tüm dünyanın peşinden koşacağı efsane doğdu.' },
-  { year: '2012', date: 'Temmuz 2012', title: 'Team GB', desc: 'İngiltere Olimpiyat Takımı ile ülkeler ve özel lisans konseptine ilk eşsiz adım atıldı.' },
-  { year: '2014', date: 'Mayıs 2014', title: 'The Simpsons', desc: 'Tarihte ilk kez o klasik "sarı silindir kafa" kuralı yıkıldı ve IP bazlı maskeler/kalıplar kullanıldı!' },
-  { year: '2016', date: 'Mayıs 2016', title: 'Disney S1', desc: 'Mickey, Ariel, Stitch... Raflara düştüğü saniye tükenen, gelmiş geçmiş en popüler CMF serisi oldu.' },
-  { year: '2018', date: 'Nisan 2018', title: 'Seri 18 - Özel Polis', desc: 'Kutuda sadece 1 tane bulunan "Klasik Polis" figürüyle, paket elleyerek arama (feel guide) sanatı çılgınlığa dönüştü.' },
-  { year: '2018', date: 'Ağustos 2018', title: 'Harry Potter', desc: 'İlk kez 22 figürlük devasa (ikisi bir arada) seri üretildi. Yenilikçi bükülebilen midi-bacaklar icat edildi.' },
-  { year: '2022', date: 'Mayıs 2022', title: 'The Muppets', desc: 'Orijinal formuna sadık kalınarak heykel kalitesinde üretilmiş, olağanüstü detaylı kafa kalıplarıyla bir başyapıt.' },
-  { year: '2023', date: 'Eylül 2023', title: 'Marvel Serisi 2', desc: 'Karakter tasarımları ve eşya kalitesindeki sıçramayla Marvel Sinematik Evreni oyuncak standartlarını aştı.' },
-  { year: '2024', date: 'Ocak 2024', title: 'Kare Kod Devrimi', desc: 'Poşetler kalktı! Doğa dostu karton kutulara geçildi. Kutunun altındaki Date Matrix kodunu okutarak içeriği bilme hilesi şoke etti!' },
-  { year: 'Bugün', date: 'Gelecek', title: 'Minifigürlerim', desc: 'Türkiye merkezli bu premium koleksiyon takip platformuyla AFOL kültürünü yaşatmak için harika bir sayfa açıldı!' }
-];
+import { useTranslations } from 'next-intl';
 
 interface SeriesTimelineClientProps {
   titleFirst: string;
@@ -24,6 +12,13 @@ interface SeriesTimelineClientProps {
 
 export default function SeriesTimelineClient({ titleFirst, titleSecond, subtitle }: SeriesTimelineClientProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const t = useTranslations('SeriesTimeline');
+  
+  // To keep the map simple, we can extract items from the dictionary
+  // However, next-intl useTranslations requires mapping over keys or extracting an array if configured.
+  // It's safer to map manually or use t.raw('Items')
+  const historyItems: Array<{year: string, date: string, title: string, desc: string}> = t.raw('Items');
+
 
   return (
     <div className="hidden md:block w-full bg-[#fcfcfc] pt-12 pb-16 overflow-hidden relative border-b border-gray-100 z-10">
@@ -42,7 +37,7 @@ export default function SeriesTimelineClient({ titleFirst, titleSecond, subtitle
              {/* Arka plan bağlayıcı çizgisi: İnce, düz ve flat */}
              <div className="absolute top-[44px] left-0 right-0 h-px bg-gray-200 -z-10"></div>
           
-             {CMF_HISTORY.map((item, index) => {
+             {historyItems.map((item, index) => {
                 const isActive = index === activeIndex;
                 return (
                 <div 

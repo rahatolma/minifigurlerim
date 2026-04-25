@@ -11,7 +11,9 @@ import { uploadEntityMedia } from '@/services/media_dal';
 export default function AboutSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
   const [uploadingField, setUploadingField] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'tr' | 'en'>('tr');
 
   const [formData, setFormData] = useState({
     quote_text: '',
@@ -31,6 +33,23 @@ export default function AboutSettingsPage() {
     join_text: '',
     join_btn_text: '',
     join_btn_link: '/iletisim',
+    // EN Fields
+    quote_text_en: '',
+    quote_author_en: '',
+    boss_title_en: '',
+    boss_subtitle_en: '',
+    boss_desc_en: '',
+    main_title_en: '',
+    main_text_en: '',
+    mid_title_en: '',
+    mid_subtitle_en: '',
+    mid_desc_en: '',
+    small_title_en: '',
+    small_subtitle_en: '',
+    small_desc_en: '',
+    join_title_en: '',
+    join_text_en: '',
+    join_btn_text_en: '',
   });
 
   const [imageUrls, setImageUrls] = useState({
@@ -69,6 +88,23 @@ export default function AboutSettingsPage() {
             join_text: data.join_text || '',
             join_btn_text: data.join_btn_text || 'FORMU DOLDURUNUZ',
             join_btn_link: data.join_btn_link || '/iletisim',
+            // EN Fields
+            quote_text_en: data.quote_text_en || '',
+            quote_author_en: data.quote_author_en || '',
+            boss_title_en: data.boss_title_en || '',
+            boss_subtitle_en: data.boss_subtitle_en || '',
+            boss_desc_en: data.boss_desc_en || '',
+            main_title_en: data.main_title_en || '',
+            main_text_en: data.main_text_en || '',
+            mid_title_en: data.mid_title_en || '',
+            mid_subtitle_en: data.mid_subtitle_en || '',
+            mid_desc_en: data.mid_desc_en || '',
+            small_title_en: data.small_title_en || '',
+            small_subtitle_en: data.small_subtitle_en || '',
+            small_desc_en: data.small_desc_en || '',
+            join_title_en: data.join_title_en || '',
+            join_text_en: data.join_text_en || '',
+            join_btn_text_en: data.join_btn_text_en || '',
         });
         setImageUrls({
             hero_image_url: data.hero_image_url || null,
@@ -154,6 +190,56 @@ console.error(err);
     }
   };
 
+  const handleTranslate = async () => {
+    if (!formData.main_text || !formData.boss_title) {
+      toast.error('Önce Türkçe alanları doldurun!');
+      return;
+    }
+    
+    setIsTranslating(true);
+    const toastId = toast.loading('Yapay Zeka çeviriyor, lütfen bekleyin...');
+    
+    try {
+      const response = await fetch('/api/cto/translate-about', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) throw new Error('Çeviri servisi yanıt vermedi');
+      
+      const { data, success } = await response.json();
+      
+      if (success && data) {
+        setFormData(prev => ({
+          ...prev,
+          quote_text_en: data.quote_text_en || prev.quote_text_en,
+          quote_author_en: data.quote_author_en || prev.quote_author_en,
+          boss_title_en: data.boss_title_en || prev.boss_title_en,
+          boss_subtitle_en: data.boss_subtitle_en || prev.boss_subtitle_en,
+          boss_desc_en: data.boss_desc_en || prev.boss_desc_en,
+          main_title_en: data.main_title_en || prev.main_title_en,
+          main_text_en: data.main_text_en || prev.main_text_en,
+          mid_title_en: data.mid_title_en || prev.mid_title_en,
+          mid_subtitle_en: data.mid_subtitle_en || prev.mid_subtitle_en,
+          mid_desc_en: data.mid_desc_en || prev.mid_desc_en,
+          small_title_en: data.small_title_en || prev.small_title_en,
+          small_subtitle_en: data.small_subtitle_en || prev.small_subtitle_en,
+          small_desc_en: data.small_desc_en || prev.small_desc_en,
+          join_title_en: data.join_title_en || prev.join_title_en,
+          join_text_en: data.join_text_en || prev.join_text_en,
+          join_btn_text_en: data.join_btn_text_en || prev.join_btn_text_en,
+        }));
+        toast.success('Çeviri tamamlandı! Kaydetmeyi unutmayın.', { id: toastId });
+      }
+    } catch (err: any) {
+      console.error(err);
+      toast.error('Çeviri başarısız oldu: ' + err.message, { id: toastId });
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
   const uploadBoxes = [
     { id: 'hero_image_url', title: '1. Tepe (Hero) Mozaik', desc: 'En üstteki büyük yatay görsel.' },
     { id: 'boss_image_url', title: '2. Büyük Patron', desc: 'Hikaye metninin solundaki kare profil.' },
@@ -167,8 +253,40 @@ console.error(err);
   return (
     <div className="w-full max-w-[1600px] mx-auto p-12 pb-24">
       <div className="mb-8">
-        <h1 className="text-3xl font-black text-gray-900 mb-2">HAKKIMIZDA DÜZENLEME</h1>
-        <p className="text-sm font-semibold text-gray-500 uppercase tracking-widest">Sitedeki "Hakkımızda" Sayfasının Tüm Medya ve Metin İçerikleri</p>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-black text-gray-900 mb-2">HAKKIMIZDA DÜZENLEME</h1>
+            <p className="text-sm font-semibold text-gray-500 uppercase tracking-widest">Sitedeki "Hakkımızda" Sayfasının Tüm Medya ve Metin İçerikleri</p>
+          </div>
+          <div className="flex bg-gray-100 p-1 rounded-lg">
+            <button 
+              onClick={() => setActiveTab('tr')}
+              className={`px-6 py-2 rounded-md font-bold text-sm transition-all ${activeTab === 'tr' ? 'bg-white shadow-sm text-black' : 'text-gray-500 hover:text-gray-900'}`}
+            >
+              TÜRKÇE İÇERİK
+            </button>
+            <button 
+              onClick={() => setActiveTab('en')}
+              className={`px-6 py-2 rounded-md font-bold text-sm transition-all ${activeTab === 'en' ? 'bg-[#D22B2B] shadow-sm text-white' : 'text-gray-500 hover:text-gray-900'}`}
+            >
+              İNGİLİZCE (EN)
+            </button>
+            {activeTab === 'en' && (
+              <button
+                type="button"
+                onClick={handleTranslate}
+                disabled={isTranslating}
+                className="ml-4 px-4 py-2 bg-[#111] hover:bg-black text-white rounded-md font-black text-[11px] tracking-widest uppercase transition-all shadow-md flex items-center gap-2 disabled:bg-gray-400"
+              >
+                {isTranslating ? (
+                  <><Loader2 className="animate-spin" size={14} /> ÇEVRİLİYOR...</>
+                ) : (
+                  <>🤖 OTOMATİK ÇEVİRİ YAP</>
+                )}
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
@@ -224,67 +342,85 @@ console.error(err);
             
             {/* Üst Alıntı */}
             <div className="bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden">
-                <div className="p-4 bg-black text-white px-6 font-black tracking-widest uppercase text-xs">Hero & Alıntı Alanı</div>
+                <div className="p-4 bg-black text-white px-6 font-black tracking-widest uppercase text-xs flex justify-between items-center">
+                  <span>Hero & Alıntı Alanı</span>
+                  {activeTab === 'en' && <span className="text-[#D22B2B] bg-white px-2 py-0.5 rounded text-[10px]">İNGİLİZCE</span>}
+                </div>
                 <div className="p-6 space-y-4">
                    <div>
                        <label className="block mb-2 text-gray-700">Kırmızı Kutucuk Sloganı</label>
-                       <textarea name="quote_text" value={formData.quote_text} onChange={handleChange} rows={2} className="w-full border border-gray-200 rounded p-3 focus:outline-black font-semibold text-gray-900" placeholder="Peşinden gidecek cesaretiniz varsa..."></textarea>
+                       <textarea name={activeTab === 'en' ? 'quote_text_en' : 'quote_text'} value={activeTab === 'en' ? formData.quote_text_en : formData.quote_text} onChange={handleChange} rows={2} className="w-full border border-gray-200 rounded p-3 focus:outline-black font-semibold text-gray-900" placeholder={activeTab === 'en' ? "If you have the courage to pursue..." : "Peşinden gidecek cesaretiniz varsa..."}></textarea>
                    </div>
                    <div>
                        <label className="block mb-2 text-gray-700">Alıntı Sahibi</label>
-                       <input name="quote_author" value={formData.quote_author} onChange={handleChange} className="w-full border border-gray-200 rounded p-3 focus:outline-black font-semibold text-gray-900" placeholder="Walt Disney" />
+                       <input name={activeTab === 'en' ? 'quote_author_en' : 'quote_author'} value={activeTab === 'en' ? formData.quote_author_en : formData.quote_author} onChange={handleChange} className="w-full border border-gray-200 rounded p-3 focus:outline-black font-semibold text-gray-900" placeholder="Walt Disney" />
                    </div>
                 </div>
             </div>
 
             {/* Büyük Patron */}
             <div className="bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden">
-                <div className="p-4 bg-black text-white px-6 font-black tracking-widest uppercase text-xs">Büyük Patron (Sol Profil)</div>
+                <div className="p-4 bg-black text-white px-6 font-black tracking-widest uppercase text-xs flex justify-between items-center">
+                  <span>Büyük Patron (Sol Profil)</span>
+                  {activeTab === 'en' && <span className="text-[#D22B2B] bg-white px-2 py-0.5 rounded text-[10px]">İNGİLİZCE</span>}
+                </div>
                 <div className="p-6 space-y-4">
-                   <div><label className="block mb-2">Başlık</label><input name="boss_title" value={formData.boss_title} onChange={handleChange} className="w-full border border-gray-200 rounded p-3 focus:outline-black" /></div>
-                   <div><label className="block mb-2">Alt Başlık (Meslek vb.)</label><input name="boss_subtitle" value={formData.boss_subtitle} onChange={handleChange} className="w-full border border-gray-200 rounded p-3 focus:outline-black" /></div>
-                   <div><label className="block mb-2">Kısa Açıklama</label><textarea name="boss_desc" value={formData.boss_desc} onChange={handleChange} rows={2} className="w-full border border-gray-200 rounded p-3 focus:outline-black text-xs font-semibold" /></div>
+                   <div><label className="block mb-2">Başlık</label><input name={activeTab === 'en' ? 'boss_title_en' : 'boss_title'} value={activeTab === 'en' ? formData.boss_title_en : formData.boss_title} onChange={handleChange} className="w-full border border-gray-200 rounded p-3 focus:outline-black" /></div>
+                   <div><label className="block mb-2">Alt Başlık (Meslek vb.)</label><input name={activeTab === 'en' ? 'boss_subtitle_en' : 'boss_subtitle'} value={activeTab === 'en' ? formData.boss_subtitle_en : formData.boss_subtitle} onChange={handleChange} className="w-full border border-gray-200 rounded p-3 focus:outline-black" /></div>
+                   <div><label className="block mb-2">Kısa Açıklama</label><textarea name={activeTab === 'en' ? 'boss_desc_en' : 'boss_desc'} value={activeTab === 'en' ? formData.boss_desc_en : formData.boss_desc} onChange={handleChange} rows={2} className="w-full border border-gray-200 rounded p-3 focus:outline-black text-xs font-semibold" /></div>
                 </div>
             </div>
 
             {/* Ana Hikaye */}
             <div className="bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden">
-                <div className="p-4 bg-black text-white px-6 font-black tracking-widest uppercase text-xs">Ana Metin (Sağ Taraf)</div>
+                <div className="p-4 bg-black text-white px-6 font-black tracking-widest uppercase text-xs flex justify-between items-center">
+                  <span>Ana Metin (Sağ Taraf)</span>
+                  {activeTab === 'en' && <span className="text-[#D22B2B] bg-white px-2 py-0.5 rounded text-[10px]">İNGİLİZCE</span>}
+                </div>
                 <div className="p-6 space-y-4">
-                   <div><label className="block mb-2">Hikaye Başlığı</label><input name="main_title" value={formData.main_title} onChange={handleChange} className="w-full border border-gray-200 rounded p-3 focus:outline-black" /></div>
+                   <div><label className="block mb-2">Hikaye Başlığı</label><input name={activeTab === 'en' ? 'main_title_en' : 'main_title'} value={activeTab === 'en' ? formData.main_title_en : formData.main_title} onChange={handleChange} className="w-full border border-gray-200 rounded p-3 focus:outline-black" /></div>
                    <div>
                        <label className="block mb-2">Geniş Hikaye Metni</label>
-                       <RichTextEditor value={formData.main_text} onChange={(val) => setFormData(p => ({ ...p, main_text: val }))} placeholder="Sitenin kuruluş hikayesi..." />
+                       {activeTab === 'en' ? (
+                           <RichTextEditor key="en-editor" value={formData.main_text_en} onChange={(val) => setFormData(p => ({ ...p, main_text_en: val }))} placeholder="Sitenin kuruluş hikayesi (İngilizce)..." />
+                       ) : (
+                           <RichTextEditor key="tr-editor" value={formData.main_text} onChange={(val) => setFormData(p => ({ ...p, main_text: val }))} placeholder="Sitenin kuruluş hikayesi..." />
+                       )}
                    </div>
                 </div>
             </div>
 
             {/* Alt 3'lü */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden p-6 space-y-4">
+              <div className="bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden p-6 space-y-4 relative">
+                 {activeTab === 'en' && <span className="absolute top-4 right-4 text-[#D22B2B] bg-gray-100 px-2 py-0.5 rounded text-[10px]">İNGİLİZCE</span>}
                  <h4 className="font-black border-b pb-2 mb-4">Ortanca Patron</h4>
-                 <div><input name="mid_title" value={formData.mid_title} onChange={handleChange} placeholder="Başlık" className="w-full border p-2 text-xs" /></div>
-                 <div><input name="mid_subtitle" value={formData.mid_subtitle} onChange={handleChange} placeholder="Alt Başlık" className="w-full border p-2 text-xs" /></div>
-                 <div><textarea name="mid_desc" value={formData.mid_desc} onChange={handleChange} rows={3} placeholder="Açıklama" className="w-full border p-2 text-xs" /></div>
+                 <div><input name={activeTab === 'en' ? 'mid_title_en' : 'mid_title'} value={activeTab === 'en' ? formData.mid_title_en : formData.mid_title} onChange={handleChange} placeholder="Başlık" className="w-full border p-2 text-xs" /></div>
+                 <div><input name={activeTab === 'en' ? 'mid_subtitle_en' : 'mid_subtitle'} value={activeTab === 'en' ? formData.mid_subtitle_en : formData.mid_subtitle} onChange={handleChange} placeholder="Alt Başlık" className="w-full border p-2 text-xs" /></div>
+                 <div><textarea name={activeTab === 'en' ? 'mid_desc_en' : 'mid_desc'} value={activeTab === 'en' ? formData.mid_desc_en : formData.mid_desc} onChange={handleChange} rows={3} placeholder="Açıklama" className="w-full border p-2 text-xs" /></div>
               </div>
               
-              <div className="bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden p-6 space-y-4">
+              <div className="bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden p-6 space-y-4 relative">
+                 {activeTab === 'en' && <span className="absolute top-4 right-4 text-[#D22B2B] bg-gray-100 px-2 py-0.5 rounded text-[10px]">İNGİLİZCE</span>}
                  <h4 className="font-black border-b pb-2 mb-4">Küçük Patron</h4>
-                 <div><input name="small_title" value={formData.small_title} onChange={handleChange} placeholder="Başlık" className="w-full border p-2 text-xs" /></div>
-                 <div><input name="small_subtitle" value={formData.small_subtitle} onChange={handleChange} placeholder="Alt Başlık" className="w-full border p-2 text-xs" /></div>
-                 <div><textarea name="small_desc" value={formData.small_desc} onChange={handleChange} rows={3} placeholder="Açıklama" className="w-full border p-2 text-xs" /></div>
+                 <div><input name={activeTab === 'en' ? 'small_title_en' : 'small_title'} value={activeTab === 'en' ? formData.small_title_en : formData.small_title} onChange={handleChange} placeholder="Başlık" className="w-full border p-2 text-xs" /></div>
+                 <div><input name={activeTab === 'en' ? 'small_subtitle_en' : 'small_subtitle'} value={activeTab === 'en' ? formData.small_subtitle_en : formData.small_subtitle} onChange={handleChange} placeholder="Alt Başlık" className="w-full border p-2 text-xs" /></div>
+                 <div><textarea name={activeTab === 'en' ? 'small_desc_en' : 'small_desc'} value={activeTab === 'en' ? formData.small_desc_en : formData.small_desc} onChange={handleChange} rows={3} placeholder="Açıklama" className="w-full border p-2 text-xs" /></div>
               </div>
             </div>
 
             {/* Katılım Kutusu */}
             <div className="bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden">
-                <div className="p-4 bg-black text-white px-6 font-black tracking-widest uppercase text-xs">Katılım / Ekip Kutusu (En Sağ)</div>
+                <div className="p-4 bg-black text-white px-6 font-black tracking-widest uppercase text-xs flex justify-between items-center">
+                  <span>Katılım / Ekip Kutusu (En Sağ)</span>
+                  {activeTab === 'en' && <span className="text-[#D22B2B] bg-white px-2 py-0.5 rounded text-[10px]">İNGİLİZCE</span>}
+                </div>
                 <div className="p-6 space-y-4">
-                   <div><label className="block mb-2 text-gray-700">Kutu Başlığı</label><input name="join_title" value={formData.join_title} onChange={handleChange} className="w-full border p-3 focus:outline-black" /></div>
-                   <div><label className="block mb-2 text-gray-700">Davet Metni</label><textarea name="join_text" value={formData.join_text} onChange={handleChange} rows={3} className="w-full border p-3 focus:outline-black" /></div>
+                   <div><label className="block mb-2 text-gray-700">Kutu Başlığı</label><input name={activeTab === 'en' ? 'join_title_en' : 'join_title'} value={activeTab === 'en' ? formData.join_title_en : formData.join_title} onChange={handleChange} className="w-full border p-3 focus:outline-black" /></div>
+                   <div><label className="block mb-2 text-gray-700">Davet Metni</label><textarea name={activeTab === 'en' ? 'join_text_en' : 'join_text'} value={activeTab === 'en' ? formData.join_text_en : formData.join_text} onChange={handleChange} rows={3} className="w-full border p-3 focus:outline-black" /></div>
                    <div className="grid grid-cols-2 gap-4">
-                     <div><label className="block mb-2 text-gray-700">Buton Sloganı</label><input name="join_btn_text" value={formData.join_btn_text} onChange={handleChange} className="w-full border p-3 focus:outline-black" /></div>
-                     <div><label className="block mb-2 text-gray-700">Buton Linki</label><input name="join_btn_link" value={formData.join_btn_link} onChange={handleChange} className="w-full border p-3 focus:outline-black text-gray-400" /></div>
+                     <div><label className="block mb-2 text-gray-700">Buton Sloganı</label><input name={activeTab === 'en' ? 'join_btn_text_en' : 'join_btn_text'} value={activeTab === 'en' ? formData.join_btn_text_en : formData.join_btn_text} onChange={handleChange} className="w-full border p-3 focus:outline-black" /></div>
+                     <div><label className="block mb-2 text-gray-700">Buton Linki</label><input name="join_btn_link" value={formData.join_btn_link} onChange={handleChange} className="w-full border p-3 focus:outline-black text-gray-400" disabled={activeTab === 'en'} title="Link tüm dillerde ortaktır" /></div>
                    </div>
                 </div>
             </div>

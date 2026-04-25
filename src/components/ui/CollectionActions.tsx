@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { toggleCollectionStatus, saveRating } from '@/app/actions/collection';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import toast from 'react-hot-toast';
 
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useGamification } from '@/components/providers/GamificationProvider';
@@ -16,6 +18,8 @@ export default function CollectionActions({ minifigureId, trackingProps }: { min
   const { user } = useAuth();
   const { userStatusMap, updateStatus: setGlobalStatus } = useGamification();
   const isLoggedIn = !!user;
+  const tCard = useTranslations('FigureCard');
+  const tAction = useTranslations('CollectionActions');
 
   const [loading, setLoading] = useState(false);
   
@@ -46,8 +50,7 @@ export default function CollectionActions({ minifigureId, trackingProps }: { min
   // Fetch initial rating from server just for this figure
   useEffect(() => {
     if (isLoggedIn && mounted) {
-        // Fetch rating dynamically via standard client side fetch
-        fetch(`/api/track-view?action=get_rating&minifigure_id=${minifigureId}`)
+        fetch(`/api/rating?minifigure_id=${minifigureId}`)
             .then(res => res.json())
             .then(data => {
                 if (data.rating) setRating(data.rating);
@@ -74,25 +77,37 @@ export default function CollectionActions({ minifigureId, trackingProps }: { min
     setGlobalStatus(minifigureId, optimisticStatus);
 
     setLoading(true);
-    // DAL depends on "currentStatus === newStatus" constraint to do deletion! So pass type as newStatus!
-    const result = await toggleCollectionStatus(minifigureId, previousStatus, type); 
-    
-    if (result?.error) {
-       // ROLLBACK ON ERROR
+    try {
+      const result = await toggleCollectionStatus(minifigureId, previousStatus, type); 
+      
+      if (result?.error) {
+         // ROLLBACK ON ERROR
+         setStatus(previousStatus);
+         setGlobalStatus(minifigureId, previousStatus);
+         if (result.code === 'UNAPPROVED_USER') {
+             toast.error(tAction('ApprovalRequired'));
+         } else {
+             toast.error(result.error);
+         }
+      } else {
+         // ANALYTICS TRACKING ON SUCCESS
+         if (type === 'have') {
+             if (optimisticStatus === 'have') trackAddToCollection(trackingProps);
+             else trackRemoveFromCollection(trackingProps);
+         } else if (type === 'want') {
+             if (optimisticStatus === 'want') trackAddToWatchlist(trackingProps);
+             else trackRemoveFromWatchlist(trackingProps);
+         }
+      }
+    } catch (err) {
+       // ROLLBACK ON CRITICAL ERROR
+       console.error("Action error:", err);
        setStatus(previousStatus);
        setGlobalStatus(minifigureId, previousStatus);
-       alert(result.error);
-    } else {
-       // ANALYTICS TRACKING ON SUCCESS
-       if (type === 'have') {
-           if (optimisticStatus === 'have') trackAddToCollection(trackingProps);
-           else trackRemoveFromCollection(trackingProps);
-       } else if (type === 'want') {
-           if (optimisticStatus === 'want') trackAddToWatchlist(trackingProps);
-           else trackRemoveFromWatchlist(trackingProps);
-       }
+       toast.error("Bir hata oluştu. Lütfen tekrar deneyin.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const submitRating = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -128,17 +143,17 @@ export default function CollectionActions({ minifigureId, trackingProps }: { min
               <div className="w-full flex items-center justify-center gap-3 py-4 px-6 rounded-2xl border-2 bg-[#D22B2B] border-[#D22B2B] text-white shadow-sm">
                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"></path></svg>
                  <span className="text-[13px] md:text-[14px] uppercase tracking-widest font-black">
-                    Koleksiyonuma Ekle
+                    {tCard('AddToCollection')}
                  </span>
               </div>
               <div className="w-full flex items-center justify-center gap-3 py-3.5 px-6 rounded-xl border-2 bg-gray-50 border-gray-200 text-gray-700">
                   <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                   <span className="text-[11px] md:text-[12px] uppercase tracking-[0.15em]">
-                    Takip Et (İstek)
+                    {tCard('Follow')}
                   </span>
               </div>
               <div className="w-full py-3 px-4 rounded-xl border border-gray-200 bg-white text-gray-700 flex items-center justify-center gap-2 font-bold text-sm">
-                  <span className="text-yellow-400 text-lg">★</span> Minifigüre Puan Ver
+                  <span className="text-yellow-400 text-lg">★</span> {tAction('GiveRating')}
               </div>
            </div>
 
@@ -148,7 +163,7 @@ export default function CollectionActions({ minifigureId, trackingProps }: { min
              className="absolute inset-[0] bg-white/40 backdrop-blur-[3px] z-10 flex flex-col items-center justify-center transition-all duration-300 hover:bg-white/20 hover:backdrop-blur-[2px] rounded-2xl overflow-hidden cursor-pointer group/overlay mt-[-4px] mb-[-4px]"
            >
               <span className="text-[11px] font-black tracking-widest text-[#D22B2B] drop-shadow-[0_1px_1px_rgba(255,255,255,1)] text-center px-4 transition-all duration-300 opacity-0 translate-y-2 group-hover/overlay:opacity-100 group-hover/overlay:translate-y-0 absolute uppercase z-20">
-                  Detayları görmek<br/>için erişim aç
+                  {tCard('LoginToSeeDetails1')}<br/>{tCard('LoginToSeeDetails2')}
               </span>
            </div>
         </div>
@@ -165,8 +180,8 @@ export default function CollectionActions({ minifigureId, trackingProps }: { min
                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
                    </div>
                    <div>
-                       <h4 className="text-green-800 font-black text-sm uppercase tracking-wider mb-0.5">Senin Koleksiyonunda</h4>
-                       <p className="text-green-700 font-medium text-[11px]">Bu minifigür kasana başarıyla eklendi.</p>
+                       <h4 className="text-green-800 font-black text-sm uppercase tracking-wider mb-0.5">{tAction('SuccessTitle')}</h4>
+                       <p className="text-green-700 font-medium text-[11px]">{tAction('SuccessDesc')}</p>
                    </div>
                </div>
            </div>
@@ -185,7 +200,7 @@ export default function CollectionActions({ minifigureId, trackingProps }: { min
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"></path></svg>
              )}
              <span className="text-[13px] md:text-[14px] uppercase tracking-widest font-black">
-                {status === 'have' ? 'Koleksiyondan Çıkar' : 'Koleksiyonuma Ekle'}
+                {status === 'have' ? tCard('RemoveFromCollection') : tCard('AddToCollection')}
              </span>
           </button>
           
@@ -200,7 +215,7 @@ export default function CollectionActions({ minifigureId, trackingProps }: { min
                 <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
              )}
              <span className="text-[11px] md:text-[12px] uppercase tracking-[0.15em]">
-                {status === 'want' ? ' Takipte (İstek)' : ' Takip Et (İstek)'}
+                {status === 'want' ? tCard('Unfollow') : tCard('Follow')}
              </span>
           </button>
        </div>
@@ -213,7 +228,7 @@ export default function CollectionActions({ minifigureId, trackingProps }: { min
           className={`w-full py-3 px-4 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.04)] border flex items-center justify-center gap-2 font-bold text-sm transition-all duration-300 ${rating ? 'bg-yellow-50 border-yellow-200 text-yellow-800' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:-translate-y-1 hover:shadow-md'}`}
        >
           <span className="text-yellow-400 text-lg">★</span> 
-          {rating ? `${rating} Yıldız Puanı Verdin` : 'Minifigüre Puan Ver'}
+          {rating ? `${rating} ${tAction('GivenStars')}` : tAction('GiveRating')}
        </button>
 
        {/* Puanlama Modalı (Portal) */}
@@ -223,8 +238,8 @@ export default function CollectionActions({ minifigureId, trackingProps }: { min
                 <button onClick={() => closeRatingModal()} className="absolute top-4 right-4 text-gray-400 hover:text-black">
                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
-                <h3 className="text-xl font-black text-center mb-2">Minifigürü Oyla</h3>
-                <p className="text-xs text-gray-500 font-medium text-center mb-6">Diğer koleksiyonerler için bu minifigürün kalitesini derecelendir.</p>
+                <h3 className="text-xl font-black text-center mb-2">{tAction('RateTitle')}</h3>
+                <p className="text-xs text-gray-500 font-medium text-center mb-6">{tAction('RateDesc')}</p>
                 
                 <form onSubmit={submitRating} className="flex flex-col gap-6">
                    <div className="flex justify-center gap-2 flex-row-reverse star-rating-group mb-4">
@@ -237,7 +252,7 @@ export default function CollectionActions({ minifigureId, trackingProps }: { min
                    </div>
                    
                    <button type="submit" disabled={loading} className="w-full bg-black text-white font-black py-4 rounded-xl hover:bg-gray-900 transition-colors uppercase tracking-widest text-xs">
-                       Puanı Kaydet
+                       {tAction('SaveRating')}
                    </button>
                 </form>
              </div>

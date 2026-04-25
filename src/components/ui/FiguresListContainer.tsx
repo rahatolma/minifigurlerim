@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import FigureCard from '@/components/ui/FigureCard';
 import { FigureCardData } from '@/utils/figureMapper';
 import { fetchMoreMinifigures } from '@/actions/minifigures';
+import { useTranslations } from 'next-intl';
 
 interface FiguresListContainerProps {
   initialFigures: FigureCardData[];
@@ -14,12 +15,14 @@ interface FiguresListContainerProps {
     type?: string;
     rarity?: string;
   };
+  locale?: string;
 }
 
-export default function FiguresListContainer({ initialFigures, totalCount, filters }: FiguresListContainerProps) {
+export default function FiguresListContainer({ initialFigures, totalCount, filters, locale = 'tr' }: FiguresListContainerProps) {
   const [figures, setFigures] = useState<FigureCardData[]>(initialFigures);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const t = useTranslations('FiguresList');
 
   // When filters or initial figures change from Server (URL change), reset our client state.
   useEffect(() => {
@@ -35,7 +38,7 @@ export default function FiguresListContainer({ initialFigures, totalCount, filte
     
     try {
       const nextPage = page + 1;
-      const newBatch = await fetchMoreMinifigures(filters, nextPage, 36);
+      const newBatch = await fetchMoreMinifigures(filters, nextPage, 36, locale);
       
       if (newBatch && newBatch.length > 0) {
         setFigures((prev) => [...prev, ...newBatch]);
@@ -79,10 +82,10 @@ export default function FiguresListContainer({ initialFigures, totalCount, filte
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Yükleniyor...
+                {t('Loading')}
               </span>
             ) : (
-              <span>Daha Fazla Gör</span>
+              <span>{t('LoadMore')}</span>
             )}
           </button>
         </div>

@@ -7,7 +7,7 @@ export interface ExploreDataShape {
   degradedBlocks: string[];
 }
 
-export const getExplorePageData = async (): Promise<ExploreDataShape> => {
+export const getExplorePageData = async (locale: string = 'tr'): Promise<ExploreDataShape> => {
   const degradedBlocks: string[] = [];
   const t0 = performance.now();
   
@@ -16,7 +16,7 @@ export const getExplorePageData = async (): Promise<ExploreDataShape> => {
   try {
     const rawData = await getAllMinifigures();
     if (Array.isArray(rawData)) {
-      figures = rawData.slice(0, 24).map(mapFigureForCard).filter(Boolean) as FigureCardData[];
+      figures = rawData.slice(0, 24).map((row) => mapFigureForCard(row, locale)).filter(Boolean) as FigureCardData[];
     }
   } catch (err: any) {
     const duration = performance.now() - t0;

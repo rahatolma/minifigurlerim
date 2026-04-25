@@ -1,6 +1,7 @@
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { getAboutSettings } from '@/services/dal';
 import RichTextContent from '@/components/ui/RichTextContent';
+import { getTranslations } from 'next-intl/server';
 
 export const revalidate = 60; // 1 dakika ISR cache
 
@@ -11,6 +12,8 @@ export const metadata = {
 
 export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {
   const resolvedParams = await params;
+  const locale = resolvedParams.locale;
+  const t = await getTranslations({ locale, namespace: 'AboutPage' });
   const settings = await getAboutSettings();
   
   const finalSelectedValues = {
@@ -31,14 +34,20 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
 
   // Varsayılan değerler
   const bgImage = settings?.hero_image_url || '/images/placeholder.svg';
-  const quote = settings?.quote_text || 'Peşinden gidecek cesaretiniz varsa bütün hayalleriniz gerçek olabilir.';
-  const author = settings?.quote_author || 'Walt Disney';
+  
+  // Helper for bilingual fields
+  const getField = (baseField: string, fallbackKey: string) => {
+    if (locale === 'en' && settings?.[`${baseField}_en`]) {
+      return settings[`${baseField}_en`];
+    }
+    return settings?.[baseField] || t(fallbackKey);
+  };
+
+  const quote = getField('quote_text', 'Quote');
+  const author = getField('quote_author', 'Author');
 
   return (
     <div className="bg-[#fcfcfc] min-h-screen pb-16">
-      
-
-
       {/* Hero Alanı */}
       <div className="w-full relative px-4 sm:px-8 max-w-7xl mx-auto mt-8">
         {/* Arka plan mozaik resmi */}
@@ -78,11 +87,11 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
                       />
                   </div>
                   <div className="px-6 py-6 text-center border-t border-gray-100 bg-white flex flex-col flex-1">
-                      <h3 className="font-bold text-[18px] text-[#D22B2B] mb-2">{settings?.boss_title || 'Büyük Patron'}</h3>
-                      <p className="font-bold text-[20px] text-gray-900 mb-5">{settings?.boss_subtitle || 'Ruh Hastası, Obsesif'}</p>
+                      <h3 className="font-bold text-[18px] text-[#D22B2B] mb-2">{getField('boss_title', 'BossTitle')}</h3>
+                      <p className="font-bold text-[20px] text-gray-900 mb-5">{getField('boss_subtitle', 'BossSubtitle')}</p>
                       <div className="w-full h-px bg-gray-100 mb-5"></div>
                       <p className="flex flex-col items-center gap-1.5 text-[20px] font-bold text-gray-600">
-                        {settings?.boss_desc || 'Baştan aşağı güzellik abidesi. Ne iş olsa yapar.'}
+                        {getField('boss_desc', 'BossDesc')}
                       </p>
                   </div>
                 </div>
@@ -91,16 +100,16 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
             {/* Sağ Metin - Hikaye */}
             <div className="w-full lg:w-2/3 min-w-0 overflow-hidden">
                 <h2 className="text-3xl font-black text-black mb-[30px] text-left">
-                    {settings?.main_title || '"Minik parçalarla büyük hayaller inşa edin!"'}
+                    {getField('main_title', 'MainTitle')}
                 </h2>
                 
                 <div className="text-gray-700 font-medium text-[15px] leading-relaxed">
-                    {settings?.main_text ? (
+                    {locale === 'en' && settings?.main_text_en ? (
+                        <RichTextContent html={settings.main_text_en} />
+                    ) : settings?.main_text ? (
                         <RichTextContent html={settings.main_text} />
                     ) : (
-                        <>
-                            <p>LEGO®, çocukluğumdan beri hayatımda önemli bir yer tutuyor...</p>
-                        </>
+                        <RichTextContent html={t.raw('MainDesc')} />
                     )}
                 </div>
             </div>
@@ -122,11 +131,11 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
                     />
                 </div>
                 <div className="px-6 py-6 text-center border-t border-gray-100 bg-white flex flex-col flex-1">
-                    <h3 className="font-bold text-[18px] text-[#D22B2B] mb-2">{settings?.mid_title || 'Ortanca Patron'}</h3>
-                    <p className="font-bold text-[20px] text-gray-900 mb-5">{settings?.mid_subtitle || 'Rahat, Huzurlu, Mutlu'}</p>
+                    <h3 className="font-bold text-[18px] text-[#D22B2B] mb-2">{getField('mid_title', 'MidTitle')}</h3>
+                    <p className="font-bold text-[20px] text-gray-900 mb-5">{getField('mid_subtitle', 'MidSubtitle')}</p>
                     <div className="w-full h-px bg-gray-100 mb-5"></div>
                     <p className="flex flex-col items-center gap-1.5 text-[20px] font-bold text-gray-600 leading-relaxed">
-                      {settings?.mid_desc || 'İçerik üretir. Pratik zekası ve vizyonu ile yol gösterir.'}
+                      {getField('mid_desc', 'MidDesc')}
                     </p>
                 </div>
               </div>
@@ -141,11 +150,11 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
                     />
                 </div>
                 <div className="px-6 py-6 text-center border-t border-gray-100 bg-white flex flex-col flex-1">
-                    <h3 className="font-bold text-[18px] text-[#D22B2B] mb-2">{settings?.small_title || 'Küçük Patron'}</h3>
-                    <p className="font-bold text-[20px] text-gray-900 mb-5">{settings?.small_subtitle || 'Cinyıs, Eğlenceli, Olgun'}</p>
+                    <h3 className="font-bold text-[18px] text-[#D22B2B] mb-2">{getField('small_title', 'SmallTitle')}</h3>
+                    <p className="font-bold text-[20px] text-gray-900 mb-5">{getField('small_subtitle', 'SmallSubtitle')}</p>
                     <div className="w-full h-px bg-gray-100 mb-5"></div>
                     <p className="flex flex-col items-center gap-1.5 text-[20px] font-bold text-gray-600 leading-relaxed">
-                      {settings?.small_desc || 'Oynar. Arada neden böyle yapmıyoruz diye sorgular.'}
+                      {getField('small_desc', 'SmallDesc')}
                     </p>
                 </div>
               </div>
@@ -160,14 +169,14 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
                     />
                 </div>
                 <div className="px-6 py-6 text-center flex flex-col flex-1">
-                    <h3 className="font-bold text-[18px] text-white mb-2">{settings?.join_title || 'Ekibimize Katılın'}</h3>
+                    <h3 className="font-bold text-[18px] text-white mb-2">{getField('join_title', 'JoinTitle')}</h3>
                     <div className="w-full h-px bg-white/20 mb-5 mt-2"></div>
                     <p className="flex flex-col items-center gap-1.5 text-[13px] font-bold text-white/90 leading-relaxed mb-6">
-                      {settings?.join_text || 'Minifigür tutkusunu paylaşan dostlarla birlikte daha zengin ve keyifli içerikler üretmek istiyoruz. Hep birlikte büyüyelim!'}
+                      {getField('join_text', 'JoinDesc')}
                     </p>
                     <div className="mt-auto">
-                        <Link href={settings?.join_btn_link || "/iletisim"} className="w-full block bg-black hover:bg-gray-800 text-white font-black text-[11px] py-4 rounded-md transition-colors uppercase tracking-widest shadow-md">
-                            {settings?.join_btn_text || 'Formu Doldurunuz'}
+                        <Link href={getField('join_btn_link', '/iletisim') as any} className="w-full block bg-black hover:bg-gray-800 text-white font-black text-[11px] py-4 rounded-md transition-colors uppercase tracking-widest shadow-md">
+                            {getField('join_btn_text', 'JoinBtn')}
                         </Link>
                     </div>
                 </div>

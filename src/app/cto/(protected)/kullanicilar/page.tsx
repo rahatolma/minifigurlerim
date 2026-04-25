@@ -119,6 +119,7 @@ console.error(err);
                                   userId={p.id} 
                                   isApproved={p.is_approved} 
                                   role={p.role}
+                                  currentUserId={user.id}
                                />
                            </td>
                         </tr>

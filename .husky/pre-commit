@@ -1,1 +1,1 @@
-node scripts/enforce-standards.mjs
+npx tsc --noEmit

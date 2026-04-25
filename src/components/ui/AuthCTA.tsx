@@ -1,7 +1,8 @@
 'use client';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import { useAuth } from '@/components/providers/AuthProvider';
+import { useTranslations } from 'next-intl';
 
 export interface AuthCTAProps {
   fullWidth?: boolean;
@@ -13,6 +14,7 @@ export default function AuthCTA({ fullWidth = false }: AuthCTAProps) {
   // Bu yüzden kozmetik bir 'fallback' yapmıyoruz, doğrudan context'in gücüne ve hatasına güveniyoruz.
   const { user } = useAuth();
   const isLoggedIn = !!user;
+  const t = useTranslations('AuthCTA');
 
   const containerStyle = fullWidth
     ? "w-full relative overflow-hidden bg-gray-900 py-16 md:py-20 px-4 md:px-8 shadow-xl flex flex-col items-center justify-center text-center group border-y border-gray-800"
@@ -32,11 +34,11 @@ export default function AuthCTA({ fullWidth = false }: AuthCTAProps) {
       {/* Main Copy */}
       <div className="relative z-10 flex flex-col items-center mb-6">
         <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight drop-shadow-sm">
-          {isLoggedIn ? 'Portföyünü Genişlet. Piyasa Değerini Gör.' : 'Kendi koleksiyonunu oluşturmaya başla.'}
+          {isLoggedIn ? t('LoggedInTitle') : t('LoggedOutTitle')}
         </h2>
         {!isLoggedIn && (
           <p className="text-[16px] md:text-[18px] font-bold text-gray-300 mt-4 max-w-xl mx-auto drop-shadow-sm">
-            Sahip olduğun figürleri ekle, ilerlemeni takip et.
+            {t('LoggedOutDesc')}
           </p>
         )}
       </div>
@@ -47,7 +49,7 @@ export default function AuthCTA({ fullWidth = false }: AuthCTAProps) {
           href={isLoggedIn ? "/koleksiyonum" : "/login"}
           className={`relative overflow-hidden inline-flex items-center justify-center font-black text-[13px] tracking-[0.15em] uppercase py-4 px-12 rounded-xl transition-all duration-300 shadow-[0_0_20px_rgba(210,43,43,0.4)] group/btn w-full md:w-auto transform hover:-translate-y-1 ${isLoggedIn ? 'bg-green-600 text-white hover:bg-green-500 hover:shadow-[0_0_30px_rgba(22,163,74,0.6)]' : 'bg-[#D22B2B] text-white hover:bg-red-600 hover:shadow-[0_0_30px_rgba(210,43,43,0.6)]'}`}
         >
-          <span className="relative z-10">{isLoggedIn ? 'Koleksiyonuma Git' : 'Erişim Aç'}</span>
+          <span className="relative z-10">{isLoggedIn ? t('BtnLoggedIn') : t('BtnLoggedOut')}</span>
           {/* Button shine effect */}
           <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover/btn:animate-[shimmer_1.5s_infinite]"></div>
         </Link>
@@ -57,17 +59,17 @@ export default function AuthCTA({ fullWidth = false }: AuthCTAProps) {
       <div className="relative z-10 flex items-center justify-center gap-4 text-[11px] md:text-[13px] font-bold text-gray-400 tracking-wide">
         <span className="flex items-center gap-1.5">
           <svg className="w-4 h-4 text-[#D22B2B]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-          800+ Minifigür
+          {t('Trust1')}
         </span>
         <span className="text-gray-600">•</span>
         <span className="flex items-center gap-1.5">
           <svg className="w-4 h-4 text-[#D22B2B]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-          25+ Seri
+          {t('Trust2')}
         </span>
         <span className="text-gray-600">•</span>
         <span className="flex items-center gap-1.5">
           <svg className="w-4 h-4 text-[#D22B2B]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-          Sürekli güncellenen veri
+          {t('Trust3')}
         </span>
       </div>
     </div>

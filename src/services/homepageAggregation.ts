@@ -44,7 +44,7 @@ async function safeFetch<T>(
   }
 }
 
-export const getHomepageData = async (): Promise<HomepageDataShape> => {
+export const getHomepageData = async (locale: string = 'tr'): Promise<HomepageDataShape> => {
   const degradedBlocks: string[] = [];
 
   const [
@@ -57,11 +57,25 @@ export const getHomepageData = async (): Promise<HomepageDataShape> => {
     previewSeriesRes
   ] = await Promise.all([
     safeFetch('sliders', getHomeSliders),
-    safeFetch('latest_series', getLatestSeries),
-    safeFetch('latest_figures', getLatestFigures, mapFigureForCard),
-    safeFetch('top_demanded', () => getTopDemandedFigures(6), mapFigureForCard),
-    safeFetch('top_valued', () => getTopValuedFigures(6), mapFigureForCard),
-    safeFetch('news', getLatestNews),
+    safeFetch('latest_series', getLatestSeries, (row) => {
+      const isEn = locale === 'en' && row.en_status !== 'missing';
+      return {
+        ...row,
+        title: isEn && row.title_en ? row.title_en : row.title,
+        slug: isEn && row.slug_en ? row.slug_en : (row.slug_tr || row.slug)
+      };
+    }),
+    safeFetch('latest_figures', getLatestFigures, (row) => mapFigureForCard(row, locale)),
+    safeFetch('top_demanded', () => getTopDemandedFigures(6), (row) => mapFigureForCard(row, locale)),
+    safeFetch('top_valued', () => getTopValuedFigures(6), (row) => mapFigureForCard(row, locale)),
+    safeFetch('news', getLatestNews, (row) => {
+      const isEn = locale === 'en' && row.en_status !== 'missing';
+      return {
+        ...row,
+        title: isEn && row.title_en ? row.title_en : row.title,
+        slug: isEn && row.slug_en ? row.slug_en : (row.slug_tr || row.slug)
+      };
+    }),
     safeFetch('series_fig_stats', getPreviewFiguresForSeries, undefined, null)
   ]);
 
