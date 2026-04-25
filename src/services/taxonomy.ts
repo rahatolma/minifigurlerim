@@ -1,9 +1,25 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { cache } from 'react';
+
+export type TaxonomyTerm = {
+  type: string;
+  key: string;
+  label_tr: string;
+  label_en: string;
+};
+
+export type TaxonomyMessages = {
+  Role: Record<string, string>;
+  Category: Record<string, string>;
+  Rarity: Record<string, string>;
+  ValueSignal: Record<string, string>;
+  DemandSignal: Record<string, string>;
+  [key: string]: Record<string, string>;
+};
 
 // Create a Supabase client with the anon key for public data.
 // Since taxonomy_terms public select is enabled for is_active=true, we don't need service role.
-let _supabase: any = null;
+let _supabase: SupabaseClient | null = null;
 
 function getSupabaseClient() {
   if (_supabase) return _supabase;
@@ -14,7 +30,7 @@ function getSupabaseClient() {
 }
 
 // Cache the database call for the lifetime of the request (and next.js fetch caching applies)
-export const fetchTaxonomyTerms = cache(async () => {
+export const fetchTaxonomyTerms = cache(async (): Promise<TaxonomyTerm[]> => {
   const client = getSupabaseClient();
   const { data, error } = await client
     .from('taxonomy_terms')
@@ -29,10 +45,10 @@ export const fetchTaxonomyTerms = cache(async () => {
   return data;
 });
 
-export async function getTaxonomyMessages(locale: string) {
+export async function getTaxonomyMessages(locale: string): Promise<TaxonomyMessages> {
   const terms = await fetchTaxonomyTerms();
   
-  const taxonomyMessages: any = {
+  const taxonomyMessages: TaxonomyMessages = {
     Role: {},
     Category: {},
     Rarity: {},
@@ -40,8 +56,8 @@ export async function getTaxonomyMessages(locale: string) {
     DemandSignal: {}
   };
 
-  terms.forEach((term: any) => {
-    // Map the database 'type' to the dictionary namespace
+  terms.forEach((term: TaxonomyTerm) => {
+     // Map the database 'type' to the dictionary namespace
     let namespace = '';
     if (term.type === 'figure_role') namespace = 'Role';
     else if (term.type === 'series_category') namespace = 'Category';

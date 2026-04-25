@@ -1,15 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 
-export const createPublicClient = () => {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
+import { validateSupabaseEnv } from '@/utils/env';
 
-  if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn('Supabase URL or Anon Key is missing. Check your environment variables.');
-  }
+export const createPublicClient = () => {
+  const { url, key } = validateSupabaseEnv();
 
   // Create standard supabase-js client with NO cookies or SSR auth logic
-  return createClient(supabaseUrl || '', supabaseAnonKey || '', {
+  return createClient(url, key, {
     auth: {
       persistSession: false,
       autoRefreshToken: false,

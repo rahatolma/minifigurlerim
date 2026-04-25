@@ -3,42 +3,22 @@ import OpenAI from "openai";
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/admin";
+import { validateOpenAIEnv } from "@/utils/env";
 import { slugify } from "@/utils/helpers";
-
-function getOpenAIClient() {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    throw new Error("OPENAI_API_KEY is not configured");
-  }
-  return new OpenAI({ apiKey });
-}
-
 export async function POST(request: Request) {
   try {
     // 1. Auth Check (Must be CTO/Admin)
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll();
-          },
-          setAll(cookiesToSet) {
-            try {
-              cookiesToSet.forEach(({ name, value, options }) =>
-                cookieStore.set(name, value, options)
-              );
-            } catch (error) {
-              console.error("Cookie Error:", error);
-            }
-          },
-        },
-      }
-    );
+    let openai: OpenAI;
+    try {
+      const { apiKey } = validateOpenAIEnv();
+      openai = new OpenAI({ apiKey });
+    } catch (envError: any) {
+      return NextResponse.json({ error: "Configuration Error", message: envError.message }, { status: 500 });
+    }
+
+    const supabase = await createClient();
 
     const {
       data: { user },
@@ -52,12 +32,8 @@ export async function POST(request: Request) {
     // Optional: Check if user has admin role (if applicable in this project)
     // For now, having a valid session on this /cto route is our primary check.
 
-    let openai: OpenAI;
-    try {
-      openai = getOpenAIClient();
-    } catch (envError: any) {
-      return NextResponse.json({ error: "Configuration Error", message: envError.message }, { status: 500 });
-    }
+    // Optional: Check if user has admin role (if applicable in this project)
+    // For now, having a valid session on this /cto route is our primary check.
 
     // 2. Parse Request
     const body = await request.json();
@@ -73,16 +49,10 @@ export async function POST(request: Request) {
     // We need service role to bypass RLS for updating content if needed, 
     // or we can use the regular client if RLS allows admins to update. 
     // We'll use service role for safety in the CTO API.
-    const supabaseAdmin = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      {
-        cookies: {
-          getAll: () => [],
-          setAll: () => {},
-        },
-      }
-    );
+    // We need service role to bypass RLS for updating content if needed, 
+    // or we can use the regular client if RLS allows admins to update. 
+    // We'll use service role for safety in the CTO API.
+    const supabaseAdmin = createAdminClient();
 
     // 3. Fetch TR Data
     const { data: entityData, error: dbError } = await supabaseAdmin

@@ -4,12 +4,12 @@ import OpenAI from 'openai';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 import { updateTranslationAdminDal } from '@/services/action_dal';
+import { validateOpenAIEnv } from '@/utils/env';
 
 export async function POST(req: Request) {
   let openai: OpenAI;
   try {
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) throw new Error("OPENAI_API_KEY is missing");
+    const { apiKey } = validateOpenAIEnv();
     openai = new OpenAI({ apiKey });
   } catch (envErr: any) {
     return NextResponse.json({ error: "Config Error", details: envErr.message }, { status: 500 });

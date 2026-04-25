@@ -4,19 +4,13 @@ import OpenAI from "openai";
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-function getOpenAIClient() {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    throw new Error("OPENAI_API_KEY is not configured");
-  }
-  return new OpenAI({ apiKey });
-}
-
+import { validateOpenAIEnv } from "@/utils/env";
 export async function POST(request: Request) {
   try {
     let openai: OpenAI;
     try {
-      openai = getOpenAIClient();
+      const { apiKey } = validateOpenAIEnv();
+      openai = new OpenAI({ apiKey });
     } catch (envError: any) {
       return NextResponse.json({ error: "Configuration Error", message: envError.message }, { status: 500 });
     }
