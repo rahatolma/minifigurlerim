@@ -201,6 +201,7 @@ export default async function FigureDetail({
 
   const isFallback = locale === 'en' && !rawFigure.name_en && !rawFigure.short_description_en;
 
+  // Force cache invalidation
   const cleanSeries = figure.series_name ? cleanSeriesDisplayTitle(figure.series_name, locale) : null;
 
   return (

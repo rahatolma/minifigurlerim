@@ -38,12 +38,12 @@ export function cleanSeriesDisplayTitle(title: string, locale: string): { prefix
     if (rawTitle.startsWith(prefixFull) && rawTitle.length > prefixFull.length) {
         return {
             prefix: prefixFull,
-            mainTitle: rawTitle.substring(prefixFull.length).trim()
+            mainTitle: rawTitle.substring(prefixFull.length).replace(/^[\s:\-]+/, '').trim()
         };
     } else if (rawTitle.startsWith(prefixShort) && rawTitle.length > prefixShort.length) {
         return {
             prefix: prefixShort,
-            mainTitle: rawTitle.substring(prefixShort.length).trim()
+            mainTitle: rawTitle.substring(prefixShort.length).replace(/^[\s:\-]+/, '').trim()
         };
     }
 
