@@ -623,6 +623,18 @@
     "WidgetDesc": "Ama çok yakında koleksiyonerler için özel içerikler burada olacak."
   },
   "Taxonomy": {
+    "Category": {
+      "KoleksiyonSerileri": "Koleksiyon Serileri",
+      "LisansliSeriler": "Lisanslı Seriler",
+      "OzelSeriler": "Özel Seriler",
+      "Diger": "Diğer"
+    },
+    "Rarity": {
+      "Yaygin": "Yaygın",
+      "Nadir": "Nadir",
+      "CokNadir": "Çok Nadir",
+      "Efsanevi": "Efsanevi"
+    },
     "Role": {
       "IlkelKarakter": "İlkel Karakter",
       "AileKarakteri": "Aile Karakteri",

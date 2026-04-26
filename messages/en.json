@@ -624,6 +624,18 @@
     "WidgetDesc": "But exclusive content for collectors will be here very soon."
   },
   "Taxonomy": {
+    "Category": {
+      "KoleksiyonSerileri": "Collectible Series",
+      "LisansliSeriler": "Licensed Series",
+      "OzelSeriler": "Special Series",
+      "Diger": "Other"
+    },
+    "Rarity": {
+      "Yaygin": "Common",
+      "Nadir": "Rare",
+      "CokNadir": "Very Rare",
+      "Efsanevi": "Legendary"
+    },
     "Role": {
       "IlkelKarakter": "Primitive Character",
       "AileKarakteri": "Family Character",
