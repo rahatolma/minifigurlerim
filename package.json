@@ -10,11 +10,9 @@
     "start": "next start",
     "lint": "eslint",
     "cevir": "npx tsx scripts/translate-i18n.ts",
-    "prepare": "husky",
     "predev": "node scripts/verify-env.mjs",
     "prebuild": "node scripts/verify-env.mjs",
-    "test:e2e": "playwright test",
-    "preflight": "npm ci && npx tsc --noEmit && NEXT_PUBLIC_SUPABASE_URL=https://dummy.supabase.co NEXT_PUBLIC_SUPABASE_ANON_KEY=dummy-anon-key npm run build"
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@marsidev/react-turnstile": "^1.5.0",
@@ -45,7 +43,6 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.1",
-    "husky": "^9.1.7",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.4"
