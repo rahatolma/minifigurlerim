@@ -9,6 +9,7 @@ import DragScrollContainer from '@/components/ui/DragScrollContainer';
 import { getTranslations, getLocale } from 'next-intl/server';
 
 import SeriesTimelineClient from '@/components/ui/SeriesTimelineClient';
+import { mapSeriesToCardViewModel } from '@/services/mappers';
 
 export const revalidate = 300; // 5 minute ISR cache (Architecture Document Standard)
 
@@ -68,6 +69,12 @@ export default async function SeriesPage({
      });
   }
 
+  const tTax = await getTranslations({ locale, namespace: 'Taxonomy' });
+  const tCard = await getTranslations({ locale, namespace: 'SeriesCard' });
+  const tCommon = await getTranslations({ locale, namespace: 'CommonTypes' });
+
+  const mappedFilteredSeries = filteredSeries.map(series => mapSeriesToCardViewModel(series, locale, tTax, tCard, tCommon, seriesFigStats));
+
   return (
     <div className="bg-[#fcfcfc] min-h-screen">
       
@@ -97,20 +104,9 @@ export default async function SeriesPage({
       */}
       <div className={`max-w-7xl mx-auto px-8 pt-6 md:pt-0 ${filteredSeries.length > 21 ? 'pb-0' : 'pb-12'}`}>
         <div className="flex flex-row snap-x snap-mandatory overflow-x-auto pb-4 -mx-8 px-8 gap-4 md:grid md:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 md:gap-5 md:overflow-visible md:snap-none md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-           {filteredSeries.slice(0, 21).map(series => (
-            <div key={series.id} className="snap-center snap-always shrink-0 w-[90vw] md:w-auto flex flex-col justify-stretch">
-              <SeriesCard 
-                  id={(locale === 'en' && series.en_status !== 'missing' && series.slug_en) ? series.slug_en : (series.slug || series.id)}
-                  seriesId={series.id}
-                  title={(locale === 'en' && series.en_status !== 'missing' && series.title_en) ? series.title_en : series.title}
-                  imageUrl={series.cover_image_url || ''}
-                  year={series.release_year || (series.created_at ? new Date(series.created_at).getFullYear() : '2010')}
-                  seriesNo={series.series_no}
-                  category={series.category || 'CMF'}
-                  totalFigures={series.figure_count || seriesFigStats[series.id]?.count || 0}
-                  rarity={series.rarity || 'Yaygın'}
-                  latestFigureName={seriesFigStats[series.id]?.latestName || null}
-              />
+           {mappedFilteredSeries.slice(0, 21).map(seriesViewModel => (
+            <div key={seriesViewModel.id} className="snap-center snap-always shrink-0 w-[90vw] md:w-auto flex flex-col justify-stretch">
+              <SeriesCard {...seriesViewModel} />
             </div>
           ))}
         </div>
@@ -132,20 +128,9 @@ export default async function SeriesPage({
                <AuthCTA />
             </div>
             <div className="flex flex-row snap-x snap-mandatory overflow-x-auto pb-8 -mx-8 px-8 gap-4 md:grid md:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 md:gap-5 md:overflow-visible md:snap-none md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-               {filteredSeries.slice(21).map(series => (
-                <div key={series.id} className="snap-center snap-always shrink-0 w-[85%] md:w-auto flex flex-col justify-stretch">
-                  <SeriesCard 
-                      id={(locale === 'en' && series.en_status !== 'missing' && series.slug_en) ? series.slug_en : (series.slug || series.id)}
-                      seriesId={series.id}
-                      title={(locale === 'en' && series.en_status !== 'missing' && series.title_en) ? series.title_en : series.title}
-                      imageUrl={series.cover_image_url || ''}
-                      year={series.release_year || (series.created_at ? new Date(series.created_at).getFullYear() : '2010')}
-                      seriesNo={series.series_no}
-                      category={series.category || 'CMF'}
-                      totalFigures={series.figure_count || seriesFigStats[series.id]?.count || 0}
-                      rarity={series.rarity || 'Yaygın'}
-                      latestFigureName={seriesFigStats[series.id]?.latestName || null}
-                  />
+               {mappedFilteredSeries.slice(21).map(seriesViewModel => (
+                <div key={seriesViewModel.id} className="snap-center snap-always shrink-0 w-[85%] md:w-auto flex flex-col justify-stretch">
+                  <SeriesCard {...seriesViewModel} />
                 </div>
               ))}
             </div>

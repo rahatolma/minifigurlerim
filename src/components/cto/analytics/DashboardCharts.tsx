@@ -145,7 +145,7 @@ export default function DashboardCharts({ timelineData, statusData, topSeriesDat
                     verticalAlign="bottom" 
                     height={36} 
                     iconType="circle"
-                    formatter={(value) => <span className="text-gray-900 font-bold ml-1">{value}</span>}
+                    formatter={(value: any) => <span className="text-gray-900 font-bold ml-1">{value}</span>}
                   />
                 </PieChart>
               </ResponsiveContainer>

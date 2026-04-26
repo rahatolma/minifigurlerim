@@ -46,7 +46,7 @@ export default function PriceChart({ history }: { history: any[] }) {
                  tick={{ fill: '#A0AEC0', fontSize: 10, fontWeight: 700 }} 
                  axisLine={false}
                  tickLine={false}
-                 tickFormatter={(value) => `$${value}`}
+                 tickFormatter={(value: any) => `$${value}`}
               />
               <Tooltip 
                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 15px rgba(0,0,0,0.1)', fontWeight: 'bold', fontSize: '12px' }}

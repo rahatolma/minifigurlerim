@@ -142,7 +142,7 @@
     "MetaGraphSuffix": " | Latest Announcement"
   },
   "SeriesCard": {
-    "CategoryDefault": "LEGO® Minifigure Series",
+    "CategoryDefault": "Uncategorized",
     "Figure": "Figures",
     "CommonRarity": "Common",
     "Completion": "Series Completion",
@@ -624,6 +624,18 @@
     "WidgetDesc": "But exclusive content for collectors will be here very soon."
   },
   "Taxonomy": {
+    "Category": {
+      "LisansliSeriler": "Licensed Series",
+      "KoleksiyonSerileri": "Collection Series",
+      "OzelSeriler": "Special Series"
+    },
+    "Rarity": {
+      "Yaygin": "Common",
+      "Nadir": "Rare",
+      "CokNadir": "Super Rare",
+      "Efsanevi": "Legendary",
+      "Benzersiz": "Unique"
+    },
     "Role": {
       "IlkelKarakter": "Primitive Character",
       "AileKarakteri": "Family Character",
@@ -935,18 +947,6 @@
       "HavaDestegi": "Air Support",
       "Gezgin": "Wanderer",
       "AbsurtKahraman": "Absurd Hero"
-    },
-    "Category": {
-      "LisansliSeriler": "Licensed Series",
-      "KoleksiyonSerileri": "Collection Series",
-      "OzelSeriler": "Special Series"
-    },
-    "Rarity": {
-      "Yaygin": "Common",
-      "Nadir": "Rare",
-      "CokNadir": "Super Rare",
-      "Efsanevi": "Legendary",
-      "Benzersiz": "Unique"
     }
   },
   "Collection": {

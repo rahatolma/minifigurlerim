@@ -254,7 +254,7 @@ export default async function FigureDetail({
                 )}
                 {figure.category_main ? (
                     <Link href={`/seriler?category=${slugify(figure.category_main)}` as any} className="bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors font-black uppercase tracking-widest text-[9px] sm:text-[10px] px-3.5 py-1.5 rounded-sm">
-                        {getLocalizedCategory(figure.category_main, tTax)}
+                        {getLocalizedCategory(figure.category_main, tTax, locale) || t('Table.Category')}
                     </Link>
                 ) : (
                     <span className="bg-gray-100 text-gray-600 font-black uppercase tracking-widest text-[9px] sm:text-[10px] px-3.5 py-1.5 rounded-sm">
@@ -288,10 +288,10 @@ export default async function FigureDetail({
                         ) : '-'
                     } />
                     <TableRow label={t('Table.SeriesNo')} value={figure.series_number} />
-                    <TableRow label={t('Table.Category')} value={figure.category_main ? getLocalizedCategory(figure.category_main, tTax) : (locale === 'en' ? 'Uncategorized' : 'Kategorisiz')} />
+                    <TableRow label={t('Table.Category')} value={figure.category_main ? getLocalizedCategory(figure.category_main, tTax, locale) || (locale === 'en' ? 'Uncategorized' : 'Kategorisiz') : (locale === 'en' ? 'Uncategorized' : 'Kategorisiz')} />
                     <TableRow label={t('Table.FigureName')} value={figure.figure_name} />
                     <TableRow label={t('Table.FigureNo')} value={figure.figure_number} />
-                    <TableRow label={t('Table.Role')} value={figure.figure_role ? getLocalizedRole(figure.figure_role, tTax) : '-'} />
+                    <TableRow label={t('Table.Role')} value={figure.figure_role ? getLocalizedRole(figure.figure_role, tTax, locale) || '-' : '-'} />
                     <TableRow label={t('Table.Type')} value={figure.figure_type} />
                     <TableRow label={t('Table.Code')} value={figure.figure_code} />
                     <TableRow label={t('Table.PieceCount')} value={figure.piece_count} />
@@ -344,7 +344,7 @@ export default async function FigureDetail({
                     <div className="flex flex-col items-center justify-center bg-yellow-50/50 px-2 py-2 rounded-lg border border-yellow-100 flex-1 min-w-0">
                         <span className="text-[8px] sm:text-[9px] text-yellow-600/80 font-bold uppercase tracking-widest mb-1 truncate w-full text-center">{t('Value.Score')}</span>
                         <span className="text-[12px] sm:text-[14px] font-black text-yellow-700 truncate w-full text-center">
-                            {getLocalizedRarity(figure.rarity_level || '', tTax) || '-'}
+                            {getLocalizedRarity(figure.rarity_level || '', tTax, locale) || '-'}
                         </span>
                     </div>
 

@@ -20,7 +20,11 @@ export default getRequestConfig(async ({ requestLocale }) => {
   // Merge dynamic DB translations into the static Taxonomy namespace
   messages.Taxonomy = {
     ...messages.Taxonomy, // Preserve any static taxonomy values (if any)
-    ...dbTaxonomy
+    Role: { ...(messages.Taxonomy?.Role || {}), ...dbTaxonomy.Role },
+    Category: { ...(messages.Taxonomy?.Category || {}), ...dbTaxonomy.Category },
+    Rarity: { ...(messages.Taxonomy?.Rarity || {}), ...dbTaxonomy.Rarity },
+    ValueSignal: { ...(messages.Taxonomy?.ValueSignal || {}), ...dbTaxonomy.ValueSignal },
+    DemandSignal: { ...(messages.Taxonomy?.DemandSignal || {}), ...dbTaxonomy.DemandSignal }
   };
 
   return {

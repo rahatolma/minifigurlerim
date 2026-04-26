@@ -124,7 +124,7 @@ export default function FiguresFilterClient({
           name="role"
           options={[
             { value: 'all', label: tFilter('AllRoles') }, // Keep as is since roles are dynamic
-            ...sortedRoles.map(r => ({ value: r, label: getLocalizedRole(r, tTax) }))
+            ...sortedRoles.map(r => ({ value: r, label: getLocalizedRole(r, tTax, locale) }))
           ]}
           value={currentRole}
           onChange={(val: string) => handleFilterUpdate('role', val)}
@@ -138,7 +138,7 @@ export default function FiguresFilterClient({
           name="rarity"
           options={[
             { value: 'all', label: tFilter('AllRarities') },
-            ...rarities.map(r => ({ value: r, label: getLocalizedRarity(r, tTax) }))
+            ...rarities.map(r => ({ value: r, label: getLocalizedRarity(r, tTax, locale) }))
           ]}
           value={currentRarity}
           onChange={(val: string) => handleFilterUpdate('rarity', val)}
@@ -245,7 +245,7 @@ export default function FiguresFilterClient({
                   className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
                 >
                   <option value="all">{tFilter('AllRoles')}</option>
-                  {sortedRoles.map(r => <option key={r} value={r}>{getLocalizedRole(r, tTax)}</option>)}
+                  {sortedRoles.map(r => <option key={r} value={r}>{getLocalizedRole(r, tTax, locale)}</option>)}
                 </select>
             </div>
 
@@ -259,7 +259,7 @@ export default function FiguresFilterClient({
                   className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
                 >
                   <option value="all">{tFilter('AllRarities')}</option>
-                  {rarities.map(r => <option key={r} value={r}>{getLocalizedRarity(r, tTax)}</option>)}
+                  {rarities.map(r => <option key={r} value={r}>{getLocalizedRarity(r, tTax, locale)}</option>)}
                 </select>
             </div>
         </div>
