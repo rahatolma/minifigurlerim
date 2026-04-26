@@ -29,7 +29,7 @@ const warnedTaxonomyKeys = new Set<string>();
  * Fallback mekanizmalı güvenli taxonomy okuyucusu.
  * Eğer key sözlükte (DB'de) yoksa, ham değeri döndürür.
  */
-function safeTranslate(dbValue: any, namespace: string, t: any): string {
+function safeTranslate(dbValue: any, namespace: string, t: any, locale?: string): string {
   try {
     if (!dbValue) return '';
     
@@ -47,6 +47,10 @@ function safeTranslate(dbValue: any, namespace: string, t: any): string {
       warnedTaxonomyKeys.add(warnId);
     }
     
+    if (locale === 'en') {
+      return '';
+    }
+    
     return typeof dbValue === 'string' ? dbValue : String(dbValue);
   } catch (error) {
     console.error(`[Taxonomy Fatal Error] Fallback triggered for dbValue:`, dbValue, error);
@@ -54,22 +58,22 @@ function safeTranslate(dbValue: any, namespace: string, t: any): string {
   }
 }
 
-export function getLocalizedCategory(dbValue: string, t: any): string {
-  return safeTranslate(dbValue, 'Category', t);
+export function getLocalizedCategory(dbValue: string, t: any, locale?: string): string {
+  return safeTranslate(dbValue, 'Category', t, locale);
 }
 
-export function getLocalizedRarity(dbValue: string, t: any): string {
-  return safeTranslate(dbValue, 'Rarity', t);
+export function getLocalizedRarity(dbValue: string, t: any, locale?: string): string {
+  return safeTranslate(dbValue, 'Rarity', t, locale);
 }
 
-export function getLocalizedRole(dbValue: string, t: any): string {
-  return safeTranslate(dbValue, 'Role', t);
+export function getLocalizedRole(dbValue: string, t: any, locale?: string): string {
+  return safeTranslate(dbValue, 'Role', t, locale);
 }
 
-export function getLocalizedValueSignal(dbValue: string, t: any): string {
-  return safeTranslate(dbValue, 'ValueSignal', t);
+export function getLocalizedValueSignal(dbValue: string, t: any, locale?: string): string {
+  return safeTranslate(dbValue, 'ValueSignal', t, locale);
 }
 
-export function getLocalizedDemandSignal(dbValue: string, t: any): string {
-  return safeTranslate(dbValue, 'DemandSignal', t);
+export function getLocalizedDemandSignal(dbValue: string, t: any, locale?: string): string {
+  return safeTranslate(dbValue, 'DemandSignal', t, locale);
 }

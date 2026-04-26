@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import CustomDropdown from './CustomDropdown';
 import { getLocalizedCategory } from '@/utils/taxonomy';
 
@@ -21,6 +21,7 @@ export default function SeriesFilterClient({
   const t = useTranslations('SeriesPage');
   const tFilter = useTranslations('SeriesFilter');
   const tTax = useTranslations('Taxonomy');
+  const locale = useLocale();
 
   const currentSort = searchParams.get('sort') || 'newest';
   const currentCategory = searchParams.get('category') || 'all';
@@ -106,7 +107,7 @@ export default function SeriesFilterClient({
           name="category"
           options={[
             { value: 'all', label: tFilter('AllCategories') },
-            ...categories.map(c => ({ value: c.slug, label: getLocalizedCategory(c.name, tTax) }))
+            ...categories.map(c => ({ value: c.slug, label: getLocalizedCategory(c.name, tTax, locale) }))
           ]}
           value={currentCategory}
           onChange={(val: string) => handleFilterUpdate('category', val)}
@@ -217,7 +218,7 @@ export default function SeriesFilterClient({
                   className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
                 >
                   <option value="all">{tFilter('AllCategories')}</option>
-                  {categories.map(c => <option key={c.slug} value={c.slug}>{getLocalizedCategory(c.name, tTax)}</option>)}
+                  {categories.map(c => <option key={c.slug} value={c.slug}>{getLocalizedCategory(c.name, tTax, locale)}</option>)}
                 </select>
             </div>
         </div>

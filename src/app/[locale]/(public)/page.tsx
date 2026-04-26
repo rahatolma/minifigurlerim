@@ -10,6 +10,7 @@ import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import { LayoutGrid, Package, TrendingUp } from 'lucide-react';
 import { getHomepageData } from '@/services/homepageAggregation';
 import { getTranslations } from 'next-intl/server';
+import { mapSeriesToCardViewModel } from '@/services/mappers';
 
 
 
@@ -23,6 +24,12 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
     topDemanded: mappedTopDemanded, topValued: finalTopValued,
     news: latestNews, seriesFigStats, degradedBlocks
   } = await getHomepageData(locale);
+
+  const tTax = await getTranslations({ locale, namespace: 'Taxonomy' });
+  const tCard = await getTranslations({ locale, namespace: 'SeriesCard' });
+  const tCommon = await getTranslations({ locale, namespace: 'CommonTypes' });
+
+  const mappedLatestSeries = latestSeries.map(series => mapSeriesToCardViewModel(series, locale, tTax, tCard, tCommon, seriesFigStats));
 
   return (
     <div className="w-full flex-col overflow-hidden">
@@ -84,19 +91,10 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
               <Link href="/seriler" className="bg-[#D22B2B] text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">{t('AllSeries')}</Link>
             }
           >
-            {latestSeries.map(series => (
+            {mappedLatestSeries.map(seriesViewModel => (
               <SeriesCard 
-                key={series.id}
-                id={series.slug || series.id}
-                seriesId={series.id}
-                title={series.title}
-                imageUrl={series.cover_image_url || ''}
-                year={series.release_year || '2024'}
-                seriesNo={series.series_no}
-                category={series.category || 'Minifigures'}
-                totalFigures={series.figure_count || (seriesFigStats ? seriesFigStats[series.id]?.count : 0) || 0}
-                rarity={series.rarity || 'Yaygın'}
-                latestFigureName={seriesFigStats ? seriesFigStats[series.id]?.latestName : null}
+                key={seriesViewModel.id}
+                {...seriesViewModel}
               />
             ))}
             {latestSeries.length === 0 && (

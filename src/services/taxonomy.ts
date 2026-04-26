@@ -1,5 +1,6 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { cache } from 'react';
+import { generateTaxonomyKey } from '@/utils/taxonomy';
 
 export type TaxonomyTerm = {
   type: string;
@@ -69,6 +70,13 @@ export async function getTaxonomyMessages(locale: string): Promise<TaxonomyMessa
       // If locale is EN and label_en exists, use it. Otherwise fallback to label_tr.
       const label = (locale === 'en' && term.label_en) ? term.label_en : term.label_tr;
       taxonomyMessages[namespace][term.key] = label;
+      
+      // Also register by the normalized key generated from the TR label
+      // because our frontend `safeTranslate` uses this logic when resolving raw string values.
+      if (term.label_tr) {
+        const normalizedKey = generateTaxonomyKey(term.label_tr);
+        taxonomyMessages[namespace][normalizedKey] = label;
+      }
     }
   });
 
