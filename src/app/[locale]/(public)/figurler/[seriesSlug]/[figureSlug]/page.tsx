@@ -14,7 +14,7 @@ import FloatingFigureNav from '@/components/ui/FloatingFigureNav';
 import TranslationFallbackBadge from '@/components/ui/TranslationFallbackBadge';
 
 import { slugify } from '@/utils/helpers';
-import { formatBrandText } from '@/utils/textFormatting';
+import { formatBrandText, cleanSeriesDisplayTitle } from '@/utils/textFormatting';
 import { mapFigureForDetail } from '@/utils/figureMapper';
 import { getLocalizedCategory, getLocalizedRole, getLocalizedRarity } from '@/utils/taxonomy';
 
@@ -201,6 +201,8 @@ export default async function FigureDetail({
 
   const isFallback = locale === 'en' && !rawFigure.name_en && !rawFigure.short_description_en;
 
+  const cleanSeries = figure.series_name ? cleanSeriesDisplayTitle(figure.series_name, locale) : null;
+
   return (
     <div className="bg-[#fcfcfc] min-h-screen w-full pb-16">
       {isFallback && <TranslationFallbackBadge />}
@@ -246,11 +248,11 @@ export default async function FigureDetail({
             
             {/* Etiketler (Seri & Kategori) */}
             <div className="flex flex-wrap gap-2 items-start w-full mb-6">
-                {figure.series_name && (
+                {figure.series_name && cleanSeries && (
                     <Link href={(figure.series_slug_tr ? `/seriler/${figure.series_slug_tr}` : `/seriler`) as any} className="bg-red-50 text-[#D22B2B] hover:bg-[#D22B2B] hover:text-white transition-colors font-black uppercase tracking-widest text-[9px] sm:text-[10px] px-3.5 py-1.5 rounded-sm flex flex-col items-start text-left">
-                        <span>{t('SeriesPrefix')}</span>
+                        <span>{cleanSeries.prefix ? cleanSeries.prefix : t('SeriesPrefix')}</span>
                         <span className="mt-0.5">
-                            {figure.series_name.replace(/LEGO®?/i, '').replace(/Minifigürler/i, '').replace(/Serisi/i, '').trim()}
+                            {cleanSeries.mainTitle}
                         </span>
                     </Link>
                 )}
@@ -280,11 +282,11 @@ export default async function FigureDetail({
                 <div className="flex flex-col w-full border-t border-gray-900 mt-2">
                     <TableRow label={t('Table.Brand')} value="LEGO®" />
                     <TableRow label={t('Table.SeriesName')} value={
-                        figure.series_name ? (
+                        figure.series_name && cleanSeries ? (
                             <div className="flex flex-col text-right items-end">
-                                <span className="text-gray-900">{t('SeriesPrefix')}</span>
+                                <span className="text-gray-900">{cleanSeries.prefix ? cleanSeries.prefix : t('SeriesPrefix')}</span>
                                 <span className="text-gray-600 block mt-1">
-                                    {figure.series_name.replace(/LEGO®?/i, '').replace(/Minifigürler/i, '').replace(/Serisi/i, '').trim() || '-'}
+                                    {cleanSeries.mainTitle || '-'}
                                 </span>
                             </div>
                         ) : '-'
