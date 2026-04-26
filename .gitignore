@@ -86,3 +86,7 @@ rename_admin_to_cto*.js
 create-verified-user.js
 tmp_*.js
 _scratch/
+tmp/
+cookies*.txt
+error*.html
+qa-report*.json
