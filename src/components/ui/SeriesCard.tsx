@@ -85,7 +85,7 @@ export default function SeriesCard({
 
        <div className="px-6 pt-5 pb-6 flex flex-col flex-1 bg-white relative z-10">
           <Link href={(targetHref || "#") as any} onClick={(e) => !targetHref && e.preventDefault()} aria-disabled={!targetHref} className={`flex flex-col flex-1 items-center text-center group/text ${targetHref ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}>
-              <div className="h-[76px] w-full mb-0 sm:mb-1 overflow-hidden flex flex-col items-center justify-start">
+              <div className="h-[76px] w-full mb-0 sm:mb-1 overflow-hidden flex flex-col items-center justify-center">
                   <h3 className="font-black text-[18px] sm:text-[20px] text-[#D22B2B] leading-tight tracking-tight w-full">
                       {formattedTitle}
                   </h3>
@@ -139,15 +139,13 @@ export default function SeriesCard({
                     </div>
                 </div>
 
-                {/* LATEST ADDED (YENİ EKLEME) - SADECƏ FIGUR EKLENDIYSE GÖSTER */}
-                {seriesProgress && seriesProgress.collected > 0 && actualLatestAddedText && (
-                  <div className="w-full mt-4 bg-gray-50 border border-gray-100 rounded-lg p-2.5 flex items-center justify-between group-hover:bg-[#fcf8f8] group-hover:border-[#ffeaea] transition-colors">
-                      <span className="text-[10px] uppercase font-black tracking-widest text-[#D22B2B]">{t('LatestAdded')}</span>
-                      <span className="text-[11px] font-bold text-gray-800 line-clamp-1 truncate max-w-[140px] text-right">
-                          {actualLatestAddedText}
-                      </span>
-                  </div>
-                )}
+                {/* LATEST ADDED (YENİ EKLEME) - HER ZAMAN GÖSTER (BOYUT TUTARLILIĞI İÇİN) */}
+                <div className="w-full mt-4 bg-gray-50 border border-gray-100 rounded-lg p-2.5 flex items-center justify-between group-hover:bg-[#fcf8f8] group-hover:border-[#ffeaea] transition-colors">
+                    <span className="text-[10px] uppercase font-black tracking-widest text-[#D22B2B]">{t('LatestAdded')}</span>
+                    <span className="text-[11px] font-bold text-gray-800 line-clamp-1 truncate max-w-[140px] text-right">
+                        {(seriesProgress && seriesProgress.collected > 0 && actualLatestAddedText) ? actualLatestAddedText : t('DefaultFigureText')}
+                    </span>
+                </div>
 
                 <div className="w-full mt-3">
                     <Link href={(targetHref || "#") as any} onClick={(e) => !targetHref && e.preventDefault()} aria-disabled={!targetHref} className={`flex w-full items-center justify-center rounded-md py-3 text-[11px] font-black tracking-widest uppercase transition-all duration-300 ${targetHref ? 'bg-gray-50 group-hover:bg-[#D22B2B] text-gray-500 group-hover:text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>
