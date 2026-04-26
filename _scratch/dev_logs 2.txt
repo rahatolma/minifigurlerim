@@ -1,5 +1,0 @@
-
-> temp_app@0.1.0 dev
-> next dev -p 3004 3005
-
-Invalid project directory provided, no such directory: /Users/Gungor/Documents/GitHub/minifigurlerim/3005

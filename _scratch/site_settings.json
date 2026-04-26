@@ -1,1 +1,0 @@
-{"code":"PGRST205","details":null,"hint":"Perhaps you meant the table 'public.about_settings'","message":"Could not find the table 'public.site_settings' in the schema cache"}
