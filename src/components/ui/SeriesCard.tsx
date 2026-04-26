@@ -67,12 +67,12 @@ export default function SeriesCard({
       
       return (
         <>
-          <span className="block text-[14px] leading-[18px] font-semibold text-gray-800 mb-2 truncate max-w-[95%]">{cleanPrefix}</span>
-          <span className="block line-clamp-2 leading-snug group-hover/text:underline">{suffix}</span>
+          <span className="block text-[14px] leading-[18px] font-semibold text-gray-800 mb-2 truncate max-w-[95%] mx-auto text-center">{cleanPrefix}</span>
+          <span className="block line-clamp-2 leading-snug group-hover/text:underline text-center mx-auto">{suffix}</span>
         </>
       );
     }
-    return <span className="group-hover/text:underline line-clamp-3 leading-snug">{title}</span>;
+    return <span className="block group-hover/text:underline line-clamp-3 leading-snug text-center mx-auto">{title}</span>;
   })();
 
   const targetHref = getSeriesUrl({ seriesSlug: id, locale: locale as any });
@@ -143,7 +143,7 @@ export default function SeriesCard({
                 <div className="w-full mt-4 bg-gray-50 border border-gray-100 rounded-lg p-2.5 flex items-center justify-between group-hover:bg-[#fcf8f8] group-hover:border-[#ffeaea] transition-colors">
                     <span className="text-[10px] uppercase font-black tracking-widest text-[#D22B2B]">{t('LatestAdded')}</span>
                     <span className="text-[11px] font-bold text-gray-800 line-clamp-1 truncate max-w-[140px] text-right">
-                        {(seriesProgress && seriesProgress.collected > 0 && actualLatestAddedText) ? actualLatestAddedText : t('DefaultFigureText')}
+                        {(seriesProgress && seriesProgress.collected > 0 && actualLatestAddedText) ? actualLatestAddedText : t('NoneYet')}
                     </span>
                 </div>
 
@@ -185,7 +185,7 @@ export default function SeriesCard({
                     <div className="w-full mt-4 bg-gray-50 border border-gray-100 rounded-lg p-2.5 flex items-center justify-between">
                         <span className="text-[10px] uppercase font-black tracking-widest text-[#D22B2B]">{t('LatestAdded')}</span>
                         <span className="text-[11px] font-bold text-gray-800 line-clamp-1 truncate max-w-[140px] text-right">
-                            {latestFigureName || t('DefaultFigureText')}
+                            {latestFigureName || t('NoneYet')}
                         </span>
                     </div>
 
