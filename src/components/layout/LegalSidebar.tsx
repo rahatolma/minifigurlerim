@@ -1,11 +1,12 @@
 'use client';
 import { Link, usePathname } from '@/i18n/routing';
-import { useLocale } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { legalContent } from '@/content/legal/legalContent';
 
 export default function LegalSidebar() {
   const pathname = usePathname();
   const locale = useLocale();
+  const t = useTranslations('CommonTypes');
   const content = legalContent[locale] || legalContent['tr'];
 
   const links = [
@@ -20,7 +21,7 @@ export default function LegalSidebar() {
     <div className="bg-white rounded-[24px] shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 p-6 hidden lg:block">
       <h3 className="text-[13px] font-black tracking-widest text-[#D22B2B] mb-6 uppercase flex items-center gap-2">
         <span className="w-2 h-2 rounded-full bg-[#D22B2B]"></span>
-        {locale === 'en' ? 'Legal Pages' : 'Yasal Sayfalar'}
+        {t('LegalPages')}
       </h3>
       <nav className="flex flex-col gap-2">
         {links.map((link) => {

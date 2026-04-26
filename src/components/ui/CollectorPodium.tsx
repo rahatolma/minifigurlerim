@@ -3,8 +3,10 @@
 import React from 'react';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function CollectorPodium({ ratings }: { ratings: any[] }) {
+    const t = useTranslations('FigurePodium');
     const router = useRouter();
     const pathname = usePathname();
     const handleOpenRating = () => {
@@ -15,20 +17,20 @@ export default function CollectorPodium({ ratings }: { ratings: any[] }) {
         <div className="w-full bg-white rounded-2xl border border-gray-100 p-6 sm:p-10 shadow-[0_2px_10px_rgba(0,0,0,0.02)] h-full">
             <div className="flex flex-col gap-1 mb-8">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight uppercase">Koleksiyoner Podiumu</h3>
-                    <span className="text-gray-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest">{ratings?.length || 0} Değerlendirme</span>
+                    <h3 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight uppercase">{t('title')}</h3>
+                    <span className="text-gray-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest">{t('reviewCount', { count: ratings?.length || 0 })}</span>
                 </div>
             </div>
 
             {!ratings || ratings.length === 0 ? (
                 <div className="flex flex-col items-center justify-center bg-gray-50/50 border border-dashed border-gray-200 rounded-xl py-12 px-4 text-center">
-                    <h4 className="text-gray-400 font-black text-sm uppercase tracking-widest mb-1">Podium Boş</h4>
-                    <p className="text-gray-400 text-xs mb-6">Bu minifigürü ilk değerlendiren sen ol!</p>
+                    <h4 className="text-gray-400 font-black text-sm uppercase tracking-widest mb-1">{t('emptyTitle')}</h4>
+                    <p className="text-gray-400 text-xs mb-6">{t('emptyDescription')}</p>
                     <button 
                         onClick={handleOpenRating}
                         className="bg-white border border-gray-200 text-gray-900 hover:border-blue-500 hover:text-blue-600 font-bold text-xs uppercase tracking-widest px-6 py-3 rounded-lg transition-all shadow-sm"
                     >
-                        Minifigürü Değerlendir
+                        {t('cta')}
                     </button>
                 </div>
             ) : (
@@ -37,7 +39,7 @@ export default function CollectorPodium({ ratings }: { ratings: any[] }) {
                         {ratings.map((r: any) => {
                             const userProfile = r.profiles;
                             const avatar = userProfile?.avatar_url || 'https://via.placeholder.com/150/EEEEEE/999999?text=U';
-                            const name = userProfile?.username || 'Adsız Koleksiyoner';
+                            const name = userProfile?.username || t('anonymousCollector');
                             const isAdmin = userProfile?.role === 'admin';
 
                             return (
@@ -73,7 +75,7 @@ export default function CollectorPodium({ ratings }: { ratings: any[] }) {
                             onClick={handleOpenRating}
                             className="bg-white border border-gray-200 text-gray-500 hover:border-blue-500 hover:text-blue-600 font-bold text-[10px] sm:text-xs uppercase tracking-widest px-6 py-3 rounded-lg transition-all"
                         >
-                            Değerlendirme Ekle
+                            {t('addReview')}
                         </button>
                     </div>
                 </div>

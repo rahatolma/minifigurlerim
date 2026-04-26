@@ -79,11 +79,11 @@ export async function updatePassword(formData: FormData) {
   const confirmPassword = formData.get('confirm_password') as string;
 
   if (!newPassword || newPassword.length < 6) {
-    return { error: 'Şifreniz en az 6 karakter olmalıdır.' };
+    return { error: 'ERROR_PASSWORD_TOO_SHORT' };
   }
 
   if (newPassword !== confirmPassword) {
-    return { error: 'Girdiğiniz şifreler eşleşmiyor!' };
+    return { error: 'ERROR_PASSWORD_MISMATCH' };
   }
 
   try {
@@ -94,10 +94,10 @@ export async function updatePassword(formData: FormData) {
   } catch (err: any) {
     if (err.message === 'TIMEOUT') {
        console.error(JSON.stringify({ code: 'PASSWORD_UPDATE_TIMEOUT', message: 'Action timed out after 8s', userId: user.id }));
-       return { error: 'Şifre güncellenirken zaman aşımı yaşandı.' };
+       return { error: 'ERROR_TIMEOUT' };
     }
     console.error(JSON.stringify({ code: 'PASSWORD_UPDATE_FAILED', error: err.message, userId: user.id }));
-    return { error: 'Şifre güncellenemedi, mevcut şifreniz geçerliliğini koruyor.' };
+    return { error: 'ERROR_UPDATE_FAILED' };
   }
 }
 

@@ -589,7 +589,13 @@
     "Benzersiz": "Benzersiz",
     "Düşük": "Düşük",
     "Orta": "Orta",
-    "Yüksek": "Yüksek"
+    "Yüksek": "Yüksek",
+    "MysterySeries": "Gizemli Seri",
+    "Uncategorized": "Kategorisiz",
+    "RATING_FAILED": "Puanlama yapılamadı.",
+    "ERROR_UNKNOWN": "Bir hata oluştu. Lütfen tekrar deneyin.",
+    "LegalPages": "YASAL SAYFALAR",
+    "Home": "Ana Sayfa"
   },
   "FigureCard": {
     "InCollection": "Koleksiyonda",
@@ -624,16 +630,16 @@
   },
   "Taxonomy": {
     "Category": {
-      "KoleksiyonSerileri": "Koleksiyon Serileri",
       "LisansliSeriler": "Lisanslı Seriler",
-      "OzelSeriler": "Özel Seriler",
-      "Diger": "Diğer"
+      "KoleksiyonSerileri": "Koleksiyon Serileri",
+      "OzelSeriler": "Özel Seriler"
     },
     "Rarity": {
       "Yaygin": "Yaygın",
       "Nadir": "Nadir",
       "CokNadir": "Çok Nadir",
-      "Efsanevi": "Efsanevi"
+      "Efsanevi": "Efsanevi",
+      "Benzersiz": "Benzersiz"
     },
     "Role": {
       "IlkelKarakter": "İlkel Karakter",
@@ -946,18 +952,6 @@
       "HavaDestegi": "Hava Desteği",
       "Gezgin": "Gezgin",
       "AbsurtKahraman": "Absürt Kahraman"
-    },
-    "Category": {
-      "LisansliSeriler": "Lisanslı Seriler",
-      "KoleksiyonSerileri": "Koleksiyon Serileri",
-      "OzelSeriler": "Özel Seriler"
-    },
-    "Rarity": {
-      "Yaygin": "Yaygın",
-      "Nadir": "Nadir",
-      "CokNadir": "Çok Nadir",
-      "Efsanevi": "Efsanevi",
-      "Benzersiz": "Benzersiz"
     }
   },
   "Collection": {
@@ -1008,7 +1002,10 @@
     "Apply": "Uygula",
     "SearchSeries": "Seri ara...",
     "NoFilter": "Koleksiyon Filtresi Yok",
-    "UnknownSeries": "Bilinmeyen Seri"
+    "UnknownSeries": "Bilinmeyen Seri",
+    "collector": "Koleksiyoner",
+    "lastAdded": "Son Eklenen",
+    "emptyFigures": "Henüz gösterilecek figür yok."
   },
   "Auth": {
     "LoginTitle": "Hesabına Giriş Yap",
@@ -1068,5 +1065,61 @@
     "GivenStars": "Yıldız Puanı Verdin",
     "GiveRating": "Minifigüre Puan Ver",
     "ApprovalRequired": "Koleksiyon işlemleri için hesabınızın yönetici tarafından onaylanması bekleniyor."
+  },
+  "FigurePodium": {
+    "title": "Koleksiyoner Podiumu",
+    "emptyTitle": "Podium Boş",
+    "emptyDescription": "Bu minifigürü ilk değerlendiren sen ol!",
+    "cta": "Minifigürü Değerlendir",
+    "reviewCount": "{count} Değerlendirme",
+    "anonymousCollector": "Adsız Koleksiyoner",
+    "addReview": "Değerlendirme Ekle"
+  },
+  "Comments": {
+    "emptyComments": "Henüz yorum yapılmamış. İlk yorumu sen yapmak istemez misin?",
+    "loading": "Yorumlar Yükleniyor...",
+    "title": "Topluluk Yorumları",
+    "commentCount": "{count} Yorum",
+    "leaveComment": "Yorum Bırak",
+    "namePlaceholder": "Adınız Veya Nickname'iniz...",
+    "contentPlaceholder": "Buraya yorumunuzu yazın. Fikirlerinize kulak vermek çok isteriz!",
+    "submitting": "Gönderiliyor...",
+    "submit": "Yorumu Gönder",
+    "errorEmpty": "Lütfen adınızı ve yorumunuzu girin!",
+    "successSubmit": "Yorumunuz başarıyla gönderildi!",
+    "errorSubmit": "Yorum gönderilirken hata oluştu."
+  },
+  "Settings": {
+    "security": "Güvenlik ve Şifre",
+    "newPassword": "Yeni Şifre",
+    "newPasswordConfirm": "Yeni Şifre (Tekrar)",
+    "confirmPlaceholder": "Şifreyi onayla",
+    "changePassword": "Şifreyi Değiştir",
+    "SUCCESS_PASSWORD_UPDATED": "Şifren güvenli bir şekilde güncellendi!",
+    "ERROR_PASSWORD_TOO_SHORT": "Şifreniz en az 6 karakter olmalıdır.",
+    "ERROR_TIMEOUT": "Şifre güncellenirken zaman aşımı yaşandı.",
+    "ERROR_UPDATE_FAILED": "Şifre güncellenemedi, mevcut şifreniz geçerliliğini koruyor.",
+    "ERROR_UNKNOWN": "Bilinmeyen bir hata oluştu.",
+    "profileInfo": "Profil Bilgileri",
+    "emailLabel": "Kayıtlı E-Posta Adresi",
+    "emailDesc": "Değiştirirseniz güvenlik onayı almanız gerekecektir.",
+    "nameLabel": "Adı Soyadı",
+    "namePlaceholder": "Adını gir (İsteğe Bağlı)",
+    "ageLabel": "Yaş",
+    "agePlaceholder": "Örn: 24",
+    "saveProfile": "Profili Kaydet",
+    "SUCCESS_PROFILE_UPDATED": "Profil bilgilerin başarıyla güncellendi!",
+    "passwordPlaceholder": "Gizli şifreni gir (En az 6 karakter)",
+    "ERROR_PASSWORD_MISMATCH": "Girdiğiniz şifreler eşleşmiyor!"
+  },
+  "Metadata": {
+    "contactTitle": "İletişim | Minifigürlerim",
+    "aboutTitle": "Hakkımızda | Minifigürlerim"
+  },
+  "ExplorePage": {
+    "title": "Keşfet",
+    "description": "En çok ilgi gören ve değerlenen figürlere göz at.",
+    "errorDegraded": "Figür verileri şu anda yüklenemiyor. Daha sonra tekrar deneyin.",
+    "emptyFigures": "Henüz gösterilecek figür yok."
   }
 }

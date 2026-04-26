@@ -14,7 +14,7 @@ import FloatingFigureNav from '@/components/ui/FloatingFigureNav';
 import TranslationFallbackBadge from '@/components/ui/TranslationFallbackBadge';
 
 import { slugify } from '@/utils/helpers';
-import { formatBrandText } from '@/utils/textFormatting';
+import { formatBrandText, cleanSeriesDisplayTitle } from '@/utils/textFormatting';
 import { mapFigureForDetail } from '@/utils/figureMapper';
 import { getLocalizedCategory, getLocalizedRole, getLocalizedRarity } from '@/utils/taxonomy';
 
@@ -46,6 +46,7 @@ export async function generateMetadata(
   const rawFigure = await getMinifigureBySlug(resolvedParams.figureSlug, locale, resolvedParams.seriesSlug);
 
   const t = await getTranslations({ locale, namespace: 'FigureDetail' });
+  const tCommon = await getTranslations({ locale, namespace: 'CommonTypes' });
 
   if (!rawFigure) {
     return { title: 'Minifigür Bulunamadı | Minifigürlerim' };
@@ -68,7 +69,7 @@ export async function generateMetadata(
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://minifigurlerim.com';
   const ogUrl = new URL(`${baseUrl}/api/og/figure`);
   ogUrl.searchParams.set('title', titleText || '');
-  ogUrl.searchParams.set('series', figure.series_name || 'Gizemli Seri');
+  ogUrl.searchParams.set('series', figure.series_name || tCommon('MysterySeries'));
   ogUrl.searchParams.set('image', figureImage);
   
   const canonicalUrl = isFallback ? `/tr/figurler/${figure.figure_slug_tr}` : (locale === 'en' && figure.figure_slug_en ? `/en/figures/${figure.figure_slug_en}` : `/tr/figurler/${figure.figure_slug_tr}`);
@@ -119,6 +120,7 @@ export default async function FigureDetail({
   const queryCol = isUUID ? 'id' : 'slug';
   const t = await getTranslations('FigureDetail');
   const tTax = await getTranslations('Taxonomy');
+  const tCommon = await getTranslations('CommonTypes');
 
   // Figür verisini çek
   const rawFigure = await getMinifigureBySlug(resolvedParams.figureSlug, locale, resolvedParams.seriesSlug);
@@ -199,6 +201,9 @@ export default async function FigureDetail({
 
   const isFallback = locale === 'en' && !rawFigure.name_en && !rawFigure.short_description_en;
 
+  // Force cache invalidation
+  const cleanSeries = figure.series_name ? cleanSeriesDisplayTitle(figure.series_name, locale) : null;
+
   return (
     <div className="bg-[#fcfcfc] min-h-screen w-full pb-16">
       {isFallback && <TranslationFallbackBadge />}
@@ -244,11 +249,11 @@ export default async function FigureDetail({
             
             {/* Etiketler (Seri & Kategori) */}
             <div className="flex flex-wrap gap-2 items-start w-full mb-6">
-                {figure.series_name && (
+                {figure.series_name && cleanSeries && (
                     <Link href={(figure.series_slug_tr ? `/seriler/${figure.series_slug_tr}` : `/seriler`) as any} className="bg-red-50 text-[#D22B2B] hover:bg-[#D22B2B] hover:text-white transition-colors font-black uppercase tracking-widest text-[9px] sm:text-[10px] px-3.5 py-1.5 rounded-sm flex flex-col items-start text-left">
-                        <span>{t('SeriesPrefix')}</span>
+                        <span>{cleanSeries.prefix ? cleanSeries.prefix : t('SeriesPrefix')}</span>
                         <span className="mt-0.5">
-                            {figure.series_name.replace(/LEGO®?/i, '').replace(/Minifigürler/i, '').replace(/Serisi/i, '').trim()}
+                            {cleanSeries.mainTitle}
                         </span>
                     </Link>
                 )}
@@ -258,7 +263,7 @@ export default async function FigureDetail({
                     </Link>
                 ) : (
                     <span className="bg-gray-100 text-gray-600 font-black uppercase tracking-widest text-[9px] sm:text-[10px] px-3.5 py-1.5 rounded-sm">
-                        {locale === 'en' ? 'Uncategorized' : 'Kategorisiz'}
+                        {tCommon('Uncategorized')}
                     </span>
                 )}
             </div>
@@ -278,17 +283,17 @@ export default async function FigureDetail({
                 <div className="flex flex-col w-full border-t border-gray-900 mt-2">
                     <TableRow label={t('Table.Brand')} value="LEGO®" />
                     <TableRow label={t('Table.SeriesName')} value={
-                        figure.series_name ? (
+                        figure.series_name && cleanSeries ? (
                             <div className="flex flex-col text-right items-end">
-                                <span className="text-gray-900">{t('SeriesPrefix')}</span>
+                                <span className="text-gray-900">{cleanSeries.prefix ? cleanSeries.prefix : t('SeriesPrefix')}</span>
                                 <span className="text-gray-600 block mt-1">
-                                    {figure.series_name.replace(/LEGO®?/i, '').replace(/Minifigürler/i, '').replace(/Serisi/i, '').trim() || '-'}
+                                    {cleanSeries.mainTitle || '-'}
                                 </span>
                             </div>
                         ) : '-'
                     } />
                     <TableRow label={t('Table.SeriesNo')} value={figure.series_number} />
-                    <TableRow label={t('Table.Category')} value={figure.category_main ? getLocalizedCategory(figure.category_main, tTax, locale) || (locale === 'en' ? 'Uncategorized' : 'Kategorisiz') : (locale === 'en' ? 'Uncategorized' : 'Kategorisiz')} />
+                    <TableRow label={t('Table.Category')} value={figure.category_main ? getLocalizedCategory(figure.category_main, tTax, locale) || tCommon('Uncategorized') : tCommon('Uncategorized')} />
                     <TableRow label={t('Table.FigureName')} value={figure.figure_name} />
                     <TableRow label={t('Table.FigureNo')} value={figure.figure_number} />
                     <TableRow label={t('Table.Role')} value={figure.figure_role ? getLocalizedRole(figure.figure_role, tTax, locale) || '-' : '-'} />
