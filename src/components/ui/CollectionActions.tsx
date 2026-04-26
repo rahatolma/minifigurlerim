@@ -20,6 +20,7 @@ export default function CollectionActions({ minifigureId, trackingProps }: { min
   const isLoggedIn = !!user;
   const tCard = useTranslations('FigureCard');
   const tAction = useTranslations('CollectionActions');
+  const tCommon = useTranslations('CommonTypes');
 
   const [loading, setLoading] = useState(false);
   
@@ -104,7 +105,7 @@ export default function CollectionActions({ minifigureId, trackingProps }: { min
        console.error("Action error:", err);
        setStatus(previousStatus);
        setGlobalStatus(minifigureId, previousStatus);
-       toast.error("Bir hata oluştu. Lütfen tekrar deneyin.");
+       toast.error(tCommon('ERROR_UNKNOWN'));
     } finally {
       setLoading(false);
     }
@@ -129,7 +130,7 @@ export default function CollectionActions({ minifigureId, trackingProps }: { min
          setRating(star);
          closeRatingModal();
       } else {
-         alert(result?.error || 'Puanlama yapılamadı.');
+         alert(result?.error || tCommon('RATING_FAILED'));
       }
       setLoading(false);
   };

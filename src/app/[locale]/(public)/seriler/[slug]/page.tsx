@@ -12,6 +12,7 @@ import { formatBrandText, cleanSeriesDisplayTitle } from '@/utils/textFormatting
 import FloatingSeriesNav from '@/components/ui/FloatingSeriesNav';
 import HeroImage from '@/components/ui/HeroImage';
 import { mapFigureForCard } from '@/utils/figureMapper';
+import { getLocalizedCategory } from '@/utils/taxonomy';
 import TranslationFallbackBadge from '@/components/ui/TranslationFallbackBadge';
 
 // ... (code omitted for brevity to apply changes via multiple replacements, wait, I can just replace specific lines)
@@ -87,6 +88,7 @@ export default async function SeriesDetail({
   const { slug, locale: localeParam } = resolvedParams;
   const locale = await getLocale();
   const t = await getTranslations('SeriesDetail');
+  const tTax = await getTranslations('Taxonomy');
 
   // Series verisini çek
   const series = await getSeriesBySlug(slug, localeParam);
@@ -195,7 +197,7 @@ export default async function SeriesDetail({
             </div>
             <div>
               <p className="text-[10px] md:text-[11px] font-black opacity-50 uppercase tracking-[0.2em] text-[#D22B2B]">{t('Category')}</p>
-              <p className="font-black text-sm md:text-[15px] text-gray-900 leading-tight pr-2 mt-0.5">{series.category || '-'}</p>
+              <p className="font-black text-sm md:text-[15px] text-gray-900 leading-tight pr-2 mt-0.5">{series.category ? getLocalizedCategory(series.category, tTax, locale) || '-' : '-'}</p>
             </div>
           </div>
           <div className="p-4 md:p-6 lg:pl-10 flex items-center justify-start gap-4 hover:bg-white transition-colors">

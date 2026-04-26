@@ -5,10 +5,20 @@ import { getTranslations } from 'next-intl/server';
 
 export const revalidate = 60; // 1 dakika ISR cache
 
-export const metadata = {
-  title: 'Hakkımızda | Minifigürlerim',
-  description: 'Minifigür sevgisine sahip herkesin buluştuğu bir topluluk merkezi.',
-};
+import { ResolvingMetadata, Metadata } from 'next';
+
+export async function generateMetadata(
+  { params }: { params: Promise<{ locale: string }> },
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'Metadata' });
+
+  return {
+    title: t('aboutTitle'),
+    description: 'Minifigür sevgisine sahip herkesin buluştuğu bir topluluk merkezi.',
+  };
+}
 
 export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {
   const resolvedParams = await params;

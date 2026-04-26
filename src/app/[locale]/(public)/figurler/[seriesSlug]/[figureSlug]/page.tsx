@@ -46,6 +46,7 @@ export async function generateMetadata(
   const rawFigure = await getMinifigureBySlug(resolvedParams.figureSlug, locale, resolvedParams.seriesSlug);
 
   const t = await getTranslations({ locale, namespace: 'FigureDetail' });
+  const tCommon = await getTranslations({ locale, namespace: 'CommonTypes' });
 
   if (!rawFigure) {
     return { title: 'Minifigür Bulunamadı | Minifigürlerim' };
@@ -68,7 +69,7 @@ export async function generateMetadata(
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://minifigurlerim.com';
   const ogUrl = new URL(`${baseUrl}/api/og/figure`);
   ogUrl.searchParams.set('title', titleText || '');
-  ogUrl.searchParams.set('series', figure.series_name || 'Gizemli Seri');
+  ogUrl.searchParams.set('series', figure.series_name || tCommon('MysterySeries'));
   ogUrl.searchParams.set('image', figureImage);
   
   const canonicalUrl = isFallback ? `/tr/figurler/${figure.figure_slug_tr}` : (locale === 'en' && figure.figure_slug_en ? `/en/figures/${figure.figure_slug_en}` : `/tr/figurler/${figure.figure_slug_tr}`);
@@ -119,6 +120,7 @@ export default async function FigureDetail({
   const queryCol = isUUID ? 'id' : 'slug';
   const t = await getTranslations('FigureDetail');
   const tTax = await getTranslations('Taxonomy');
+  const tCommon = await getTranslations('CommonTypes');
 
   // Figür verisini çek
   const rawFigure = await getMinifigureBySlug(resolvedParams.figureSlug, locale, resolvedParams.seriesSlug);
@@ -258,7 +260,7 @@ export default async function FigureDetail({
                     </Link>
                 ) : (
                     <span className="bg-gray-100 text-gray-600 font-black uppercase tracking-widest text-[9px] sm:text-[10px] px-3.5 py-1.5 rounded-sm">
-                        {locale === 'en' ? 'Uncategorized' : 'Kategorisiz'}
+                        {tCommon('Uncategorized')}
                     </span>
                 )}
             </div>
@@ -288,7 +290,7 @@ export default async function FigureDetail({
                         ) : '-'
                     } />
                     <TableRow label={t('Table.SeriesNo')} value={figure.series_number} />
-                    <TableRow label={t('Table.Category')} value={figure.category_main ? getLocalizedCategory(figure.category_main, tTax, locale) || (locale === 'en' ? 'Uncategorized' : 'Kategorisiz') : (locale === 'en' ? 'Uncategorized' : 'Kategorisiz')} />
+                    <TableRow label={t('Table.Category')} value={figure.category_main ? getLocalizedCategory(figure.category_main, tTax, locale) || tCommon('Uncategorized') : tCommon('Uncategorized')} />
                     <TableRow label={t('Table.FigureName')} value={figure.figure_name} />
                     <TableRow label={t('Table.FigureNo')} value={figure.figure_number} />
                     <TableRow label={t('Table.Role')} value={figure.figure_role ? getLocalizedRole(figure.figure_role, tTax, locale) || '-' : '-'} />

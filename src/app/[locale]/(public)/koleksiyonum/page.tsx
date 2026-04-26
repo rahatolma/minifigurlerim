@@ -41,7 +41,7 @@ export default async function KoleksiyonumPage({
 
   // 1. Kullanıcı Profili (Gösterim için)
   const profile = await getUserProfile(user.id);
-  const displayName = profile?.username || user.email?.split('@')[0] || 'Koleksiyoner';
+  const displayName = profile?.username || user.email?.split('@')[0] || t('collector');
 
   // 2. Kullanıcının Koleksiyonlarını (figür detaylarıyla) çek
   const collectionsData = await getUserCollectionsWithDetails(user.id);
@@ -365,7 +365,7 @@ export default async function KoleksiyonumPage({
                 <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-[0_10px_40px_rgba(0,0,0,0.02)] flex items-center gap-6 group hover:border-gray-200 hover:shadow-md transition-all h-[132px] relative z-20">
                    <div className="relative w-[84px] h-[84px] min-w-[84px] min-h-[84px] bg-gray-50 rounded-2xl border border-gray-100 p-2 shrink-0 overflow-hidden flex items-center justify-center group-hover:bg-red-50 transition-colors">
                       {lastAddedFigure ? (
-                         <img src={Array.isArray((lastAddedFigure as any)?.images) && (lastAddedFigure as any)?.images.length > 0 ? (lastAddedFigure as any)?.images[0] : (typeof (lastAddedFigure as any)?.images === 'string' ? (lastAddedFigure as any)?.images : '/images/placeholder.svg')} alt="Son Eklenen" className="absolute inset-0 m-auto max-w-[68px] max-h-[68px] w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
+                         <img src={Array.isArray((lastAddedFigure as any)?.images) && (lastAddedFigure as any)?.images.length > 0 ? (lastAddedFigure as any)?.images[0] : (typeof (lastAddedFigure as any)?.images === 'string' ? (lastAddedFigure as any)?.images : '/images/placeholder.svg')} alt={t('lastAdded')} className="absolute inset-0 m-auto max-w-[68px] max-h-[68px] w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
                       ) : (
                          <LegoHeadIcon mode="neutral" className="w-8 h-8 text-gray-300" />
                       )}
@@ -396,7 +396,7 @@ export default async function KoleksiyonumPage({
                 <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-[0_10px_40px_rgba(0,0,0,0.02)] flex items-center gap-6 group hover:border-gray-200 hover:shadow-md transition-all h-[132px] relative z-20">
                    <div className="relative w-[84px] h-[84px] min-w-[84px] min-h-[84px] bg-gray-50 rounded-2xl border border-gray-100 p-2 shrink-0 overflow-hidden flex items-center justify-center group-hover:bg-blue-50 transition-colors">
                       {lastWantedFigure ? (
-                         <img src={Array.isArray((lastWantedFigure as any)?.images) && (lastWantedFigure as any)?.images.length > 0 ? (lastWantedFigure as any)?.images[0] : (typeof (lastWantedFigure as any)?.images === 'string' ? (lastWantedFigure as any)?.images : '/images/placeholder.svg')} alt="Yakın Takipteki Figür" className="absolute inset-0 m-auto max-w-[68px] max-h-[68px] w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
+                         <img src={Array.isArray((lastWantedFigure as any)?.images) && (lastWantedFigure as any)?.images.length > 0 ? (lastWantedFigure as any)?.images[0] : (typeof (lastWantedFigure as any)?.images === 'string' ? (lastWantedFigure as any)?.images : '/images/placeholder.svg')} alt={t('LastViewedTitle')} className="absolute inset-0 m-auto max-w-[68px] max-h-[68px] w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
                       ) : (
                          <svg className="w-8 h-8 text-gray-300 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                       )}

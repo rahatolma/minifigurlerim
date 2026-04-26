@@ -10,6 +10,7 @@ import { getTranslations, getLocale } from 'next-intl/server';
 
 import SeriesTimelineClient from '@/components/ui/SeriesTimelineClient';
 import { mapSeriesToCardViewModel } from '@/services/mappers';
+import { getLocalizedCategory } from '@/utils/taxonomy';
 
 export const revalidate = 300; // 5 minute ISR cache (Architecture Document Standard)
 
@@ -33,7 +34,8 @@ export default async function SeriesPage({
 
   // 1. Kategorileri Çek
   const catData = await getCategoriesByType(targetType);
-  const categoryFilters = (catData || []).map((c: { slug: string, name: string, name_en?: string }) => ({ slug: c.slug, name: locale === 'en' && c.name_en ? c.name_en : c.name }));
+  const tTax = await getTranslations({ locale, namespace: 'Taxonomy' });
+  const categoryFilters = (catData || []).map((c: { slug: string, name: string, name_en?: string }) => ({ slug: c.slug, name: getLocalizedCategory(c.name, tTax, locale) || c.name }));
 
   // 2. Tüm Serileri Çek (Sadece Dropdown Filter menüsü doldurmak için - Minimal payload)
   const allSeries = await getAllSeries();
@@ -69,7 +71,6 @@ export default async function SeriesPage({
      });
   }
 
-  const tTax = await getTranslations({ locale, namespace: 'Taxonomy' });
   const tCard = await getTranslations({ locale, namespace: 'SeriesCard' });
   const tCommon = await getTranslations({ locale, namespace: 'CommonTypes' });
 

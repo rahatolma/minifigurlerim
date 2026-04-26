@@ -1,7 +1,9 @@
 import { getAuthUser, getFigureRatings } from '@/services/action_dal';
 import Image from 'next/image';
+import { getTranslations } from 'next-intl/server';
 
 export default async function FigureComments({ minifigureId }: { minifigureId: string }) {
+   const t = await getTranslations('FigurePodium');
    const user = await getAuthUser();
 
    let ratings: any[] = [];
@@ -21,16 +23,16 @@ console.error(err);
    return (
       <div className="mt-16 pt-12 border-t border-gray-200 w-full mb-24">
          <div className="flex items-center justify-between mb-8">
-            <h3 className="text-2xl font-black text-gray-900 tracking-tight">Koleksiyoner Podyumu</h3>
+            <h3 className="text-2xl font-black text-gray-900 tracking-tight">{t('title')}</h3>
             <div className="bg-gray-100 text-gray-600 px-3 py-1 font-bold rounded-lg text-xs tracking-widest uppercase">
-               {ratings?.length || 0} Değerlendirme
+               {t('reviewCount', { count: ratings?.length || 0 })}
             </div>
          </div>
 
          {!ratings || ratings.length === 0 ? (
             <div className="py-12 text-center bg-gray-50 border border-gray-100 rounded-2xl w-full">
-               <p className="text-gray-400 font-black text-sm tracking-widest uppercase mb-1">Podyum Boş</p>
-               <p className="text-gray-400 text-xs">Bu efsane parçayı ilk değerlendiren sen ol!</p>
+               <p className="text-gray-400 font-black text-sm tracking-widest uppercase mb-1">{t('emptyTitle')}</p>
+               <p className="text-gray-400 text-xs">{t('emptyDescription')}</p>
             </div>
          ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -38,7 +40,7 @@ console.error(err);
                   // @ts-ignore
                   const userProfile = r.profiles;
                   const avatar = userProfile?.avatar_url || 'https://via.placeholder.com/150/EEEEEE/999999?text=U';
-                  const name = userProfile?.username || 'Adsız Koleksiyoner';
+                  const name = userProfile?.username || t('anonymousCollector');
                   const isAdmin = userProfile?.role === 'admin';
 
                   return (

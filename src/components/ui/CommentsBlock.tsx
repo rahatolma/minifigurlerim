@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { getApprovedCommentsClient, submitCommentClient } from '@/services/client_dal';
 import { User, MessageSquare, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useTranslations } from 'next-intl';
 
 interface Comment {
   id: string;
@@ -20,6 +21,7 @@ export default function CommentsBlock({ entityType, entityId }: { entityType: st
     user_name: '',
     content: ''
   });
+  const t = useTranslations('Comments');
 
   const fetchComments = async () => {
     try {
@@ -41,7 +43,7 @@ export default function CommentsBlock({ entityType, entityId }: { entityType: st
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.user_name || !form.content) {
-      toast.error('Lütfen adınızı ve yorumunuzu girin!');
+      toast.error(t('errorEmpty'));
       return;
     }
 
@@ -51,32 +53,32 @@ export default function CommentsBlock({ entityType, entityId }: { entityType: st
       await submitCommentClient(entityType, entityId, form.user_name, form.content);
 
       
-      toast.success('Yorumunuz başarıyla gönderildi!');
+      toast.success(t('successSubmit'));
       setForm({ user_name: '', content: '' });
       fetchComments(); // Listeyi yenile
     } catch (err: any) {
 console.error(err);
-      toast.error('Yorum gönderilirken hata oluştu.');
+      toast.error(t('errorSubmit'));
     } finally {
       setSubmitting(false);
     }
   };
 
-  if (loading) return <div className="py-8 text-center text-sm font-bold text-gray-400">Yorumlar Yükleniyor...</div>;
+  if (loading) return <div className="py-8 text-center text-sm font-bold text-gray-400">{t('loading')}</div>;
 
   return (
     <div className="w-full max-w-4xl mx-auto py-8">
       {/* Header */}
       <div className="flex items-center gap-3 mb-8 border-b border-gray-100 pb-4">
         <MessageSquare size={24} className="text-[#D22B2B]" />
-        <h3 className="text-2xl font-black text-gray-900 tracking-tight">Topluluk Yorumları</h3>
-        <span className="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ml-auto">{comments.length} Yorum</span>
+        <h3 className="text-2xl font-black text-gray-900 tracking-tight">{t('title')}</h3>
+        <span className="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ml-auto">{t('commentCount', { count: comments.length })}</span>
       </div>
 
       {/* Yorum Listesi */}
       <div className="space-y-6 mb-12">
         {comments.length === 0 ? (
-           <p className="text-sm font-medium text-gray-500 italic">Henüz yorum yapılmamış. İlk yorumu sen yapmak istemez misin?</p>
+           <p className="text-sm font-medium text-gray-500 italic">{t('emptyComments')}</p>
         ) : (
           comments.map(c => (
             <div key={c.id} className="flex gap-4">
@@ -101,13 +103,13 @@ console.error(err);
       <div className="bg-gray-50 p-6 sm:p-8 border border-gray-200 rounded-md">
          <h4 className="text-sm font-black text-gray-900 uppercase tracking-widest mb-6 flex items-center gap-2">
            <div className="w-2 h-2 rounded-full bg-[#D22B2B]" />
-           Yorum Bırak
+           {t('leaveComment')}
          </h4>
          <form onSubmit={handleSubmit} className="space-y-4">
            <div>
              <input 
                type="text" 
-               placeholder="Adınız Veya Nickname'iniz..."
+               placeholder={t('namePlaceholder')}
                value={form.user_name}
                onChange={(e) => setForm(prev => ({ ...prev, user_name: e.target.value }))}
                disabled={submitting}
@@ -117,7 +119,7 @@ console.error(err);
            </div>
            <div>
              <textarea 
-               placeholder="Buraya yorumunuzu yazın. Fikirlerinize kulak vermek çok isteriz!"
+               placeholder={t('contentPlaceholder')}
                value={form.content}
                onChange={(e) => setForm(prev => ({ ...prev, content: e.target.value }))}
                disabled={submitting}
@@ -132,7 +134,7 @@ console.error(err);
                className="bg-black text-white hover:bg-[#D22B2B] disabled:bg-gray-400 transition-colors uppercase tracking-widest text-[11px] font-black px-8 py-4 rounded-sm shadow-md flex items-center justify-center gap-2 w-full sm:w-auto"
              >
                {submitting && <Loader2 size={14} className="animate-spin" />}
-               {submitting ? 'Gönderiliyor...' : 'Yorumu Gönder'}
+               {submitting ? t('submitting') : t('submit')}
              </button>
            </div>
          </form>

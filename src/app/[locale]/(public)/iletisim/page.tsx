@@ -4,10 +4,20 @@ import { getActiveFaqs } from "@/services/dal";
 import InstagramBlock from "@/components/ui/InstagramBlock";
 import { getTranslations, getLocale } from 'next-intl/server';
 
-export const metadata = {
-  title: 'İletişim | Minifigürlerim',
-  description: 'Bizimle iletişime geçin. Her türlü soru, görüş ve önerileriniz için buradayız.',
-};
+import { ResolvingMetadata, Metadata } from 'next';
+
+export async function generateMetadata(
+  { params }: { params: Promise<{ locale: string }> },
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'Metadata' });
+
+  return {
+    title: t('contactTitle'),
+    description: 'Bizimle iletişime geçin. Her türlü soru, görüş ve önerileriniz için buradayız.',
+  };
+}
 
 export const revalidate = 86400; // FAQs can change dynamically
 

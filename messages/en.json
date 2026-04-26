@@ -589,7 +589,13 @@
     "Benzersiz": "Unique",
     "Düşük": "Low",
     "Orta": "Medium",
-    "Yüksek": "High"
+    "Yüksek": "High",
+    "MysterySeries": "Mystery Series",
+    "Uncategorized": "Uncategorized",
+    "RATING_FAILED": "Rating could not be submitted.",
+    "ERROR_UNKNOWN": "An error occurred. Please try again.",
+    "LegalPages": "LEGAL PAGES",
+    "Home": "Home"
   },
   "FigureCard": {
     "InCollection": "In Collection",
@@ -997,7 +1003,10 @@
     "Apply": "Apply",
     "SearchSeries": "Search series...",
     "NoFilter": "No Filter",
-    "UnknownSeries": "Unknown Series"
+    "UnknownSeries": "Unknown Series",
+    "collector": "Collector",
+    "lastAdded": "Last Added",
+    "emptyFigures": "No figures to show yet."
   },
   "Auth": {
     "LoginTitle": "Log In to Your Account",
@@ -1057,5 +1066,61 @@
     "GivenStars": "Stars Given",
     "GiveRating": "Rate Minifigure",
     "ApprovalRequired": "Your account needs to be approved by an administrator before you can use collection features."
+  },
+  "FigurePodium": {
+    "title": "Collector Podium",
+    "emptyTitle": "Podium is empty",
+    "emptyDescription": "Be the first to rate this minifigure!",
+    "cta": "Rate Minifigure",
+    "reviewCount": "{count} reviews",
+    "anonymousCollector": "Anonymous Collector",
+    "addReview": "Add Review"
+  },
+  "Comments": {
+    "emptyComments": "No comments yet. Would you like to be the first one to comment?",
+    "loading": "Loading comments...",
+    "title": "Community Comments",
+    "commentCount": "{count} Comments",
+    "leaveComment": "Leave a Comment",
+    "namePlaceholder": "Your Name or Nickname...",
+    "contentPlaceholder": "Write your comment here. We'd love to hear your thoughts!",
+    "submitting": "Submitting...",
+    "submit": "Submit Comment",
+    "errorEmpty": "Please enter your name and comment!",
+    "successSubmit": "Your comment has been submitted successfully!",
+    "errorSubmit": "An error occurred while submitting your comment."
+  },
+  "Settings": {
+    "security": "Security and Password",
+    "newPassword": "New Password",
+    "newPasswordConfirm": "New Password (Confirm)",
+    "confirmPlaceholder": "Confirm password",
+    "changePassword": "Change Password",
+    "SUCCESS_PASSWORD_UPDATED": "Your password has been securely updated!",
+    "ERROR_PASSWORD_TOO_SHORT": "Your password must be at least 6 characters.",
+    "ERROR_TIMEOUT": "A timeout occurred while updating password.",
+    "ERROR_UPDATE_FAILED": "Password could not be updated, your current password remains valid.",
+    "ERROR_UNKNOWN": "An unknown error occurred.",
+    "profileInfo": "Profile Information",
+    "emailLabel": "Registered E-Mail Address",
+    "emailDesc": "If you change it, you will need security approval.",
+    "nameLabel": "Full Name",
+    "namePlaceholder": "Enter your name (Optional)",
+    "ageLabel": "Age",
+    "agePlaceholder": "e.g. 24",
+    "saveProfile": "Save Profile",
+    "SUCCESS_PROFILE_UPDATED": "Your profile information has been successfully updated!",
+    "passwordPlaceholder": "Enter your secret password (At least 6 characters)",
+    "ERROR_PASSWORD_MISMATCH": "The passwords you entered do not match!"
+  },
+  "Metadata": {
+    "contactTitle": "Contact | Minifigurlerim",
+    "aboutTitle": "About Us | Minifigurlerim"
+  },
+  "ExplorePage": {
+    "title": "Explore",
+    "description": "Browse the most popular and highly valued figures.",
+    "errorDegraded": "Figure data cannot be loaded at the moment. Please try again later.",
+    "emptyFigures": "No figures to display yet."
   }
 }
