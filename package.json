@@ -12,7 +12,9 @@
     "cevir": "npx tsx scripts/translate-i18n.ts",
     "predev": "node scripts/verify-env.mjs",
     "prebuild": "node scripts/verify-env.mjs",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "check:i18n-contract": "node scripts/check-i18n-contract.mjs",
+    "verify:i18n": "npm run check:i18n-contract && npx tsc --noEmit && npx playwright test e2e/figures-page.contract.spec.ts"
   },
   "dependencies": {
     "@marsidev/react-turnstile": "^1.5.0",
@@ -22,7 +24,7 @@
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "embla-carousel-react": "^8.6.0",
-    "lucide-react": "^1.7.0",
+    "lucide-react": "^1.11.0",
     "next": "16.2.1",
     "next-intl": "4.9.0",
     "oauth-1.0a": "^2.2.6",

@@ -48,7 +48,8 @@ function safeTranslate(dbValue: any, namespace: string, t: any, locale?: string)
     }
     
     if (locale === 'en') {
-      return '';
+      const rawFallback = typeof dbValue === 'string' ? dbValue : String(dbValue);
+      return `${rawFallback} (TR)`;
     }
     
     return typeof dbValue === 'string' ? dbValue : String(dbValue);

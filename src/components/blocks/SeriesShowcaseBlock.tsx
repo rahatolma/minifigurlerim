@@ -7,6 +7,7 @@ import RichTextContent from '@/components/ui/RichTextContent';
 import { Flag, Presentation, Star, Lightbulb, Zap } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useGamification } from '@/components/providers/GamificationProvider';
+import { useTranslations } from 'next-intl';
 
 interface Props {
   data: SeriesShowcaseBlockData;
@@ -18,6 +19,7 @@ export default function SeriesShowcaseBlock({ data, seriesId }: Props) {
   const { user } = useAuth();
   const { userSeriesProgressMap } = useGamification();
   const isLoggedIn = !!user;
+  const t = useTranslations('SeriesShowcase');
 
   const collectionStats = seriesId ? userSeriesProgressMap[seriesId] : null;
 
@@ -87,19 +89,19 @@ export default function SeriesShowcaseBlock({ data, seriesId }: Props) {
              <div className="flex flex-row items-stretch justify-between divide-x divide-gray-100 px-2 py-4">
                 <div className="flex-1 flex flex-col items-center justify-center text-center px-1 overflow-hidden">
                    <span className="text-xl font-bold text-green-600 leading-none mb-1">3</span>
-                   <span className="text-[9px] font-bold text-gray-400 tracking-wider uppercase truncate w-full">T. Gör.</span>
+                   <span className="text-[9px] font-bold text-gray-400 tracking-wider uppercase truncate w-full">{t('TotalViews')}</span>
                 </div>
                 <div className="flex-1 flex flex-col items-center justify-center text-center px-1 overflow-hidden">
                    <span className="text-xl font-bold text-green-600 leading-none mb-1">3</span>
-                   <span className="text-[9px] font-bold text-gray-400 tracking-wider uppercase truncate w-full">G. Gör.</span>
+                   <span className="text-[9px] font-bold text-gray-400 tracking-wider uppercase truncate w-full">{t('DailyViews')}</span>
                 </div>
                 <div className="flex-1 flex flex-col items-center justify-center text-center px-1 overflow-hidden">
-                   <span className="text-xl font-bold text-[#D22B2B] leading-none mb-1">1 Dk</span>
-                   <span className="text-[9px] font-bold text-gray-400 tracking-wider uppercase truncate w-full">Okuma</span>
+                   <span className="text-xl font-bold text-[#D22B2B] leading-none mb-1">1 {t('MinuteShort')}</span>
+                   <span className="text-[9px] font-bold text-gray-400 tracking-wider uppercase truncate w-full">{t('ReadTime')}</span>
                 </div>
                 <div className="flex-1 flex flex-col items-center justify-center text-center px-1 overflow-hidden">
                    <span className="text-xl font-bold text-gray-800 leading-none mb-1">0</span>
-                   <span className="text-[9px] font-bold text-gray-400 tracking-wider uppercase truncate w-full">Yorum</span>
+                   <span className="text-[9px] font-bold text-gray-400 tracking-wider uppercase truncate w-full">{t('Comments')}</span>
                 </div>
              </div>
            </div>
@@ -135,13 +137,13 @@ export default function SeriesShowcaseBlock({ data, seriesId }: Props) {
                 {!isLoggedIn ? (
                   <div className="mt-4">
                     <span className="text-4xl md:text-5xl font-bold text-gray-300 tracking-tighter leading-none inline-block mb-2">?</span>
-                    <p className="text-[12px] md:text-[13px] font-bold text-gray-400">Giriş Yapılmadı</p>
+                    <p className="text-[12px] md:text-[13px] font-bold text-gray-400">{t('NotLoggedIn')}</p>
                     <div className="h-6 mt-3"></div> {/* spacer to align */}
                   </div>
                 ) : (
                   <div className="mt-4">
                     <span className="text-4xl md:text-5xl font-bold text-green-600 tracking-tighter leading-none inline-block mb-2">%{percent}</span>
-                    <p className="text-[12px] md:text-[13px] font-bold text-gray-800">Tamamlandı</p>
+                    <p className="text-[12px] md:text-[13px] font-bold text-gray-800">{t('Completed')}</p>
                     <div className="h-6 mt-3 relative">
                       <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden absolute top-1">
                         <div className="h-full bg-green-500 rounded-full transition-all duration-1000" style={{ width: `${Math.min(percent, 100)}%` }}></div>
@@ -159,18 +161,18 @@ export default function SeriesShowcaseBlock({ data, seriesId }: Props) {
                 {!isLoggedIn ? (
                   <div className="mt-4">
                     <span className="text-4xl md:text-5xl font-bold text-gray-300 tracking-tighter leading-none inline-block mb-2">0</span>
-                    <p className="text-[12px] md:text-[13px] font-bold text-gray-400">Hedef {total || '?'} Figür</p>
+                    <p className="text-[12px] md:text-[13px] font-bold text-gray-400">{t('TargetFigures', { total: total || '?' })}</p>
                     <div className="h-6 mt-3"></div> {/* spacer */}
                   </div>
                 ) : (
                   <div className="mt-4">
                     <span className="text-4xl md:text-5xl font-bold text-[#D22B2B] tracking-tighter leading-none mb-2 block">{collected}</span>
                     <p className="text-[12px] md:text-[13px] font-bold text-gray-800 text-balance">
-                      {total ? `${total} figürden ${collected} sende` : 'Durum bilinmiyor'}
+                      {total ? t('CollectionStatus', { total, collected }) : t('StatusUnknown')}
                     </p>
                     <div className="h-6 mt-3">
                        {total - collected > 0 && (
-                          <p className="text-[10px] md:text-[11px] font-semibold text-gray-400 pt-1">Seriyi tamamlamana sadece <strong className="text-gray-700">{total - collected} figür</strong> kaldı</p>
+                          <p className="text-[10px] md:text-[11px] font-semibold text-gray-400 pt-1" dangerouslySetInnerHTML={{ __html: t.raw('RemainingFigures').replace('{remaining}', String(total - collected)) }} />
                        )}
                     </div>
                   </div>
@@ -192,21 +194,19 @@ export default function SeriesShowcaseBlock({ data, seriesId }: Props) {
                <div className="absolute bottom-[-50%] right-[-10%] w-[40%] h-[150%] bg-[#D22B2B] mix-blend-screen filter blur-[80px] rounded-full opacity-50"></div>
             </div>
 
-            <div className="flex flex-col relative z-10 max-w-2xl">
+             <div className="flex flex-col relative z-10 max-w-2xl">
                <div className="inline-block px-3 py-1 bg-white/10 text-gray-300 border border-white/10 rounded-full text-[10px] font-black tracking-widest uppercase mb-5 w-max mx-auto md:mx-0">
-                  {data.title || "Koleksiyonuna Değer Kat"}
+                  {data.title || t('AddValue')}
                </div>
-               <h3 className="text-2xl md:text-3xl lg:text-4xl font-black text-white tracking-tight mb-4 leading-tight">
-                 Seriyi Tamamlamaya <span className="text-[#D22B2B]">Devam Et</span>
-               </h3>
-               <p className="text-base md:text-lg font-medium text-gray-400">Tüm figürleri teker teker incele, koleksiyonuna ekle ve tamamlama ilerlemeni anında takip et.</p>
+               <h3 className="text-2xl md:text-3xl lg:text-4xl font-black text-white tracking-tight mb-4 leading-tight" dangerouslySetInnerHTML={{ __html: t.raw('ContinueCompleting').replace('Devam Et', '<span class="text-[#D22B2B]">Devam Et</span>').replace('the Series', '<span class="text-[#D22B2B]">the Series</span>') }}></h3>
+               <p className="text-base md:text-lg font-medium text-gray-400">{t('ExamineFigures')}</p>
             </div>
             
             <button 
                onClick={handleCollect}
                className="bg-[#D22B2B] hover:bg-[#b02222] text-white px-10 py-5 rounded-2xl font-black text-sm uppercase tracking-widest transition-transform hover:scale-105 shrink-0 shadow-xl shadow-red-900/20"
             >
-               KOLEKSİYONUMA EKLE
+               {t('AddToMyCollection')}
             </button>
             
          </div>

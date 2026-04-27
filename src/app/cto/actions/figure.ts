@@ -7,12 +7,30 @@ import { AdminActionResponse } from '@/types/cto-action';
 import { validateNamingConvention, normalizeSlug } from '@/utils/validations/naming-standards';
 import { validateInteger } from '@/utils/validations/numeric';
 
-export async function saveFigureData(formData: any, isEdit: boolean, figureId?: string): Promise<AdminActionResponse> {
+import { normalizeIncomingMinifigure } from '@/services/inputNormalizers';
+import { persistNormalizationLogs } from '@/services/dataGovernanceLogger';
+
+export async function saveFigureData(rawFormData: any, isEdit: boolean, figureId?: string): Promise<AdminActionResponse> {
   try {
     // 1. Yetki Kontrolü
     const { user, profile } = await getAuthUserProfile();
     if (!user || profile?.role !== 'admin') {
       throw new Error('Yetkisiz işlem: Admin yetkiniz bulunmuyor.');
+    }
+    
+    // Apply Input Normalization Layer immediately after auth
+    // Phase 3: Observability & Data Governance
+    const { safeRecord: formData, logs: normalizationLogs } = normalizeIncomingMinifigure(rawFormData, false);
+
+    if (normalizationLogs.length > 0) {
+      console.warn('[DataGovernance: Normalization Executed]');
+      normalizationLogs.forEach(log => {
+        console.warn(`  ↳ Field '${log.field}': '${log.originalValue}' -> '${log.normalizedValue}'`);
+      });
+      // Fire-and-forget persistent logging
+      persistNormalizationLogs(normalizationLogs, 'minifigures', 'cto_api', figureId, user?.id || null).catch(err => {
+         console.error('[DataGovernance] Unhandled persistence error:', err);
+      });
     }
 
     // 2. Format ve Güvenlik Sanitizasyonu (Görsel URL Doğrulama)
@@ -51,7 +69,7 @@ export async function saveFigureData(formData: any, isEdit: boolean, figureId?: 
     // figure_number'ı Number'a parse ediyoruz ama string olarak db'deki yapıya uygun string-int atıyoruz
     formData.figure_number = String(validateInteger(formData.figure_number, 'figure_number'));
     
-    // 3. Normalization
+    // 3. Normalization (Extra fallbacks)
     formData.figure_code = String(formData.figure_code).trim();
     formData.slug_tr = normalizeSlug(String(formData.slug_tr).trim());
     if (formData.slug_en) formData.slug_en = normalizeSlug(String(formData.slug_en).trim());
@@ -82,8 +100,7 @@ export async function saveFigureData(formData: any, isEdit: boolean, figureId?: 
         throw new Error(`CRITICAL: Bu seri içerisinde '${formData.slug_tr}' URL'si zaten kullanımda!`);
     }
 
-
-    
+    const warnings = normalizationLogs.map(l => `'${l.field}' alanı sistem tarafından düzeltildi: '${l.originalValue}' -> '${l.normalizedValue}'`);
 
     // 5. Veritabanı Yazma İşlemi (DB Constraint Fallback Guard)
     try {
@@ -95,7 +112,7 @@ export async function saveFigureData(formData: any, isEdit: boolean, figureId?: 
           .select();
         if (error) throw error;
         if (!data || data.length === 0) throw new Error('Figür bulunamadı veya güncellenemedi.');
-        return { success: true, message: 'Figür başarıyla güncellendi! 🎉', data: data[0] };
+        return { success: true, message: 'Figür başarıyla güncellendi! 🎉', data: data[0], normalizationWarnings: warnings };
       } else {
         const { data, error } = await adminClient
           .from('minifigures')
@@ -103,7 +120,7 @@ export async function saveFigureData(formData: any, isEdit: boolean, figureId?: 
           .select();
         if (error) throw error;
         if (!data || data.length === 0) throw new Error('Yeni figür oluşturulamadı.');
-        return { success: true, message: 'Yeni figür başarıyla eklendi! 🎉', data: data[0] };
+        return { success: true, message: 'Yeni figür başarıyla eklendi! 🎉', data: data[0], normalizationWarnings: warnings };
       }
     } catch (dbErr: any) {
        // Graceful DB constraint handling (Rule 3)

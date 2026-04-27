@@ -70,7 +70,7 @@ import { MINIFIGURES_SELECT_FIELDS } from '@/utils/queries';
 export const getSeriesList = cache(async () => {
   const supabase = createPublicClient();
   const { data, error } = await supabase
-    .from('series').select('id, title, slug_tr, slug_en, description, description_blocks_en, is_active, release_year, category, category_main, cover_image_url, hero_image_url, content_blocks, series_no, rarity, figure_count, is_published, total_views, title_en, en_status')
+    .from('series').select('id, title, slug_tr, slug_en, description, description_blocks_en, is_active, release_year, category, category_main, cover_image_url, hero_image_url, content_blocks, series_no, rarity, figure_count, is_published, total_views, title_en, en_status, en_translation_status')
     .order('created_at', { ascending: false });
 
   if (error) throw error;
@@ -115,7 +115,7 @@ export const getAllMinifigures = cache(async (): Promise<RawListFigureDTO[]> => 
 export const getAllSeries = cache(async (): Promise<SeriesDTO[]> => {
   const supabase = createPublicClient();
   const { data, error } = await supabase
-    .from('series').select('id, title, slug_tr, slug_en, description, description_blocks_en, is_active, release_year, category, category_main, cover_image_url, hero_image_url, content_blocks, series_no, rarity, figure_count, is_published, total_views, title_en, en_status')
+    .from('series').select('id, title, slug_tr, slug_en, description, description_blocks_en, is_active, release_year, category, category_main, cover_image_url, hero_image_url, content_blocks, series_no, rarity, figure_count, is_published, total_views, title_en, en_status, en_translation_status')
     .order('created_at', { ascending: false });
 
   if (error) throw error;
@@ -163,7 +163,7 @@ export const getHomeSliders = cache(async () => {
 export const getLatestSeries = cache(async (): Promise<SeriesDTO[]> => {
   const supabase = createPublicClient();
   const { data, error } = await supabase
-    .from('series').select('id, title, slug_tr, slug_en, description, description_blocks_en, is_active, release_year, category, category_main, cover_image_url, hero_image_url, content_blocks, series_no, rarity, figure_count, is_published, total_views, title_en, en_status')
+    .from('series').select('id, title, slug_tr, slug_en, description, description_blocks_en, is_active, release_year, category, category_main, cover_image_url, hero_image_url, content_blocks, series_no, rarity, figure_count, is_published, total_views, title_en, en_status, en_translation_status')
     .order('created_at', { ascending: false })
     .limit(100); // Havuzu geniş tuttuk ki JS ile kronolojik dizebilelim
 
@@ -244,17 +244,12 @@ export const getSeriesBySlug = cache(async (slug: string, locale?: string) => {
   const supabase = createPublicClient();
   const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
 
-  let query = supabase.from('series').select('id, title, slug_tr, slug_en, description, description_blocks_en, is_active, release_year, category, category_main, cover_image_url, hero_image_url, content_blocks, series_no, rarity, figure_count, is_published, total_views, title_en, en_status');
+  let query = supabase.from('series').select('id, title, slug, slug_tr, slug_en, description, description_blocks_en, is_active, release_year, category, category_main, cover_image_url, hero_image_url, content_blocks, series_no, rarity, figure_count, is_published, total_views, title_en, en_status, en_translation_status');
   if (isUUID) {
     query = query.eq('id', slug);
   } else {
-    if (locale === 'en') {
-      query = query.or(`slug_en.eq.${slug},slug.eq.${slug}`);
-    } else if (locale === 'tr') {
-      query = query.or(`slug_tr.eq.${slug},slug.eq.${slug}`);
-    } else {
-      query = query.or(`slug.eq.${slug},slug_tr.eq.${slug},slug_en.eq.${slug}`);
-    }
+    // Search all slugs regardless of locale so that bi-directional redirects can catch mismatched slugs
+    query = query.or(`slug.eq.${slug},slug_tr.eq.${slug},slug_en.eq.${slug}`);
   }
 
   const { data, error } = await query.single();
@@ -611,7 +606,7 @@ export const getSeriesListItems = cache(async (
 ): Promise<SeriesDTO[]> => {
   const supabase = createPublicClient();
   let query = supabase
-    .from('series').select('id, title, slug_tr, slug_en, description, description_blocks_en, is_active, release_year, category, category_main, cover_image_url, hero_image_url, content_blocks, series_no, rarity, figure_count, is_published, total_views, title_en, en_status');
+    .from('series').select('id, title, slug_tr, slug_en, description, description_blocks_en, is_active, release_year, category, category_main, cover_image_url, hero_image_url, content_blocks, series_no, rarity, figure_count, is_published, total_views, title_en, en_status, en_translation_status');
 
   query = query.eq('is_published', true);
 

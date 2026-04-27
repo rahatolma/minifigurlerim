@@ -18,7 +18,7 @@ export default function NewSeriesPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [qualityReport, setQualityReport] = useState<{score: number, feedback: string} | null>(null);
-  const [activeTab, setActiveTab] = useState<'tr'|'en'>('tr');
+  const [isEnUnlocked, setIsEnUnlocked] = useState(false);
   const [uploadingField, setUploadingField] = useState<string | null>(null);
   const [categories, setCategories] = useState<any[]>([]);
   
@@ -141,7 +141,8 @@ console.error(err);
             description_blocks_en: formData.content_blocks_en,
             slug_en: formData.slug_en,
             meta_title_en: formData.meta_title_en,
-            meta_description_en: formData.meta_description_en
+            meta_description_en: formData.meta_description_en,
+            en_translation_status: isEnUnlocked ? 'manual_override' : undefined
       };
       
       const result = await saveSeriesData(dbPayload, false);
@@ -360,87 +361,78 @@ console.error(err);
               </div>
             </div>
 
-            {/* DİL BAZLI İÇERİKLER */}
-            <div className="mb-4 flex gap-2 border-b border-gray-200">
-              <button 
-                type="button" 
-                onClick={() => setActiveTab('tr')} 
-                className={`px-6 py-3 font-black text-xs uppercase tracking-widest transition-colors border-b-2 ${activeTab === 'tr' ? 'border-black text-black' : 'border-transparent text-gray-400 hover:text-black'}`}>
-                🇹🇷 TÜRKÇE İÇERİK (KAYNAK)
-              </button>
-              <button 
-                type="button" 
-                onClick={() => setActiveTab('en')} 
-                className={`px-6 py-3 font-black text-xs uppercase tracking-widest transition-colors border-b-2 ${activeTab === 'en' ? 'border-[#3B82F6] text-[#3B82F6]' : 'border-transparent text-gray-400 hover:text-black'}`}>
-                🇺🇸 İNGİLİZCE İÇERİK (ÇEVİRİ)
-              </button>
+            <div className="bg-white border border-gray-200 rounded-md shadow-sm mb-8 overflow-hidden">
+               <div className="flex items-center group">
+                 <div className="w-1/3 py-5 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
+                     <label className="text-gray-900 block truncate font-black tracking-wide">Seri Adı (TR) <span className="text-[#D22B2B]">*</span></label>
+                 </div>
+                 <div className="w-2/3 py-3">
+                     <input name="title" type="text" value={formData.title} onChange={handleChange} placeholder="Örn: LEGO® Minifigürler Serisi 27" className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold placeholder:font-medium placeholder:opacity-30" />
+                 </div>
+               </div>
+            </div>
+            
+            <div className="bg-transparent pt-4 pb-8">
+               <div className="mb-6 flex flex-col">
+                  <h3 className="text-xl font-black text-gray-900 uppercase tracking-widest">İçerik Blokları Yöneticisi (TR)</h3>
+                  <p className="text-xs text-gray-500 font-semibold mt-1">Türkçe içerikleri modüler bloklar kullanarak oluşturun.</p>
+               </div>
+               
+               <BlockEditor 
+                  blocks={formData.content_blocks} 
+                  onChange={(newBlocks) => setFormData(prev => ({ ...prev, content_blocks: newBlocks }))} 
+               />
             </div>
 
-            {activeTab === 'tr' && (
-              <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                <div className="bg-white border border-gray-200 rounded-md shadow-sm mb-8 overflow-hidden">
-                   <div className="flex items-center group">
-                     <div className="w-1/3 py-5 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
-                         <label className="text-gray-900 block truncate font-black tracking-wide">Seri Adı (TR) <span className="text-[#D22B2B]">*</span></label>
-                     </div>
-                     <div className="w-2/3 py-3">
-                         <input name="title" type="text" value={formData.title} onChange={handleChange} placeholder="Örn: LEGO® Minifigürler Serisi 27" className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold placeholder:font-medium placeholder:opacity-30" />
-                     </div>
-                   </div>
+            {/* DİL BAZLI İÇERİKLER: EN (AUTO DERIVED) */}
+            <div className="mt-8 border-t-[3px] border-black pt-8">
+              <div className="mb-6 flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-black uppercase tracking-widest text-black flex items-center gap-3">
+                    🇺🇸 İNGİLİZCE İÇERİK <span className="bg-blue-100 text-blue-800 text-[10px] px-2 py-1 rounded-sm">AUTO-DERIVED</span>
+                  </h2>
+                  <p className="text-[12px] font-medium text-gray-500 mt-2">
+                    Bu alan TR kaynağı kaydedildiğinde otomatik olarak güncellenir. Yapay Zeka müdahale eder.
+                  </p>
                 </div>
-                
-                <div className="bg-transparent pt-4">
-                   <div className="mb-6 flex flex-col">
-                      <h3 className="text-xl font-black text-gray-900 uppercase tracking-widest">İçerik Blokları Yöneticisi (TR)</h3>
-                      <p className="text-xs text-gray-500 font-semibold mt-1">Türkçe içerikleri modüler bloklar kullanarak oluşturun.</p>
-                   </div>
-                   
-                   <BlockEditor 
-                      blocks={formData.content_blocks} 
-                      onChange={(newBlocks) => setFormData(prev => ({ ...prev, content_blocks: newBlocks }))} 
-                   />
-                </div>
+                {!isEnUnlocked ? (
+                  <button 
+                    type="button" 
+                    onClick={() => setIsEnUnlocked(true)}
+                    className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded text-[11px] font-black tracking-widest uppercase transition-colors flex items-center gap-2"
+                  >
+                    🔒 KİLİDİ AÇ (MANUAL OVERRIDE)
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <button 
+                      type="button" 
+                      onClick={() => setIsEnUnlocked(false)}
+                      className="bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 py-2 rounded text-[11px] font-black tracking-widest uppercase transition-colors"
+                    >
+                      İPTAL / KİLİTLE
+                    </button>
+                    <button 
+                      type="button" 
+                      onClick={handleAIGenerate}
+                      disabled={isGeneratingAI}
+                      className="bg-black hover:bg-[#D22B2B] disabled:bg-gray-400 text-white px-4 py-2 rounded text-[11px] font-black tracking-widest uppercase transition-colors flex items-center gap-2"
+                    >
+                      {isGeneratingAI ? <Loader2 size={14} className="animate-spin" /> : "⚡️ FORCE REWRITE"}
+                    </button>
+                  </div>
+                )}
               </div>
-            )}
 
-            {activeTab === 'en' && (
-              <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                <div className="bg-blue-50 border border-blue-100 p-6 rounded-md shadow-sm mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                   <div>
-                     <div className="flex items-center gap-3 mb-1">
-                       <h3 className="font-bold text-sm text-blue-900">Otomatik İngilizce Taslak & Kalite Kontrol</h3>
-                       {qualityReport && (
-                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-black tracking-wider ${qualityReport.score >= 90 ? 'bg-green-100 text-green-700' : qualityReport.score >= 70 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>
-                            SKOR: {qualityReport.score}/100
-                          </span>
-                       )}
-                     </div>
-                     
-                     {!qualityReport ? (
-                        <p className="text-[11px] font-medium text-blue-700">TÜRKÇE içeriği "Collector Tone" kurallarıyla optimize ederek profesyonel İngilizceye çevirin.</p>
-                     ) : (
-                        <p className="text-[11px] font-medium text-blue-700 max-w-2xl">
-                          <span className="font-bold text-blue-900">AI Kalite Denetçisi:</span> {qualityReport.feedback}
-                        </p>
-                     )}
-                   </div>
-                   <button 
-                     type="button" 
-                     onClick={handleAIGenerate}
-                     disabled={isGeneratingAI}
-                     className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-6 py-3 rounded-md text-[11px] font-black tracking-widest uppercase transition-colors flex items-center gap-2 shadow-sm whitespace-nowrap"
-                   >
-                     {isGeneratingAI ? <><Loader2 size={16} className="animate-spin" /> ÜRETİLİYOR...</> : "✨ REWRITE & TASLAK ÜRET"}
-                   </button>
-                </div>
-
+              <div className={`transition-opacity duration-300 ${!isEnUnlocked ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
+                
                 <div className="bg-white border border-gray-200 rounded-md shadow-sm mb-8 overflow-hidden">
                    <div className="flex items-center group">
                      <div className="w-1/3 py-5 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
                          <label className="text-gray-900 block truncate font-black tracking-wide">Seri Adı (EN)</label>
                      </div>
                      <div className="w-2/3 py-3">
-                         <input name="title_en" type="text" value={formData.title_en} onChange={handleChange} placeholder="Örn: LEGO® Minifigures Series 27" className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold placeholder:font-medium placeholder:opacity-30" />
+                         <input name="title_en" type="text" value={formData.title_en} onChange={handleChange} readOnly={!isEnUnlocked} placeholder="Örn: LEGO® Minifigures Series 27" className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold placeholder:font-medium placeholder:opacity-30" />
                      </div>
                    </div>
                 </div>
@@ -448,55 +440,52 @@ console.error(err);
                 <div className="bg-transparent pt-4">
                    <div className="mb-6 flex flex-col">
                       <h3 className="text-xl font-black text-gray-900 uppercase tracking-widest">İçerik Blokları Yöneticisi (EN)</h3>
-                      <p className="text-xs text-gray-500 font-semibold mt-1">Yapay zekanın ürettiği blokları kontrol edebilir veya manuel olarak İngilizce blok ekleyebilirsiniz.</p>
                    </div>
                    
-                   <BlockEditor 
-                      blocks={formData.content_blocks_en} 
-                      onChange={(newBlocks) => setFormData(prev => ({ ...prev, content_blocks_en: newBlocks }))} 
-                   />
+                   <div className={!isEnUnlocked ? "opacity-70 grayscale" : ""}>
+                     <BlockEditor 
+                        blocks={formData.content_blocks_en} 
+                        onChange={(newBlocks) => setFormData(prev => ({ ...prev, content_blocks_en: newBlocks }))} 
+                     />
+                   </div>
                 </div>
                 
                 {/* SEO BÖLÜMÜ */}
                 <div className="bg-white border border-gray-200 rounded-md shadow-sm mt-8 overflow-hidden">
                    <div className="bg-[#111] px-6 py-4 flex items-center justify-between">
-                     <h3 className="font-black text-white text-xs tracking-widest uppercase">Global SEO Yöneticisi</h3>
-                     <span className="text-[10px] text-gray-400">Yapay Zeka Destekli</span>
+                     <h3 className="font-black text-white text-xs tracking-widest uppercase">Global SEO Yöneticisi (EN)</h3>
                    </div>
                    
                    <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
                      <div className="w-1/3 py-5 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
                          <label className="text-gray-900 block truncate font-black tracking-wide">SEO Slug (URL Ucu)</label>
-                         <p className="text-[10px] text-gray-500 mt-1">/en/series/... kısmı</p>
                      </div>
                      <div className="w-2/3 py-3">
-                         <input name="slug_en" type="text" value={formData.slug_en} onChange={handleChange} placeholder="Örn: lego-minifigures-series-27" className="w-full bg-transparent px-3 py-2 text-black font-semibold text-[13px] border-b border-gray-200 focus:border-black transition-colors focus:outline-none" />
+                         <input name="slug_en" type="text" value={formData.slug_en} onChange={handleChange} readOnly={!isEnUnlocked} placeholder="Örn: lego-minifigures-series-27" className="w-full bg-transparent px-3 py-2 text-black font-semibold text-[13px] border-b border-gray-200 focus:border-black transition-colors focus:outline-none" />
                      </div>
                    </div>
 
                    <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
                      <div className="w-1/3 py-5 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
                          <label className="text-gray-900 block truncate font-black tracking-wide">SEO Meta Title</label>
-                         <p className="text-[10px] text-gray-500 mt-1">Maks. 60 Karakter</p>
                      </div>
                      <div className="w-2/3 py-3">
-                         <input name="meta_title_en" type="text" value={formData.meta_title_en} onChange={handleChange} placeholder="Örn: LEGO Series 27 | Minifigürlerim" className="w-full bg-transparent px-3 py-2 text-black font-semibold text-[13px] border-b border-gray-200 focus:border-black transition-colors focus:outline-none" />
+                         <input name="meta_title_en" type="text" value={formData.meta_title_en} onChange={handleChange} readOnly={!isEnUnlocked} placeholder="Örn: LEGO Series 27 | Minifigürlerim" className="w-full bg-transparent px-3 py-2 text-black font-semibold text-[13px] border-b border-gray-200 focus:border-black transition-colors focus:outline-none" />
                      </div>
                    </div>
 
                    <div className="flex border-b border-gray-100 items-start hover:bg-gray-50 transition-colors group">
                      <div className="w-1/3 pt-6 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
                          <label className="text-gray-900 block truncate font-black tracking-wide">SEO Meta Description</label>
-                         <p className="text-[10px] text-gray-500 mt-1">Google aramalarında gözüken 160 karakterlik özet.</p>
                      </div>
                      <div className="w-2/3 py-4">
-                         <textarea name="meta_description_en" value={formData.meta_description_en} onChange={handleChange} rows={3} placeholder="Discover the highly anticipated LEGO Minifigures Series 27." className="w-full bg-transparent px-3 py-2 text-black font-semibold text-[13px] border border-gray-200 focus:border-black transition-colors focus:outline-none rounded-sm resize-none"></textarea>
+                         <textarea name="meta_description_en" value={formData.meta_description_en} onChange={handleChange} readOnly={!isEnUnlocked} rows={3} placeholder="Discover the highly anticipated LEGO Minifigures Series 27." className="w-full bg-transparent px-3 py-2 text-black font-semibold text-[13px] border border-gray-200 focus:border-black transition-colors focus:outline-none rounded-sm resize-none"></textarea>
                      </div>
                    </div>
                 </div>
 
               </div>
-            )}
+            </div>
 
             {/* Save Button */}
             <div className="mt-12 flex justify-end">

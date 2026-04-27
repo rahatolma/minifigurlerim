@@ -7,6 +7,8 @@ import { ChevronRight, ImagePlus, Wand2, Loader2, Save } from 'lucide-react';
 import { supabase } from '@/utils/supabase/client';
 import toast from 'react-hot-toast';
 import { slugify } from '@/utils/helpers';
+import { normalizeIncomingMinifigure } from '@/services/inputNormalizers';
+import { logNormalizationEventsAction } from '@/app/admin/actions/logger';
 
 export default function EditFigurePage() {
   const router = useRouter();
@@ -189,43 +191,75 @@ export default function EditFigurePage() {
     const generatedSlug = slugify(`${formData.name} ${selectedSeries?.title || ''} ${formData.code || ''}`);
 
     try {
-      const { error } = await supabase
+      const rawRecord = {
+          slug: generatedSlug,
+          series_id: formData.series_id,
+          name: formData.name,
+          description: formData.description,
+          brand: formData.brand,
+          category: selectedSeries?.category || '',
+          series_name: selectedSeries?.title || '',
+          series_no: selectedSeries?.series_no || '',
+          figure_no: formData.figure_no,
+          role: role,
+          type: type,
+          code: formData.code,
+          piece_count: pieceCount,
+          body_material: formData.body_material,
+          rarity: rarity,
+          value_usd: valueUsd,
+          min_price: formData.min_price ? parseFloat(formData.min_price.toString().replace(',', '.')) : null,
+          max_price: formData.max_price ? parseFloat(formData.max_price.toString().replace(',', '.')) : null,
+          avg_price: formData.avg_price ? parseFloat(formData.avg_price.toString().replace(',', '.')) : null,
+          rarity_score: parseInt(formData.rarity_score) || 1,
+          series_score: parseInt(formData.series_score) || 1,
+          view_count_30d: parseInt(formData.view_count_30d.toString()) || 0,
+          collection_count_30d: parseInt(formData.collection_count_30d.toString()) || 0,
+          favorite_count_30d: parseInt(formData.favorite_count_30d.toString()) || 0,
+          rating_count: parseInt(formData.rating_count.toString()) || 0,
+          release_month: formData.release_month,
+          release_year: formData.release_year,
+          images: uploadedImages.filter(Boolean),
+          custom_attributes: finalCustomAttr
+      };
+
+      const { safeRecord: normalizedRecord, logs: normalizationLogs } = normalizeIncomingMinifigure(rawRecord);
+
+      if (normalizationLogs.length > 0) {
+        console.warn('[DataGovernance: Normalization Executed]');
+        normalizationLogs.forEach(log => {
+          console.warn(`  ↳ Field '${log.field}': '${log.originalValue}' -> '${log.normalizedValue}'`);
+          toast.custom((t) => (
+            <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-orange-50 shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}>
+              <div className="flex-1 w-0 p-4">
+                <div className="flex items-start">
+                  <div className="ml-3 flex-1">
+                    <p className="text-sm font-bold text-orange-900">Sistem Uyarısı (Otomatik Düzeltme)</p>
+                    <p className="mt-1 text-sm text-orange-700">{`'${log.field}' alanı sistem tarafından düzeltildi: '${log.originalValue}' -> '${log.normalizedValue}'`}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ), { duration: 6000 });
+        });
+      }
+
+      const { data, error } = await supabase
         .from('minifigures')
-        .update({
-            slug: generatedSlug,
-            series_id: formData.series_id,
-            name: formData.name,
-            description: formData.description,
-            brand: formData.brand,
-            category: selectedSeries?.category || '',
-            series_name: selectedSeries?.title || '',
-            series_no: selectedSeries?.series_no || '',
-            figure_no: formData.figure_no,
-            role: role,
-            type: type,
-            code: formData.code,
-            piece_count: pieceCount,
-            body_material: formData.body_material,
-            rarity: rarity,
-            value_usd: valueUsd,
-            min_price: formData.min_price ? parseFloat(formData.min_price.toString().replace(',', '.')) : null,
-            max_price: formData.max_price ? parseFloat(formData.max_price.toString().replace(',', '.')) : null,
-            avg_price: formData.avg_price ? parseFloat(formData.avg_price.toString().replace(',', '.')) : null,
-            rarity_score: parseInt(formData.rarity_score) || 1,
-            series_score: parseInt(formData.series_score) || 1,
-            view_count_30d: parseInt(formData.view_count_30d.toString()) || 0,
-            collection_count_30d: parseInt(formData.collection_count_30d.toString()) || 0,
-            favorite_count_30d: parseInt(formData.favorite_count_30d.toString()) || 0,
-            rating_count: parseInt(formData.rating_count.toString()) || 0,
-            release_month: formData.release_month,
-            release_year: formData.release_year,
-            images: uploadedImages.filter(Boolean),
-            custom_attributes: finalCustomAttr
-        })
-        .eq('id', figureId);
+        .update(normalizedRecord)
+        .eq('id', figureId)
+        .select();
 
       if (error) throw error;
-      toast.success('Figür başarıyla güncellendi.');
+      
+      // Fire-and-forget persistent logging if there are normalization logs
+      if (normalizationLogs.length > 0 && data && data.length > 0) {
+         logNormalizationEventsAction(normalizationLogs, 'minifigures', 'admin_panel', data[0].id).catch(err => {
+            console.error('[DataGovernance] Client failed to trigger log persistence:', err);
+         });
+      }
+
+      toast.success('Figür başarıyla güncellendi!');
       router.push('/admin/figurler');
     } catch (err: any) {
       console.error(err);

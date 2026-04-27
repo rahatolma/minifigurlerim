@@ -5,6 +5,7 @@ import { getAuthUserProfile } from '@/services/action_dal';
 import { createAdminClient } from '@/utils/supabase/admin';
 import { AdminActionResponse } from '@/types/cto-action';
 import { validateNamingConvention, normalizeSlug } from '@/utils/validations/naming-standards';
+import { generateENContent } from '@/services/aiGenerator';
 
 export async function saveSeriesData(formData: any, isEdit: boolean, seriesId?: string): Promise<AdminActionResponse> {
   try {
@@ -42,6 +43,9 @@ export async function saveSeriesData(formData: any, isEdit: boolean, seriesId?: 
     const adminClient = createAdminClient();
 
     // 4. Veritabanı Yazma İşlemi
+    let savedEntity;
+    let message = '';
+
     if (isEdit && seriesId) {
       const { data, error } = await adminClient
         .from('series')
@@ -53,6 +57,9 @@ export async function saveSeriesData(formData: any, isEdit: boolean, seriesId?: 
       if (!data || data.length === 0) {
         throw new Error('Seri bulunamadı veya güncellenemedi.');
       }
+      
+      savedEntity = data[0];
+      message = 'Seri GÜNCELLENDİ ve içindeki tüm figürler otomatik eşitlendi! 🎉';
 
       // Kaskad Güncelleme
       const cascadePayload = {
@@ -68,10 +75,8 @@ export async function saveSeriesData(formData: any, isEdit: boolean, seriesId?: 
 
       if (cascadeError) {
         console.error("Figürler kaskad güncellenirken hata:", cascadeError);
-        return { success: true, message: 'Seri güncellendi ama içindeki figürler eşitlenemedi. 🎉', data: data[0] };
+        message = 'Seri güncellendi ama içindeki figürler eşitlenemedi. 🎉';
       }
-
-      return { success: true, message: 'Seri GÜNCELLENDİ ve içindeki tüm figürler otomatik eşitlendi! 🎉', data: data[0] };
     } else {
       const { data, error } = await adminClient
         .from('series')
@@ -82,8 +87,44 @@ export async function saveSeriesData(formData: any, isEdit: boolean, seriesId?: 
       if (!data || data.length === 0) {
         throw new Error('Yeni seri oluşturulamadı.');
       }
-      return { success: true, message: 'Yeni seri başarıyla eklendi! 🎉', data: data[0] };
+      
+      savedEntity = data[0];
+      message = 'Yeni seri başarıyla eklendi! 🎉';
     }
+
+    // 5. Asenkron AI Translation Job (Non-blocking)
+    const isManualOverride = savedEntity.en_translation_status === 'manual_override';
+    const forceRegenerate = formData.en_translation_status === 'queued';
+    const trSourceData = { title: savedEntity.title, category: savedEntity.category, content_blocks: savedEntity.content_blocks };
+    
+    // We import this dynamically to avoid circular dependencies if any, but regular import is fine.
+    const { queueTranslationJobIfNeeded } = await import('@/services/aiTranslationPipeline');
+    
+    const { queued, hash, error: queueError } = await queueTranslationJobIfNeeded(
+      'series',
+      savedEntity.id,
+      trSourceData,
+      savedEntity.en_source_hash || null,
+      isManualOverride,
+      forceRegenerate
+    );
+
+    if (queued) {
+      console.log(`[Auto-Generate] Queued EN translation job for series: ${savedEntity.id} with hash: ${hash}`);
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3004';
+      // Fire and forget (may not trigger depending on Vercel environment, but good enough for Phase 1 / local)
+      const expectedSecret = process.env.CRON_SECRET || process.env.API_SECRET;
+      fetch(`${siteUrl}/api/jobs/process-translation`, { 
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(expectedSecret ? { 'Authorization': `Bearer ${expectedSecret}` } : {})
+        },
+        body: JSON.stringify({ jobId: null })
+      }).catch(e => console.error('Failed to trigger job processor:', e));
+    }
+
+    return { success: true, message, data: savedEntity };
   } catch (err: any) {
     console.error('[Action: saveSeriesData] Error:', err);
     return { success: false, error: err.message || 'Bilinmeyen bir hata oluştu.' };

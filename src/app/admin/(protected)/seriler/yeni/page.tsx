@@ -9,6 +9,7 @@ import { supabase } from '@/utils/supabase/client';
 import { slugify } from '@/utils/helpers';
 import BlockEditor from '@/components/admin/blocks/BlockEditor';
 import { AnyContentBlock } from '@/types/content-blocks';
+import { saveSeriesData } from '@/app/cto/actions/series';
 import toast from 'react-hot-toast';
 
 export default function NewSeriesPage() {
@@ -125,31 +126,30 @@ export default function NewSeriesPage() {
     const generatedSlug = slugify(formData.title);
     
     try {
-      const { error } = await supabase
-        .from('series')
-        .insert([
-          {
-            slug: generatedSlug,
-            title: formData.title,
-            category: formData.category,
-            series_no: formData.series_no,
-            brand: formData.brand,
-            figure_count: formData.figure_count ? parseInt(formData.figure_count) : null,
-            release_month: formData.release_month,
-            release_year: formData.release_year,
-            cover_image_url: imageUrls.cover_image_url,
-            hero_image_url: imageUrls.hero_image_url,
-            content_blocks: formData.content_blocks,
-            title_en: formData.title_en,
-            description_blocks_en: formData.content_blocks_en,
-            slug_en: formData.slug_en,
-            meta_title_en: formData.meta_title_en,
-            meta_description_en: formData.meta_description_en
-          }
-        ]);
+      const dbPayload = {
+          slug: generatedSlug,
+          title: formData.title,
+          category: formData.category,
+          series_no: formData.series_no,
+          brand: formData.brand,
+          figure_count: formData.figure_count ? parseInt(formData.figure_count) : null,
+          release_month: formData.release_month,
+          release_year: formData.release_year,
+          cover_image_url: imageUrls.cover_image_url,
+          hero_image_url: imageUrls.hero_image_url,
+          content_blocks: formData.content_blocks,
+          title_en: formData.title_en,
+          description_blocks_en: formData.content_blocks_en,
+          slug_en: formData.slug_en,
+          meta_title_en: formData.meta_title_en,
+          meta_description_en: formData.meta_description_en,
+          en_translation_status: undefined // New items start missing or queued
+      };
+      
+      const result = await saveSeriesData(dbPayload, false);
+      if (!result.success) throw new Error(result.error);
 
-      if (error) throw error;
-      toast.success('Seri başarıyla kaydedildi! 🎉');
+      toast.success(result.message);
       router.push('/admin/seriler');
     } catch (err: any) {
       toast.error('Kayıt Hatası: ' + err.message);

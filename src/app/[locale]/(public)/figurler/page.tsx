@@ -1,9 +1,9 @@
 import { getMinifigureListItems, getMinifigureFilterOptions, getAllSeries, getTotalMinifiguresCount } from '@/services/dal';
 import FigureCard from '@/components/ui/FigureCard';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
-import { Link } from '@/i18n/routing';
 import { permanentRedirect } from 'next/navigation';
 import { getCanonicalQueryString } from '@/utils/filterHelpers';
+import { toSeriesOption, toRoleOption, toRarityOption, toTypeOption } from '@/services/displayMappers';
 import FiguresFilterClient from '@/components/ui/FiguresFilterClient';
 import DragScrollContainer from '@/components/ui/DragScrollContainer';
 import { mapFigureForCard } from '@/utils/figureMapper';
@@ -77,6 +77,24 @@ export default async function FiguresPage({
      .map(row => mapFigureForCard(row, locale))
      .filter((fig): fig is NonNullable<typeof fig> => fig !== null);
 
+  const tTax = await getTranslations({ locale, namespace: 'Taxonomy' });
+  const tFilter = await getTranslations({ locale, namespace: 'FiguresFilter' });
+
+  const mutableSeriesList = [...seriesList];
+  if (process.env.NODE_ENV !== 'production' && resolvedParams?._mockFallback === '1') {
+      mutableSeriesList.push({
+          id: 999999,
+          title: 'LEGO Minifigürler Serisi X',
+          title_en: null,
+          slug: 'mock-1'
+      } as any);
+  }
+
+  const mappedSeriesList = mutableSeriesList.map(s => toSeriesOption(s, locale as 'tr'|'en'));
+  const mappedRoles = [...roles].sort((a,b) => a.localeCompare(b, locale)).map(r => toRoleOption(r, locale as 'tr'|'en', tTax));
+  const mappedRarities = rarities.map(r => toRarityOption(r, locale as 'tr'|'en'));
+  const mappedTypes = types.map(t => toTypeOption(t, locale as 'tr'|'en'));
+
   return (
     <div className="bg-[#fcfcfc] min-h-screen pb-16">
       
@@ -91,10 +109,10 @@ export default async function FiguresPage({
         {/* YATAY FİLTRE BARI (Client-Side Auto Submit) */}
         <div className="max-w-7xl mx-auto px-0 md:px-8">
             <FiguresFilterClient 
-              seriesList={seriesList} 
-              roles={roles} 
-              types={types} 
-              rarities={rarities} 
+              seriesList={mappedSeriesList} 
+              roles={mappedRoles} 
+              types={mappedTypes} 
+              rarities={mappedRarities} 
               totalCount={fetchedFigures.count || 0}
               absoluteTotalCount={absoluteTotalCount}
             />

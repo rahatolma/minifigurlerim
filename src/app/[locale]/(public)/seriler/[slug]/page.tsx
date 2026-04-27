@@ -104,10 +104,15 @@ export default async function SeriesDetail({
     permanentRedirect(`/tr/seriler/${series.slug}`);
   }
 
-  const title = locale === 'en' && series.title_en ? series.title_en : series.title;
-  const content_blocks = locale === 'en' && series.description_blocks_en ? series.description_blocks_en : series.content_blocks;
+  const isFallback = locale === 'en' && series.en_translation_status !== 'ready' && series.en_translation_status !== 'manual_override';
   
-  const isFallback = locale === 'en' && !series.title_en && !series.description_blocks_en;
+  const title = isFallback ? "Content in Preparation" : (locale === 'en' && series.title_en ? series.title_en : series.title);
+  
+  // If it's a fallback, we explicitly do NOT want to show the Turkish content_blocks
+  const content_blocks = isFallback 
+    ? [{ type: 'paragraph', data: { text: "This content is currently being prepared in English and will be available soon. Thank you for your patience." } }] 
+    : (locale === 'en' && series.description_blocks_en ? series.description_blocks_en : series.content_blocks);
+  
   const fallbackT = await getTranslations('Fallback');
   
   // Bu seriye ait figürleri çek
