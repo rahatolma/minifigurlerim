@@ -19,15 +19,14 @@ jobs:
       run: npx playwright install --with-deps chromium
     - name: Verify build (Required to test Next.js integration)
       env:
-        NEXT_PUBLIC_SUPABASE_URL: "https://dummy.supabase.co"
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: "dummy-anon-key"
+        NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
       run: npm run build
     - name: Run Playwright tests
       run: npm run test:e2e
       env:
-        # Fallback dummy envs to prevent test failures on CI if needed
-        NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:54321' }}
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'fake-key' }}
+        NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         CI: true
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}

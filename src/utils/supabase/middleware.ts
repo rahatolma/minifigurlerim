@@ -71,7 +71,7 @@ export async function updateSession(request: NextRequest) {
       error
     } = await supabase.auth.getUser()
 
-    if (error) {
+    if (error && process.env.CI !== 'true') {
       console.error('Middleware Supabase Auth Error:', error.message)
     }
 
