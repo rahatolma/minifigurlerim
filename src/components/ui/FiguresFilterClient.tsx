@@ -4,7 +4,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import CustomDropdown from './CustomDropdown';
 import { useLocale, useTranslations } from 'next-intl';
-import { getLocalizedRole, getLocalizedRarity } from '@/utils/taxonomy';
 
 export default function FiguresFilterClient({
   seriesList,
@@ -14,10 +13,10 @@ export default function FiguresFilterClient({
   totalCount,
   absoluteTotalCount
 }: {
-  seriesList: any[];
-  roles: string[];
-  types: string[];
-  rarities: string[];
+  seriesList: { value: string, label: string }[];
+  roles: { value: string, label: string }[];
+  types: { value: string, label: string }[];
+  rarities: { value: string, label: string }[];
   totalCount: number;
   absoluteTotalCount?: number;
 }) {
@@ -26,7 +25,6 @@ export default function FiguresFilterClient({
   const locale = useLocale();
   const t = useTranslations('SeriesPage');
   const tFilter = useTranslations('FiguresFilter');
-  const tTax = useTranslations('Taxonomy');
 
   const currentSort = searchParams.get('sort') || 'newest';
   const currentSeries = searchParams.get('series') || 'all';
@@ -83,7 +81,7 @@ export default function FiguresFilterClient({
 
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const sortedRoles = [...roles].sort((a,b) => a.localeCompare(b, locale));
+
 
   return (
     <>
@@ -109,7 +107,7 @@ export default function FiguresFilterClient({
           name="series"
           options={[
             { value: 'all', label: tFilter('AllSeries') },
-            ...seriesList.map(s => ({ value: s.id.toString(), label: s.title }))
+            ...seriesList
           ]}
           value={currentSeries}
           onChange={(val: string) => handleFilterUpdate('series', val)}
@@ -123,8 +121,8 @@ export default function FiguresFilterClient({
           key={`role-desktop-${currentRole}`}
           name="role"
           options={[
-            { value: 'all', label: tFilter('AllRoles') }, // Keep as is since roles are dynamic
-            ...sortedRoles.map(r => ({ value: r, label: getLocalizedRole(r, tTax, locale) }))
+            { value: 'all', label: tFilter('AllRoles') },
+            ...roles
           ]}
           value={currentRole}
           onChange={(val: string) => handleFilterUpdate('role', val)}
@@ -138,7 +136,7 @@ export default function FiguresFilterClient({
           name="rarity"
           options={[
             { value: 'all', label: tFilter('AllRarities') },
-            ...rarities.map(r => ({ value: r, label: getLocalizedRarity(r, tTax, locale) }))
+            ...rarities
           ]}
           value={currentRarity}
           onChange={(val: string) => handleFilterUpdate('rarity', val)}
@@ -231,7 +229,7 @@ export default function FiguresFilterClient({
                   className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
                 >
                   <option value="all">{tFilter('AllSeries')}</option>
-                  {seriesList.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
+                  {seriesList.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
                 </select>
             </div>
 
@@ -245,7 +243,7 @@ export default function FiguresFilterClient({
                   className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
                 >
                   <option value="all">{tFilter('AllRoles')}</option>
-                  {sortedRoles.map(r => <option key={r} value={r}>{getLocalizedRole(r, tTax, locale)}</option>)}
+                  {roles.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
                 </select>
             </div>
 
@@ -259,7 +257,7 @@ export default function FiguresFilterClient({
                   className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
                 >
                   <option value="all">{tFilter('AllRarities')}</option>
-                  {rarities.map(r => <option key={r} value={r}>{getLocalizedRarity(r, tTax, locale)}</option>)}
+                  {rarities.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
                 </select>
             </div>
         </div>

@@ -87,6 +87,23 @@
       }
     }
   },
+  "SeriesShowcase": {
+    "ContinueCompleting": "Continue Completing the Series",
+    "AddToMyCollection": "Add to My Collection",
+    "Completed": "Completed",
+    "StatusUnknown": "Status unknown",
+    "NotLoggedIn": "Not Logged In",
+    "TargetFigures": "Target {total} Figures",
+    "RemainingFigures": "You have only <strong className=\"text-gray-700\">{remaining} figures</strong> left to complete the series",
+    "CollectionStatus": "{collected} out of {total} figures are yours",
+    "AddValue": "Add Value to Your Collection",
+    "ExamineFigures": "Examine all figures one by one, add them to your collection, and instantly track your completion progress.",
+    "TotalViews": "T. Views",
+    "DailyViews": "D. Views",
+    "ReadTime": "Read",
+    "Comments": "Comments",
+    "MinuteShort": "Min"
+  },
   "SeriesPage": {
     "TitleFirst": "The CMF",
     "TitleSecond": " Journey",

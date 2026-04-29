@@ -10,7 +10,8 @@ import { useAuth } from '@/components/providers/AuthProvider';
 import { useGamification } from '@/components/providers/GamificationProvider';
 import { useLocale, useTranslations } from 'next-intl';
 import { getFigureUrl } from '@/utils/routeBuilder';
-import { getLocalizedRarity, getLocalizedDemandSignal } from '@/utils/taxonomy';
+import { getLocalizedDemandSignal } from '@/utils/taxonomy';
+import { toRarityOption } from '@/services/displayMappers';
 import toast from 'react-hot-toast';
 
 import { FigureCardData } from '@/utils/figureMapper';
@@ -181,7 +182,7 @@ export default function FigureCard(props: FigureCardData) {
                 <div className="flex flex-col flex-1 items-center justify-center bg-yellow-50/50 py-2 px-1 rounded-lg border border-yellow-100/50 text-center">
                     <span className="text-[9px] text-yellow-600/80 font-bold uppercase tracking-widest mb-0.5">{t('ValueScore')}</span>
                     <span className="text-[11px] font-black text-yellow-700 leading-tight">
-                        {rarity_level ? getLocalizedRarity(rarity_level, tTax, locale) || tCommon('Yaygın') : tCommon('Yaygın')}
+                        {rarity_level ? toRarityOption(rarity_level, locale as 'tr'|'en').label : tCommon('Yaygın')}
                     </span>
                 </div>
 

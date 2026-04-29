@@ -36,7 +36,7 @@ export function toRarityLabel(key: string, locale: string): string {
     const localizedMap: Record<string, Record<string, string>> = {
         rare: { tr: 'Nadir', en: 'Rare' },
         common: { tr: 'Yaygın', en: 'Common' },
-        epic: { tr: 'Çok Nadir', en: 'Epic' },
+        epic: { tr: 'Çok Nadir', en: 'Super Rare' },
         legendary: { tr: 'Efsanevi', en: 'Legendary' }
     };
     
@@ -120,4 +120,3 @@ export function getCanonicalQueryString(
 
     return { needsRedirect, canonicalQueryString: currentParams.toString() };
 }
-

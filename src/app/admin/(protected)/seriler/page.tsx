@@ -2,13 +2,15 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/utils/supabase/client';
-import { Plus, Loader2, Edit, Trash2, ChevronDown, ChevronRight } from 'lucide-react';
+import { Plus, Loader2, Edit, Trash2, ChevronDown, ChevronRight, Sparkles } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function SeriesListPage() {
   const [series, setSeries] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [openCategories, setOpenCategories] = useState<string[]>([]);
+  const [isBulkGenerating, setIsBulkGenerating] = useState(false);
 
   useEffect(() => {
     fetchSeries();
@@ -57,6 +59,28 @@ export default function SeriesListPage() {
     );
   };
 
+  const handleBulkGenerate = async () => {
+    setIsBulkGenerating(true);
+    const toastId = toast.loading('Eksik çeviriler taranıyor ve kuyruğa alınıyor...');
+    try {
+      const res = await fetch('/api/jobs/bulk-generate-missing-en', {
+        method: 'POST'
+      });
+      const data = await res.json();
+      
+      if (!res.ok) throw new Error(data.error || 'İşlem başarısız');
+      
+      toast.success(`İşlem Tamamlandı! İşlenen: ${data.processed}, Kuyruğa Alınan: ${data.queued}, Atlanan: ${data.skipped}`, { id: toastId, duration: 6000 });
+      
+      // Refresh list to update UI states
+      fetchSeries();
+    } catch (err: any) {
+      toast.error(err.message, { id: toastId });
+    } finally {
+      setIsBulkGenerating(false);
+    }
+  };
+
   return (
     <div className="w-full max-w-[1600px] mx-auto p-12 pb-24">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
@@ -72,6 +96,14 @@ export default function SeriesListPage() {
             onChange={e => setSearchQuery(e.target.value)}
             className="border border-gray-300 rounded-sm px-4 py-4 text-[13px] font-bold focus:outline-none focus:ring-1 focus:ring-black w-full md:w-64"
           />
+          <button 
+            onClick={handleBulkGenerate}
+            disabled={isBulkGenerating}
+            className="bg-blue-600 text-white px-6 py-4 rounded-sm shadow-md text-xs font-black tracking-widest flex items-center gap-2 hover:bg-blue-700 transition-all uppercase whitespace-nowrap disabled:opacity-50"
+          >
+            {isBulkGenerating ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
+            Toplu Çeviri Kuyruğu (25)
+          </button>
           <Link href="/admin/seriler/yeni" className="bg-black text-white px-8 py-4 rounded-sm shadow-md text-xs font-black tracking-widest flex items-center gap-2 hover:bg-gray-800 transition-all uppercase whitespace-nowrap">
             <Plus size={16} /> Yeni Seri Ekle
           </Link>

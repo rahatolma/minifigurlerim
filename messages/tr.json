@@ -87,6 +87,23 @@
       }
     }
   },
+  "SeriesShowcase": {
+    "ContinueCompleting": "Seriyi Tamamlamaya Devam Et",
+    "AddToMyCollection": "Koleksiyonuma Ekle",
+    "Completed": "Tamamlandı",
+    "StatusUnknown": "Durum bilinmiyor",
+    "NotLoggedIn": "Giriş Yapılmadı",
+    "TargetFigures": "Hedef {total} Figür",
+    "RemainingFigures": "Seriyi tamamlamana sadece <strong className=\"text-gray-700\">{remaining} figür</strong> kaldı",
+    "CollectionStatus": "{total} figürden {collected} sende",
+    "AddValue": "Koleksiyonuna Değer Kat",
+    "ExamineFigures": "Tüm figürleri teker teker incele, koleksiyonuna ekle ve tamamlama ilerlemeni anında takip et.",
+    "TotalViews": "T. Gör.",
+    "DailyViews": "G. Gör.",
+    "ReadTime": "Okuma",
+    "Comments": "Yorum",
+    "MinuteShort": "Dk"
+  },
   "SeriesPage": {
     "TitleFirst": "CMF",
     "TitleSecond": " Evrimi",

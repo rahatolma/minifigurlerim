@@ -322,6 +322,23 @@ console.error(err);
       if (!result.success) throw new Error(result.error);
 
       toast.success(result.message);
+      if (result.normalizationWarnings && result.normalizationWarnings.length > 0) {
+        result.normalizationWarnings.forEach(warning => {
+           toast.custom((t) => (
+            <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-orange-50 shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}>
+              <div className="flex-1 w-0 p-4">
+                <div className="flex items-start">
+                  <div className="ml-3 flex-1">
+                    <p className="text-sm font-bold text-orange-900">Sistem Uyarısı (Otomatik Düzeltme)</p>
+                    <p className="mt-1 text-sm text-orange-700">{warning}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ), { duration: 6000 });
+        });
+      }
+      
       router.push('/cto/figurler');
     } catch (err: any) {
       console.error(err);

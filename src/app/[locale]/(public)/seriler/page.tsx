@@ -10,7 +10,7 @@ import { getTranslations, getLocale } from 'next-intl/server';
 
 import SeriesTimelineClient from '@/components/ui/SeriesTimelineClient';
 import { mapSeriesToCardViewModel } from '@/services/mappers';
-import { getLocalizedCategory } from '@/utils/taxonomy';
+import { toCategoryOption, toSeriesOption } from '@/services/displayMappers';
 
 export const revalidate = 300; // 5 minute ISR cache (Architecture Document Standard)
 
@@ -35,11 +35,11 @@ export default async function SeriesPage({
   // 1. Kategorileri Çek
   const catData = await getCategoriesByType(targetType);
   const tTax = await getTranslations({ locale, namespace: 'Taxonomy' });
-  const categoryFilters = (catData || []).map((c: { slug: string, name: string, name_en?: string }) => ({ slug: c.slug, name: getLocalizedCategory(c.name, tTax, locale) || c.name }));
+  const categoryFilters = (catData || []).map((c: { slug: string, name: string, name_en?: string }) => toCategoryOption(c, locale as 'tr'|'en', tTax));
 
   // 2. Tüm Serileri Çek (Sadece Dropdown Filter menüsü doldurmak için - Minimal payload)
   const allSeries = await getAllSeries();
-  const seriesListFilters = (allSeries || []).map(s => ({ slug: locale === 'en' && s.slug_en ? s.slug_en : (s.slug_tr || s.id.toString()), title: locale === 'en' && s.title_en ? s.title_en : s.title }));
+  const seriesListFilters = (allSeries || []).map(s => toSeriesOption(s, locale as 'tr'|'en'));
 
   // 3. Filtrelenmiş Serileri Doğrudan Veritabanından (DB) Çek
   // Kural: UI tarafında asla dataset.filter() gibi diziyi manipüle etme! Tüm filter/sort DAL'a havale edildi.
