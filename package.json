@@ -14,7 +14,8 @@
     "prebuild": "node scripts/verify-env.mjs",
     "test:e2e": "playwright test",
     "check:i18n-contract": "node scripts/check-i18n-contract.mjs",
-    "verify:i18n": "npm run check:i18n-contract && npx tsc --noEmit && npx playwright test e2e/figures-page.contract.spec.ts"
+    "verify:i18n": "npm run check:i18n-contract && npx tsc --noEmit && npx playwright test e2e/figures-page.contract.spec.ts",
+    "preflight": "npm run check:i18n-contract && npx tsc --noEmit && npm run build"
   },
   "dependencies": {
     "@marsidev/react-turnstile": "^1.5.0",
