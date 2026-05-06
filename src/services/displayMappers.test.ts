@@ -16,9 +16,9 @@ describe('displayMappers', () => {
       expect(normalizeRarityKey('RARE')).toBe('rare');
     });
 
-    it('defaults to empty string on invalid input', () => {
+    it('returns the raw string if no map matches', () => {
       expect(normalizeRarityKey(null)).toBe('');
-      expect(normalizeRarityKey('invalid')).toBe('');
+      expect(normalizeRarityKey('invalid')).toBe('invalid');
     });
   });
 

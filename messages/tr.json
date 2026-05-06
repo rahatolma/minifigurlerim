@@ -115,6 +115,7 @@
     "SortNewest": "En Yeniler",
     "SortOldest": "En Eskiler",
     "SortPopular": "En Popüler",
+    "SortValued": "En Değerli",
     "EmptyStateTitle": "Eşleşen Seri Bulunamadı",
     "EmptyStateDesc": "Seçtiğiniz filtrelere uygun bir seri bulunamadı. Lütfen filtreleri temizleyerek tekrar deneyin.",
     "ClearFilters": "Filtreleri Temizle"
@@ -1003,7 +1004,7 @@
     "EmptyStateTitle": "Burası Çok Issız",
     "EmptyStateDesc": "Mevcut filtrelere uyan hiçbir figür bulunamadı ya da henüz kasana figür eklemedin.",
     "BrowseFigures": "Figürlere Göz At",
-    "FilterAll": "Tüm Koleksiyon",
+    "FilterAll": "Tümü",
     "FilterHave": "Kasamda Olanlar",
     "FilterWant": "Takip Ettiklerim",
     "FilterSeries": "Tüm Seriler",

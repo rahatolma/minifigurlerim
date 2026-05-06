@@ -4,7 +4,8 @@ export interface SeriesCardViewModel {
   id: string;
   seriesId: string;
   familyLabel: string | null;
-  title: string;
+  displayTitle: string;
+  showcaseTitle: string | null;
   imageUrl: string;
   year: string | number;
   seriesNo: string | null;
@@ -74,13 +75,29 @@ export function mapSeriesToCardViewModel(
     }
   }
 
+  // SERIES_SHOWCASE title is editorial content (hero/storytelling) 
+  // and MUST NOT override the canonical card identity (displayTitle).
+  let showcaseTitle: string | null = null;
+  if (locale === 'en' && series.description_blocks_en && Array.isArray(series.description_blocks_en)) {
+    const showcaseBlock = series.description_blocks_en.find((b: any) => b.type === 'SERIES_SHOWCASE');
+    if (showcaseBlock?.data?.title) {
+      showcaseTitle = showcaseBlock.data.title;
+    }
+  } else if (series.content_blocks && Array.isArray(series.content_blocks)) {
+    const showcaseBlock = series.content_blocks.find((b: any) => b.type === 'SERIES_SHOWCASE');
+    if (showcaseBlock?.data?.title) {
+      showcaseTitle = showcaseBlock.data.title;
+    }
+  }
+
   const realCategory = series.category_main || series.category;
 
   return {
     id: finalId,
     seriesId: series.id,
     familyLabel,
-    title: finalTitle,
+    displayTitle: finalTitle,
+    showcaseTitle,
     imageUrl: series.cover_image_url || '',
     year: series.release_year || (series.created_at ? new Date(series.created_at).getFullYear() : '2010'),
     seriesNo: series.series_no || null,

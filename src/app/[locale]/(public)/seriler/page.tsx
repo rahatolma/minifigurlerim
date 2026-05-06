@@ -14,6 +14,28 @@ import { toCategoryOption, toSeriesOption } from '@/services/displayMappers';
 
 export const revalidate = 300; // 5 minute ISR cache (Architecture Document Standard)
 
+import { Metadata } from 'next';
+
+export async function generateMetadata({ params, searchParams }: any): Promise<Metadata> {
+  const resolvedParams = await searchParams;
+  const resolvedLocaleParams = await params;
+  const locale = resolvedLocaleParams?.locale || 'tr';
+  
+  const hasFilters = !!(resolvedParams?.sort || resolvedParams?.series || resolvedParams?.category || resolvedParams?.page);
+  
+  const path = locale === 'en' ? '/en/series' : '/tr/seriler';
+  
+  return {
+    alternates: {
+      canonical: path,
+    },
+    robots: {
+      index: !hasFilters,
+      follow: true,
+    }
+  };
+}
+
 export default async function SeriesPage({
   searchParams,
 }: {

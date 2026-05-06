@@ -8,7 +8,7 @@ import { useGamification } from '@/components/providers/GamificationProvider';
 import type { SeriesCardViewModel } from '@/services/mappers';
 
 export default function SeriesCard({ 
-  id, seriesId, familyLabel, title, imageUrl, year, seriesNo, totalFigures, categoryLabel, rarityLabel, latestFigureName, labels, targetHref
+  id, seriesId, familyLabel, displayTitle, showcaseTitle, imageUrl, year, seriesNo, totalFigures, categoryLabel, rarityLabel, latestFigureName, labels, targetHref
 }: SeriesCardViewModel) {
   const { user } = useAuth();
   const { userSeriesProgressMap, userLatestAddedFigureMap } = useGamification();
@@ -30,17 +30,17 @@ export default function SeriesCard({
       return (
         <>
           <span className="block text-[14px] leading-[18px] font-semibold text-gray-800 mb-2 truncate max-w-[95%] mx-auto text-center">{familyLabel}</span>
-          <span className="block line-clamp-2 leading-snug group-hover/text:underline text-center mx-auto">{title}</span>
+          <span className="block line-clamp-2 leading-snug group-hover/text:underline text-center mx-auto">{displayTitle}</span>
         </>
       );
     }
-    return <span className="block group-hover/text:underline line-clamp-3 leading-snug text-center mx-auto">{title}</span>;
+    return <span className="block group-hover/text:underline line-clamp-3 leading-snug text-center mx-auto">{displayTitle}</span>;
   };
 
   return (
     <div className="flex flex-col h-full bg-white rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 hover:shadow-[0_20px_40px_rgba(210,43,43,0.08)] hover:border-[#D22B2B]/20 hover:-translate-y-2 transition-all duration-400 ease-out relative group">
-       <Link href={(targetHref || "#") as any} onClick={(e) => !targetHref && e.preventDefault()} aria-disabled={!targetHref} className={`relative w-full aspect-[4/3] bg-gradient-to-b from-gray-50/50 to-white flex items-center justify-center border-b border-gray-50 flex-none transition-all duration-500 ${targetHref ? 'group-hover:from-red-50/20 group-hover:to-white' : 'opacity-50 cursor-not-allowed'}`}>
-          <Image src={imgSrc} alt={title} fill className="object-contain px-6 py-4 mix-blend-multiply group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500 will-change-transform" onError={() => setImgSrc(labels.defaultImage)} />
+       <Link href={(targetHref || "#") as any} onClick={(e) => !targetHref && e.preventDefault()} aria-disabled={!targetHref} className={`relative w-full aspect-[4/3] bg-white flex items-center justify-center border-b border-gray-50 flex-none transition-all duration-500 ${targetHref ? '' : 'opacity-50 cursor-not-allowed'}`}>
+          <Image src={imgSrc} alt={displayTitle} fill className="object-contain px-6 py-4 mix-blend-multiply group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500 will-change-transform" onError={() => setImgSrc(labels.defaultImage)} />
        </Link>
 
        <div className="px-6 pt-5 pb-6 flex flex-col flex-1 bg-white relative z-10">

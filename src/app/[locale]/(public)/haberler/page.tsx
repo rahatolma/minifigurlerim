@@ -52,7 +52,7 @@ export default async function NewsPage({
                 key={news.id} 
                 slug={locale === 'en' && news.slug_en ? news.slug_en : (news.slug || news.id)}
                 title={locale === 'en' && news.title_en ? news.title_en : news.title}
-                imageUrl={news.cover_image_url || '/images/placeholder.svg'}
+                imageUrl={news.cover_image_url || (locale === 'en' ? '/images/placeholder-en.svg' : '/images/placeholder.svg')}
                 views={news.total_views || 0}
                 dailyViews={news.daily_views || 0}
                 minRead={news.min_read || 1}

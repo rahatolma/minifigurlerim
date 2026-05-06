@@ -269,8 +269,20 @@ export default async function FigureDetail({
             </div>
 
             {/* Başlık */}
-            <h1 className="text-3xl md:text-5xl lg:text-5xl font-black text-[#111] leading-[1.1] tracking-tight mb-8">
-                {formatBrandText(figure.figure_name)}
+            <h1 className="text-3xl md:text-[40px] lg:text-[40px] font-black text-[#111] leading-[1.1] tracking-tight mb-8">
+                {(() => {
+                    const name = figure.figure_name || "";
+                    const parts = name.split('(');
+                    if (parts.length > 1) {
+                        return (
+                            <>
+                                {formatBrandText(parts[0].trim())}
+                                <span className="block mt-2 text-[#111]">({formatBrandText(parts.slice(1).join('(').trim())}</span>
+                            </>
+                        );
+                    }
+                    return formatBrandText(name);
+                })()}
             </h1>
 
             {/* Açıklama Alanı */}

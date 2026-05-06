@@ -99,7 +99,7 @@ export default function FigureCard(props: FigureCardData) {
   return (
     <div className="flex flex-col h-full bg-white rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 hover:shadow-[0_20px_40px_rgba(210,43,43,0.08)] hover:border-[#D22B2B]/20 hover:-translate-y-2 transition-all duration-400 ease-out relative group">
        
-       <Link href={(targetHref || "#") as any} onClick={(e) => !targetHref && e.preventDefault()} aria-disabled={!targetHref} className={`relative w-full aspect-square bg-[#fff] flex items-center justify-center p-8 border-b border-gray-50 flex-none transition-colors ${targetHref ? 'group-hover:bg-[#fcfcfc]' : 'opacity-50 cursor-not-allowed'}`}>
+       <Link href={(targetHref || "#") as any} onClick={(e) => !targetHref && e.preventDefault()} aria-disabled={!targetHref} className={`relative w-full aspect-square bg-white flex items-center justify-center p-8 border-b border-gray-50 flex-none transition-colors ${targetHref ? '' : 'opacity-50 cursor-not-allowed'}`}>
           {(status === 'have') && (
              <div className="absolute top-4 left-4 z-10 bg-[#5CB85C] text-white text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded shadow-sm flex items-center gap-1">
                 <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
@@ -182,7 +182,7 @@ export default function FigureCard(props: FigureCardData) {
                 <div className="flex flex-col flex-1 items-center justify-center bg-yellow-50/50 py-2 px-1 rounded-lg border border-yellow-100/50 text-center">
                     <span className="text-[9px] text-yellow-600/80 font-bold uppercase tracking-widest mb-0.5">{t('ValueScore')}</span>
                     <span className="text-[11px] font-black text-yellow-700 leading-tight">
-                        {rarity_level ? toRarityOption(rarity_level, locale as 'tr'|'en').label : tCommon('Yaygın')}
+                        {rarity_level ? toRarityOption(rarity_level, locale as 'tr'|'en').label : '-'}
                     </span>
                 </div>
 

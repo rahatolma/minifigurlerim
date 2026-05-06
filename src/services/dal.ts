@@ -456,6 +456,7 @@ export const getUserCollectionsWithDetails = cache(async (userId: string) => {
         role,
         type,
         rarity,
+        rarity_level,
         min_price,
         max_price,
         avg_price,
@@ -576,6 +577,11 @@ export const getMinifigureListItems = cache(async (
         .order('series(release_year)', { ascending: false, nullsFirst: false })
         .order('series(series_no)', { ascending: false, nullsFirst: false });
       break;
+    case 'value_desc':
+      query = query.order('value_score', { ascending: false, nullsFirst: false })
+        .order('series(release_year)', { ascending: false, nullsFirst: false })
+        .order('series(series_no)', { ascending: false, nullsFirst: false });
+      break;
     case 'oldest':
       query = query.order('series(release_year)', { ascending: true, nullsFirst: false })
         .order('series(series_no)', { ascending: true, nullsFirst: false })
@@ -606,7 +612,8 @@ export const getSeriesListItems = cache(async (
 ): Promise<SeriesDTO[]> => {
   const supabase = createPublicClient();
   let query = supabase
-    .from('series').select('id, title, slug_tr, slug_en, description, description_blocks_en, is_active, release_year, category, category_main, cover_image_url, hero_image_url, content_blocks, series_no, rarity, figure_count, is_published, total_views, title_en, en_status, en_translation_status');
+    .from('series_with_value_summary')
+    .select('id, title, slug_tr, slug_en, description, description_blocks_en, is_active, release_year, category, category_main, cover_image_url, hero_image_url, content_blocks, series_no, rarity, original_figure_count, is_published, total_views, title_en, en_status, en_translation_status, created_at, total_value_score, active_figure_count');
 
   query = query.eq('is_published', true);
 
@@ -630,6 +637,12 @@ export const getSeriesListItems = cache(async (
         .order('series_no', { ascending: true, nullsFirst: false })
         .order('created_at', { ascending: true });
       break;
+    case 'value_desc':
+      query = query
+        .order('total_value_score', { ascending: false })
+        .order('release_year', { ascending: false })
+        .order('series_no', { ascending: true, nullsFirst: false });
+      break;
     case 'newest':
     default:
       query = query
@@ -645,8 +658,14 @@ export const getSeriesListItems = cache(async (
     throw error;
   }
 
+  // Restore figure_count alias for frontend compatibility
+  const mappedData = data?.map(row => ({
+    ...row,
+    figure_count: row.original_figure_count
+  })) || [];
+
   // JS Sıralama (Database string number karşılaştırması hatalarını önlemek için)
-  let sortedData = [...(data as any[])];
+  let sortedData = [...(mappedData as any[])];
 
   switch (sortParam) {
     case 'popular':
@@ -669,6 +688,9 @@ export const getSeriesListItems = cache(async (
         const _noB = parseInt(b.series_no) || 0;
         return _noA - _noB;
       });
+      break;
+    case 'value_desc':
+      // Sorted exactly via DB (total_value_score)
       break;
     case 'newest':
     default:

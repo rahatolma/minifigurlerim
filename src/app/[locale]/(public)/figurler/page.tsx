@@ -12,6 +12,27 @@ import FiguresListContainer from '@/components/ui/FiguresListContainer';
 
 import EvolutionTimelineClient from '@/components/ui/EvolutionTimelineClient';
 import { getTranslations } from 'next-intl/server';
+import { Metadata } from 'next';
+
+export async function generateMetadata({ params, searchParams }: any): Promise<Metadata> {
+  const resolvedParams = await searchParams;
+  const resolvedLocaleParams = await params;
+  const locale = resolvedLocaleParams?.locale || 'tr';
+  
+  const hasFilters = !!(resolvedParams?.sort || resolvedParams?.series || resolvedParams?.role || resolvedParams?.type || resolvedParams?.rarity || resolvedParams?.page);
+  
+  const path = locale === 'en' ? '/en/figures' : '/tr/figurler';
+  
+  return {
+    alternates: {
+      canonical: path,
+    },
+    robots: {
+      index: !hasFilters,
+      follow: true,
+    }
+  };
+}
 
 
 export default async function FiguresPage({
