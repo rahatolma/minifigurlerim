@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import Image from 'next/image';
 
 interface FigureGalleryProps {
     images: string[];
@@ -25,10 +26,13 @@ export default function FigureGallery({ images, name }: FigureGalleryProps) {
         <div className="w-full flex flex-col items-center">
             {/* Main Image Stage */}
             <div className="relative w-full h-[500px] flex items-center justify-center group overflow-hidden">
-                <img 
+                <Image 
                     src={images[currentIndex]} 
                     alt={`${name} - Görsel ${currentIndex + 1}`} 
-                    className="max-w-full max-h-full object-scale-down mix-blend-multiply transition-all duration-300 pointer-events-none" 
+                    fill
+                    sizes="(max-width: 768px) 100vw, 500px"
+                    priority={currentIndex === 0}
+                    className="object-contain mix-blend-multiply transition-all duration-300 pointer-events-none" 
                 />
                 
                 {images.length > 1 && (
@@ -61,7 +65,9 @@ export default function FigureGallery({ images, name }: FigureGalleryProps) {
                                 ${currentIndex === idx ? 'border-[#D22B2B] shadow-sm transform scale-105' : 'border-gray-100 hover:border-gray-300'}
                             `}
                         >
-                            <img src={img} alt={`Küçük Önizleme ${idx + 1}`} className="w-full h-full object-contain p-2 mix-blend-multiply" />
+                            <div className="relative w-full h-full p-2">
+                                <Image src={img} alt={`Küçük Önizleme ${idx + 1}`} fill sizes="80px" className="object-contain mix-blend-multiply" />
+                            </div>
                         </div>
                     ))}
                 </div>

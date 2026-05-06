@@ -13,6 +13,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 const sen = Sen({
   variable: "--font-sen",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {

@@ -13,6 +13,7 @@ import FiguresListContainer from '@/components/ui/FiguresListContainer';
 import EvolutionTimelineClient from '@/components/ui/EvolutionTimelineClient';
 import { getTranslations } from 'next-intl/server';
 import { Metadata } from 'next';
+import { Suspense } from 'react';
 
 import { buildMetadata } from '@/lib/seo';
 
@@ -144,14 +145,16 @@ export default async function FiguresPage({
       <div className="md:sticky md:bg-[#fcfcfc] md:py-4 md:border-b md:border-gray-100 md:shadow-sm md:mb-6 z-40 md:z-40 top-0 md:top-[75px]">
         {/* YATAY FİLTRE BARI (Client-Side Auto Submit) */}
         <div className="max-w-7xl mx-auto px-0 md:px-8">
-            <FiguresFilterClient 
-              seriesList={mappedSeriesList} 
-              roles={mappedRoles} 
-              types={mappedTypes} 
-              rarities={mappedRarities} 
-              totalCount={fetchedFigures.count || 0}
-              absoluteTotalCount={absoluteTotalCount}
-            />
+            <Suspense fallback={<div className="h-[60px] w-full border-b border-gray-100 bg-[#fcfcfc] flex items-center px-4"><span className="text-sm text-gray-400">Yükleniyor...</span></div>}>
+              <FiguresFilterClient 
+                seriesList={mappedSeriesList} 
+                roles={mappedRoles} 
+                types={mappedTypes} 
+                rarities={mappedRarities} 
+                totalCount={fetchedFigures.count || 0}
+                absoluteTotalCount={absoluteTotalCount}
+              />
+            </Suspense>
         </div>
       </div>
 
