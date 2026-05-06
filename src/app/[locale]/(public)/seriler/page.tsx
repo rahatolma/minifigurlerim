@@ -16,6 +16,8 @@ export const revalidate = 300; // 5 minute ISR cache (Architecture Document Stan
 
 import { Metadata } from 'next';
 
+import { buildMetadata } from '@/lib/seo';
+
 export async function generateMetadata({ params, searchParams }: any): Promise<Metadata> {
   const resolvedParams = await searchParams;
   const resolvedLocaleParams = await params;
@@ -23,17 +25,18 @@ export async function generateMetadata({ params, searchParams }: any): Promise<M
   
   const hasFilters = !!(resolvedParams?.sort || resolvedParams?.series || resolvedParams?.category || resolvedParams?.page);
   
-  const path = locale === 'en' ? '/en/series' : '/tr/seriler';
-  
-  return {
+  const t = await getTranslations({ locale, namespace: 'SeriesPage' });
+
+  return buildMetadata({
+    title: t('MetaTitle') || 'LEGO Minifigür Serileri | Minifigürlerim',
+    description: t('MetaDescription') || 'LEGO CMF, Star Wars, Marvel ve daha fazlası. Tüm minifigür serilerini inceleyin ve keşfedin.',
+    locale,
     alternates: {
-      canonical: path,
+      tr: '/seriler',
+      en: '/series'
     },
-    robots: {
-      index: !hasFilters,
-      follow: true,
-    }
-  };
+    noindex: hasFilters
+  });
 }
 
 export default async function SeriesPage({
@@ -98,8 +101,23 @@ export default async function SeriesPage({
 
   const mappedFilteredSeries = filteredSeries.map(series => mapSeriesToCardViewModel(series, locale, tTax, tCard, tCommon, seriesFigStats));
 
+  const { generateBreadcrumbSchema, generateCollectionPageSchema, safeJsonLd } = await import('@/lib/jsonLd');
+  
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Minifigürlerim', item: `/${locale}` },
+    { name: t('MetaTitle') || 'LEGO Minifigür Serileri' }
+  ]);
+  
+  const collectionSchema = generateCollectionPageSchema(
+    t('MetaTitle') || 'LEGO Minifigür Serileri | Minifigürlerim',
+    t('MetaDescription') || 'LEGO CMF, Star Wars, Marvel ve daha fazlası. Tüm minifigür serilerini inceleyin ve keşfedin.',
+    `/${locale === 'en' ? 'en/series' : 'tr/seriler'}`
+  );
+
   return (
     <div className="bg-[#fcfcfc] min-h-screen">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(collectionSchema) }} />
       
 
 

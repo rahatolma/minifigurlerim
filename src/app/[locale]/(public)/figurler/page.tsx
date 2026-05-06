@@ -14,6 +14,8 @@ import EvolutionTimelineClient from '@/components/ui/EvolutionTimelineClient';
 import { getTranslations } from 'next-intl/server';
 import { Metadata } from 'next';
 
+import { buildMetadata } from '@/lib/seo';
+
 export async function generateMetadata({ params, searchParams }: any): Promise<Metadata> {
   const resolvedParams = await searchParams;
   const resolvedLocaleParams = await params;
@@ -21,17 +23,18 @@ export async function generateMetadata({ params, searchParams }: any): Promise<M
   
   const hasFilters = !!(resolvedParams?.sort || resolvedParams?.series || resolvedParams?.role || resolvedParams?.type || resolvedParams?.rarity || resolvedParams?.page);
   
-  const path = locale === 'en' ? '/en/figures' : '/tr/figurler';
-  
-  return {
+  const t = await getTranslations({ locale, namespace: 'FiguresPage' });
+
+  return buildMetadata({
+    title: t('MetaTitle') || 'LEGO Minifigürleri - Tüm Figürler Koleksiyonu | Minifigürlerim',
+    description: t('MetaDescription') || 'Kapsamlı LEGO minifigür koleksiyonumuzu keşfedin. Nadirlik, tema ve yıla göre filtreleyin.',
+    locale,
     alternates: {
-      canonical: path,
+      tr: '/figurler',
+      en: '/figures'
     },
-    robots: {
-      index: !hasFilters,
-      follow: true,
-    }
-  };
+    noindex: hasFilters
+  });
 }
 
 
@@ -116,9 +119,21 @@ export default async function FiguresPage({
   const mappedRarities = rarities.map(r => toRarityOption(r, locale as 'tr'|'en'));
   const mappedTypes = types.map(t => toTypeOption(t, locale as 'tr'|'en'));
 
+  const { generateBreadcrumbSchema, generateCollectionPageSchema, safeJsonLd } = await import('@/lib/jsonLd');
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Minifigürlerim', item: `/${locale}` },
+    { name: t('MetaTitle') || 'Tüm Figürler Koleksiyonu' }
+  ]);
+  const collectionSchema = generateCollectionPageSchema(
+    t('MetaTitle') || 'LEGO Minifigürleri - Tüm Figürler Koleksiyonu | Minifigürlerim',
+    t('MetaDescription') || 'Kapsamlı LEGO minifigür koleksiyonumuzu keşfedin. Nadirlik, tema ve yıla göre filtreleyin.',
+    `/${locale === 'en' ? 'en/figures' : 'tr/figurler'}`
+  );
+
   return (
     <div className="bg-[#fcfcfc] min-h-screen pb-16">
-      
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(collectionSchema) }} />
 
       {/* MİNİFİGÜR EVRİMİ (HERO TIMELINE) - Client Component */}
       <EvolutionTimelineClient />

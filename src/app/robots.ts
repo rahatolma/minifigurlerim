@@ -10,7 +10,9 @@ export default function robots(): MetadataRoute.Robots {
       disallow: [
         '/cto/',
         '/koleksiyonum/',
-        '/api/'
+        '/api/',
+        '/admin/',
+        '/maintenance/'
       ],
     },
     sitemap: `${baseUrl}/sitemap.xml`,

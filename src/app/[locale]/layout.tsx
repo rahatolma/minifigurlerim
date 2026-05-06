@@ -71,8 +71,8 @@ export default async function RootLayout({
               }} 
             />
             {children}
-            <Analytics />
-            <SpeedInsights />
+            {process.env.NODE_ENV === 'production' && <Analytics />}
+            {process.env.NODE_ENV === 'production' && <SpeedInsights />}
           </PostHogProvider>
           </GamificationProvider>
         </AuthProvider>
