@@ -7,16 +7,16 @@ import { useTranslations } from 'next-intl';
 import CustomDropdown from './CustomDropdown';
 
 export default function VaultFilterClient({
-  seriesList,
-  roles,
-  types,
-  rarities,
+  seriesOptions,
+  roleOptions,
+  typeOptions,
+  rarityOptions,
   totalCount
 }: {
-  seriesList: any[];
-  roles: string[];
-  types: string[];
-  rarities: string[];
+  seriesOptions: { value: string; label: string }[];
+  roleOptions: { value: string; label: string }[];
+  typeOptions: { value: string; label: string }[];
+  rarityOptions: { value: string; label: string }[];
   totalCount: number;
 }) {
   const router = useRouter();
@@ -97,7 +97,7 @@ export default function VaultFilterClient({
           name="series"
           options={[
             { value: 'all', label: t('FilterSeries') },
-            ...seriesList.map(s => ({ value: s.id.toString(), label: s.title }))
+            ...seriesOptions
           ]}
           value={currentSeries}
           onChange={(val: string) => handleFilterUpdate('series', val)}
@@ -111,7 +111,7 @@ export default function VaultFilterClient({
           name="role"
           options={[
             { value: 'all', label: t('FilterRoles') },
-            ...roles.map(r => ({ value: r, label: r }))
+            ...roleOptions
           ]}
           value={currentRole}
           onChange={(val: string) => handleFilterUpdate('role', val)}
@@ -123,7 +123,7 @@ export default function VaultFilterClient({
           name="type"
           options={[
             { value: 'all', label: t('FilterTypes') },
-            ...types.map(t => ({ value: t, label: t }))
+            ...typeOptions
           ]}
           value={currentType}
           onChange={(val: string) => handleFilterUpdate('type', val)}
@@ -134,8 +134,8 @@ export default function VaultFilterClient({
         <CustomDropdown 
           name="rarity"
           options={[
-            { value: 'all', label: t('FilterRarities') },
-            ...rarities.map(r => ({ value: r, label: r }))
+            { value: 'all', label: t('FilterAll') },
+            ...rarityOptions
           ]}
           value={currentRarity}
           onChange={(val: string) => handleFilterUpdate('rarity', val)}
@@ -221,7 +221,7 @@ export default function VaultFilterClient({
                   className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
                 >
                   <option value="all">{t('FilterSeries')}</option>
-                  {seriesList.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
+                  {seriesOptions.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
                 </select>
             </div>
 
@@ -234,7 +234,7 @@ export default function VaultFilterClient({
                   className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
                 >
                   <option value="all">{t('FilterRoles')}</option>
-                  {roles.map(r => <option key={r} value={r}>{r}</option>)}
+                  {roleOptions.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
                 </select>
             </div>
 
@@ -247,7 +247,7 @@ export default function VaultFilterClient({
                   className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
                 >
                   <option value="all">{t('FilterTypes')}</option>
-                  {types.map(t => <option key={t} value={t}>{t}</option>)}
+                  {typeOptions.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
                 </select>
             </div>
 
@@ -259,8 +259,8 @@ export default function VaultFilterClient({
                   onChange={handleChange}
                   className="w-full border border-gray-200 bg-gray-50 shadow-sm rounded-xl px-4 py-4 text-[14px] font-bold outline-none cursor-pointer text-black"
                 >
-                  <option value="all">{t('FilterRarities')}</option>
-                  {rarities.map(r => <option key={r} value={r}>{r}</option>)}
+                  <option value="all">{t('FilterAll')}</option>
+                  {rarityOptions.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
                 </select>
             </div>
         </div>

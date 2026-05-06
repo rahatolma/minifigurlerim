@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useState } from 'react';
 import CustomDropdown from './CustomDropdown';
 import { useLocale, useTranslations } from 'next-intl';
@@ -23,6 +23,7 @@ export default function FiguresFilterClient({
   const router = useRouter();
   const searchParams = useSearchParams();
   const locale = useLocale();
+  const pathname = usePathname();
   const t = useTranslations('SeriesPage');
   const tFilter = useTranslations('FiguresFilter');
 
@@ -41,6 +42,9 @@ export default function FiguresFilterClient({
   const handleFilterUpdate = (name: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
     
+    // Her filtre değişiminde pagination'ı başa sar
+    params.delete('page');
+    
     if (value === 'all' || value === 'newest') {
         if (name !== 'sort') {
             params.delete(name);
@@ -53,7 +57,7 @@ export default function FiguresFilterClient({
         params.set(name, value);
     }
 
-    router.push(`/${locale}/figurler?${params.toString()}`, { scroll: false });
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
 
     // Sayfa zaten çok aşağıdaysa (örneğin eski sonuçlarda), yeni filtre sonrası tekrar filtre alanına hizala (snap)
     setTimeout(() => {
@@ -68,7 +72,7 @@ export default function FiguresFilterClient({
   };
 
   const clearFilters = () => {
-    router.push(`/${locale}/figurler`, { scroll: false });
+    router.push(pathname, { scroll: false });
     setTimeout(() => {
         const filterSection = document.getElementById('filter-section');
         if (filterSection) {
@@ -94,7 +98,8 @@ export default function FiguresFilterClient({
           options={[
             { value: 'newest', label: t('SortNewest') },
             { value: 'oldest', label: t('SortOldest') },
-            { value: 'popular', label: t('SortPopular') }
+            { value: 'popular', label: t('SortPopular') },
+            { value: 'value_desc', label: t('SortValued') }
           ]}
           value={currentSort}
           onChange={(val: string) => handleFilterUpdate('sort', val)}
@@ -216,6 +221,7 @@ export default function FiguresFilterClient({
                   <option value="newest">{t('SortNewest')}</option>
                   <option value="oldest">{t('SortOldest')}</option>
                   <option value="popular">{t('SortPopular')}</option>
+                  <option value="value_desc">{t('SortValued')}</option>
                 </select>
             </div>
 

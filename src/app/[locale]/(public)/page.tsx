@@ -141,7 +141,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
                </div>
              }
              actionButton={
-               <Link href="/figurler" className="bg-[#D22B2B] text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">{t('DiscoverAll')}</Link>
+               <Link href={{ pathname: '/figurler', query: { sort: 'popular' } }} className="bg-[#D22B2B] text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">{t('DiscoverAll')}</Link>
              }
           >
              {mappedTopDemanded.map(fig => (
@@ -168,7 +168,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
                </div>
              }
              actionButton={
-               <Link href="/figurler" className="bg-[#D22B2B] text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">{t('DiscoverAll')}</Link>
+               <Link href={{ pathname: '/figurler', query: { sort: 'value_desc' } }} className="bg-[#D22B2B] text-white font-bold py-2 px-4 md:py-3 md:px-8 rounded-sm shadow-md hover:bg-[#B22222] transition-colors tracking-widest uppercase text-[9px] md:text-[11px] block text-center whitespace-nowrap">{t('DiscoverAll')}</Link>
              }
           >
              {finalTopValued.map(fig => (
@@ -208,7 +208,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
                 key={newsItem.id}
                 slug={newsItem.slug || newsItem.id}
                 title={newsItem.title}
-                imageUrl={newsItem.cover_image_url || '/images/placeholder.svg'}
+                imageUrl={newsItem.cover_image_url || (locale === 'en' ? '/images/placeholder-en.svg' : '/images/placeholder.svg')}
                 views={newsItem.total_views || 0}
                 dailyViews={newsItem.daily_views || 0}
                 minRead={newsItem.min_read || 1}

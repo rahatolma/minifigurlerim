@@ -115,6 +115,7 @@
     "SortNewest": "Newest First",
     "SortOldest": "Oldest First",
     "SortPopular": "Most Viewed",
+    "SortValued": "Most Valuable",
     "EmptyStateTitle": "No Series Found",
     "EmptyStateDesc": "We couldn't find any series matching your filters. Please adjust them and try again.",
     "ClearFilters": "Clear Filters"

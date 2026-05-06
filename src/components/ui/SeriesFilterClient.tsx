@@ -32,6 +32,9 @@ export default function SeriesFilterClient({
 
   const handleFilterUpdate = (name: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
+    
+    // Her filtre değişiminde pagination'ı başa sar
+    params.delete('page');
 
     if (value === 'all' || (value === 'newest' && name === 'sort')) {
         params.delete(name);
@@ -78,7 +81,8 @@ export default function SeriesFilterClient({
           options={[
             { value: 'newest', label: t('SortNewest') },
             { value: 'oldest', label: t('SortOldest') },
-            { value: 'popular', label: t('SortPopular') }
+            { value: 'popular', label: t('SortPopular') },
+            { value: 'value_desc', label: t('SortValued') }
           ]}
           value={currentSort}
           onChange={(val: string) => handleFilterUpdate('sort', val)}

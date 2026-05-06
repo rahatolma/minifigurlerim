@@ -90,3 +90,4 @@ tmp/
 cookies*.txt
 error*.html
 qa-report*.json
+_scratch/

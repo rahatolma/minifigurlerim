@@ -1,3 +1,4 @@
+import { toRarityOption, toRoleOption, toTypeOption } from '@/services/displayMappers';
 import { getAuthUser } from '@/services/action_dal';
 import { redirect } from 'next/navigation';
 import { getUserProfile, getUserCollectionsWithDetails, getAllSeries, getTotalMinifiguresCount, getUserSeriesStats, getMinifigurePriceHistoryBatch, getMinifigureBySlug } from '@/services/dal';
@@ -28,6 +29,7 @@ export default async function KoleksiyonumPage({
   const resolvedParams = await searchParams;
   const locale = (await params).locale as any;
   const t = await getTranslations('Collection');
+  const tTax = await getTranslations('Taxonomy');
   
   const currentStatus = (resolvedParams.status as string) || 'have';
   const currentSeries = (resolvedParams.series as string) || 'all';
@@ -47,14 +49,21 @@ export default async function KoleksiyonumPage({
   const collectionsData = await getUserCollectionsWithDetails(user.id);
   const rawCollections = collectionsData || [];
 
-  // 3. Dropdown için seriler (Orijinal veritabanından, eksik seri çıkmasın diye)
+  // 3. Dropdown için seriler (Orijinal veritabanından, eksik seri çıkmasın diye, SADECE koleksiyondakileri göster)
   const sRes = await getAllSeries();
-  const seriesList = sRes || [];
+  const collectionSeriesIds = Array.from(new Set(rawCollections.map((c: any) => c.minifigures?.series_id).filter(Boolean)));
+  const seriesOptions = (sRes || [])
+      .filter(s => collectionSeriesIds.includes(s.id))
+      .map(s => ({ value: s.id.toString(), label: s.title }));
 
   // Dinamik Olarak Kasadaki Filtre Seçeneklerini Oluştur (Sadece kullanıcının sahip olduğu/istediği şeylerin kategorileri)
-  const roles = Array.from(new Set(rawCollections.map((c: import("@/services/dal").UserCollectionDTO) => (c.minifigures as any)?.role).filter(Boolean))) as string[];
-  const types = Array.from(new Set(rawCollections.map((c: import("@/services/dal").UserCollectionDTO) => (c.minifigures as any)?.type).filter(Boolean))) as string[];
-  const rarities = Array.from(new Set(rawCollections.map((c: import("@/services/dal").UserCollectionDTO) => (c.minifigures as any)?.rarity).filter(Boolean))) as string[];
+  const rawRoles = Array.from(new Set(rawCollections.map((c: any) => c.minifigures?.role).filter(Boolean))) as string[];
+  const rawTypes = Array.from(new Set(rawCollections.map((c: any) => c.minifigures?.type).filter(Boolean))) as string[];
+  const rawRarities = Array.from(new Set(rawCollections.map((c: any) => c.minifigures?.rarity_level || c.minifigures?.rarity).filter(Boolean))) as string[];
+
+  const roleOptions = rawRoles.map(r => toRoleOption(r, locale, tTax));
+  const typeOptions = rawTypes.map(tStr => toTypeOption(tStr, locale));
+  const rarityOptions = rawRarities.map(r => toRarityOption(r, locale));
 
   // 4. İSTEMCİ FİLTRELEMESİNİ VERİYE UYGULA
   let filteredCollections = rawCollections.filter((c: any) => {
@@ -66,7 +75,7 @@ export default async function KoleksiyonumPage({
       if (currentSeries !== 'all' && fig.series_id !== currentSeries) match = false;
       if (currentRole !== 'all' && fig.role !== currentRole) match = false;
       if (currentType !== 'all' && fig.type !== currentType) match = false;
-      if (currentRarity !== 'all' && fig.rarity !== currentRarity) match = false;
+      if (currentRarity !== 'all' && (fig.rarity_level || fig.rarity) !== currentRarity) match = false;
 
       return match;
   });
@@ -436,10 +445,10 @@ export default async function KoleksiyonumPage({
         <div className="md:sticky md:bg-[#fcfcfc] md:py-4 md:border-b md:border-gray-100 md:shadow-sm md:mb-6 top-0 z-40 md:z-40 md:top-[75px]">
           <div className="max-w-7xl mx-auto px-0 md:px-8">
               <VaultFilterClient 
-                seriesList={seriesList} 
-                roles={roles} 
-                types={types} 
-                rarities={rarities} 
+                seriesOptions={seriesOptions} 
+                roleOptions={roleOptions} 
+                typeOptions={typeOptions} 
+                rarityOptions={rarityOptions} 
                 totalCount={filteredCollections.length}
               />
           </div>
@@ -462,6 +471,7 @@ export default async function KoleksiyonumPage({
                <div className="flex flex-row snap-x snap-mandatory overflow-x-auto pb-8 -mx-8 px-8 gap-4 md:grid md:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 md:gap-5 md:overflow-visible md:snap-none md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                   {filteredCollections.map((item: any, i: number) => {
                       const fig = item.minifigures;
+                      console.log("DEBUG_FIG_RARITY:", fig.name, fig.rarity_level, fig.rarity);
                       
                       // DTO Mapping (Mevcut projection'a göre name -> figure_name vb)
                       const rawDTO = {
@@ -474,6 +484,8 @@ export default async function KoleksiyonumPage({
                           avg_price: fig.value_usd,
                           value_score: fig.value_score,
                           demand_score: fig.demand_score,
+                          rarity_level: fig.rarity_level, // YENİ EKLENDİ
+                          rarity: fig.rarity,
                           series: {
                               series_name: fig.series?.title || fig.series?.title_en || fig.series_name,
                               slug_tr: fig.series?.slug_tr || fig.series?.slug_en || fig.series_slug || fig.series_id

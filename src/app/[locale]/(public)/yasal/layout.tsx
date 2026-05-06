@@ -1,5 +1,5 @@
 import LegalSidebar from "@/components/layout/LegalSidebar";
-import LegalBreadcrumb from "@/components/layout/LegalBreadcrumb";
+
 
 export default function LegalLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -10,8 +10,7 @@ export default function LegalLayout({ children }: { children: React.ReactNode })
         <div className="absolute top-20 right-20 w-[400px] h-[400px] bg-[#D22B2B]/[0.02] rounded-full blur-3xl" />
       </div>
       
-      <LegalBreadcrumb />
-      
+
       <div className="max-w-7xl mx-auto px-6 md:px-8 relative z-10 w-full mt-8 mb-24 flex-1">
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           
