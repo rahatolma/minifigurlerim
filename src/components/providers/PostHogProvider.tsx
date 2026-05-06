@@ -4,6 +4,7 @@ import posthog from 'posthog-js'
 import { PostHogProvider as PHProvider } from 'posthog-js/react'
 import { useEffect } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
+import { shouldTrackAnalytics } from '@/lib/analytics'
 
 export function PostHogPageView() {
   const pathname = usePathname()
@@ -16,16 +17,20 @@ export function PostHogPageView() {
       if (searchParams.toString()) {
         url = url + `?${searchParams.toString()}`
       }
-      posthog.capture('$pageview', {
-        $current_url: url,
-      })
+      if (shouldTrackAnalytics()) {
+          posthog.capture('$pageview', {
+            $current_url: url,
+          })
+      } else {
+          console.log(`[analytics:debug] pageview skipped: ${url}`);
+      }
     }
   }, [pathname, searchParams])
   
   return null
 }
 
-if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_POSTHOG_KEY && shouldTrackAnalytics()) {
     posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY as string, {
         api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST as string || "https://eu.i.posthog.com",
         person_profiles: 'always', 
@@ -35,10 +40,14 @@ if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
         sanitize_properties: (properties: any) => {
             // URL üzerinden gelebilecek session id vb hassas parametreleri engelle
             if (properties.$current_url) {
-                const url = new URL(properties.$current_url);
-                url.searchParams.delete('token');
-                url.searchParams.delete('session');
-                properties.$current_url = url.toString();
+                try {
+                    const url = new URL(properties.$current_url);
+                    const sensitiveKeys = ['token', 'session', 'access_token', 'refresh_token', 'code', 'email', 'magiclink', 'callback', 'secret', 'password'];
+                    sensitiveKeys.forEach(k => url.searchParams.delete(k));
+                    properties.$current_url = url.toString();
+                } catch (e) {
+                    // Ignore URL parsing errors
+                }
             }
             return properties;
         }

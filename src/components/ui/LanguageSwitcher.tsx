@@ -2,8 +2,9 @@
 
 import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from '@/i18n/routing';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams, usePathname as useNextPathname } from 'next/navigation';
 import { useTransition } from 'react';
+import { trackLanguageSwitched } from '@/lib/analytics';
 
 export default function LanguageSwitcher() {
   const locale = useLocale();
@@ -11,9 +12,20 @@ export default function LanguageSwitcher() {
   const pathname = usePathname();
   const params = useParams();
   const searchParams = useSearchParams();
+  const nextPathname = useNextPathname();
   const [isPending, startTransition] = useTransition();
 
   function onLanguageChange(newLocale: 'en' | 'tr') {
+    if (newLocale !== locale) {
+      trackLanguageSwitched({
+        locale: newLocale,
+        route: nextPathname || pathname || '/',
+        from_lang: locale,
+        to_lang: newLocale,
+        source_section: 'header_switcher'
+      });
+    }
+
     startTransition(() => {
       if (!pathname) return;
       

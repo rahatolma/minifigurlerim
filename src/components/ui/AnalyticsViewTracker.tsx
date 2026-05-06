@@ -3,24 +3,25 @@
 import { useEffect, useRef } from 'react';
 import { trackViewFigure, FigureTrackingProps } from '@/lib/analytics';
 import { usePostHog } from 'posthog-js/react';
+import { usePathname } from 'next/navigation';
 
 interface AnalyticsViewTrackerProps {
-  figure: FigureTrackingProps;
+  figure: Omit<FigureTrackingProps, 'route' | 'source_section'>;
 }
 
 export default function AnalyticsViewTracker({ figure }: AnalyticsViewTrackerProps) {
   const posthog = usePostHog();
+  const pathname = usePathname();
   const trackedRef = useRef(false);
 
   useEffect(() => {
-    // Sadece figure_detail bağlamında ve posthog hazır olduğunda tetiklenir
-    if (figure && figure.source_area === 'figure_detail' && posthog) {
+    if (figure && posthog && pathname) {
       if (!trackedRef.current) {
-         trackViewFigure(figure, posthog);
+         trackViewFigure({ ...figure, route: pathname, source_section: 'figure_detail' }, posthog);
          trackedRef.current = true;
       }
     }
-  }, [figure.figure_id, posthog]); // Sadece ID değiştiğinde (ve ilk mountta) çalışır, rerender'da tekrar çalışmaz.
+  }, [figure.figure_id, posthog, pathname]);
 
-  return null; // Arayüzü yok
+  return null;
 }

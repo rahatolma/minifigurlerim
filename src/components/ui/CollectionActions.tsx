@@ -11,7 +11,7 @@ import { useAuth } from '@/components/providers/AuthProvider';
 import { useGamification } from '@/components/providers/GamificationProvider';
 import { trackAddToCollection, trackRemoveFromCollection, trackAddToWatchlist, trackRemoveFromWatchlist, FigureTrackingProps } from '@/lib/analytics';
 
-export default function CollectionActions({ minifigureId, trackingProps }: { minifigureId: string, trackingProps: FigureTrackingProps }) {
+export default function CollectionActions({ minifigureId, trackingProps }: { minifigureId: string, trackingProps: Omit<FigureTrackingProps, 'route'> }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -93,11 +93,11 @@ export default function CollectionActions({ minifigureId, trackingProps }: { min
       } else {
          // ANALYTICS TRACKING ON SUCCESS
          if (type === 'have') {
-             if (optimisticStatus === 'have') trackAddToCollection(trackingProps);
-             else trackRemoveFromCollection(trackingProps);
+             if (optimisticStatus === 'have') trackAddToCollection({ ...trackingProps, route: pathname });
+             else trackRemoveFromCollection({ ...trackingProps, route: pathname });
          } else if (type === 'want') {
-             if (optimisticStatus === 'want') trackAddToWatchlist(trackingProps);
-             else trackRemoveFromWatchlist(trackingProps);
+             if (optimisticStatus === 'want') trackAddToWatchlist({ ...trackingProps, route: pathname });
+             else trackRemoveFromWatchlist({ ...trackingProps, route: pathname });
          }
       }
     } catch (err) {

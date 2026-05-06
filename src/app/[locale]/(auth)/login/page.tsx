@@ -1,6 +1,7 @@
 import { login, signup, signInWithGoogle } from './actions';
 import { Link } from '@/i18n/routing';
 import { getTranslations } from 'next-intl/server';
+import AuthSubmitButton from '@/components/ui/AuthSubmitButton';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const resolvedParams = await params;
@@ -135,9 +136,7 @@ export default async function LoginPage({
               </div>
             ) : null}
 
-            <button type="submit" className="w-full bg-[#1A2035] text-white font-black hover:bg-[#111526] transition-colors py-4 px-6 rounded-xl shadow-[0_10px_30px_rgba(26,32,53,0.15)] hover:shadow-[0_15px_40px_rgba(26,32,53,0.25)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none flex items-center justify-center gap-2 group tracking-wide text-sm">
-                 {isRegister ? t('CreateAccountFree') : t('LoginBtn')}
-            </button>
+            <AuthSubmitButton isRegister={isRegister} locale={locale} label={isRegister ? t('CreateAccountFree') : t('LoginBtn')} />
             
           </form>
 
@@ -183,7 +182,12 @@ export default async function LoginPage({
                 <div className="space-y-4">
                    {/* Google */}
                    <form action={signInWithGoogle} className="w-full">
-                       <button type="submit" className="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 hover:border-gray-300 hover:shadow-md text-gray-800 font-bold py-3.5 px-6 rounded-xl transition-all">
+                       <AuthSubmitButton 
+                           isRegister={isRegister} 
+                           locale={locale} 
+                           authProvider="google" 
+                           className="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 hover:border-gray-300 hover:shadow-md text-gray-800 font-bold py-3.5 px-6 rounded-xl transition-all"
+                       >
                            <svg className="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -191,16 +195,21 @@ export default async function LoginPage({
                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                            </svg>
                            {t('ContinueWithGoogle')}
-                       </button>
+                       </AuthSubmitButton>
                    </form>
                    
                    {/* Apple */}
-                   <button className="w-full flex items-center justify-center gap-3 bg-black text-white hover:bg-gray-900 font-bold py-3.5 px-6 rounded-xl transition-all shadow-sm">
+                   <AuthSubmitButton 
+                       isRegister={isRegister} 
+                       locale={locale} 
+                       authProvider="apple" 
+                       className="w-full flex items-center justify-center gap-3 bg-black text-white hover:bg-gray-900 font-bold py-3.5 px-6 rounded-xl transition-all shadow-sm"
+                   >
                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                            <path d="M16.48 11.2a4.43 4.43 0 01-2.12-3.8c0-2.45 2.15-3.7 2.25-3.76-1.12-1.58-2.87-1.8-3.48-1.83-1.48-.15-2.9.89-3.66.89-.78 0-1.93-.86-3.14-.84-1.57.02-3.03.9-3.84 2.28-1.63 2.78-.42 6.89 1.17 9.15.77 1.1 1.69 2.33 2.87 2.29 1.15-.04 1.58-.75 2.97-.75 1.37 0 1.77.75 2.97.73 1.22-.02 2-.14 2.76-1.25.88-1.27 1.24-2.49 1.26-2.55-.030-.02-2.39-.9-2.39-3.55zM14.72 4.44c.64-.76 1.07-1.82.95-2.88-0.93.04-2.07.63-2.73 1.4-.58.68-1.08 1.75-.95 2.8C13.02 5.86 14.08 5.2 14.72 4.44z"/>
                        </svg>
                        {t('ContinueWithApple')}
-                   </button>
+                   </AuthSubmitButton>
                    
                 </div>
                 

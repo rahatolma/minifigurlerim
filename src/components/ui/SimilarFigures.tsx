@@ -9,9 +9,11 @@ import { trackClickSimilarFigure } from '@/lib/analytics';
 import { FigureCardData } from '@/utils/figureMapper';
 
 import { useTranslations } from 'next-intl';
+import { usePathname } from 'next/navigation';
 
 export default function SimilarFigures({ figures, locale }: { figures: any[], locale: string }) {
     const t = useTranslations('SimilarFigures');
+    const pathname = usePathname();
     if (!figures || figures.length === 0) return null;
 
     const mappedFigures = figures.map(row => mapFigureForCard(row, locale)).filter((fig): fig is FigureCardData => fig !== null);
@@ -38,7 +40,8 @@ export default function SimilarFigures({ figures, locale }: { figures: any[], lo
                           series_id: fig.series_id || '',
                           series_slug: fig.series_slug_tr || '',
                           locale: locale,
-                          source_area: 'similar_figures'
+                          route: pathname,
+                          source_section: 'similar_figures'
                       });
                   }}>
                       <FigureCard {...fig} />
