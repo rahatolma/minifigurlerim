@@ -42,8 +42,10 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const resolvedParams = await params;
-  const { locale } = resolvedParams;
-  const rawFigure = await getMinifigureBySlug(resolvedParams.figureSlug, locale, resolvedParams.seriesSlug);
+  const { locale, seriesSlug, figureSlug } = resolvedParams;
+  
+  // DAL function should be cached via React.cache
+  const rawFigure = await getMinifigureBySlug(figureSlug, locale, seriesSlug);
 
   const t = await getTranslations({ locale, namespace: 'FigureDetail' });
   const tCommon = await getTranslations({ locale, namespace: 'CommonTypes' });
@@ -58,53 +60,56 @@ export async function generateMetadata(
 
   const isFallback = locale === 'en' && rawFigure.en_status === 'missing';
   
-  const titleText = isFallback ? figure.figure_name : (locale === 'en' && rawFigure.meta_title_en ? rawFigure.meta_title_en : figure.figure_name);
-  const descText = isFallback ? figure.short_description_tr : (locale === 'en' && rawFigure.meta_description_en ? rawFigure.meta_description_en : figure.short_description_tr);
-
-  const defaultImage = 'https://minifigurlerim.com/og-image.jpg';
-  const figureImage = figure.image_url || defaultImage;
-  const desc = descText ? descText.substring(0, 150) + '...' : `${titleText} detayları ve borsa geçmişi Minifigürlerim platformunda.`;
-
-  // Dinamik OG Mimarisi
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://minifigurlerim.com';
-  const ogUrl = new URL(`${baseUrl}/api/og/figure`);
-  ogUrl.searchParams.set('title', titleText || '');
-  ogUrl.searchParams.set('series', figure.series_name || tCommon('MysterySeries'));
-  ogUrl.searchParams.set('image', figureImage);
+  // Figure code logic (Only if it's a collector SKU, not UUID)
+  const isInternalId = /^[0-9a-f]{8}-/i.test(figure.figure_code || '');
+  const displayCode = (figure.figure_code && !isInternalId) ? ` (${figure.figure_code})` : '';
   
-  const canonicalUrl = isFallback ? `/tr/figurler/${figure.figure_slug_tr}` : (locale === 'en' && figure.figure_slug_en ? `/en/figures/${figure.figure_slug_en}` : `/tr/figurler/${figure.figure_slug_tr}`);
+  const rawTitle = isFallback ? figure.figure_name : (locale === 'en' && rawFigure.title_en ? rawFigure.title_en : figure.figure_name);
+  const seriesName = figure.series_name || tCommon('MysterySeries');
+  
+  // Format: Figure Name (Code) | Series Name | Minifigurlerim (NO RARITY IN TITLE)
+  const metaTitle = locale === 'en' && rawFigure.meta_title_en && !isFallback 
+    ? rawFigure.meta_title_en 
+    : `${rawTitle}${displayCode} | ${seriesName} | Minifigürlerim`;
 
-  return {
-    title: rawFigure.meta_title_en && locale === 'en' && !isFallback ? titleText : `${titleText} | ${t('MetaTitleSuffix')}`,
-    description: desc,
+  // SEO Variations for description
+  const { getDeterministicVariation, FIGURE_DESC_PREFIXES_EN, FIGURE_DESC_PREFIXES_TR } = await import('@/utils/seoVariations');
+  const prefixes = locale === 'en' ? FIGURE_DESC_PREFIXES_EN : FIGURE_DESC_PREFIXES_TR;
+  const prefix = getDeterministicVariation(rawFigure.id, prefixes);
+  
+  // Natural rarity usage in description
+  const rarityText = figure.rarity_level ? (locale === 'en' ? ` Rarity: ${figure.rarity_level}.` : ` Nadirlik: ${figure.rarity_level}.`) : '';
+
+  let descText = isFallback ? figure.short_description_tr : (locale === 'en' && rawFigure.meta_description_en ? rawFigure.meta_description_en : figure.short_description_tr);
+  if (!descText) {
+    descText = locale === 'en' 
+      ? `${prefix} ${rawTitle} from ${seriesName}.${rarityText}`
+      : `${prefix} ${rawTitle} (${seriesName} serisi).${rarityText}`;
+  } else {
+    descText = `${descText}${rarityText}`; // Append rarity naturally
+  }
+
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://minifigurlerim.com';
+  const defaultImage = `${baseUrl}/api/og/figure?title=${encodeURIComponent(rawTitle)}&series=${encodeURIComponent(seriesName)}`;
+  const figureImage = figure.image_url || defaultImage;
+
+  const { buildMetadata } = await import('@/lib/seo');
+
+  // Strict locales path mapping
+  const pathTr = `/figurler/${figure.series_slug_tr || seriesSlug}/${figure.figure_slug_tr || figureSlug}`;
+  const pathEn = `/figures/${figure.series_slug_en || seriesSlug}/${figure.figure_slug_en || figureSlug}`;
+
+  return buildMetadata({
+    title: metaTitle,
+    description: descText.substring(0, 155),
+    locale,
     alternates: {
-      canonical: canonicalUrl,
-      languages: {
-        'tr-TR': `/tr/figurler/${figure.figure_slug_tr}`,
-        'en-US': figure.figure_slug_en ? `/en/figures/${figure.figure_slug_en}` : `/en/figures/${figure.figure_slug_tr}`
-      }
+      tr: pathTr,
+      en: pathEn
     },
-    robots: isFallback ? { index: false, follow: true } : undefined,
-    openGraph: {
-      title: `${figure.figure_name} | Karakter Detayları`,
-      description: desc,
-      images: [
-        {
-           url: ogUrl.toString(),
-           width: 1200,
-           height: 630,
-           alt: figure.figure_name,
-        }
-      ],
-      type: 'article',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `${figure.figure_name} | ${t('MetaTitleSuffix')}`,
-      description: desc,
-      images: [ogUrl.toString()],
-    }
-  };
+    ogImage: figureImage,
+    noindex: isFallback
+  });
 }
 
 export default async function FigureDetail({
@@ -204,8 +209,32 @@ export default async function FigureDetail({
   // Force cache invalidation
   const cleanSeries = figure.series_name ? cleanSeriesDisplayTitle(figure.series_name, locale) : null;
 
+  // JSON-LD Generation
+  const { generateBreadcrumbSchema, generateItemPageSchema, safeJsonLd } = await import('@/lib/jsonLd');
+  
+  const displayTitle = locale === 'en' && rawFigure.title_en ? rawFigure.title_en : figure.figure_name;
+  const seriesDisplayName = figure.series_name ? cleanSeriesDisplayTitle(figure.series_name, locale).mainTitle : undefined;
+  
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Minifigürlerim', item: `/${locale}` },
+    { name: locale === 'en' ? 'Series' : 'Seriler', item: `/${locale === 'en' ? 'en/series' : 'tr/seriler'}` },
+    { name: seriesDisplayName || (locale === 'en' ? 'Figures' : 'Figürler'), item: figure.series_name ? `/${locale === 'en' ? 'en/series' : 'tr/seriler'}/${figure.series_slug_en || figure.series_slug_tr || seriesSlug}` : `/${locale === 'en' ? 'en/figures' : 'tr/figurler'}` },
+    { name: displayTitle }
+  ]);
+
+  const itemPageSchema = generateItemPageSchema(
+    displayTitle,
+    (locale === 'en' && rawFigure.short_description_en ? rawFigure.short_description_en : figure.short_description_tr) || displayTitle,
+    `/${locale === 'en' ? 'en/figures' : 'tr/figurler'}/${figure.series_slug_en || figure.series_slug_tr || seriesSlug}/${figure.figure_slug_en || figure.figure_slug_tr || slug}`,
+    images[0] || `${process.env.NEXT_PUBLIC_SITE_URL || 'https://minifigurlerim.com'}/api/og/figure?title=${encodeURIComponent(displayTitle)}`,
+    seriesDisplayName
+  );
+
   return (
     <div className="bg-[#fcfcfc] min-h-screen w-full pb-16">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(itemPageSchema) }} />
+      
       {isFallback && <TranslationFallbackBadge />}
       <FloatingFigureNav prev={prevFigure} next={nextFigure} />
       <ClientViewTracker table="minifigures" id={figure.id} />

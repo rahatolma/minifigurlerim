@@ -24,43 +24,43 @@ export async function generateMetadata(
 
   const news = await getNewsBySlug(slug);
   if (!news) {
-    return { title: t('NotFoundTitle') };
+    return { title: t('NotFoundTitle') || 'Haber Bulunamadı' };
   }
 
   const isFallback = locale === 'en' && !news.title_en && !news.content_en;
-  const title = locale === 'en' && news.meta_title_en && !isFallback ? news.meta_title_en : (locale === 'en' && news.title_en && !isFallback ? news.title_en : news.title);
-  const descriptionText = locale === 'en' && news.meta_description_en && !isFallback ? news.meta_description_en : (news.summary || news.meta_description || '');
+  const rawTitle = locale === 'en' && news.title_en && !isFallback ? news.title_en : news.title;
+  
+  const metaTitle = locale === 'en' && news.meta_title_en && !isFallback 
+    ? news.meta_title_en 
+    : `${rawTitle} | Minifigürlerim`;
 
-  const defaultImage = 'https://minifigurlerim.com/og-image.jpg';
+  let descriptionText = locale === 'en' && news.meta_description_en && !isFallback 
+    ? news.meta_description_en 
+    : (news.summary || news.meta_description || '');
+
+  if (!descriptionText) {
+    descriptionText = `${rawTitle} - ${t('NotFoundDesc') || 'Detaylı lego haberi.'}`;
+  }
+
+  const defaultImage = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://minifigurlerim.com'}/api/og/news?title=${encodeURIComponent(rawTitle)}`;
   const newsImage = news.cover_image_url || defaultImage;
-  const desc = descriptionText ? descriptionText.substring(0, 150) + '...' : `${title} ${t('NotFoundDesc')}`;
 
-  const canonicalUrl = isFallback ? `/tr/haberler/${news.slug}` : (locale === 'en' && news.slug_en ? `/en/news/${news.slug_en}` : `/tr/haberler/${news.slug}`);
+  const { buildMetadata } = await import('@/lib/seo');
 
-  return {
-    title: news.meta_title_en && locale === 'en' && !isFallback ? title : `${title}${t('MetaTitleSuffix')}`,
-    description: desc,
+  const pathTr = `/haberler/${news.slug}`;
+  const pathEn = `/news/${news.slug_en || news.slug}`;
+
+  return buildMetadata({
+    title: metaTitle,
+    description: descriptionText.substring(0, 155),
+    locale,
     alternates: {
-      canonical: canonicalUrl,
-      languages: {
-        'tr-TR': `/tr/haberler/${news.slug}`,
-        'en-US': news.slug_en ? `/en/news/${news.slug_en}` : `/en/news/${news.slug}`
-      }
+      tr: pathTr,
+      en: pathEn
     },
-    robots: isFallback ? { index: false, follow: true } : undefined,
-    openGraph: {
-      title: `${title}${t('MetaGraphSuffix')}`,
-      description: desc,
-      images: [newsImage],
-      type: 'article',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `${title}${t('MetaTitleSuffix')}`,
-      description: desc,
-      images: [newsImage],
-    }
-  };
+    ogImage: newsImage,
+    noindex: isFallback
+  });
 }
 
 export default async function NewsDetailPage({
@@ -100,8 +100,29 @@ export default async function NewsDetailPage({
     day: 'numeric'
   });
 
+  // JSON-LD Generation
+  const { generateBreadcrumbSchema, generateArticleSchema, safeJsonLd } = await import('@/lib/jsonLd');
+  
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Minifigürlerim', item: `/${locale}` },
+    { name: locale === 'en' ? 'News' : 'Haberler', item: `/${locale === 'en' ? 'en/news' : 'tr/haberler'}` },
+    { name: title }
+  ]);
+
+  const articleSchema = generateArticleSchema(
+    title,
+    summary || title,
+    `/${locale === 'en' ? 'en/news' : 'tr/haberler'}/${news.slug_en || news.slug}`,
+    news.cover_image_url || `${process.env.NEXT_PUBLIC_SITE_URL || 'https://minifigurlerim.com'}/api/og/news?title=${encodeURIComponent(title)}`,
+    news.created_at,
+    news.updated_at || news.created_at
+  );
+
   return (
     <div className="bg-[#fcfcfc] min-h-screen pb-24">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(articleSchema) }} />
+      
       {isFallback && <TranslationFallbackBadge />}
       {/* Sunucu bazlı view takip işlemi için Client bileşeni (Figürlerdeki gibi) */}
       <ClientViewTracker table="news" id={news.id} />

@@ -76,7 +76,6 @@ export async function GET(request: Request) {
                   textTransform: 'uppercase',
                   letterSpacing: '2px',
                   marginBottom: 30,
-                  width: 'fit-content',
                 }}
               >
                 {series}
@@ -140,16 +139,20 @@ export async function GET(request: Request) {
                 height: '100%',
               }}
             >
-              <img
-                src={imgUrl}
-                alt="Figure"
-                style={{
-                  maxHeight: '480px',
-                  maxWidth: '100%',
-                  objectFit: 'contain',
-                  filter: 'drop-shadow(0px 20px 40px rgba(0,0,0,0.15))',
-                }}
-              />
+              {image && image !== 'null' && (
+                <img
+                  src={image}
+                  alt="Figure"
+                  width="400"
+                  height="480"
+                  style={{
+                    maxHeight: '480px',
+                    maxWidth: '100%',
+                    objectFit: 'contain',
+                    filter: 'drop-shadow(0px 20px 40px rgba(0,0,0,0.15))',
+                  }}
+                />
+              )}
             </div>
           </div>
         </div>

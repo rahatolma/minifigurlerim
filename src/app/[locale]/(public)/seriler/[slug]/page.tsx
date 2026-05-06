@@ -29,54 +29,63 @@ export async function generateMetadata(
   { params }: { params: Promise<{ slug: string, locale: string }> },
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const locale = await getLocale();
-  const t = await getTranslations('SeriesDetail');
   const resolvedParams = await params;
-  const { slug, locale: paramLocale } = resolvedParams;
-  const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
-  const queryCol = isUUID ? 'id' : 'slug';
+  const { slug, locale } = resolvedParams;
   
-  const series = await getSeriesBySlug(slug, paramLocale);
+  // Use cached DAL function
+  const series = await getSeriesBySlug(slug, locale);
 
   if (!series) {
-    return { title: t('NotFoundTitle') };
+    const t = await getTranslations({ locale, namespace: 'SeriesDetail' });
+    return { title: t('NotFoundTitle') || 'Not Found' };
   }
 
-  const isFallback = locale === 'en' && !series.title_en && !series.description_blocks_en;
+  // Determine fallback state
+  const isFallback = locale === 'en' && series.en_translation_status !== 'ready' && series.en_translation_status !== 'manual_override';
 
-  const title = locale === 'en' && series.meta_title_en && !isFallback ? series.meta_title_en : (locale === 'en' && series.title_en && !isFallback ? series.title_en : series.title);
-  const descriptionText = locale === 'en' && series.meta_description_en && !isFallback ? series.meta_description_en : (series.description || '');
+  // Base text
+  const rawTitle = locale === 'en' && series.title_en && !isFallback ? series.title_en : series.title;
+  const { mainTitle } = cleanSeriesDisplayTitle(rawTitle, locale);
+  const releaseYear = series.release_year || '';
+  
+  // SEO Variations
+  const { getDeterministicVariation, SERIES_TITLE_SUFFIXES_EN, SERIES_TITLE_SUFFIXES_TR } = await import('@/utils/seoVariations');
+  const suffixes = locale === 'en' ? SERIES_TITLE_SUFFIXES_EN : SERIES_TITLE_SUFFIXES_TR;
+  const suffix = getDeterministicVariation(series.id, suffixes);
 
-  const defaultImage = 'https://minifigurlerim.com/og-image.jpg';
+  // Compile Collector Title
+  const metaTitle = locale === 'en' && series.meta_title_en && !isFallback 
+    ? series.meta_title_en 
+    : `${mainTitle} - ${suffix} ${releaseYear ? `(${releaseYear})` : ''} | Minifigürlerim`;
+
+  // Compile Description
+  let descriptionText = locale === 'en' && series.meta_description_en && !isFallback 
+    ? series.meta_description_en 
+    : (series.description || '');
+    
+  if (!descriptionText) {
+     const tCommon = await getTranslations({ locale, namespace: 'SeriesPage' });
+     descriptionText = locale === 'en' 
+       ? `Explore the complete ${mainTitle} minifigure collection. View collection details, rarities, and archive images.`
+       : `${mainTitle} serisindeki tüm minifigürleri keşfedin. Koleksiyon bilgileri, nadirlik dereceleri ve arşiv görselleriyle tam liste.`;
+  }
+
+  const defaultImage = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://minifigurlerim.com'}/api/og/series?title=${encodeURIComponent(mainTitle)}&year=${releaseYear}`;
   const seriesImage = series.cover_image_url || defaultImage;
-  const desc = descriptionText ? descriptionText.substring(0, 150) + '...' : `${title} ${t('NotFoundDesc')}`;
 
-  const canonicalUrl = isFallback ? `/tr/seriler/${series.slug}` : (locale === 'en' && series.slug_en ? `/en/series/${series.slug_en}` : `/tr/seriler/${series.slug}`);
+  const { buildMetadata } = await import('@/lib/seo');
 
-  return {
-    title: series.meta_title_en && locale === 'en' && !isFallback ? title : `${title}${t('MetaTitleSuffix')}`,
-    description: desc,
+  return buildMetadata({
+    title: metaTitle,
+    description: descriptionText.substring(0, 155),
+    locale,
     alternates: {
-      canonical: canonicalUrl,
-      languages: {
-        'tr-TR': `/tr/seriler/${series.slug}`,
-        'en-US': series.slug_en ? `/en/series/${series.slug_en}` : `/en/series/${series.slug}`
-      }
+      tr: `/seriler/${series.slug}`,
+      en: `/series/${series.slug_en || series.slug}` // fallback to tr slug if en missing
     },
-    robots: isFallback ? { index: false, follow: true } : undefined,
-    openGraph: {
-      title: `${title}${t('MetaGraphSuffix')}`,
-      description: desc,
-      images: [seriesImage],
-      type: 'article',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `${title}${t('MetaTwitterSuffix')}`,
-      description: desc,
-      images: [seriesImage],
-    }
-  };
+    ogImage: seriesImage,
+    noindex: isFallback
+  });
 }
 
 export default async function SeriesDetail({
@@ -146,8 +155,37 @@ export default async function SeriesDetail({
     }
   }
 
+  const { generateBreadcrumbSchema, generateCollectionPageSchema, generateItemListSchema, safeJsonLd } = await import('@/lib/jsonLd');
+  
+  const { mainTitle: displayTitle } = cleanSeriesDisplayTitle(title, locale);
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Minifigürlerim', item: `/${locale}` },
+    { name: locale === 'en' ? 'Series' : 'Seriler', item: `/${locale === 'en' ? 'en/series' : 'tr/seriler'}` },
+    { name: displayTitle }
+  ]);
+
+  const collectionSchema = generateCollectionPageSchema(
+    displayTitle,
+    (locale === 'en' && series.meta_description_en ? series.meta_description_en : series.description) || displayTitle,
+    `/${locale === 'en' ? 'en/series' : 'tr/seriler'}/${series.slug_en || series.slug}`
+  );
+
+  const itemListSchema = generateItemListSchema(
+    locale === 'en' ? `Figures in ${displayTitle}` : `${displayTitle} Figürleri`,
+    `/${locale === 'en' ? 'en/series' : 'tr/seriler'}/${series.slug_en || series.slug}`,
+    figures ? figures.map((fig: any) => ({
+      name: locale === 'en' && fig.title_en ? fig.title_en : fig.name,
+      url: `/${locale === 'en' ? 'en/figures' : 'tr/figurler'}/${series.slug_en || series.slug}/${fig.slug_en || fig.slug}`,
+      image: fig.cover_image_url || fig.image_url || undefined
+    })) : []
+  );
+
   return (
     <div className="bg-white min-h-screen pb-20 w-full">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(collectionSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(itemListSchema) }} />
+      
       {isFallback && <TranslationFallbackBadge />}
       <FloatingSeriesNav prev={prevSeries} next={nextSeries} />
 

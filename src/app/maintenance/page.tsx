@@ -1,3 +1,20 @@
+import { Metadata } from 'next';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+export const metadata: Metadata = {
+  title: 'Bakım Molası | Minifigürlerim',
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+  },
+  alternates: {
+    canonical: '', // Try to clear canonical or we can set it to a dummy empty
+  }
+};
+
 export default function MaintenancePage() {
   return (
     <main className="flex-1 w-full min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
