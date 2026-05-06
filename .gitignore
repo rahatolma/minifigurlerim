@@ -106,3 +106,7 @@ node_modules/
 .env*
 *.tsbuildinfo
 
+# Duplicate artefact files from local operations
+* 2.*
+* 3.*
+temp_*

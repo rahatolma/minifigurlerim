@@ -11,6 +11,7 @@ import BlockRenderer from '@/components/blocks/BlockRenderer';
 import { formatBrandText, cleanSeriesDisplayTitle } from '@/utils/textFormatting';
 import FloatingSeriesNav from '@/components/ui/FloatingSeriesNav';
 import HeroImage from '@/components/ui/HeroImage';
+import AnalyticsSeriesTracker from '@/components/ui/AnalyticsSeriesTracker';
 import { mapFigureForCard } from '@/utils/figureMapper';
 import { getLocalizedCategory } from '@/utils/taxonomy';
 import TranslationFallbackBadge from '@/components/ui/TranslationFallbackBadge';
@@ -190,8 +191,11 @@ export default async function SeriesDetail({
       <FloatingSeriesNav prev={prevSeries} next={nextSeries} />
 
       <ClientViewTracker table="series" id={series.id} />
-
-
+      <AnalyticsSeriesTracker series={{
+          series_id: series.id,
+          series_slug: series.slug || '',
+          locale: locale
+      }} />
       {/* Devasa Kapak Görseli */}
       {series.hero_image_url && (
         <HeroImage src={series.hero_image_url} alt={title} />

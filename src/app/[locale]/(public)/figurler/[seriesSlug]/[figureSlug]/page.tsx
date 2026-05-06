@@ -243,8 +243,7 @@ export default async function FigureDetail({
           figure_slug: figure.figure_slug_tr || '',
           series_id: figure.series_id || '',
           series_slug: figure.series_slug_tr || '',
-          locale: locale,
-          source_area: 'figure_detail'
+          locale: locale
       }} />
 
 
@@ -264,8 +263,7 @@ export default async function FigureDetail({
                 figure_slug: figure.figure_slug_tr || '',
                 series_id: figure.series_id || '',
                 series_slug: figure.series_slug_tr || '',
-                locale: locale,
-                source_area: 'figure_detail'
+                locale: locale
             }} />
 
         </div>
@@ -524,8 +522,7 @@ export default async function FigureDetail({
                                 figure_slug: figure.figure_slug_tr || '',
                                 series_id: figure.series_id || '',
                                 series_slug: figure.series_slug_tr || '',
-                                locale: locale,
-                                source_area: 'market_block'
+                                locale: locale
                             }}
                          />
                          <p className="mt-6 text-center text-[9px] sm:text-[10px] text-gray-400 font-bold tracking-wide">

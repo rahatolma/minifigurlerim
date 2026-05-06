@@ -2,7 +2,9 @@
 import { Link } from '@/i18n/routing';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import { useAuth } from '@/components/providers/AuthProvider';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
+import { usePathname } from 'next/navigation';
+import { trackCtaClicked } from '@/lib/analytics';
 
 export interface AuthCTAProps {
   fullWidth?: boolean;
@@ -15,6 +17,8 @@ export default function AuthCTA({ fullWidth = false }: AuthCTAProps) {
   const { user } = useAuth();
   const isLoggedIn = !!user;
   const t = useTranslations('AuthCTA');
+  const locale = useLocale();
+  const pathname = usePathname();
 
   const containerStyle = fullWidth
     ? "w-full relative overflow-hidden bg-gray-900 py-16 md:py-20 px-4 md:px-8 shadow-xl flex flex-col items-center justify-center text-center group border-y border-gray-800"
@@ -47,6 +51,15 @@ export default function AuthCTA({ fullWidth = false }: AuthCTAProps) {
       <div className="relative z-10 mt-6 mb-8 w-full md:w-auto">
         <Link 
           href={isLoggedIn ? "/koleksiyonum" : "/login"}
+          onClick={() => {
+             trackCtaClicked({
+                 locale,
+                 route: pathname,
+                 cta_name: isLoggedIn ? 'go_to_collection' : 'login_register',
+                 cta_type: 'primary',
+                 source_section: 'auth_cta_block'
+             });
+          }}
           className={`relative overflow-hidden inline-flex items-center justify-center font-black text-[13px] tracking-[0.15em] uppercase py-4 px-12 rounded-xl transition-all duration-300 shadow-[0_0_20px_rgba(210,43,43,0.4)] group/btn w-full md:w-auto transform hover:-translate-y-1 ${isLoggedIn ? 'bg-green-600 text-white hover:bg-green-500 hover:shadow-[0_0_30px_rgba(22,163,74,0.6)]' : 'bg-[#D22B2B] text-white hover:bg-red-600 hover:shadow-[0_0_30px_rgba(210,43,43,0.6)]'}`}
         >
           <span className="relative z-10">{isLoggedIn ? t('BtnLoggedIn') : t('BtnLoggedOut')}</span>

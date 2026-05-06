@@ -5,6 +5,7 @@ import { supabase } from '@/utils/supabase/client';
 import * as Sentry from '@sentry/nextjs';
 import posthog from 'posthog-js';
 import { User, Session } from '@supabase/supabase-js';
+import { shouldTrackAnalytics } from '@/lib/analytics';
 
 interface AuthContextType {
   user: User | null;
@@ -22,11 +23,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const syncSentryAndPostHog = (sessionUser: User | null) => {
       if (sessionUser) {
-        Sentry.setUser({ id: sessionUser.id, email: sessionUser.email });
-        posthog.identify(sessionUser.id, { email: sessionUser.email });
+        Sentry.setUser({ id: sessionUser.id });
+        if (shouldTrackAnalytics()) {
+            posthog.identify(sessionUser.id, { is_authenticated: true });
+        } else {
+            console.log('[analytics:debug] identify skipped', sessionUser.id);
+        }
       } else {
         Sentry.setUser(null);
-        posthog.reset();
+        if (shouldTrackAnalytics()) {
+            posthog.reset();
+        } else {
+            console.log('[analytics:debug] reset skipped');
+        }
       }
     };
 

@@ -4,6 +4,7 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useState } from 'react';
 import CustomDropdown from './CustomDropdown';
 import { useLocale, useTranslations } from 'next-intl';
+import { trackFilterUsed } from '@/lib/analytics';
 
 export default function FiguresFilterClient({
   seriesList,
@@ -40,6 +41,14 @@ export default function FiguresFilterClient({
   };
 
   const handleFilterUpdate = (name: string, value: string) => {
+    trackFilterUsed({
+       locale,
+       route: pathname,
+       filter_type: name,
+       filter_value: value,
+       source_section: 'figures_filter'
+    });
+    
     const params = new URLSearchParams(searchParams.toString());
     
     // Her filtre değişiminde pagination'ı başa sar
