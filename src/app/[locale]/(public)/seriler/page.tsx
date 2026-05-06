@@ -1,5 +1,6 @@
 import SeriesCard from '@/components/ui/SeriesCard';
 import SeriesFilterClient from '@/components/ui/SeriesFilterClient';
+import { Suspense } from 'react';
 import { Link } from '@/i18n/routing';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import { getDefinitions, getCategoriesByType, getAllSeries, getPreviewFiguresForSeries, getSeriesListItems } from '@/services/dal';
@@ -132,11 +133,13 @@ export default async function SeriesPage({
 
       <div className="md:sticky md:bg-[#fcfcfc] md:py-4 md:border-b md:border-gray-100 md:shadow-sm md:mb-6 z-40 md:z-30 top-0 md:top-[75px]">
         <div className="max-w-7xl mx-auto px-0 md:px-8">
-          <SeriesFilterClient 
-            categories={categoryFilters}
-            seriesList={seriesListFilters}
-            totalCount={filteredSeries.length}
-          />
+          <Suspense fallback={<div className="h-[60px] w-full border-b border-gray-100 bg-[#fcfcfc] flex items-center px-4"><span className="text-sm text-gray-400">Yükleniyor...</span></div>}>
+            <SeriesFilterClient 
+              categories={categoryFilters}
+              seriesList={seriesListFilters}
+              totalCount={filteredSeries.length}
+            />
+          </Suspense>
         </div>
       </div>
       

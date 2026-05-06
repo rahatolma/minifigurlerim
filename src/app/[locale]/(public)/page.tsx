@@ -12,9 +12,7 @@ import { getHomepageData } from '@/services/homepageAggregation';
 import { getTranslations } from 'next-intl/server';
 import { mapSeriesToCardViewModel } from '@/services/mappers';
 
-
-
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600; // 1 Hour ISR cache
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'Homepage' });
