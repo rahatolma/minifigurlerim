@@ -32,6 +32,18 @@ export async function updateSession(request: NextRequest) {
   console.log(`\n\n🚨 MIDDLEWARE_DEBUG incoming=${request.url} status=${supabaseResponse.status} location=${supabaseResponse.headers.get('location') || 'NONE'}\n\n`)
 
   try {
+    const pathname = request.nextUrl.pathname;
+    const requiresAuth = 
+      pathname.match(/^\/(tr|en)?\/?cto/) ||
+      pathname.match(/^\/(tr|en)?\/?admin/) ||
+      pathname.match(/^\/(tr|en)?\/?koleksiyonum/) ||
+      pathname.match(/^\/api\/admin/) ||
+      pathname.match(/^\/api\/cto/);
+
+    if (!requiresAuth) {
+      return supabaseResponse;
+    }
+
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
     
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !supabaseKey) {
@@ -62,10 +74,6 @@ export async function updateSession(request: NextRequest) {
       }
     )
 
-    // IMPORTANT: Avoid writing any logic between createServerClient and
-    // supabase.auth.getUser(). A simple mistake could make it very hard to debug
-    // issues with users being randomly logged out.
-
     const {
       data: { user },
       error
@@ -81,10 +89,6 @@ export async function updateSession(request: NextRequest) {
       !request.nextUrl.pathname.match(/^\/(tr|en)\/cto\/login/)
     ) {
       // no user, potentially respond by redirecting the user to the login page
-      // GEÇİCİ İPTAL: Kullanıcının yerelde geliştirme yapabilmesi için şifre duvarı (middleware redirect) kapatıldı.
-      // const url = request.nextUrl.clone()
-      // url.pathname = `/${request.nextUrl.pathname.split('/')[1]}/cto/login`
-      // return NextResponse.redirect(url)
     }
 
     return supabaseResponse

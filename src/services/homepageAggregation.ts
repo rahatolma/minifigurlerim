@@ -44,7 +44,9 @@ async function safeFetch<T>(
   }
 }
 
-export const getHomepageData = async (locale: string = 'tr'): Promise<HomepageDataShape> => {
+import { unstable_cache } from 'next/cache';
+
+const getHomepageDataInternal = async (locale: string = 'tr'): Promise<HomepageDataShape> => {
   const degradedBlocks: string[] = [];
 
   const [
@@ -117,4 +119,12 @@ export const getHomepageData = async (locale: string = 'tr'): Promise<HomepageDa
     seriesFigStats,
     degradedBlocks
   };
+};
+
+export const getHomepageData = (locale: string = 'tr') => {
+  return unstable_cache(
+    async () => getHomepageDataInternal(locale),
+    ['homepage-data', locale],
+    { revalidate: 3600, tags: ['homepage', `homepage-${locale}`] }
+  )();
 };

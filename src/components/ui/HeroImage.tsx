@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 
 interface HeroImageProps {
   src: string;
@@ -17,9 +18,13 @@ export default function HeroImage({ src, alt }: HeroImageProps) {
   return (
     <section className="relative w-full flex items-end justify-center overflow-hidden bg-[#fcfcfc]">
       <div className="relative w-full max-w-7xl mx-auto flex justify-center">
-        <img 
+        <Image 
           src={src} 
           alt={alt}
+          width={1920}
+          height={600}
+          priority={true}
+          sizes="(max-width: 1280px) 100vw, 1280px"
           className="w-full h-auto object-bottom"
           onError={() => setError(true)}
         />

@@ -91,3 +91,18 @@ cookies*.txt
 error*.html
 qa-report*.json
 _scratch/
+
+# Temporary & Scratch files
+scratch*
+scratch/
+_scratch/
+_archive/
+*.log
+*.tmp
+*_output.txt
+*_test.html
+node_modules/
+.next/
+.env*
+*.tsbuildinfo
+
