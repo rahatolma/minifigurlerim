@@ -17,6 +17,10 @@ export default async function AyarlarPage() {
     redirect('/login');
   }
 
+  if (profile?.status === 'banned') {
+    redirect('/banned');
+  }
+
   return (
     <div className="bg-[#fcfcfc] min-h-screen pb-16">
 

@@ -52,8 +52,8 @@ export async function toggleCollectionStatus(minifigureId: string, currentStatus
     return { error: 'Giriş yapmanız gerekiyor.' };
   }
 
-  if (profile?.role === 'banned') return { error: 'Hesabınız yasaklanmıştır.' };
-  if (!profile?.is_approved && profile?.role !== 'admin') {
+  if (profile?.status === 'banned') return { error: 'Hesabınız yasaklanmıştır.' };
+  if (profile?.status !== 'active' && profile?.role !== 'admin') {
     return { error: 'Koleksiyon işlemleri için hesabınızın yönetici tarafından onaylanması bekleniyor.', code: 'UNAPPROVED_USER' };
   }
 
@@ -92,8 +92,8 @@ export async function saveRating(minifigureId: string, rating: number, comment?:
     return { error: 'Giriş yapmanız gerekiyor.' };
   }
 
-  if (profile?.role === 'banned') return { error: 'Hesabınız yasaklanmıştır.' };
-  if (!profile?.is_approved && profile?.role !== 'admin') {
+  if (profile?.status === 'banned') return { error: 'Hesabınız yasaklanmıştır.' };
+  if (profile?.status !== 'active' && profile?.role !== 'admin') {
     return { error: 'Puan verebilmek için hesabınızın yönetici tarafından onaylanması bekleniyor.' };
   }
 
