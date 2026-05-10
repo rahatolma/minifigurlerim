@@ -14,8 +14,9 @@ export const revalidate = 0; // Her zaman canlı
 export default async function AdminUsersPage({
   searchParams,
 }: {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const resolvedParams = await searchParams;
   const { user, profile } = await getAuthUserProfile();
 
   if (!user) {
@@ -33,9 +34,9 @@ export default async function AdminUsersPage({
   }
 
   const limit = 25;
-  const page = typeof searchParams?.page === 'string' ? parseInt(searchParams.page, 10) : 1;
-  const search = typeof searchParams?.search === 'string' ? searchParams.search : undefined;
-  const statusFilter = typeof searchParams?.status === 'string' ? searchParams.status : undefined;
+  const page = typeof resolvedParams?.page === 'string' ? parseInt(resolvedParams.page, 10) : 1;
+  const search = typeof resolvedParams?.search === 'string' ? resolvedParams.search : undefined;
+  const statusFilter = typeof resolvedParams?.status === 'string' ? resolvedParams.status : undefined;
 
   let profiles: any = [];
   let totalCount = 0;
