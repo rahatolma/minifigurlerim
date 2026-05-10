@@ -43,6 +43,9 @@ export default async function KoleksiyonumPage({
 
   // 1. Kullanıcı Profili (Gösterim için)
   const profile = await getUserProfile(user.id);
+  if (profile?.status === 'banned') {
+    redirect(`/${locale}/banned`);
+  }
   const displayName = profile?.username || user.email?.split('@')[0] || t('collector');
 
   // 2. Kullanıcının Koleksiyonlarını (figür detaylarıyla) çek

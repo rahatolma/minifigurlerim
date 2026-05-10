@@ -31,7 +31,7 @@ export const getAuthUserProfile = async () => {
   const { data: { user }, error } = await supabase.auth.getUser();
   if (error || !user) return { user: null, profile: null };
 
-  const { data: profile } = await supabase.from('profiles').select('is_approved, role, avatar_url, full_name, username, age').eq('id', user.id).single();
+  const { data: profile } = await supabase.from('profiles').select('is_approved, role, status, avatar_url, full_name, username, age').eq('id', user.id).single();
   return { user, profile };
 };
 
@@ -289,14 +289,30 @@ export const updateTranslationAdminDal = async (table: string, id: string, updat
   return { success: true };
 };
 
-export const getAdminUsersDal = async () => {
+export const getAdminUsersDal = async (page: number = 1, limit: number = 25, search?: string, statusFilter?: string) => {
   const supabaseAdmin = getAdminClient();
-  const { data: profiles, error } = await supabaseAdmin
+  const safeLimit = Math.min(limit, 100);
+  const from = (page - 1) * safeLimit;
+  const to = from + safeLimit - 1;
+
+  let query = supabaseAdmin
     .from('profiles')
-    .select('id, username, avatar_url, created_at, is_approved, role')
-    .order('created_at', { ascending: false });
+    .select('id, username, avatar_url, created_at, is_approved, role, status, email', { count: 'exact' });
+
+  if (search) {
+    query = query.or(`username.ilike.%${search}%,email.ilike.%${search}%`);
+  }
+  
+  if (statusFilter && statusFilter !== 'all') {
+    query = query.eq('status', statusFilter);
+  }
+
+  const { data: profiles, error, count } = await query
+    .order('created_at', { ascending: false })
+    .range(from, to);
+
   if (error) throw new Error(error.message);
-  return profiles || [];
+  return { profiles: profiles || [], count: count || 0 };
 };
 
 export const getAdminBorsaFiguresDal = async () => {
@@ -365,28 +381,76 @@ export const getAdminDashboardMetricsDal = async () => {
   return { totalSeries, totalFigures, totalCollections, rawCollections, allFigures, allSeries };
 };
 
-export const toggleUserApprovalAdminDal = async (userId: string, currentStatus: boolean) => {
+export const logAdminActionDal = async (actorId: string, targetId: string, action: string, prevState: any, newState: any, reason?: string) => {
+  const supabaseAdmin = getAdminClient();
+  const { error } = await supabaseAdmin.from('admin_audit_logs').insert({
+    actor_admin_id: actorId,
+    target_user_id: targetId,
+    action: action,
+    previous_state: prevState,
+    new_state: newState,
+    reason: reason || null
+  });
+  if (error) console.error('[AUDIT LOG ERROR]', error.message);
+};
+
+export const toggleUserApprovalAdminDal = async (adminId: string, userId: string, currentStatus: boolean, currentStatusText?: string) => {
   if (!userId) throw new Error("Kullanıcı ID'si geçersiz.");
   
+  // Backward compatibility check
+  const actualCurrentStatus = currentStatusText || (currentStatus ? 'active' : 'pending');
+  const newStatus = actualCurrentStatus === 'active' ? 'pending' : 'active';
+  const actionName = actualCurrentStatus === 'active' ? 'revoke_approval' : 'approve_user';
+
   const supabaseAdmin = getAdminClient();
   const { data, error } = await supabaseAdmin
     .from('profiles')
-    .update({ is_approved: !currentStatus })
+    .update({ status: newStatus, is_approved: newStatus === 'active' }) // is_approved is kept synced
     .eq('id', userId)
     .select();
     
   if (error) throw new Error(error.message);
   if (!data || data.length === 0) throw new Error("Belirtilen kullanıcı bulunamadı veya güncellenemedi.");
   
+  await logAdminActionDal(adminId, userId, actionName, { status: actualCurrentStatus, is_approved: currentStatus }, { status: newStatus, is_approved: newStatus === 'active' });
   return { success: true };
 };
 
-export const deleteUserFromDBAdminDal = async (userId: string) => {
+export const banUserAdminDal = async (adminId: string, userId: string, reason: string) => {
   if (!userId) throw new Error("Kullanıcı ID'si geçersiz.");
   
   const supabaseAdmin = getAdminClient();
-  const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);
+  const { data: currentUser } = await supabaseAdmin.from('profiles').select('status, role').eq('id', userId).single();
+
+  const { error } = await supabaseAdmin.from('profiles').update({
+    status: 'banned',
+    banned_at: new Date().toISOString(),
+    banned_by: adminId,
+    banned_reason: reason || 'Kural ihlali'
+  }).eq('id', userId);
+
   if (error) throw new Error(error.message);
+
+  await logAdminActionDal(adminId, userId, 'ban_user', currentUser, { status: 'banned' }, reason);
+  return { success: true };
+};
+
+export const unbanUserAdminDal = async (adminId: string, userId: string, reason: string) => {
+  if (!userId) throw new Error("Kullanıcı ID'si geçersiz.");
+  
+  const supabaseAdmin = getAdminClient();
+  const { data: currentUser } = await supabaseAdmin.from('profiles').select('status, role').eq('id', userId).single();
+
+  const { error } = await supabaseAdmin.from('profiles').update({
+    status: 'pending', // Revert to pending
+    banned_at: null,
+    banned_by: null,
+    banned_reason: null
+  }).eq('id', userId);
+
+  if (error) throw new Error(error.message);
+
+  await logAdminActionDal(adminId, userId, 'unban_user', currentUser, { status: 'pending' }, reason);
   return { success: true };
 };
 
