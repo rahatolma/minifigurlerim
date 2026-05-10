@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import UserAdminActions from './components/UserAdminActions';
 import UserAdminFilters from './components/UserAdminFilters';
 import Pagination from './components/Pagination';
@@ -61,13 +62,18 @@ export default async function AdminUsersPage({
     <div className="flex-1 flex flex-col min-w-0 p-8 sm:p-12 pb-32">
         <div className="flex justify-between items-end border-b border-gray-200 pb-6 mb-8 mt-16">
             <div>
-                <h1 className="text-3xl sm:text-4xl font-black text-[#111] tracking-tight">Kullanıcı Onayları</h1>
-                <p className="mt-2 text-sm text-gray-500 font-medium">Borsa evrenine kayıt olan üyelerin durumlarını yönetin. Takas ve yorum işlemleri için onay gerekecektir.</p>
+                <h1 className="text-3xl sm:text-4xl font-black text-[#111] tracking-tight">Kullanıcı Yönetimi</h1>
+                <p className="mt-2 text-sm text-gray-500 font-medium">Hesap onay ve yasaklama (status) durumlarını yönetin.</p>
             </div>
             
-            <div className="bg-gray-100 px-4 py-2 rounded-lg border border-gray-200 shadow-sm flex items-center gap-3 w-max">
-                <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Toplam Üye</span>
-                <span className="text-lg font-black text-gray-900">{totalCount}</span>
+            <div className="flex items-center gap-3 w-max">
+                <Link href="/cto/kullanicilar/audit" className="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-gray-50 transition-colors">
+                    Audit Logları
+                </Link>
+                <div className="bg-gray-100 px-4 py-2 rounded-lg border border-gray-200 shadow-sm flex items-center gap-3">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Toplam Üye</span>
+                    <span className="text-lg font-black text-gray-900">{totalCount}</span>
+                </div>
             </div>
         </div>
 

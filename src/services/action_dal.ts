@@ -315,6 +315,43 @@ export const getAdminUsersDal = async (page: number = 1, limit: number = 25, sea
   return { profiles: profiles || [], count: count || 0 };
 };
 
+export const getAdminAuditLogsDal = async (page: number = 1, limit: number = 25, targetUserId?: string, actionFilter?: string) => {
+  const supabaseAdmin = getAdminClient();
+  const safeLimit = Math.min(limit, 100);
+  const from = (page - 1) * safeLimit;
+  const to = from + safeLimit - 1;
+
+  let query = supabaseAdmin
+    .from('admin_audit_logs')
+    .select(`
+      id, 
+      action, 
+      reason, 
+      created_at, 
+      previous_state,
+      new_state,
+      actor_admin_id,
+      target_user_id,
+      actor:profiles!admin_audit_logs_actor_admin_id_fkey(username, email, role),
+      target:profiles!admin_audit_logs_target_user_id_fkey(username, email, role)
+    `, { count: 'exact' });
+
+  if (actionFilter && actionFilter !== 'all') {
+    query = query.eq('action', actionFilter);
+  }
+  
+  if (targetUserId) {
+    query = query.eq('target_user_id', targetUserId);
+  }
+
+  const { data: logs, error, count } = await query
+    .order('created_at', { ascending: false })
+    .range(from, to);
+
+  if (error) throw new Error(error.message);
+  return { logs: logs || [], count: count || 0 };
+};
+
 export const getAdminBorsaFiguresDal = async () => {
   const supabaseAdmin = getAdminClient();
   let figures = [];
@@ -396,6 +433,7 @@ export const logAdminActionDal = async (actorId: string, targetId: string, actio
 
 export const toggleUserApprovalAdminDal = async (adminId: string, userId: string, currentStatus: boolean, currentStatusText?: string) => {
   if (!userId) throw new Error("Kullanıcı ID'si geçersiz.");
+  if (adminId === userId) throw new Error("Kendi hesabınız üzerinde onay işlemi yapamazsınız.");
   
   // Backward compatibility check
   const actualCurrentStatus = currentStatusText || (currentStatus ? 'active' : 'pending');
@@ -418,6 +456,7 @@ export const toggleUserApprovalAdminDal = async (adminId: string, userId: string
 
 export const banUserAdminDal = async (adminId: string, userId: string, reason: string) => {
   if (!userId) throw new Error("Kullanıcı ID'si geçersiz.");
+  if (adminId === userId) throw new Error("Kendi hesabınızı yasaklayamazsınız.");
   
   const supabaseAdmin = getAdminClient();
   const { data: currentUser } = await supabaseAdmin.from('profiles').select('status, role').eq('id', userId).single();
@@ -437,6 +476,7 @@ export const banUserAdminDal = async (adminId: string, userId: string, reason: s
 
 export const unbanUserAdminDal = async (adminId: string, userId: string, reason: string) => {
   if (!userId) throw new Error("Kullanıcı ID'si geçersiz.");
+  if (adminId === userId) throw new Error("Kendi hesabınız üzerinde işlem yapamazsınız.");
   
   const supabaseAdmin = getAdminClient();
   const { data: currentUser } = await supabaseAdmin.from('profiles').select('status, role').eq('id', userId).single();
