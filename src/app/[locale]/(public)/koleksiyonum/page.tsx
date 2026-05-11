@@ -1,7 +1,8 @@
 import { toRarityOption, toRoleOption, toTypeOption } from '@/services/displayMappers';
 import { getAuthUser } from '@/services/action_dal';
 import { redirect } from 'next/navigation';
-import { getUserProfile, getUserCollectionsWithDetails, getAllSeries, getTotalMinifiguresCount, getUserSeriesStats, getMinifigurePriceHistoryBatch, getMinifigureBySlug } from '@/services/dal';
+import { getUserProfile, getUserCollectionsWithDetails, getUserSeriesStats } from '@/services/dal_private';
+import { getAllSeries, getTotalMinifiguresCount, getMinifigurePriceHistoryBatch, getMinifigureBySlug } from '@/services/dal';
 import { logOut } from '@/app/[locale]/(auth)/login/actions';
 import { Link } from '@/i18n/routing';
 import FigureCard from '@/components/ui/FigureCard';
@@ -432,7 +433,7 @@ export default async function KoleksiyonumPage({
                       ) : (
                          <>
                             <span className="text-[16px] font-black text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">{t('NoReviewYet')}</span>
-                            <Link href={`/${locale}/figurler` as any} className="text-[13px] font-bold text-gray-400 mt-0.5 group-hover:text-gray-500 transition-colors flex items-center gap-1">{t('StartExploring')} <span className="transform group-hover:translate-x-1 transition-transform">→</span></Link>
+                            <Link href="/figurler" className="text-[13px] font-bold text-gray-400 mt-0.5 group-hover:text-gray-500 transition-colors flex items-center gap-1">{t('StartExploring')} <span className="transform group-hover:translate-x-1 transition-transform">→</span></Link>
                          </>
                       )}
                    </div>
@@ -465,7 +466,7 @@ export default async function KoleksiyonumPage({
                    <h2 className="text-xl font-black text-gray-800 uppercase tracking-widest mb-2">{t('EmptyStateTitle')}</h2>
                    <p className="text-sm font-medium text-gray-500 max-w-sm mx-auto">{t('EmptyStateDesc')}</p>
                    {rawCollections.length === 0 && (
-                      <Link href={`/${locale}/figurler` as any} className="mt-6 inline-block bg-[#D22B2B] text-white font-black py-3 px-8 rounded-xl hover:bg-red-700 transition-colors shadow-md text-sm">
+                      <Link href="/figurler" className="mt-6 inline-block bg-[#D22B2B] text-white font-black py-3 px-8 rounded-xl hover:bg-red-700 transition-colors shadow-md text-sm">
                           {t('BrowseFigures')}
                       </Link>
                    )}
