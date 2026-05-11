@@ -5,8 +5,17 @@ import { redirect } from '@/i18n/routing';
 import { redirect as nextRedirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import { signInWithPasswordDal, signUpDal, signOutDal, signInWithOAuthDal } from '@/services/action_dal';
+import { checkMultiRateLimit } from '@/lib/rate-limit';
 
 export async function login(locale: string, formData: FormData) {
+  const rl = await checkMultiRateLimit('login', [
+    { limit: 20, window: '1 m' },
+    { limit: 100, window: '10 m' }
+  ]);
+  if (!rl.success) {
+    return redirect({ href: '/login?error=rate_limited' as any, locale });
+  }
+
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
@@ -21,6 +30,14 @@ export async function login(locale: string, formData: FormData) {
 }
 
 export async function signup(locale: string, formData: FormData) {
+  const rl = await checkMultiRateLimit('register', [
+    { limit: 10, window: '10 m' },
+    { limit: 25, window: '1 h' }
+  ]);
+  if (!rl.success) {
+    return redirect({ href: '/login?error=rate_limited&type=register' as any, locale });
+  }
+
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
   const terms = formData.get('terms');
