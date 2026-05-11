@@ -230,8 +230,8 @@ export const saveUserRatingDal = async (userId: string, minifigureId: string, ra
 
 // Yorumları (ve ekleyen profilleri) listeleme (Read Only - Component'ten taşındı)
 export const getFigureRatings = async (minifigureId: string) => {
-  const supabase = await createClient();
-  const { data, error } = await supabase
+  const supabaseAdmin = getAdminClient();
+  const { data, error } = await supabaseAdmin
     .from('user_ratings')
     .select('id, rating, created_at, profiles(username, avatar_url, role)')
     .eq('minifigure_id', minifigureId)
