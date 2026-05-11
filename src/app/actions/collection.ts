@@ -85,7 +85,7 @@ export async function toggleCollectionStatus(minifigureId: string, currentStatus
   }
 }
 
-export async function saveRating(minifigureId: string, rating: number, comment?: string) {
+export async function saveRating(minifigureId: string, rating: number) {
   const { user, profile } = await getAuthUserProfile();
 
   if (!user) {
@@ -98,7 +98,7 @@ export async function saveRating(minifigureId: string, rating: number, comment?:
   }
 
   try {
-    const operation = saveUserRatingDal(user.id, minifigureId, rating, comment);
+    const operation = saveUserRatingDal(user.id, minifigureId, rating);
     const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT')), 8000));
     await Promise.race([operation, timeout]);
     
@@ -108,7 +108,7 @@ export async function saveRating(minifigureId: string, rating: number, comment?:
   } catch (err: any) {
     if (err.message === 'TIMEOUT') {
        actionLog('warn', { action: 'saveRating', user_id: user.id, entity_id: minifigureId, success: false, message: 'Action timed out after 8s' });
-       return { error: 'Yorum kaydedilirken zaman aşımı yaşandı.' };
+       return { error: 'Değerlendirme kaydedilirken zaman aşımı yaşandı.' };
     }
     actionLog('error', { action: 'saveRating', user_id: user.id, entity_id: minifigureId, success: false, message: err.message });
     return { error: 'Puanlama yapılamadı, sistem yöneticilerine bildirilmiştir.' };

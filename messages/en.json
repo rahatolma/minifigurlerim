@@ -1090,9 +1090,9 @@
     "emptyTitle": "Podium is empty",
     "emptyDescription": "Be the first to rate this minifigure!",
     "cta": "Rate Minifigure",
-    "reviewCount": "{count} reviews",
+    "reviewCount": "{count} ratings",
     "anonymousCollector": "Anonymous Collector",
-    "addReview": "Add Review"
+    "addReview": "Add Rating"
   },
   "Comments": {
     "emptyComments": "No comments yet. Would you like to be the first one to comment?",
