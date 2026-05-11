@@ -34,14 +34,13 @@ export default function CollectionActions({ minifigureId, trackingProps }: { min
   useEffect(() => {
      if (searchParams.get('rate') === 'true') {
         setShowRatingModal(true);
-     }
-  }, [searchParams]);
-
-  const closeRatingModal = () => {
-     closeRatingModal();
-     if (searchParams.has('rate')) {
+        // Clean URL instantly to prevent race condition loop
         router.replace(pathname, { scroll: false });
      }
+  }, [searchParams, pathname, router]);
+
+  const closeRatingModal = () => {
+     setShowRatingModal(false);
   };
    
    useEffect(() => {
