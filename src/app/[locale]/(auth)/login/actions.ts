@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from '@/i18n/routing';
 import { redirect as nextRedirect } from 'next/navigation';
 import { headers } from 'next/headers';
-import { signInWithPasswordDal, signUpDal, signOutDal, signInWithOAuthDal } from '@/services/auth_dal';
+import { signInWithPasswordDal, signUpDal, signOutDal, signInWithOAuthDal, resetPasswordForEmailDal } from '@/services/auth_dal';
 import { checkMultiRateLimit } from '@/lib/rate-limit';
 import { getURL } from '@/utils/helpers';
 
@@ -50,7 +50,11 @@ export async function signup(locale: string, formData: FormData) {
     return redirect({ href: '/login?error=terms_required&type=register' as any, locale });
   }
 
-  const { error } = await signUpDal(email, password, true);
+  const { data, error } = await signUpDal(email, password, true);
+
+  if (data?.user && data.user.identities && data.user.identities.length === 0) {
+    return redirect({ href: '/login?error=account_exists&type=register' as any, locale });
+  }
 
   if (error) {
     return redirect({ href: '/login?error=registration_failed&type=register' as any, locale });
@@ -63,6 +67,27 @@ export async function logOut(locale: string = 'tr') {
   await signOutDal();
   revalidatePath('/', 'layout');
   redirect({ href: '/', locale });
+}
+
+export async function forgotPassword(locale: string, formData: FormData) {
+  const rl = await checkMultiRateLimit('forgot_password', [
+    { limit: 5, window: '10 m' }
+  ]);
+  if (!rl.success) {
+    return redirect({ href: '/login?error=rate_limited&type=forgot' as any, locale });
+  }
+
+  const email = formData.get('email') as string;
+  const origin = getURL();
+  
+  // Safe fallback redirect for now
+  const { error } = await resetPasswordForEmailDal(email, `${origin}/login?message=reset_token_verified`);
+
+  if (error) {
+    return redirect({ href: '/login?error=reset_failed&type=forgot' as any, locale });
+  }
+
+  return redirect({ href: '/login?message=reset_link_sent&type=forgot' as any, locale });
 }
 
 // Yeni Google OAuth Bağlantısı
