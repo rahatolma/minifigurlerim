@@ -201,16 +201,26 @@ export const getMinifigureFilterOptions = cache(async (
   filters: { series?: string } = {}
 ) => {
   const supabase = createPublicClient();
+  let selectRaw = 'role, type, rarity, rarity_level';
+  
+  const safeSeries = sanitizeFilter(filters.series);
+  const isId = safeSeries ? /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(safeSeries) : false;
+
+  if (safeSeries && safeSeries !== 'all' && !isId) {
+    selectRaw += ', series!inner(id, slug_tr, slug_en, slug)';
+  }
+
   let query = supabase
     .from('minifigures')
-    .select('role, type, rarity, rarity_level')
+    .select(selectRaw)
     .order('created_at', { ascending: false });
 
-  const safeSeries = sanitizeFilter(filters.series);
   if (safeSeries && safeSeries !== 'all') {
-    const isId = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(safeSeries);
-    const filterCol = isId ? 'series_id' : 'series_name';
-    query = query.eq(filterCol, safeSeries);
+    if (isId) {
+      query = query.eq('series_id', safeSeries);
+    } else {
+      query = query.or(`slug.eq.${safeSeries},slug_tr.eq.${safeSeries},slug_en.eq.${safeSeries}`, { foreignTable: 'series' });
+    }
   }
 
   const { data, error } = await query;
@@ -231,14 +241,26 @@ export const getMinifigureListItems = cache(async (
   offset: number = 0
 ): Promise<{ data: RawListFigureDTO[], count: number | null }> => {
   const supabase = createPublicClient();
-  let query = supabase
-    .from('minifigures').select('id, created_at, series_id, name, brand, category, series_name, series_no, role, type, code, piece_count, body_material, rarity, value_usd, release_year, images, total_views, daily_views, custom_attributes, description, release_month, slug, affiliate_link, name_en, series_name_en, role_en, description_en, min_price, max_price, avg_price, rarity_score, series_score, view_count_30d, collection_count_30d, favorite_count_30d, rating_count, value_score, demand_score, figure_name, slug_tr, slug_en, figure_number, figure_code, character_name, short_description_tr, short_description_en, figure_role, figure_type, price_updated_at, rarity_level, accessory_count, main_color, thumbnail_url, is_featured, is_active, is_published, series(id, slug_tr, slug_en, title, title_en, release_year, release_month, series_no)', { count: "exact" });
-
+  let selectRaw = 'id, created_at, series_id, name, brand, category, series_name, series_no, role, type, code, piece_count, body_material, rarity, value_usd, release_year, images, total_views, daily_views, custom_attributes, description, release_month, slug, affiliate_link, name_en, series_name_en, role_en, description_en, min_price, max_price, avg_price, rarity_score, series_score, view_count_30d, collection_count_30d, favorite_count_30d, rating_count, value_score, demand_score, figure_name, slug_tr, slug_en, figure_number, figure_code, character_name, short_description_tr, short_description_en, figure_role, figure_type, price_updated_at, rarity_level, accessory_count, main_color, thumbnail_url, is_featured, is_active, is_published';
+  
   const safeSeries = sanitizeFilter(filters.series);
+  const isId = safeSeries ? /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(safeSeries) : false;
+
+  if (safeSeries && !isId) {
+    selectRaw += ', series!inner(id, slug_tr, slug_en, slug, title, title_en, release_year, release_month, series_no)';
+  } else {
+    selectRaw += ', series(id, slug_tr, slug_en, slug, title, title_en, release_year, release_month, series_no)';
+  }
+
+  let query = supabase
+    .from('minifigures').select(selectRaw, { count: "exact" });
+
   if (safeSeries) {
-    const isId = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(safeSeries);
-    const filterCol = isId ? 'series_id' : 'series_name';
-    query = query.eq(filterCol, safeSeries);
+    if (isId) {
+      query = query.eq('series_id', safeSeries);
+    } else {
+      query = query.or(`slug.eq.${safeSeries},slug_tr.eq.${safeSeries},slug_en.eq.${safeSeries}`, { foreignTable: 'series' });
+    }
   }
   const safeRole = sanitizeFilter(filters.role);
   if (safeRole) query = query.eq('role', safeRole);
