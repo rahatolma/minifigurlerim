@@ -38,7 +38,7 @@ export default function CollectionActions({ minifigureId, trackingProps }: { min
   }, [searchParams]);
 
   const closeRatingModal = () => {
-     closeRatingModal();
+     setShowRatingModal(false);
      if (searchParams.has('rate')) {
         router.replace(pathname, { scroll: false });
      }
