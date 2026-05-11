@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { getAuthUserProfile, toggleUserCollectionDal, saveUserRatingDal } from '@/services/action_dal';
 import { actionLog } from '@/utils/logger';
 import { createClient } from '@/utils/supabase/server';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 // In-memory rate limiter cache to guard against UI-level rapid clicking (Spam guard)
 const softRateLimitCache = new Map<string, number>();
@@ -67,6 +68,12 @@ export async function toggleCollectionStatus(minifigureId: string, currentStatus
   }
   softRateLimitCache.set(rlKey, now);
 
+  const rl = await checkRateLimit('toggleCollectionStatus', user.id, 30, '1 m');
+  if (!rl.success) {
+    actionLog('warn', { action: 'toggleCollection_RateLimit', user_id: user.id, entity_id: minifigureId, success: false, message: 'Upstash rate limit tripped' });
+    return { error: rl.error };
+  }
+
   try {
     const operation = toggleUserCollectionDal(user.id, minifigureId, currentStatus, newStatus);
     const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT')), 8000));
@@ -95,6 +102,12 @@ export async function saveRating(minifigureId: string, rating: number) {
   if (profile?.status === 'banned') return { error: 'Hesabınız yasaklanmıştır.' };
   if (profile?.status !== 'active' && profile?.role !== 'admin') {
     return { error: 'Puan verebilmek için hesabınızın yönetici tarafından onaylanması bekleniyor.' };
+  }
+
+  const rl = await checkRateLimit('saveRating', user.id, 10, '1 m');
+  if (!rl.success) {
+    actionLog('warn', { action: 'saveRating_RateLimit', user_id: user.id, entity_id: minifigureId, success: false, message: 'Upstash rate limit tripped' });
+    return { error: rl.error };
   }
 
   try {
