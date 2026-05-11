@@ -15,6 +15,14 @@ const getAdminClient = () => {
   );
 };
 
+// Helper: Get Public Client (For static reads, does NOT read cookies)
+const getPublicClient = () => {
+  return createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+};
+
 // ==========================================
 // 1. KULLANICI (AUTH) İŞLEMLERİ
 // ==========================================
@@ -230,8 +238,8 @@ export const saveUserRatingDal = async (userId: string, minifigureId: string, ra
 
 // Yorumları (ve ekleyen profilleri) listeleme (Read Only - Component'ten taşındı)
 export const getFigureRatings = async (minifigureId: string) => {
-  const supabaseAdmin = getAdminClient();
-  const { data, error } = await supabaseAdmin
+  const supabasePublic = getPublicClient();
+  const { data, error } = await supabasePublic
     .from('user_ratings')
     .select('id, rating, created_at, profiles(username, avatar_url, role)')
     .eq('minifigure_id', minifigureId)
@@ -516,10 +524,10 @@ export const updateBorsaDataAdminDal = async (minifigureId: string, valueUsd: nu
 };
 
 export const getSimilarFiguresDal = async (seriesId: string, currentFigureId: string, limit: number = 4) => {
-  const supabaseAdmin = getAdminClient();
+  const supabasePublic = getPublicClient();
   
   // 1. Same series figures (excluding current)
-  const { data: seriesData, error: seriesError } = await supabaseAdmin
+  const { data: seriesData, error: seriesError } = await supabasePublic
     .from('minifigures')
     .select('id, name, slug_tr, slug_en, series_name, rarity_level, thumbnail_url, images, series(id, title, title_en, slug_tr, slug_en)')
     .eq('series_id', seriesId)
@@ -535,7 +543,7 @@ export const getSimilarFiguresDal = async (seriesId: string, currentFigureId: st
      const remaining = limit - result.length;
      const excludeIds = [currentFigureId, ...result.map(f => f.id)];
      
-     const { data: popularData, error: popularError } = await supabaseAdmin
+     const { data: popularData, error: popularError } = await supabasePublic
         .from('minifigures')
         .select('id, name, slug_tr, slug_en, series_name, rarity_level, thumbnail_url, images, series(id, title, title_en, slug_tr, slug_en)')
         .not('id', 'in', `(${excludeIds.join(',')})`)
