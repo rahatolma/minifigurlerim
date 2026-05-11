@@ -1,5 +1,6 @@
 import * as Sentry from '@sentry/nextjs';
-import { getHomeSliders, getLatestSeries, getLatestFigures, getTopDemandedFigures, getTopValuedFigures, getLatestNews, getPreviewFiguresForSeries } from '@/services/dal';
+import { getLatestNews } from '@/services/dal';
+import { getHomeSliders, getLatestSeries, getLatestFigures, getTopDemandedFigures, getTopValuedFigures, getPreviewFiguresForSeries } from '@/services/dal_public';
 import { mapFigureForCard, FigureCardData } from '@/utils/figureMapper';
 
 export interface HomepageDataShape {

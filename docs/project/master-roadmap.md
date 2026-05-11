@@ -105,6 +105,7 @@ Bu doküman, projenin üretim, istikrar ve launch (canlıya çıkış) süreçle
 - [ ] **Renderer Test Fixtures:** Yeni UI bileşenlerinin ve Blog render sisteminin statik JSON test kurguları.
 - [ ] **Advanced Observability:** `trackUserViewDal` ve benzeri yerlerde `Sentry captureException` kullanılması.
 - [ ] **Locale-Aware Block Rendering:** Blog bloklarına dil spesifik kurallar/render yapıları eklenmesi.
+- [ ] **Admin / CTO Panel Audit & Cleanup:** Admin panelde atıl kalan, tekrar eden, gereksiz veya riskli (kullanıcı yönetimi, audit log, haber/seri/figür yönetimi, role guard) ekranların temizlenmesi ve empty/loading state kontrolleri.
 
 ---
 
