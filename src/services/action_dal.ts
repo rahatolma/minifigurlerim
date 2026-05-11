@@ -214,15 +214,14 @@ export const toggleUserCollectionDal = async (userId: string, minifigureId: stri
 // 3. PUANLAMA & YORUM (RATINGS) YÖNETİMİ
 // ==========================================
 
-export const saveUserRatingDal = async (userId: string, minifigureId: string, rating: number, comment?: string) => {
+export const saveUserRatingDal = async (userId: string, minifigureId: string, rating: number) => {
   const supabaseAdmin = getAdminClient();
   const { error } = await supabaseAdmin
     .from('user_ratings')
     .upsert({
       user_id: userId,
       minifigure_id: minifigureId,
-      rating: rating,
-      comment: comment || null
+      rating: rating
     }, { onConflict: 'user_id, minifigure_id' });
     
   if (error) throw new Error(error.message);
@@ -234,7 +233,7 @@ export const getFigureRatings = async (minifigureId: string) => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('user_ratings')
-    .select('id, rating, comment, created_at, profiles(username, avatar_url, role)')
+    .select('id, rating, created_at, profiles(username, avatar_url, role)')
     .eq('minifigure_id', minifigureId)
     .order('created_at', { ascending: false });
 

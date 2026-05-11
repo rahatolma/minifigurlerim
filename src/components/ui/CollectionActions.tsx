@@ -118,13 +118,12 @@ export default function CollectionActions({ minifigureId, trackingProps }: { min
       const form = e.currentTarget;
       const formData = new FormData(form);
       const starStr = formData.get('rating') as string;
-      const comment = formData.get('comment') as string;
       const star = parseInt(starStr, 10);
 
       if (!star) return;
 
       setLoading(true);
-      const result = await saveRating(minifigureId, star, comment);
+      const result = await saveRating(minifigureId, star);
       
       if (result?.success) {
          setRating(star);
