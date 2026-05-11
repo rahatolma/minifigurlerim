@@ -421,3 +421,93 @@ export const getSeriesListItems = cache(async (
   return sortedData as any;
 });
 
+
+// Seriye Ait Tüm Figürlerin Temel Bilgisini Getir (Önizleme İçin)
+export const getPreviewFiguresForSeries = cache(async () => {
+  const supabase = createPublicClient();
+  const { data, error } = await supabase
+    .from('minifigures').select(MINIFIGURES_SELECT_FIELDS)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data as any;
+});
+
+// Anasayfa Slaytlarını Getir
+export const getHomeSliders = cache(async () => {
+  const supabase = createPublicClient();
+  const { data, error } = await supabase
+    .from('home_sliders')
+    .select('id, title, subtitle, button1_text, button1_link, button2_text, button2_link, image_url, is_active, sort_order, created_at, location')
+    .eq('is_active', true)
+    .order('sort_order', { ascending: true });
+
+  if (error) throw error;
+  return data as any;
+});
+
+// Sadece en son 12 Seri Getir (Anasayfa) - Gerçek Kronolojik Sıralama (Yıl/Ay)
+export const getLatestSeries = cache(async (): Promise<SeriesDTO[]> => {
+  const supabase = createPublicClient();
+  const { data, error } = await supabase
+    .from('series').select('id, title, slug_tr, slug_en, description, description_blocks_en, is_active, release_year, category, category_main, cover_image_url, hero_image_url, content_blocks, series_no, rarity, figure_count, is_published, total_views, title_en, en_status, en_translation_status')
+    .order('created_at', { ascending: false })
+    .limit(100); // Havuzu geniş tuttuk ki JS ile kronolojik dizebilelim
+
+  if (error) throw error;
+
+  if (!data) return [];
+
+  const sortedData = [...(data as any[])].sort((a, b) => {
+    const scoreA = extractYearMonthScore(a);
+    const scoreB = extractYearMonthScore(b);
+    if (scoreB !== scoreA) return scoreB - scoreA;
+    return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+  });
+
+  return sortedData.slice(0, 12);
+});
+
+// Sadece en son 12 Figür Getir (Anasayfa)
+export const getLatestFigures = cache(async (): Promise<RawListFigureDTO[]> => {
+  const supabase = createPublicClient();
+  const { data, error } = await supabase
+    .from('minifigures').select(`${MINIFIGURES_SELECT_FIELDS}, series(id, slug_tr, slug_en, title, title_en, release_year, release_month, series_no)`)
+    .eq('is_published', true)
+    .order('series(release_year)', { ascending: false, nullsFirst: false })
+    .order('series(series_no)', { ascending: false, nullsFirst: false })
+    .order('created_at', { ascending: false })
+    .limit(12);
+
+  if (error) throw error;
+  if (error) throw error;
+  return data as any;
+});
+
+// En Çok Talep Gören 6 Figür (Anasayfa)
+export const getTopDemandedFigures = cache(async (limit = 6) => {
+  const supabase = createPublicClient();
+  const { data, error } = await supabase
+    .from('minifigures').select(`${MINIFIGURES_SELECT_FIELDS}, series(id, slug_tr, slug_en, title, title_en, release_year, release_month)`)
+    .not('demand_score', 'is', null) // Sadece skoru hesaplanmışlar
+    .order('demand_score', { ascending: false })
+    .order('view_count_30d', { ascending: false }) // Eşitlik durumunda etkileşime bak
+    .limit(limit);
+
+  if (error) throw error;
+  return data as any;
+});
+
+// En Değerli 6 Figür (Anasayfa)
+export const getTopValuedFigures = cache(async (limit = 6) => {
+  const supabase = createPublicClient();
+  const { data, error } = await supabase
+    .from('minifigures').select(`${MINIFIGURES_SELECT_FIELDS}, series(id, slug_tr, slug_en, title, title_en, release_year, release_month)`)
+    .not('value_score', 'is', null) // Sadece skoru hesaplanmışlar
+    .order('value_score', { ascending: false })
+    .limit(limit * 2); // Havuzu azıcık geniş tut, tekrarı önlemek için JS ile kırpacağız
+
+  if (error) throw error;
+  return data as any;
+});
+
