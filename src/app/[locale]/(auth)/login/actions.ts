@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from '@/i18n/routing';
 import { redirect as nextRedirect } from 'next/navigation';
 import { headers } from 'next/headers';
-import { signInWithPasswordDal, signUpDal, signOutDal, signInWithOAuthDal } from '@/services/action_dal';
+import { signInWithPasswordDal, signUpDal, signOutDal, signInWithOAuthDal } from '@/services/auth_dal';
 import { checkMultiRateLimit } from '@/lib/rate-limit';
 import { getURL } from '@/utils/helpers';
 
