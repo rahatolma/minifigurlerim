@@ -1068,10 +1068,12 @@
     "RegisterAction": "Kayıt Ol",
     "Home": "Ana Sayfa",
     "Error_invalid_credentials": "Giriş yapılamadı. E-posta ve şifrenizi kontrol edin.",
+    "Error_unconfirmed_email": "E-posta adresiniz henüz doğrulanmamış. Lütfen gelen kutunuzu kontrol edin.",
     "Error_terms_required": "Kullanım koşullarını ve gizlilik politikasını kabul etmeniz gerekmektedir.",
     "Error_registration_failed": "Kayıt sırasında bir hata oluştu.",
     "Error_oauth_failed": "Google ile bağlantı kurulamadı. Lütfen daha sonra tekrar deneyin.",
     "Message_registration_success": "Kayıt başarılı! Lütfen hesabınıza giriş yapın.",
+    "Message_registration_success_verify": "Kaydınız oluşturuldu. Lütfen hesabınızı aktifleştirmek için e-posta adresinize gönderilen onay linkine tıklayın.",
     "CreateAccountFree": "Ücretsiz Hesap Oluştur"
   },
   "CollectionActions": {
