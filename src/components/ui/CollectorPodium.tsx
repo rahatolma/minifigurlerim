@@ -2,16 +2,10 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { useRouter, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 export default function CollectorPodium({ ratings }: { ratings: any[] }) {
     const t = useTranslations('FigurePodium');
-    const router = useRouter();
-    const pathname = usePathname();
-    const handleOpenRating = () => {
-        router.push(`${pathname}?rate=true`, { scroll: false });
-    };
 
     return (
         <div className="w-full bg-white rounded-2xl border border-gray-100 p-6 sm:p-10 shadow-[0_2px_10px_rgba(0,0,0,0.02)] h-full">
@@ -25,13 +19,7 @@ export default function CollectorPodium({ ratings }: { ratings: any[] }) {
             {!ratings || ratings.length === 0 ? (
                 <div className="flex flex-col items-center justify-center bg-gray-50/50 border border-dashed border-gray-200 rounded-xl py-12 px-4 text-center">
                     <h4 className="text-gray-400 font-black text-sm uppercase tracking-widest mb-1">{t('emptyTitle')}</h4>
-                    <p className="text-gray-400 text-xs mb-6">{t('emptyDescription')}</p>
-                    <button 
-                        onClick={handleOpenRating}
-                        className="bg-white border border-gray-200 text-gray-900 hover:border-blue-500 hover:text-blue-600 font-bold text-xs uppercase tracking-widest px-6 py-3 rounded-lg transition-all shadow-sm"
-                    >
-                        {t('cta')}
-                    </button>
+                    <p className="text-gray-400 text-xs">{t('emptyDescription')}</p>
                 </div>
             ) : (
                 <div className="flex flex-col gap-4">
@@ -68,15 +56,6 @@ export default function CollectorPodium({ ratings }: { ratings: any[] }) {
                                 </div>
                             )
                         })}
-                    </div>
-                    
-                    <div className="w-full flex justify-center mt-4">
-                        <button 
-                            onClick={handleOpenRating}
-                            className="bg-white border border-gray-200 text-gray-500 hover:border-blue-500 hover:text-blue-600 font-bold text-[10px] sm:text-xs uppercase tracking-widest px-6 py-3 rounded-lg transition-all"
-                        >
-                            {t('addReview')}
-                        </button>
                     </div>
                 </div>
             )}
