@@ -28,3 +28,25 @@ export function slugify(text: string): string {
     .replace(/-+/g, '-')         // Peşpeşe gelen tireleri tek tire yap
     .replace(/^-|-$/g, '');      // Baş veya sondaki tireleri temizle
 }
+
+/**
+ * Environment-aware URL çözümleyici
+ * Production, Preview ve Localhost ortamları için doğru URL'yi döndürür.
+ */
+export function getURL(): string {
+  let url = 'http://localhost:3004'; // Varsayılan fallback
+
+  if (process.env.VERCEL_ENV === 'production' && process.env.NEXT_PUBLIC_SITE_URL) {
+    url = process.env.NEXT_PUBLIC_SITE_URL;
+  } else if (process.env.VERCEL_URL || process.env.NEXT_PUBLIC_VERCEL_URL) {
+    url = process.env.NEXT_PUBLIC_VERCEL_URL || process.env.VERCEL_URL || url;
+  }
+
+  // Protokolü garantiye al
+  url = url.startsWith('http') ? url : `https://${url}`;
+  
+  // Sondaki slash'i temizle
+  url = url.charAt(url.length - 1) === '/' ? url.slice(0, -1) : url;
+  
+  return url;
+}
