@@ -8,9 +8,21 @@ Bu doküman, projenin üretim, istikrar ve launch (canlıya çıkış) süreçle
 
 - **Current Phase:** Pre-Launch Stabilization & Architectural Debt Resolution
 - **Current Priority:** High-Risk Cache / Dynamic De-opt Prevention (DAL Split)
-- **Current Active Branch:** `refactor/dal-public-private-split` *(Beklemede/Planlanıyor)*
-- **Current Launch Readiness:** %90
+- **Current Active Branch:** `docs/roadmap-sync-after-dal-step1`
+- **Current Launch Readiness:** %92
 - **Current Blockers:** DAL mimarisindeki `cookies()` okuma kirliliği ve Middleware Auth Redirect eksiklikleri.
+
+**Current Risks:**
+- Remaining mixed DAL imports (Katalog dışı sayfalar hala `dal.ts` kullanıyor)
+- Private/Public coexistence (Karma import yapıları devam ediyor)
+- Stale imports risk (Ölü veya eski importların taşınma riski)
+
+**Current Stable Areas:**
+- Catalog Routes (Tamamen statik ve güvenli)
+- Blog Renderer (Stabil)
+- OAuth Preview Flow (Stabil)
+- Rating System (Stabil, Redundant CTA'lar temizlendi)
+- Smoke Workflow (Manuel QA Checklist oluşturuldu)
 
 ---
 
@@ -18,6 +30,15 @@ Bu doküman, projenin üretim, istikrar ve launch (canlıya çıkış) süreçle
 
 *Son dönemde başarıyla production/preview ortamına taşınan operasyonlar:*
 
+- [x] **DAL Public Step 1 Boundary Extraction**
+  - Tarih: `2026-05-11` | Branch: `refactor/dal-public-step-1`
+  - Durum: Merged | Ortam: Production
+- [x] **Public Catalog Routes Static Safety**
+  - Tarih: `2026-05-11` | Branch: `refactor/dal-public-step-1`
+  - Durum: Merged | Ortam: Production
+- [x] **Series Filter Slug Match Fix**
+  - Tarih: `2026-05-11` | Branch: `refactor/dal-public-step-1`
+  - Durum: Merged | Ortam: Production
 - [x] **OAuth Preview Redirect Fix**
   - Tarih: `2026-05-11` | Branch: `fix/oauth-preview-redirect`
   - Durum: Merged | Ortam: Production
@@ -46,13 +67,19 @@ Bu doküman, projenin üretim, istikrar ve launch (canlıya çıkış) süreçle
 
 *Şu an üzerinde çalışılan veya sıraya alınan operasyonlar:*
 
-1. **DAL Public/Private Split (`refactor/dal-public-private-split`)**
-   - **Risk Seviyesi:** CRITICAL (Cache De-opt riski)
+1. **DAL Step 2 Pending (`refactor/dal-public-step-2`)**
+   - **Risk Seviyesi:** MEDIUM (Homepage / Blog migration)
    - **Launch Blocker mı?:** Evet
    - **Owner:** AI Agent & Eng. Lead
    - **Status:** Planlanıyor
 
-2. **Middleware Hard Redirect Guard (`fix/middleware-auth-redirect`)**
+2. **Private/Auth Boundary Migration Pending (`refactor/dal-private-split`)**
+   - **Risk Seviyesi:** CRITICAL
+   - **Launch Blocker mı?:** Evet
+   - **Owner:** AI Agent & Eng. Lead
+   - **Status:** Backlog'da bekliyor
+
+3. **Middleware Hard Redirect Guard (`fix/middleware-auth-redirect`)**
    - **Risk Seviyesi:** MEDIUM (Protected sayfa sızıntısı riski)
    - **Launch Blocker mı?:** Kısmen
    - **Owner:** AI Agent & Eng. Lead
