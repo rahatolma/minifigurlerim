@@ -6,8 +6,7 @@ import { actionLog } from '@/utils/logger';
 import { createClient } from '@/utils/supabase/server';
 import { checkRateLimit } from '@/lib/rate-limit';
 
-// In-memory rate limiter cache to guard against UI-level rapid clicking (Spam guard)
-const softRateLimitCache = new Map<string, number>();
+
 
 interface SeriesRelation {
   slug_tr: string | null;
@@ -58,15 +57,7 @@ export async function toggleCollectionStatus(minifigureId: string, currentStatus
     return { error: 'Koleksiyon işlemleri için hesabınızın yönetici tarafından onaylanması bekleniyor.', code: 'UNAPPROVED_USER' };
   }
 
-  // Rate Limiting (1.5 seconds)
-  const rlKey = `toggle-${user.id}-${minifigureId}`;
-  const now = Date.now();
-  const lastAction = softRateLimitCache.get(rlKey) || 0;
-  if (now - lastAction < 1500) {
-    actionLog('warn', { action: 'toggleCollection_Spam', user_id: user.id, entity_id: minifigureId, success: false, message: 'Rate limit tripped' });
-    return { error: 'Çok hızlı işlem yapıyorsunuz. Lütfen biraz bekleyin.' };
-  }
-  softRateLimitCache.set(rlKey, now);
+
 
   const rl = await checkRateLimit('toggleCollectionStatus', user.id, 30, '1 m');
   if (!rl.success) {
