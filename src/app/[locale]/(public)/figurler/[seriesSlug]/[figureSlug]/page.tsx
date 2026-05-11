@@ -1,4 +1,5 @@
-import { getMinifigureBySlug, getDefinitions, getFiguresBySeries } from '@/services/dal';
+import { getDefinitions } from '@/services/dal';
+import { getMinifigureBySlug, getFiguresBySeries } from '@/services/dal_public';
 import { getSimilarFiguresDal, getFigureRatings } from '@/services/action_dal';
 import { notFound } from 'next/navigation';
 import { Link } from '@/i18n/routing';

@@ -1,4 +1,5 @@
-import { getMinifigureListItems, getMinifigureFilterOptions, getAllSeries, getTotalMinifiguresCount } from '@/services/dal';
+import { getTotalMinifiguresCount } from '@/services/dal';
+import { getMinifigureListItems, getMinifigureFilterOptions, getAllSeries } from '@/services/dal_public';
 import FigureCard from '@/components/ui/FigureCard';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
 import { permanentRedirect } from 'next/navigation';

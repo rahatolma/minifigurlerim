@@ -1,5 +1,5 @@
 import FigureCard from '@/components/ui/FigureCard';
-import { getSeriesBySlug, getFiguresBySeries, getAllSeries } from '@/services/dal';
+import { getSeriesBySlug, getFiguresBySeries, getAllSeries } from '@/services/dal_public';
 import { notFound } from 'next/navigation';
 import { Link } from '@/i18n/routing';
 import RichTextContent from '@/components/ui/RichTextContent';
