@@ -2,6 +2,7 @@ import { getNewsBySlug } from '@/services/dal';
 import { notFound } from 'next/navigation';
 import { Link } from '@/i18n/routing';
 import RichTextContent from '@/components/ui/RichTextContent';
+import BlogBlockRenderer from '@/components/ui/BlogBlockRenderer';
 import { ChevronRight, Calendar, Eye, Share2 } from 'lucide-react';
 import ClientViewTracker from '@/components/ui/ClientViewTracker'; // View tracker (we assume it exists from figures, or I will write a simple one inline)
 import TranslationFallbackBadge from '@/components/ui/TranslationFallbackBadge';
@@ -183,9 +184,9 @@ export default async function NewsDetailPage({
          )}
       </div>
 
-      {/* HABER İÇERİĞİ (RICH TEXT) */}
+      {/* HABER İÇERİĞİ (RICH TEXT VEYA BLOKLAR) */}
       <div className="w-full max-w-7xl mx-auto px-8 mb-16">
-        <RichTextContent html={content || ''} className="prose-lg prose-red text-gray-800 font-medium leading-loose" />
+        <BlogBlockRenderer content={content} />
       </div>
 
 
