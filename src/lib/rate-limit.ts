@@ -79,3 +79,47 @@ export async function checkRateLimit(
     return { success: true };
   }
 }
+
+export type RateLimitTier = {
+  limit: number;
+  window: `${number} s` | `${number} m` | `${number} h` | `${number} d`;
+};
+
+/**
+ * Checks multiple rate limit tiers sequentially for an action
+ * E.g. [{ limit: 20, window: '1 m' }, { limit: 100, window: '10 m' }]
+ */
+export async function checkMultiRateLimit(
+  actionName: string,
+  tiers: RateLimitTier[]
+): Promise<{ success: boolean; error?: string }> {
+  const ip = await getNormalizedIp();
+  const identifier = `${actionName}_${ip}`;
+
+  if (!redis) {
+    console.warn(`[MULTI_RATE_LIMIT_WARNING] Redis ENV missing. Rate limit bypassed for action: ${actionName}, identifier: ${identifier}`);
+    return { success: true };
+  }
+
+  try {
+    for (const tier of tiers) {
+      const ratelimit = new Ratelimit({
+        redis: redis,
+        limiter: Ratelimit.slidingWindow(tier.limit, tier.window),
+        analytics: false,
+      });
+
+      const { success } = await ratelimit.limit(identifier);
+
+      if (!success) {
+        console.warn(`[MULTI_RATE_LIMIT_EXCEEDED] action: ${actionName}, tier: ${tier.limit}/${tier.window}, identifier: ${identifier}`);
+        return { success: false, error: 'rate_limited' };
+      }
+    }
+
+    return { success: true };
+  } catch (error: any) {
+    console.warn(`[MULTI_RATE_LIMIT_ERROR] Failed to check rate limit for action: ${actionName}. Bypassing. Error: ${error.message}`);
+    return { success: true };
+  }
+}
