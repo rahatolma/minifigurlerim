@@ -1,7 +1,8 @@
 import { toRarityOption, toRoleOption, toTypeOption } from '@/services/displayMappers';
 import { getAuthUser } from '@/services/action_dal';
 import { redirect } from 'next/navigation';
-import { getUserProfile, getUserCollectionsWithDetails, getAllSeries, getTotalMinifiguresCount, getUserSeriesStats, getMinifigurePriceHistoryBatch, getMinifigureBySlug } from '@/services/dal';
+import { getUserProfile, getUserCollectionsWithDetails, getUserSeriesStats } from '@/services/dal_private';
+import { getAllSeries, getTotalMinifiguresCount, getMinifigurePriceHistoryBatch, getMinifigureBySlug } from '@/services/dal';
 import { logOut } from '@/app/[locale]/(auth)/login/actions';
 import { Link } from '@/i18n/routing';
 import FigureCard from '@/components/ui/FigureCard';
