@@ -43,11 +43,6 @@ export default async function ResetPasswordPage({
 
       <div className="w-full max-w-lg flex flex-col items-center z-10 gap-5 sm:gap-6 mt-2 sm:mt-0">
         
-        {/* LOGO ALANI */}
-        <Link href="/" className="inline-block hover:opacity-90 transition-opacity">
-           <img src="/images/site-logo.png" alt="Minifigürlerim Logo" className="h-[48px] w-auto drop-shadow-sm" />
-        </Link>
-
         {/* BEYAZ KART BÖLÜMÜ */}
         <div className="w-full bg-white rounded-[2rem] shadow-[0_20px_80px_rgba(0,0,0,0.08)] border border-gray-100 overflow-hidden relative flex flex-col p-6 sm:p-14">
           

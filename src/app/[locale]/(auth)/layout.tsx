@@ -7,7 +7,7 @@ export default function AuthLayout({
 }>) {
   return (
     <>
-      <Header isAuthMode={true} />
+      <Header />
       <main className="w-full min-h-[calc(100vh-60px)] md:min-h-[calc(100vh-75px)]">
         {children}
       </main>
