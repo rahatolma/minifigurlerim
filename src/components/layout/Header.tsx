@@ -12,7 +12,7 @@ import { useAuth } from '@/components/providers/AuthProvider';
 import { useTransition } from 'react';
 import { createClient } from '@/utils/supabase/client';
 
-export default function Header() {
+export default function Header({ isAuthMode = false }: { isAuthMode?: boolean }) {
   const { user, loading } = useAuth();
   const t = useTranslations('Navigation');
   const locale = useLocale();
@@ -87,14 +87,16 @@ export default function Header() {
            
            {/* Masaüstüne özel butonlar */}
            <div className="hidden md:flex items-center gap-4">
-              <LegalNoticeButton className="bg-[#1D2136] text-white font-black py-2.5 px-6 rounded-sm shadow-md hover:bg-[#131627] transition-colors tracking-widest uppercase text-[10px]" />
+              {!isAuthMode && (
+                <LegalNoticeButton className="bg-[#1D2136] text-white font-black py-2.5 px-6 rounded-sm shadow-md hover:bg-[#131627] transition-colors tracking-widest uppercase text-[10px]" />
+              )}
               
               {loading ? (
                 <div className="w-[100px] h-[36px] bg-gray-200 animate-pulse rounded-sm"></div>
               ) : user ? (
                 <div className="relative">
-                   <button onClick={() => setMenuOpen(!menuOpen)} className="bg-gray-100 text-gray-800 font-black py-2.5 px-6 rounded-sm shadow-sm hover:bg-gray-200 border border-gray-200 transition-colors tracking-widest uppercase text-[10px] flex items-center gap-2">
-                      {user.email?.split('@')[0] || t('MyAccount')} ▼
+                    <button onClick={() => setMenuOpen(!menuOpen)} className="bg-gray-100 text-gray-800 font-black py-2.5 px-6 rounded-sm shadow-sm hover:bg-gray-200 border border-gray-200 transition-colors tracking-widest uppercase text-[10px] flex items-center gap-2">
+                      {user.user_metadata?.full_name || user.user_metadata?.name || 'Koleksiyoner'} ▼
                    </button>
                    
                    {menuOpen && (
@@ -102,6 +104,11 @@ export default function Header() {
                        <div className="fixed inset-0 z-50" onClick={() => setMenuOpen(false)}></div>
                        <div className="absolute right-0 top-full pt-2 z-[60]" style={{ width: '200px' }}>
                           <div className="bg-white border border-gray-100 shadow-xl rounded-xl flex flex-col py-2">
+                              {user.email && (
+                                <div className="px-4 pb-2 pt-1 mb-1 border-b border-gray-100 text-[10px] text-gray-400 break-all">
+                                  {user.email}
+                                </div>
+                              )}
                               <Link onClick={() => setMenuOpen(false)} href="/koleksiyonum" className="px-4 py-2 hover:bg-gray-50 text-xs font-bold text-gray-700">{t('MyCollection')}</Link>
                               <Link onClick={() => setMenuOpen(false)} href="/koleksiyonum/ayarlar" className="px-4 py-2 hover:bg-gray-50 text-xs font-bold text-gray-700">{t('Settings')}</Link>
                               <div className="w-full h-px bg-gray-100 my-1"></div>
@@ -113,40 +120,42 @@ export default function Header() {
                      </>
                    )}
                 </div>
-              ) : (
+              ) : !isAuthMode ? (
                 <Link href="/login" className="bg-gray-100 text-gray-800 font-black py-2.5 px-6 rounded-sm shadow-sm hover:bg-gray-200 border border-gray-200 transition-colors tracking-widest uppercase text-[10px]">
                    {t('Login')}
                 </Link>
-              )}
+              ) : null}
            </div>
         </div>
       </div>
     </header>
 
       {/* Bottom Tier: Navigation (SADECE MASAÜSTÜNDE GÖRÜNÜR MDC) */}
-      <nav className={`hidden md:block w-full shadow-md sticky top-0 z-[60] transition-colors duration-300 ${isSticky ? 'bg-[#F2CD37]' : 'bg-[var(--color-brand-red)]'}`}>
-        <div className="mx-auto max-w-7xl flex items-center h-[75px] relative">
-          {/* Nav Links */}
-          <nav className="w-full h-full flex items-center justify-center px-8">
-            <ul className="flex items-center justify-between w-full text-[15px] font-bold tracking-wide h-full">
-              <li><Link href="/" className={`block ${getLinkClass('/')}`}>{t('Home')}</Link></li>
-              <li><Link href="/seriler" className={`block ${getLinkClass('/seriler')}`}>{t('Series')}</Link></li>
-              <li><Link href="/figurler" className={`block ${getLinkClass('/figurler')}`}>{t('Figures')}</Link></li>
-              <li><Link href="/lego-hakkinda" className={`block ${getLinkClass('/lego-hakkinda')}`}>{t('AboutLego')}</Link></li>
-              <li className="group relative">
-                <Link href="/hakkimizda" className={`flex items-center gap-1 ${getLinkClass('/hakkimizda')}`}>
-                  {t('AboutUs')}
-                </Link>
-              </li>
-              <li><Link href="/haberler" className={`block ${getLinkClass('/haberler')}`}>{t('Blog')}</Link></li>
-              <li><Link href="/iletisim" className={`block ${getLinkClass('/iletisim')}`}>{t('Contact')}</Link></li>
-            </ul>
-          </nav>
-        </div>
-      </nav>
+      {!isAuthMode && (
+        <nav className={`hidden md:block w-full shadow-md sticky top-0 z-[60] transition-colors duration-300 ${isSticky ? 'bg-[#F2CD37]' : 'bg-[var(--color-brand-red)]'}`}>
+          <div className="mx-auto max-w-7xl flex items-center h-[75px] relative">
+            {/* Nav Links */}
+            <nav className="w-full h-full flex items-center justify-center px-8">
+              <ul className="flex items-center justify-between w-full text-[15px] font-bold tracking-wide h-full">
+                <li><Link href="/" className={`block ${getLinkClass('/')}`}>{t('Home')}</Link></li>
+                <li><Link href="/seriler" className={`block ${getLinkClass('/seriler')}`}>{t('Series')}</Link></li>
+                <li><Link href="/figurler" className={`block ${getLinkClass('/figurler')}`}>{t('Figures')}</Link></li>
+                <li><Link href="/lego-hakkinda" className={`block ${getLinkClass('/lego-hakkinda')}`}>{t('AboutLego')}</Link></li>
+                <li className="group relative">
+                  <Link href="/hakkimizda" className={`flex items-center gap-1 ${getLinkClass('/hakkimizda')}`}>
+                    {t('AboutUs')}
+                  </Link>
+                </li>
+                <li><Link href="/haberler" className={`block ${getLinkClass('/haberler')}`}>{t('Blog')}</Link></li>
+                <li><Link href="/iletisim" className={`block ${getLinkClass('/iletisim')}`}>{t('Contact')}</Link></li>
+              </ul>
+            </nav>
+          </div>
+        </nav>
+      )}
       
       {/* Global Yasal Uyarı Modalı */}
-      <LegalNoticeModal />
+      {!isAuthMode && <LegalNoticeModal />}
     </>
   );
 }
