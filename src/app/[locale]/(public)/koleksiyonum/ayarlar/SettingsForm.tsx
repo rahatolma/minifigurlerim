@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { updateProfile, updatePassword } from './actions';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import PasswordInput from '@/components/ui/PasswordInput';
 
 export default function SettingsForm({ initialData }: { initialData: any }) {
   const router = useRouter();
@@ -108,23 +109,21 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
           <form onSubmit={handlePasswordUpdate} className="space-y-5">
               <div className="space-y-1">
                   <label className="text-[11px] font-black uppercase tracking-widest text-gray-500">{t('newPassword')}</label>
-                  <input 
-                      type="password" 
+                  <PasswordInput 
+                      id="new_password"
                       name="new_password"
-                      className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-bold px-4 py-3 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all" 
                       placeholder={t('passwordPlaceholder')} 
-                      required
+                      required={true}
                   />
               </div>
 
               <div className="space-y-1">
                   <label className="text-[11px] font-black uppercase tracking-widest text-gray-500">{t('newPasswordConfirm')}</label>
-                  <input 
-                      type="password" 
+                  <PasswordInput 
+                      id="confirm_password"
                       name="confirm_password"
-                      className="w-full bg-gray-50 border border-gray-200 text-gray-900 font-bold px-4 py-3 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all" 
                       placeholder={t('confirmPlaceholder')} 
-                      required
+                      required={true}
                   />
               </div>
 

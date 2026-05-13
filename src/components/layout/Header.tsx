@@ -10,6 +10,7 @@ import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import { useTranslations, useLocale } from 'next-intl';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useTransition } from 'react';
+import { createClient } from '@/utils/supabase/client';
 
 export default function Header() {
   const { user, loading } = useAuth();
@@ -23,7 +24,15 @@ export default function Header() {
 
   const handleLogout = () => {
       startTransition(async () => {
-         await logOut(locale);
+         try {
+           const supabase = createClient();
+           await supabase.auth.signOut();
+           await logOut(locale);
+         } catch (error) {
+           // If redirect throws, let it pass. For safety, we can hard reload if needed.
+           // But since AuthProvider now listens to pathname, soft navigation is fine.
+           throw error;
+         }
       });
   };
 

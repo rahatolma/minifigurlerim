@@ -85,12 +85,19 @@ Bu doküman, projenin üretim, istikrar ve launch (canlıya çıkış) süreçle
    - **Owner:** AI Agent & Eng. Lead
    - **Status:** Backlog'da bekliyor
 
+4. **Auth Onboarding Stabilization (`fix/auth-onboarding-stabilization`)**
+   - **Risk Seviyesi:** HIGH
+   - **Launch Blocker mı?:** Hayır (Dead-end'leri giderdi, PR aşamasında)
+   - **Owner:** AI Agent & Eng. Lead
+   - **Status:** Preview Smoke Test Bekliyor
+
 ---
 
 ## 4. LAUNCH BLOCKERS
 
 *Sadece projeyi canlıya almayı **durduran** acil maddeler:*
 
+- [ ] **Auth Reset Password Completion (`fix/auth-reset-password-completion`):** Kullanıcının maildeki reset linkine tıklayıp yeni şifresini güvenle belirleyeceği "Şifre Sıfırlama Tamamlama" ekranının oluşturulması (Onboarding dead-end'i tamamen kapatmak için).
 - [ ] **DAL Split Migration:** `getAuthUserProfile()` gibi `cookies()` okuyan servislerin, public sayfaları gizlice `force-dynamic`'e düşürmemesi için `dal_public.ts` ve `dal_private.ts` olarak ayrıştırılması.
 
 ---
