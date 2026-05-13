@@ -2,6 +2,7 @@ import { login, signup, signInWithGoogle } from './actions';
 import { Link } from '@/i18n/routing';
 import { getTranslations } from 'next-intl/server';
 import AuthSubmitButton from '@/components/ui/AuthSubmitButton';
+import PasswordInput from '@/components/ui/PasswordInput';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const resolvedParams = await params;
@@ -103,19 +104,17 @@ export default async function LoginPage({
               <div className="flex items-center justify-between mb-1.5">
                   <label className="block text-[11px] font-black text-gray-700 uppercase tracking-widest" htmlFor="password">{t('PasswordLabel')}</label>
               </div>
-              <input
+              <PasswordInput
                 id="password"
-                type="password"
                 name="password"
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-medium outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all text-black placeholder:text-gray-400"
                 placeholder="••••••••"
-                required
+                required={true}
               />
-              {!isRegister && (
+              {/* {!isRegister && (
                   <div className="text-right mt-2">
                        <Link href={"#" as any} className="text-[11px] font-bold text-gray-500 hover:text-black transition-colors">{t('ForgotPassword')}</Link>
                   </div>
-              )}
+              )} */}
             </div>
 
             {isRegister ? (

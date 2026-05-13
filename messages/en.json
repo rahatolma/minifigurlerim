@@ -1069,10 +1069,12 @@
     "RegisterAction": "Register",
     "Home": "Home",
     "Error_invalid_credentials": "Login failed. Please check your email and password.",
+    "Error_unconfirmed_email": "Your email address is not verified yet. Please check your inbox.",
     "Error_terms_required": "You must accept the terms of use and privacy policy.",
     "Error_registration_failed": "An error occurred during registration.",
     "Error_oauth_failed": "Failed to connect with Google. Please try again later.",
     "Message_registration_success": "Registration successful! Please log in to your account.",
+    "Message_registration_success_verify": "Your account has been created. Please click the confirmation link sent to your email to activate it.",
     "CreateAccountFree": "Create Account for Free"
   },
   "CollectionActions": {
