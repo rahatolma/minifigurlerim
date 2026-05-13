@@ -1094,7 +1094,7 @@
     "Error_passwords_mismatch": "Passwords do not match.",
     "Error_password_too_short": "Password must be at least 8 characters.",
     "Error_weak_password": "Please ensure your password meets all security requirements.",
-    "PasswordPolicy_title": "Password Requirements:",
+    "PasswordPolicy_title": "Create a strong password:",
     "PasswordPolicy_minLength": "At least 8 characters",
     "PasswordPolicy_uppercase": "At least 1 uppercase letter",
     "PasswordPolicy_lowercase": "At least 1 lowercase letter",
