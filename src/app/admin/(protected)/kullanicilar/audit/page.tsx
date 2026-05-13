@@ -86,7 +86,15 @@ export default async function AuditLogsPage({
               </thead>
               <tbody>
                  {logs?.length === 0 && (
-                    <tr><td colSpan={5} className="py-10 text-center text-sm text-gray-400">Log kaydı bulunamadı.</td></tr>
+                    <tr>
+                       <td colSpan={5} className="py-16 text-center">
+                          <div className="flex flex-col items-center justify-center">
+                             <svg className="w-12 h-12 text-gray-200 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                             <p className="text-gray-500 font-medium">Bu kriterlere uygun audit log kaydı bulunamadı.</p>
+                             <p className="text-xs text-gray-400 mt-1">Sistem henüz hiç kritik işlem kaydetmemiş olabilir veya filtreler çok dar olabilir.</p>
+                          </div>
+                       </td>
+                    </tr>
                  )}
                  {logs?.map((log: any) => {
                     const dateObj = new Date(log.created_at);
