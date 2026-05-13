@@ -1144,6 +1144,7 @@
     "changePassword": "Şifreyi Değiştir",
     "SUCCESS_PASSWORD_UPDATED": "Şifren güvenli bir şekilde güncellendi!",
     "ERROR_PASSWORD_TOO_SHORT": "Şifreniz en az 6 karakter olmalıdır.",
+    "Error_same_password": "Yeni şifreniz eski şifrenizle aynı olamaz.",
     "ERROR_TIMEOUT": "Şifre güncellenirken zaman aşımı yaşandı.",
     "ERROR_UPDATE_FAILED": "Şifre güncellenemedi, mevcut şifreniz geçerliliğini koruyor.",
     "ERROR_UNKNOWN": "Bilinmeyen bir hata oluştu.",

@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Link, usePathname } from '@/i18n/routing';
+import { Link, usePathname, useRouter } from '@/i18n/routing';
 import { Search } from 'lucide-react';
-import { logOut } from '@/app/[locale]/(auth)/login/actions';
 import LegalNoticeButton from '@/components/ui/LegalNoticeButton';
 import LegalNoticeModal from '@/components/ui/LegalNoticeModal';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
@@ -19,21 +18,20 @@ export default function Header() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
+  const router = useRouter();
 
   const [isPending, startTransition] = useTransition();
 
-  const handleLogout = () => {
-      startTransition(async () => {
-         try {
-           const supabase = createClient();
-           await supabase.auth.signOut();
-           await logOut(locale);
-         } catch (error) {
-           // If redirect throws, let it pass. For safety, we can hard reload if needed.
-           // But since AuthProvider now listens to pathname, soft navigation is fine.
-           throw error;
-         }
-      });
+  const handleLogout = async () => {
+      try {
+          const supabase = createClient();
+          await supabase.auth.signOut();
+          setMenuOpen(false);
+          router.replace('/');
+          router.refresh();
+      } catch (error) {
+          console.error("Logout error", error);
+      }
   };
 
   useEffect(() => {

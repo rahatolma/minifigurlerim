@@ -97,6 +97,8 @@ scratch*
 scratch/
 _scratch/
 _archive/
+scripts/ops/
+scripts/*.mjs
 *.log
 *.tmp
 *_output.txt
