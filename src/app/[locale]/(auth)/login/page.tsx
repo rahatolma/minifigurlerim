@@ -44,7 +44,7 @@ export default async function LoginPage({
   const forgotWithLocale = forgotPassword.bind(null, locale);
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] flex items-center justify-center p-4 sm:p-8 relative overflow-hidden pb-32 md:pb-8">
+    <div className="min-h-[calc(100vh-150px)] bg-[#F5F7FA] flex justify-center px-4 sm:px-8 py-8 sm:py-12 relative overflow-hidden pb-32 md:pb-8">
       
       {/* İnce bir arka plan deseni */}
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03] pointer-events-none"></div>
@@ -53,9 +53,6 @@ export default async function LoginPage({
         
         {/* BEYAZ KART BÖLÜMÜ */}
         <div className="w-full bg-white rounded-[2rem] shadow-[0_20px_80px_rgba(0,0,0,0.08)] border border-gray-100 overflow-hidden relative flex flex-col md:flex-row">
-        
-        {/* Dekoratif Çizgi (Üst) */}
-        <div className="absolute top-0 left-0 right-0 h-1.5 sm:h-2 w-full bg-gradient-to-r from-[#D22B2B] via-yellow-400 to-[#1D2136]"></div>
         
         {/* SOL TARAF: Formlar */}
         <div className={`w-full md:w-1/2 p-6 sm:p-14 border-b-0 md:border-r border-gray-100 flex-col justify-center ${currentView === 'social' ? 'hidden md:flex' : 'flex'}`}>
