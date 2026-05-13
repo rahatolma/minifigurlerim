@@ -16,7 +16,7 @@ export default function CollectionActions({ minifigureId, trackingProps }: { min
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { user } = useAuth();
-  const { userStatusMap, updateStatus: setGlobalStatus } = useGamification();
+  const { userStatusMap, updateStatus: setGlobalStatus, refreshStats } = useGamification();
   const isLoggedIn = !!user;
   const tCard = useTranslations('FigureCard');
   const tAction = useTranslations('CollectionActions');
@@ -98,6 +98,7 @@ export default function CollectionActions({ minifigureId, trackingProps }: { min
              if (optimisticStatus === 'want') trackAddToWatchlist({ ...trackingProps, route: pathname });
              else trackRemoveFromWatchlist({ ...trackingProps, route: pathname });
          }
+         refreshStats();
       }
     } catch (err) {
        // ROLLBACK ON CRITICAL ERROR

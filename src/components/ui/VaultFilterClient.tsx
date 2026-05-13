@@ -48,6 +48,14 @@ export default function VaultFilterClient({
         params.set(name, value);
     }
 
+    // Aktif tab (status) değişince seri/rol gibi alt filtreleri resetle
+    if (name === 'status') {
+        params.delete('series');
+        params.delete('role');
+        params.delete('type');
+        params.delete('rarity');
+    }
+
     router.push(`/koleksiyonum?${params.toString()}` as any, { scroll: false });
 
     setTimeout(() => {

@@ -36,7 +36,7 @@ export default function FigureCard(props: FigureCardData) {
   
   const router = useRouter();
   const { user } = useAuth();
-  const { userStatusMap, updateStatus: setGlobalStatus } = useGamification();
+  const { userStatusMap, updateStatus: setGlobalStatus, refreshStats } = useGamification();
   
   const initialStatus = userStatusMap[id] || null;
   const isLoggedIn = !!user;
@@ -98,6 +98,8 @@ export default function FigureCard(props: FigureCardData) {
               } else {
                   toast.error(result.error || 'Bir hata oluştu. Lütfen tekrar deneyin.');
               }
+          } else {
+              refreshStats();
           }
       } catch (err) {
           // ROLLBACK ON CRITICAL ERROR
