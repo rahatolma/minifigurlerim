@@ -31,31 +31,31 @@ export default function Sidebar() {
           <Link href="/admin" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-bold transition-colors ${pathname === '/admin' ? 'bg-[#111] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-gray-50'}`}>Dashboard</Link>
           
           <div className="mt-6 mb-1">
-            <p className="text-[10px] text-gray-400 font-bold px-4 tracking-widest uppercase">Kullanıcılar</p>
+            <p className="text-[10px] text-gray-400 font-bold px-4 tracking-widest uppercase">İçerik</p>
           </div>
-          <Link href="/admin/kullanicilar" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-bold transition-colors ${pathname?.startsWith('/admin/kullanicilar') ? 'bg-[#111] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-gray-50'}`}>Kullanıcı Yönetimi</Link>
-          <Link href="/admin/hakkimizda" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-bold transition-colors ${pathname === '/admin/hakkimizda' ? 'bg-[#111] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-gray-50'}`}>Hakkımızda</Link>
-          <Link href="/admin/haberler" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-bold transition-colors ${pathname?.startsWith('/admin/haberler') ? 'bg-[#111] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-gray-50'}`}>Haberler</Link>
-          <Link href="/admin/sss" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-bold transition-colors ${pathname?.startsWith('/admin/sss') ? 'bg-[#111] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-gray-50'}`}>Sıkça Sorular</Link>
-
-          <div className="mt-6 mb-1">
-            <p className="text-[10px] text-gray-400 font-bold px-4 tracking-widest uppercase">Özellikler</p>
-          </div>
-          <Link href="/admin/tanimlar" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-bold transition-colors ${pathname?.startsWith('/admin/tanimlar') ? 'bg-[#111] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-gray-50'}`}>Özellikler</Link>
           <Link href="/admin/seriler" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-bold transition-colors ${pathname?.startsWith('/admin/seriler') ? 'bg-[#111] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-gray-50'}`}>Seriler</Link>
           <Link href="/admin/figurler" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-bold transition-colors ${pathname?.startsWith('/admin/figurler') ? 'bg-[#111] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-gray-50'}`}>Figürler</Link>
-          <Link href="/admin/borsa" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-black tracking-wide transition-colors ${pathname?.startsWith('/admin/borsa') ? 'bg-green-600 text-white shadow-sm' : 'text-green-600 hover:text-green-700 hover:bg-green-50'}`}>Borsa</Link>
+          <Link href="/admin/haberler" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-bold transition-colors ${pathname?.startsWith('/admin/haberler') ? 'bg-[#111] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-gray-50'}`}>Haberler</Link>
+          <Link href="/admin/hakkimizda" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-bold transition-colors ${pathname === '/admin/hakkimizda' ? 'bg-[#111] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-gray-50'}`}>Hakkımızda</Link>
           <Link href="/admin/slaytlar" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-bold transition-colors ${pathname?.startsWith('/admin/slaytlar') ? 'bg-[#111] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-gray-50'}`}>Slaytlar</Link>
 
           <div className="mt-6 mb-1">
-            <p className="text-[10px] text-gray-400 font-bold px-4 tracking-widest uppercase">İletişim</p>
+            <p className="text-[10px] text-gray-400 font-bold px-4 tracking-widest uppercase">Koleksiyon Verisi</p>
           </div>
-          <Link href="/admin/mesajlar" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-bold transition-colors ${pathname?.startsWith('/admin/mesajlar') ? 'bg-[#111] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-gray-50'}`}>Gelen Mesajlar</Link>
+          <Link href="/admin/tanimlar" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-bold transition-colors ${pathname?.startsWith('/admin/tanimlar') ? 'bg-[#111] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-gray-50'}`}>Tanımlar</Link>
+          <Link href="/admin/borsa" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-bold transition-colors ${pathname?.startsWith('/admin/borsa') ? 'bg-green-600 text-white shadow-sm' : 'text-green-600 hover:text-green-700 hover:bg-green-50'}`}>Fiyat / Affiliate</Link>
 
           <div className="mt-6 mb-1">
-            <p className="text-[10px] text-gray-400 font-bold px-4 tracking-widest uppercase">Ayarlar</p>
+            <p className="text-[10px] text-gray-400 font-bold px-4 tracking-widest uppercase">Kitle & İletişim</p>
           </div>
-          <Link href="/admin/settings" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-bold transition-colors ${pathname?.startsWith('/admin/settings') ? 'bg-[#111] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-gray-50'}`}>Authentication</Link>
+          <Link href="/admin/mesajlar" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-bold transition-colors ${pathname?.startsWith('/admin/mesajlar') ? 'bg-[#111] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-gray-50'}`}>Gelen Mesajlar</Link>
+          <Link href="/admin/aboneler" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-bold transition-colors ${pathname?.startsWith('/admin/aboneler') ? 'bg-[#111] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-gray-50'}`}>Bülten Aboneleri</Link>
+
+          <div className="mt-6 mb-1">
+            <p className="text-[10px] text-gray-400 font-bold px-4 tracking-widest uppercase">Sistem</p>
+          </div>
+          <Link href="/admin/kullanicilar" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-bold transition-colors ${pathname?.startsWith('/admin/kullanicilar') && !pathname?.startsWith('/admin/kullanicilar/audit') ? 'bg-[#111] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-gray-50'}`}>Kullanıcı Yönetimi</Link>
+          <Link href="/admin/kullanicilar/audit" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-bold transition-colors ${pathname?.startsWith('/admin/kullanicilar/audit') ? 'bg-[#111] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-gray-50'}`}>Audit Logları</Link>
         </nav>
       </aside>
   )
