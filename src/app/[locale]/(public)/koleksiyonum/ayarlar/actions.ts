@@ -98,8 +98,14 @@ export async function updatePassword(formData: FormData) {
        console.error(JSON.stringify({ code: 'PASSWORD_UPDATE_TIMEOUT', message: 'Action timed out after 8s', userId: user.id }));
        return { error: 'ERROR_TIMEOUT' };
     }
+    
+    // Check if new password is same as old password
+    if (err.message && (err.message.includes('different from the old password') || err.message.includes('same password'))) {
+       return { error: 'Error_same_password' };
+    }
+
     console.error(JSON.stringify({ code: 'PASSWORD_UPDATE_FAILED', error: err.message, userId: user.id }));
-    return { error: 'Error_update_failed' };
+    return { error: 'ERROR_UPDATE_FAILED' };
   }
 }
 

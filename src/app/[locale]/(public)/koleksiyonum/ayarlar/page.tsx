@@ -60,7 +60,10 @@ export default async function AyarlarPage() {
             {/* SAĞ İÇERİK (FORMLAR) */}
             <main className="flex-1 w-full min-w-0">
                {/* Client form component */}
-               <SettingsForm initialData={profile ? { ...profile, email: user.email } : { email: user.email }} />
+               <SettingsForm 
+                   initialData={profile ? { ...profile, email: user.email } : { email: user.email }} 
+                   isOAuthUser={user.app_metadata?.providers?.includes('google')}
+               />
             </main>
         </div>
     </div>

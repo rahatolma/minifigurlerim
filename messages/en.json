@@ -1145,6 +1145,7 @@
     "changePassword": "Change Password",
     "SUCCESS_PASSWORD_UPDATED": "Your password has been securely updated!",
     "ERROR_PASSWORD_TOO_SHORT": "Your password must be at least 6 characters.",
+    "Error_same_password": "New password cannot be the same as the old password.",
     "ERROR_TIMEOUT": "A timeout occurred while updating password.",
     "ERROR_UPDATE_FAILED": "Password could not be updated, your current password remains valid.",
     "ERROR_UNKNOWN": "An unknown error occurred.",
