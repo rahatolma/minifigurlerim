@@ -31,3 +31,10 @@ export const signInWithOAuthDal = async (provider: any, redirectTo: string) => {
     options: { redirectTo },
   });
 };
+
+export const resetPasswordForEmailDal = async (email: string, redirectTo: string) => {
+  const supabase = await createClient();
+  return supabase.auth.resetPasswordForEmail(email, {
+    redirectTo,
+  });
+};

@@ -1,4 +1,4 @@
-import { login, signup, signInWithGoogle } from './actions';
+import { login, signup, signInWithGoogle, forgotPassword } from './actions';
 import { Link } from '@/i18n/routing';
 import { getTranslations } from 'next-intl/server';
 import AuthSubmitButton from '@/components/ui/AuthSubmitButton';
@@ -37,7 +37,10 @@ export default async function LoginPage({
   
   const isRegister = resolvedParams?.type === 'register';
   const isSocial = resolvedParams?.type === 'social';
-  const currentView = isSocial ? 'social' : (isRegister ? 'register' : 'login');
+  const isForgot = resolvedParams?.type === 'forgot';
+  const isSuccessState = successMsgKey === 'registration_success_verify';
+  const currentView = isSuccessState ? 'success_state' : (isForgot ? 'forgot' : (isSocial ? 'social' : (isRegister ? 'register' : 'login')));
+  const forgotWithLocale = forgotPassword.bind(null, locale);
 
   return (
     <div className="min-h-screen bg-[#F5F7FA] flex items-center justify-center p-4 sm:p-8 relative overflow-hidden pb-32 md:pb-8">
@@ -64,102 +67,157 @@ export default async function LoginPage({
         {/* Dekoratif Çizgi (Üst) */}
         <div className="absolute top-0 left-0 right-0 h-1.5 sm:h-2 w-full bg-gradient-to-r from-[#D22B2B] via-yellow-400 to-[#1D2136]"></div>
         
-        {/* SOL TARAF: Geleneksel Giriş / Kayıt */}
+        {/* SOL TARAF: Formlar */}
         <div className={`w-full md:w-1/2 p-6 sm:p-14 border-b-0 md:border-r border-gray-100 flex-col justify-center ${currentView === 'social' ? 'hidden md:flex' : 'flex'}`}>
-          <div className="mb-6 sm:mb-8">
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tighter text-gray-900 mb-1.5 sm:mb-2">
-              {isRegister ? t('RegisterTitle') : t('LoginTitle')}
-            </h1>
-            <p className="text-gray-500 text-[15px] font-medium leading-relaxed">
-              {isRegister ? t('RegisterDesc') : t('LoginDesc')}
-            </p>
-          </div>
-
-          {errorMsg && (
-            <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm font-bold mb-6 border border-red-100 shadow-sm animate-pulse-once flex items-center gap-2">
-              <span className="text-xl leading-none">•</span> {errorMsg}
-            </div>
-          )}
-
-          {successMsg && (
-            <div className="bg-green-50 text-green-700 p-4 rounded-xl text-sm font-bold mb-6 border border-green-100 shadow-sm flex items-center gap-2">
-              <span className="text-xl leading-none">✓</span> {successMsg}
-            </div>
-          )}
-
-          <form className="space-y-5" action={isRegister ? signupWithLocale : loginWithLocale}>
-            <div>
-              <label className="block text-[11px] font-black text-gray-700 mb-1.5 uppercase tracking-widest" htmlFor="email">{t('EmailLabel')}</label>
-              <input
-                id="email"
-                type="email"
-                name="email"
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-medium outline-none focus:border-[#D22B2B] focus:ring-1 focus:ring-[#D22B2B] transition-all text-black placeholder:text-gray-400"
-                placeholder={t('EmailPlaceholder')}
-                required
-              />
-            </div>
-            
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-[11px] font-black text-gray-700 uppercase tracking-widest" htmlFor="password">{t('PasswordLabel')}</label>
+          
+          {isSuccessState ? (
+            <div className="flex flex-col items-center justify-center text-center space-y-6 py-10">
+              <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center text-green-500 mb-2">
+                <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
               </div>
-              <PasswordInput
-                id="password"
-                name="password"
-                placeholder="••••••••"
-                required={true}
-              />
-              {/* {!isRegister && (
-                  <div className="text-right mt-2">
-                       <Link href={"#" as any} className="text-[11px] font-bold text-gray-500 hover:text-black transition-colors">{t('ForgotPassword')}</Link>
-                  </div>
-              )} */}
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tighter text-gray-900">{t('SignupSuccessTitle')}</h1>
+              <p className="text-gray-500 text-[15px] font-medium leading-relaxed max-w-sm">{t('SignupSuccessDesc')}</p>
+              <Link href={"/login" as any} className="mt-4 px-8 py-3 bg-gray-50 hover:bg-gray-100 text-gray-800 text-sm font-black rounded-xl transition-all shadow-sm border border-gray-200">
+                {t('BackToLogin')}
+              </Link>
             </div>
+          ) : isForgot ? (
+            <>
+              <div className="mb-6 sm:mb-8">
+                <h1 className="text-2xl sm:text-3xl font-black tracking-tighter text-gray-900 mb-1.5 sm:mb-2">{t('ForgotTitle')}</h1>
+                <p className="text-gray-500 text-[15px] font-medium leading-relaxed">{t('ForgotDesc')}</p>
+              </div>
 
-            {isRegister ? (
-              <div className="flex flex-col gap-1.5 mt-2 mb-4">
-                <label className="flex items-start gap-3 cursor-pointer group">
-                  <input type="checkbox" name="terms" required className="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#D22B2B] focus:ring-[#D22B2B] transition-colors cursor-pointer" />
-                  <span className="text-[12px] text-gray-600 font-medium leading-snug">
-                    {t.rich('TermsAgreement', {
-                      terms: (chunks) => <Link href="/yasal/kullanim-kosullari" className="text-[#D22B2B] font-bold hover:underline" target="_blank">{chunks}</Link>,
-                      privacy: (chunks) => <Link href="/yasal/gizlilik-politikasi" className="text-[#D22B2B] font-bold hover:underline" target="_blank">{chunks}</Link>,
-                      membership: (chunks) => <Link href="/yasal/uyelik-sozlesmesi" className="text-[#D22B2B] font-bold hover:underline" target="_blank">{chunks}</Link>
-                    })}
-                  </span>
-                </label>
-                <p className="text-[10px] text-gray-400 font-bold tracking-wide pl-7">
-                  {t('FreeMembership')}
+              {errorMsg && (
+                <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm font-bold mb-6 border border-red-100 shadow-sm animate-pulse-once flex items-center gap-2">
+                  <span className="text-xl leading-none">•</span> {errorMsg}
+                </div>
+              )}
+
+              {successMsg && (
+                <div className="bg-green-50 text-green-700 p-4 rounded-xl text-sm font-bold mb-6 border border-green-100 shadow-sm flex items-center gap-2">
+                  <span className="text-xl leading-none">✓</span> {successMsg}
+                </div>
+              )}
+
+              <form className="space-y-5" action={forgotWithLocale}>
+                <div>
+                  <label className="block text-[11px] font-black text-gray-700 mb-1.5 uppercase tracking-widest" htmlFor="email">{t('EmailLabel')}</label>
+                  <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-medium outline-none focus:border-[#D22B2B] focus:ring-1 focus:ring-[#D22B2B] transition-all text-black placeholder:text-gray-400"
+                    placeholder={t('EmailPlaceholder')}
+                    required
+                  />
+                </div>
+                
+                <AuthSubmitButton isRegister={false} locale={locale} label={t('SendResetLinkBtn')} />
+                
+                <div className="mt-6 text-center">
+                   <Link href={"/login" as any} className="text-[12px] font-bold text-gray-500 hover:text-black transition-colors">{t('BackToLogin')}</Link>
+                </div>
+              </form>
+            </>
+          ) : (
+            <>
+              <div className="mb-6 sm:mb-8">
+                <h1 className="text-2xl sm:text-3xl font-black tracking-tighter text-gray-900 mb-1.5 sm:mb-2">
+                  {isRegister ? t('RegisterTitle') : t('LoginTitle')}
+                </h1>
+                <p className="text-gray-500 text-[15px] font-medium leading-relaxed">
+                  {isRegister ? t('RegisterDesc') : t('LoginDesc')}
                 </p>
               </div>
-            ) : null}
 
-            <AuthSubmitButton isRegister={isRegister} locale={locale} label={isRegister ? t('CreateAccountFree') : t('LoginBtn')} />
-            
-          </form>
+              {errorMsg && (
+                <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm font-bold mb-6 border border-red-100 shadow-sm animate-pulse-once flex items-center gap-2">
+                  <span className="text-xl leading-none">•</span> {errorMsg}
+                </div>
+              )}
 
-          {!isRegister ? (
-            <div className="mt-6 flex justify-center w-full">
-              <p className="text-[11px] text-center text-gray-400 font-bold flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                {t('DataSafe')}
-              </p>
-            </div>
-          ) : null}
+              {successMsg && (
+                <div className="bg-green-50 text-green-700 p-4 rounded-xl text-sm font-bold mb-6 border border-green-100 shadow-sm flex items-center gap-2">
+                  <span className="text-xl leading-none">✓</span> {successMsg}
+                </div>
+              )}
 
-          <div className="hidden md:flex mt-8 text-center pt-8 border-t border-gray-100 flex-col gap-3 items-center">
-            <p className="text-[13px] font-bold text-gray-500">
-              {isRegister ? t('AlreadyHaveAccount') : t('DontHaveCollection')}
-            </p>
-            <Link 
-              href={(isRegister ? '/login' : '/login?type=register') as any} 
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gray-50 hover:bg-gray-100 text-[#D22B2B] text-sm font-black rounded-xl transition-all shadow-sm border border-gray-200"
-            >
-              {isRegister ? t('LoginAction') : t('RegisterAction')}
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-            </Link>
-          </div>
+              <form className="space-y-5" action={isRegister ? signupWithLocale : loginWithLocale}>
+                <div>
+                  <label className="block text-[11px] font-black text-gray-700 mb-1.5 uppercase tracking-widest" htmlFor="email">{t('EmailLabel')}</label>
+                  <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-medium outline-none focus:border-[#D22B2B] focus:ring-1 focus:ring-[#D22B2B] transition-all text-black placeholder:text-gray-400"
+                    placeholder={t('EmailPlaceholder')}
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                      <label className="block text-[11px] font-black text-gray-700 uppercase tracking-widest" htmlFor="password">{t('PasswordLabel')}</label>
+                  </div>
+                  <PasswordInput
+                    id="password"
+                    name="password"
+                    placeholder="••••••••"
+                    required={true}
+                  />
+                  {!isRegister && (
+                      <div className="text-right mt-2">
+                           <Link href={"/login?type=forgot" as any} className="text-[11px] font-bold text-gray-500 hover:text-black transition-colors">{t('ForgotPassword')}</Link>
+                      </div>
+                  )}
+                </div>
+
+                {isRegister ? (
+                  <div className="flex flex-col gap-1.5 mt-2 mb-4">
+                    <label className="flex items-start gap-3 cursor-pointer group">
+                      <input type="checkbox" name="terms" required className="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#D22B2B] focus:ring-[#D22B2B] transition-colors cursor-pointer" />
+                      <span className="text-[12px] text-gray-600 font-medium leading-snug">
+                        {t.rich('TermsAgreement', {
+                          terms: (chunks) => <Link href="/yasal/kullanim-kosullari" className="text-[#D22B2B] font-bold hover:underline" target="_blank">{chunks}</Link>,
+                          privacy: (chunks) => <Link href="/yasal/gizlilik-politikasi" className="text-[#D22B2B] font-bold hover:underline" target="_blank">{chunks}</Link>,
+                          membership: (chunks) => <Link href="/yasal/uyelik-sozlesmesi" className="text-[#D22B2B] font-bold hover:underline" target="_blank">{chunks}</Link>
+                        })}
+                      </span>
+                    </label>
+                    <p className="text-[10px] text-gray-400 font-bold tracking-wide pl-7">
+                      {t('FreeMembership')}
+                    </p>
+                  </div>
+                ) : null}
+
+                <AuthSubmitButton isRegister={isRegister} locale={locale} label={isRegister ? t('CreateAccountFree') : t('LoginBtn')} />
+                
+              </form>
+
+              {!isRegister ? (
+                <div className="mt-6 flex justify-center w-full">
+                  <p className="text-[11px] text-center text-gray-400 font-bold flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    {t('DataSafe')}
+                  </p>
+                </div>
+              ) : null}
+
+              <div className="hidden md:flex mt-8 text-center pt-8 border-t border-gray-100 flex-col gap-3 items-center">
+                <p className="text-[13px] font-bold text-gray-500">
+                  {isRegister ? t('AlreadyHaveAccount') : t('DontHaveCollection')}
+                </p>
+                <Link 
+                  href={(isRegister ? '/login' : '/login?type=register') as any} 
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-gray-50 hover:bg-gray-100 text-[#D22B2B] text-sm font-black rounded-xl transition-all shadow-sm border border-gray-200"
+                >
+                  {isRegister ? t('LoginAction') : t('RegisterAction')}
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                </Link>
+              </div>
+            </>
+          )}
         </div>
         
         {/* SAĞ TARAF: Sosyal Girişler ve Özellikler */}
