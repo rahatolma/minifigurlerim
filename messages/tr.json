@@ -1093,7 +1093,7 @@
     "Error_passwords_mismatch": "Şifreler birbiriyle eşleşmiyor.",
     "Error_password_too_short": "Şifre en az 8 karakter olmalıdır.",
     "Error_weak_password": "Lütfen şifrenizin tüm güvenlik kurallarını karşıladığından emin olun.",
-    "PasswordPolicy_title": "Şifre Kuralları:",
+    "PasswordPolicy_title": "Güçlü bir şifre oluştur:",
     "PasswordPolicy_minLength": "En az 8 karakter",
     "PasswordPolicy_uppercase": "En az 1 büyük harf",
     "PasswordPolicy_lowercase": "En az 1 küçük harf",

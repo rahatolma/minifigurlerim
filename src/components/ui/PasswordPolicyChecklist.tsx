@@ -11,7 +11,7 @@ interface PasswordPolicyChecklistProps {
 }
 
 export default function PasswordPolicyChecklist({ password = '', className = '' }: PasswordPolicyChecklistProps) {
-  const t = useTranslations('Navigation');
+  const t = useTranslations('Auth');
   
   const validation = useMemo(() => validatePassword(password), [password]);
   const missingRules = validation.missingRules;
@@ -25,21 +25,17 @@ export default function PasswordPolicyChecklist({ password = '', className = '' 
   ];
 
   return (
-    <div className={`bg-gray-50 border border-gray-100 rounded-xl p-4 text-xs ${className}`}>
-      <p className="font-black text-gray-900 mb-2 uppercase tracking-wide text-[10px]">{t('PasswordPolicy_title')}</p>
+    <div className={`px-1 text-xs ${className}`}>
+      <p className="font-semibold text-gray-700 mb-2 tracking-tight text-[12px]">{t('PasswordPolicy_title')}</p>
       <ul className="space-y-1.5">
         {rules.map((rule) => {
           const isMet = password.length > 0 && !missingRules.includes(rule.key);
           return (
             <li 
               key={rule.key} 
-              className={`flex items-center gap-2 font-semibold transition-colors duration-200 ${isMet ? 'text-green-600' : 'text-gray-500'}`}
+              className={`flex items-center gap-2 transition-colors duration-300 font-medium text-[11px] ${isMet ? 'text-green-600' : 'text-gray-400'}`}
             >
-              {isMet ? (
-                <Check className="w-3.5 h-3.5 flex-shrink-0 stroke-[3]" />
-              ) : (
-                <X className="w-3.5 h-3.5 flex-shrink-0 opacity-50" />
-              )}
+              <Check className={`w-3.5 h-3.5 flex-shrink-0 transition-opacity duration-300 ${isMet ? 'opacity-100 stroke-[2.5]' : 'opacity-30 stroke-[2]'}`} />
               <span>{rule.label}</span>
             </li>
           );
