@@ -1085,6 +1085,15 @@
     "BackToLogin": "Back to Login",
     "SignupSuccessTitle": "Activation Link Sent!",
     "SignupSuccessDesc": "You are one step away from starting your collection. Please check your email and click the confirmation link we sent you.",
+    "ResetPasswordTitle": "Set New Password",
+    "ResetPasswordDesc": "Please create a new and secure password for your account.",
+    "NewPasswordLabel": "New Password",
+    "NewPasswordConfirmLabel": "New Password (Confirm)",
+    "SaveNewPasswordBtn": "Save New Password",
+    "Error_passwords_mismatch": "Passwords do not match.",
+    "Error_password_too_short": "Password must be at least 6 characters long.",
+    "Error_update_failed": "An error occurred while updating the password. The link might have expired.",
+    "Message_password_updated": "Your password has been successfully updated!",
     "CreateAccountFree": "Create Account for Free"
   },
   "CollectionActions": {

@@ -1084,6 +1084,15 @@
     "BackToLogin": "Giriş Ekranına Dön",
     "SignupSuccessTitle": "Aktivasyon Linki Gönderildi!",
     "SignupSuccessDesc": "Koleksiyona başlamaya çok az kaldı. Lütfen e-posta kutunuza gidin ve size gönderdiğimiz onay linkine tıklayın.",
+    "ResetPasswordTitle": "Yeni Şifre Belirle",
+    "ResetPasswordDesc": "Lütfen hesabınız için yeni ve güvenli bir şifre oluşturun.",
+    "NewPasswordLabel": "Yeni Şifre",
+    "NewPasswordConfirmLabel": "Yeni Şifre (Tekrar)",
+    "SaveNewPasswordBtn": "Yeni Şifreyi Kaydet",
+    "Error_passwords_mismatch": "Şifreler birbiriyle eşleşmiyor.",
+    "Error_password_too_short": "Şifre en az 6 karakter olmalıdır.",
+    "Error_update_failed": "Şifre güncellenirken bir hata oluştu. Linkin süresi dolmuş olabilir.",
+    "Message_password_updated": "Şifreniz başarıyla güncellendi!",
     "CreateAccountFree": "Ücretsiz Hesap Oluştur"
   },
   "CollectionActions": {

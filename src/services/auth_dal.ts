@@ -39,3 +39,8 @@ export const resetPasswordForEmailDal = async (email: string, redirectTo: string
     redirectTo,
   });
 };
+
+export const updateUserPasswordDal = async (password: string) => {
+  const supabase = await createClient();
+  return supabase.auth.updateUser({ password });
+};

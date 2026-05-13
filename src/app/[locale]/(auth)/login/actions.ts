@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from '@/i18n/routing';
 import { redirect as nextRedirect } from 'next/navigation';
 import { headers } from 'next/headers';
-import { signInWithPasswordDal, signUpDal, signOutDal, signInWithOAuthDal, resetPasswordForEmailDal } from '@/services/auth_dal';
+import { signInWithPasswordDal, signUpDal, signOutDal, signInWithOAuthDal, resetPasswordForEmailDal, updateUserPasswordDal } from '@/services/auth_dal';
 import { checkMultiRateLimit } from '@/lib/rate-limit';
 import { getURL } from '@/utils/helpers';
 
@@ -89,6 +89,34 @@ export async function forgotPassword(locale: string, formData: FormData) {
   }
 
   return redirect({ href: '/login?message=reset_link_sent&type=forgot' as any, locale });
+}
+
+export async function updatePassword(locale: string, formData: FormData) {
+  const rl = await checkMultiRateLimit('update_password', [
+    { limit: 5, window: '10 m' }
+  ]);
+  if (!rl.success) {
+    return redirect({ href: '/sifre-sifirlama?error=rate_limited' as any, locale });
+  }
+
+  const password = formData.get('password') as string;
+  const passwordConfirm = formData.get('passwordConfirm') as string;
+
+  if (password !== passwordConfirm) {
+    return redirect({ href: '/sifre-sifirlama?error=passwords_mismatch' as any, locale });
+  }
+
+  if (password.length < 6) {
+    return redirect({ href: '/sifre-sifirlama?error=password_too_short' as any, locale });
+  }
+
+  const { error } = await updateUserPasswordDal(password);
+
+  if (error) {
+    return redirect({ href: '/sifre-sifirlama?error=update_failed' as any, locale });
+  }
+
+  return redirect({ href: '/koleksiyonum?message=password_updated' as any, locale });
 }
 
 // Yeni Google OAuth Bağlantısı
