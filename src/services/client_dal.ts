@@ -3,10 +3,31 @@ import { supabase } from '@/utils/supabase/client';
 export const getUserCollectionStatus = async (userId: string) => {
   const { data } = await supabase
     .from('user_collections')
-    .select('status, minifigure_id, created_at, minifigures(name, series_id)')
+    .select('status, owned_qty, want_qty, minifigure_id, created_at, minifigures(name, series_id)')
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
-  return data || [];
+
+  if (!data) return [];
+
+  // Qty-First Normalization
+  return data.map(item => {
+    let finalOwned = item.owned_qty || 0;
+    let finalWant = item.want_qty || 0;
+    let finalStatus = item.status;
+
+    if (item.status === 'have' && finalOwned === 0) finalOwned = 1;
+    if (item.status === 'want' && finalWant === 0) finalWant = 1;
+
+    if (finalOwned > 0) finalStatus = 'have';
+    else if (finalWant > 0) finalStatus = 'want';
+
+    return {
+      ...item,
+      status: finalStatus,
+      owned_qty: finalOwned,
+      want_qty: finalWant
+    };
+  });
 };
 
 export const getUserSeriesProgress = async (userId: string) => {

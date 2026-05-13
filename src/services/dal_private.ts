@@ -20,6 +20,8 @@ export const getUserCollectionsWithDetails = cache(async (userId: string) => {
     .from('user_collections')
     .select(`
       status,
+      owned_qty,
+      want_qty,
       created_at,
       minifigures (
         id,
@@ -51,7 +53,26 @@ export const getUserCollectionsWithDetails = cache(async (userId: string) => {
     .order('created_at', { ascending: false });
 
   if (error) return [];
-  return data as any;
+
+  // Qty-First Normalization (Drift Kapatma & UI Uyumluluğu)
+  return (data as any[]).map(item => {
+    let finalOwned = item.owned_qty || 0;
+    let finalWant = item.want_qty || 0;
+    let finalStatus = item.status;
+
+    if (item.status === 'have' && finalOwned === 0) finalOwned = 1;
+    if (item.status === 'want' && finalWant === 0) finalWant = 1;
+
+    if (finalOwned > 0) finalStatus = 'have';
+    else if (finalWant > 0) finalStatus = 'want';
+
+    return {
+      ...item,
+      status: finalStatus,
+      owned_qty: finalOwned,
+      want_qty: finalWant
+    };
+  });
 });
 
 export const getUserSeriesStats = cache(async (userId: string) => {

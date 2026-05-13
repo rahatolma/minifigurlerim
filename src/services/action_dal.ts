@@ -119,6 +119,11 @@ export const uploadAvatarAdminDal = async (userId: string, file: File, fileName:
 // ==========================================
 
 export const toggleUserCollectionDal = async (userId: string, minifigureId: string, currentStatus: 'have' | 'want' | null, newStatus: 'have' | 'want') => {
+  const authUser = await getAuthUser();
+  if (!authUser || authUser.id !== userId) {
+    throw new Error("Unauthorized collection access");
+  }
+
   const supabaseAdmin = getAdminClient();
 
   if (currentStatus === newStatus) {
@@ -134,7 +139,9 @@ export const toggleUserCollectionDal = async (userId: string, minifigureId: stri
       .upsert({
         user_id: userId,
         minifigure_id: minifigureId,
-        status: newStatus
+        status: newStatus,
+        owned_qty: newStatus === 'have' ? 1 : 0,
+        want_qty: newStatus === 'want' ? 1 : 0
       }, { onConflict: 'user_id, minifigure_id' });
     if (error) throw new Error(error.message);
   }
@@ -187,7 +194,7 @@ export const toggleUserCollectionDal = async (userId: string, minifigureId: stri
                  const { count } = await supabaseAdmin.from('user_collections')
                      .select(String('id'), { count: 'exact', head: true })
                      .eq('user_id', userId)
-                     .eq('status', 'have')
+                     .or('status.eq.have,owned_qty.gt.0')
                      .in('minifigure_id', figIds);
                  ownedCount = count || 0;
              }
