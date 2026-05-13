@@ -58,6 +58,7 @@ export async function signup(locale: string, formData: FormData) {
   }
 
   if (error) {
+    console.error(`[Auth Diagnostics] Signup Failed | Code: ${error.code} | Status: ${error.status} | Message: ${error.message}`);
     return redirect({ href: '/login?error=registration_failed&type=register' as any, locale });
   }
 
