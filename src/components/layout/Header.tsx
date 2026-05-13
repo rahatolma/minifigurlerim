@@ -24,9 +24,15 @@ export default function Header() {
 
   const handleLogout = () => {
       startTransition(async () => {
-         const supabase = createClient();
-         await supabase.auth.signOut();
-         await logOut(locale);
+         try {
+           const supabase = createClient();
+           await supabase.auth.signOut();
+           await logOut(locale);
+         } catch (error) {
+           // If redirect throws, let it pass. For safety, we can hard reload if needed.
+           // But since AuthProvider now listens to pathname, soft navigation is fine.
+           throw error;
+         }
       });
   };
 
