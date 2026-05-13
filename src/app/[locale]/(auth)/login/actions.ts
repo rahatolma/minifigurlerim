@@ -7,6 +7,7 @@ import { headers } from 'next/headers';
 import { signInWithPasswordDal, signUpDal, signOutDal, signInWithOAuthDal, resetPasswordForEmailDal, updateUserPasswordDal } from '@/services/auth_dal';
 import { checkMultiRateLimit } from '@/lib/rate-limit';
 import { getURL } from '@/utils/helpers';
+import { validatePassword } from '@/utils/validations/password';
 
 export async function login(locale: string, formData: FormData) {
   const rl = await checkMultiRateLimit('login', [
@@ -48,6 +49,11 @@ export async function signup(locale: string, formData: FormData) {
 
   if (!terms) {
     return redirect({ href: '/login?error=terms_required&type=register' as any, locale });
+  }
+
+  const validation = validatePassword(password);
+  if (!validation.isValid) {
+    return redirect({ href: '/login?error=weak_password&type=register' as any, locale });
   }
 
   const origin = getURL();
@@ -113,8 +119,9 @@ export async function updatePassword(locale: string, formData: FormData) {
     return redirect({ href: '/sifre-sifirlama?error=passwords_mismatch' as any, locale });
   }
 
-  if (password.length < 6) {
-    return redirect({ href: '/sifre-sifirlama?error=password_too_short' as any, locale });
+  const validation = validatePassword(password);
+  if (!validation.isValid) {
+    return redirect({ href: '/sifre-sifirlama?error=weak_password' as any, locale });
   }
 
   const { error } = await updateUserPasswordDal(password);

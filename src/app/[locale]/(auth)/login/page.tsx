@@ -3,6 +3,7 @@ import { Link } from '@/i18n/routing';
 import { getTranslations } from 'next-intl/server';
 import AuthSubmitButton from '@/components/ui/AuthSubmitButton';
 import PasswordInput from '@/components/ui/PasswordInput';
+import PasswordInputWithPolicy from '@/components/ui/PasswordInputWithPolicy';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const resolvedParams = await params;
@@ -160,12 +161,21 @@ export default async function LoginPage({
                   <div className="flex items-center justify-between mb-1.5">
                       <label className="block text-[11px] font-black text-gray-700 uppercase tracking-widest" htmlFor="password">{t('PasswordLabel')}</label>
                   </div>
-                  <PasswordInput
-                    id="password"
-                    name="password"
-                    placeholder="••••••••"
-                    required={true}
-                  />
+                  {isRegister ? (
+                    <PasswordInputWithPolicy
+                      id="password"
+                      name="password"
+                      placeholder="••••••••"
+                      required={true}
+                    />
+                  ) : (
+                    <PasswordInput
+                      id="password"
+                      name="password"
+                      placeholder="••••••••"
+                      required={true}
+                    />
+                  )}
                   {!isRegister && (
                       <div className="text-right mt-2">
                            <Link href={"/login?type=forgot" as any} className="text-[11px] font-bold text-gray-500 hover:text-black transition-colors">{t('ForgotPassword')}</Link>

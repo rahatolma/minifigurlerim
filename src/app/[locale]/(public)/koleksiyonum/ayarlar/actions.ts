@@ -8,6 +8,7 @@ import {
   updateUserPasswordDal, 
   uploadAvatarAdminDal 
 } from '@/services/action_dal';
+import { validatePassword } from '@/utils/validations/password';
 
 export async function updateProfile(formData: FormData) {
   const user = await getAuthUser();
@@ -78,12 +79,13 @@ export async function updatePassword(formData: FormData) {
   const newPassword = formData.get('new_password') as string;
   const confirmPassword = formData.get('confirm_password') as string;
 
-  if (!newPassword || newPassword.length < 6) {
-    return { error: 'ERROR_PASSWORD_TOO_SHORT' };
+  if (newPassword !== confirmPassword) {
+    return { error: 'Error_passwords_mismatch' };
   }
 
-  if (newPassword !== confirmPassword) {
-    return { error: 'ERROR_PASSWORD_MISMATCH' };
+  const validation = validatePassword(newPassword);
+  if (!validation.isValid) {
+    return { error: 'Error_weak_password' };
   }
 
   try {
@@ -97,7 +99,7 @@ export async function updatePassword(formData: FormData) {
        return { error: 'ERROR_TIMEOUT' };
     }
     console.error(JSON.stringify({ code: 'PASSWORD_UPDATE_FAILED', error: err.message, userId: user.id }));
-    return { error: 'ERROR_UPDATE_FAILED' };
+    return { error: 'Error_update_failed' };
   }
 }
 

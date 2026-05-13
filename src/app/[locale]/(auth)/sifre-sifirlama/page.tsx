@@ -2,6 +2,7 @@ import { Link } from '@/i18n/routing';
 import { getTranslations } from 'next-intl/server';
 import AuthSubmitButton from '@/components/ui/AuthSubmitButton';
 import PasswordInput from '@/components/ui/PasswordInput';
+import PasswordInputWithPolicy from '@/components/ui/PasswordInputWithPolicy';
 import { updatePassword } from '../login/actions';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -75,7 +76,7 @@ export default async function ResetPasswordPage({
               <div className="flex items-center justify-between mb-1.5">
                   <label className="block text-[11px] font-black text-gray-700 uppercase tracking-widest" htmlFor="password">{t('NewPasswordLabel')}</label>
               </div>
-              <PasswordInput
+              <PasswordInputWithPolicy
                 id="password"
                 name="password"
                 placeholder="••••••••"

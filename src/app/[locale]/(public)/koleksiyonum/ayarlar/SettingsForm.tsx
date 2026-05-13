@@ -5,6 +5,7 @@ import { updateProfile, updatePassword } from './actions';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import PasswordInput from '@/components/ui/PasswordInput';
+import PasswordInputWithPolicy from '@/components/ui/PasswordInputWithPolicy';
 
 export default function SettingsForm({ initialData }: { initialData: any }) {
   const router = useRouter();
@@ -109,7 +110,7 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
           <form onSubmit={handlePasswordUpdate} className="space-y-5">
               <div className="space-y-1">
                   <label className="text-[11px] font-black uppercase tracking-widest text-gray-500">{t('newPassword')}</label>
-                  <PasswordInput 
+                  <PasswordInputWithPolicy 
                       id="new_password"
                       name="new_password"
                       placeholder={t('passwordPlaceholder')} 
