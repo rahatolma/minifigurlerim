@@ -5,12 +5,13 @@ export const signInWithPasswordDal = async (email: string, password: string) => 
   return supabase.auth.signInWithPassword({ email, password });
 };
 
-export const signUpDal = async (email: string, password: string, termsAccepted: boolean) => {
+export const signUpDal = async (email: string, password: string, termsAccepted: boolean, emailRedirectTo?: string) => {
   const supabase = await createClient();
   return supabase.auth.signUp({
     email,
     password,
     options: {
+      emailRedirectTo,
       data: {
         terms_accepted: termsAccepted,
         terms_accepted_at: termsAccepted ? new Date().toISOString() : null,

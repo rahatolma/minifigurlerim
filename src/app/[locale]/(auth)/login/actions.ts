@@ -50,7 +50,8 @@ export async function signup(locale: string, formData: FormData) {
     return redirect({ href: '/login?error=terms_required&type=register' as any, locale });
   }
 
-  const { data, error } = await signUpDal(email, password, true);
+  const origin = getURL();
+  const { data, error } = await signUpDal(email, password, true, `${origin}/api/auth/callback`);
 
   if (data?.user && data.user.identities && data.user.identities.length === 0) {
     return redirect({ href: '/login?error=account_exists&type=register' as any, locale });
@@ -80,8 +81,8 @@ export async function forgotPassword(locale: string, formData: FormData) {
   const email = formData.get('email') as string;
   const origin = getURL();
   
-  // Safe fallback redirect for now
-  const { error } = await resetPasswordForEmailDal(email, `${origin}/login?message=reset_token_verified`);
+  // Redirect to callback which sets session and forwards to completion screen
+  const { error } = await resetPasswordForEmailDal(email, `${origin}/api/auth/callback?next=/sifre-sifirlama`);
 
   if (error) {
     return redirect({ href: '/login?error=reset_failed&type=forgot' as any, locale });
