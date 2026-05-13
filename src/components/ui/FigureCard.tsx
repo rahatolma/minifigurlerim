@@ -36,7 +36,7 @@ export default function FigureCard(props: FigureCardData) {
   
   const router = useRouter();
   const { user } = useAuth();
-  const { userStatusMap, updateStatus: setGlobalStatus } = useGamification();
+  const { userStatusMap, updateStatus: setGlobalStatus, refreshStats } = useGamification();
   
   const initialStatus = userStatusMap[id] || null;
   const isLoggedIn = !!user;
@@ -71,29 +71,45 @@ export default function FigureCard(props: FigureCardData) {
   const handleToggle = async (e: React.MouseEvent, type: 'have' | 'want') => {
       e.preventDefault(); 
       e.stopPropagation();
-
-      setLoading(true);
-      const result = await toggleCollectionStatus(id, status, type);
       
-      if (result?.success) {
-          const newStatus = status === type ? null : type;
-          setStatus(newStatus);
-          setGlobalStatus(id, newStatus);
-      } else {
-          if (result?.error?.toLowerCase().includes('giriş') || result?.error?.toLowerCase().includes('oturum') || result?.error?.includes('yetki')) {
-              router.push('/login');
-          } else {
+      if (!isLoggedIn) {
+          router.push('/login');
+          return;
+      }
+      
+      const previousStatus = status;
+      const optimisticStatus = status === type ? null : type;
+
+      // OPTIMISTIC UPDATE
+      setStatus(optimisticStatus);
+      setGlobalStatus(id, optimisticStatus);
+      setLoading(true);
+
+      try {
+          const result = await toggleCollectionStatus(id, previousStatus, type);
+          
+          if (result?.error) {
+              // ROLLBACK ON ERROR
+              setStatus(previousStatus);
+              setGlobalStatus(id, previousStatus);
+              
               if (result?.code === 'UNAPPROVED_USER') {
                   toast.error(tAction('ApprovalRequired'));
               } else {
-                  toast.error(result?.error || 'Bir hata oluştu. Lütfen tekrar deneyin.');
+                  toast.error(result.error || 'Bir hata oluştu. Lütfen tekrar deneyin.');
               }
-              if (!result?.error) {
-                 router.push('/login'); // Fallback if no specific error string matches
-              }
+          } else {
+              refreshStats();
           }
+      } catch (err) {
+          // ROLLBACK ON CRITICAL ERROR
+          console.error("Action error:", err);
+          setStatus(previousStatus);
+          setGlobalStatus(id, previousStatus);
+          toast.error(tCommon('ERROR_UNKNOWN'));
+      } finally {
+          setLoading(false);
       }
-      setLoading(false);
   };
 
   return (
@@ -207,7 +223,7 @@ export default function FigureCard(props: FigureCardData) {
                  <button 
                     onClick={(e) => handleToggle(e, 'have')} 
                     disabled={loading}
-                    className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-1.5 sm:px-2 rounded-xl transition-all font-bold text-[10px] sm:text-[11px] md:text-[12px] min-w-0 ${status === 'have' ? 'bg-[#5CB85C] text-white shadow-md' : 'bg-green-50/50 text-green-700 hover:bg-green-50 border border-green-100'}`}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-1.5 sm:px-2 rounded-xl transition-all font-bold text-[10px] sm:text-[11px] md:text-[12px] min-w-0 ${loading ? 'opacity-60 cursor-not-allowed' : ''} ${status === 'have' ? 'bg-[#5CB85C] text-white shadow-md' : 'bg-green-50/50 text-green-700 hover:bg-green-50 border border-green-100'}`}
                  >
                     {status === 'have' ? (
                        <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
@@ -220,7 +236,7 @@ export default function FigureCard(props: FigureCardData) {
                  <button 
                     onClick={(e) => handleToggle(e, 'want')}
                     disabled={loading}
-                    className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-1.5 sm:px-2 rounded-xl transition-all font-bold text-[10px] sm:text-[11px] md:text-[12px] min-w-0 ${status === 'want' ? 'bg-[#D22B2B] text-white shadow-[0_2px_10px_rgba(210,43,43,0.3)]' : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-100'}`}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-1.5 sm:px-2 rounded-xl transition-all font-bold text-[10px] sm:text-[11px] md:text-[12px] min-w-0 ${loading ? 'opacity-60 cursor-not-allowed' : ''} ${status === 'want' ? 'bg-[#D22B2B] text-white shadow-[0_2px_10px_rgba(210,43,43,0.3)]' : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-100'}`}
                  >
                     {status === 'want' ? (
                        <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd"></path></svg>

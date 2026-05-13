@@ -53,29 +53,35 @@ export default async function KoleksiyonumPage({
   const collectionsData = await getUserCollectionsWithDetails(user.id);
   const rawCollections = collectionsData || [];
 
-  // 3. Dropdown için seriler (Orijinal veritabanından, eksik seri çıkmasın diye, SADECE koleksiyondakileri göster)
+  // 3. İLK FİLTRELEME ADIMI (STATUS'A GÖRE)
+  // Dropdown seçeneklerini oluştururken sadece aktif taba (status) ait seçenekleri göstermek için önce status filtrelemesi yapıyoruz.
+  const statusFilteredCollections = rawCollections.filter((c: any) => {
+      if (currentStatus !== 'all' && c.status !== currentStatus) return false;
+      return true;
+  });
+
+  // 4. Dropdown için seriler (SADECE status ile filtrelenmiş koleksiyondakileri göster)
   const sRes = await getAllSeries();
-  const collectionSeriesIds = Array.from(new Set(rawCollections.map((c: any) => c.minifigures?.series_id).filter(Boolean)));
+  const collectionSeriesIds = Array.from(new Set(statusFilteredCollections.map((c: any) => c.minifigures?.series_id).filter(Boolean)));
   const seriesOptions = (sRes || [])
       .filter(s => collectionSeriesIds.includes(s.id))
       .map(s => ({ value: s.id.toString(), label: s.title }));
 
-  // Dinamik Olarak Kasadaki Filtre Seçeneklerini Oluştur (Sadece kullanıcının sahip olduğu/istediği şeylerin kategorileri)
-  const rawRoles = Array.from(new Set(rawCollections.map((c: any) => c.minifigures?.role).filter(Boolean))) as string[];
-  const rawTypes = Array.from(new Set(rawCollections.map((c: any) => c.minifigures?.type).filter(Boolean))) as string[];
-  const rawRarities = Array.from(new Set(rawCollections.map((c: any) => c.minifigures?.rarity_level || c.minifigures?.rarity).filter(Boolean))) as string[];
+  // Dinamik Olarak Kasadaki Filtre Seçeneklerini Oluştur (Sadece aktif status içindeki eşyaların kategorileri)
+  const rawRoles = Array.from(new Set(statusFilteredCollections.map((c: any) => c.minifigures?.role).filter(Boolean))) as string[];
+  const rawTypes = Array.from(new Set(statusFilteredCollections.map((c: any) => c.minifigures?.type).filter(Boolean))) as string[];
+  const rawRarities = Array.from(new Set(statusFilteredCollections.map((c: any) => c.minifigures?.rarity_level || c.minifigures?.rarity).filter(Boolean))) as string[];
 
   const roleOptions = rawRoles.map(r => toRoleOption(r, locale, tTax));
   const typeOptions = rawTypes.map(tStr => toTypeOption(tStr, locale));
   const rarityOptions = rawRarities.map(r => toRarityOption(r, locale));
 
-  // 4. İSTEMCİ FİLTRELEMESİNİ VERİYE UYGULA
-  let filteredCollections = rawCollections.filter((c: any) => {
+  // 5. İSTEMCİ FİLTRELEMESİNİ VERİYE UYGULA (Status zaten uygulandı, diğerlerini uygula)
+  let filteredCollections = statusFilteredCollections.filter((c: any) => {
       let match = true;
       const fig = c.minifigures;
       if (!fig) return false;
 
-      if (currentStatus !== 'all' && c.status !== currentStatus) match = false;
       if (currentSeries !== 'all' && fig.series_id !== currentSeries) match = false;
       if (currentRole !== 'all' && fig.role !== currentRole) match = false;
       if (currentType !== 'all' && fig.type !== currentType) match = false;

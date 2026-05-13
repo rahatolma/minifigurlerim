@@ -16,6 +16,7 @@ interface GamificationContextType {
   userLatestAddedFigureMap: Record<string, string>;
   loading: boolean;
   updateStatus: (minifigureId: string, status: 'have' | 'want' | null) => void;
+  refreshStats: () => void;
 }
 
 const GamificationContext = createContext<GamificationContextType>({
@@ -24,6 +25,7 @@ const GamificationContext = createContext<GamificationContextType>({
   userLatestAddedFigureMap: {},
   loading: true,
   updateStatus: () => {},
+  refreshStats: () => {},
 });
 
 export function GamificationProvider({ children }: { children: React.ReactNode }) {
@@ -103,18 +105,16 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
       else next[minifigureId] = status;
       return next;
     });
-    
-    // UI'ı anında yansıttıktan sonra genel istatistikleri ve progress barlarını
-    // asenkron olarak arka planda 500ms gecikmeli doğrula (Rate Limit ve DB yazma sonrası)
+  };
+
+  const refreshStats = () => {
     if (user) {
-      setTimeout(() => {
-        fetchData(user.id);
-      }, 500);
+      fetchData(user.id);
     }
   };
 
   return (
-    <GamificationContext.Provider value={{ userStatusMap, userSeriesProgressMap, userLatestAddedFigureMap, loading, updateStatus }}>
+    <GamificationContext.Provider value={{ userStatusMap, userSeriesProgressMap, userLatestAddedFigureMap, loading, updateStatus, refreshStats }}>
       {children}
     </GamificationContext.Provider>
   );
