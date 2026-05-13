@@ -17,5 +17,12 @@ ADD CONSTRAINT check_trade_qty_limit CHECK (for_trade_qty <= owned_qty);
 UPDATE user_collections SET owned_qty = 1 WHERE status = 'have';
 UPDATE user_collections SET want_qty = 1 WHERE status = 'want';
 
--- Rollback SQL (For Documentation purposes):
--- ALTER TABLE user_collections DROP COLUMN condition_notes, DROP COLUMN for_trade_qty, DROP COLUMN want_qty, DROP COLUMN owned_qty;
+-- ROLLBACK PLAN:
+-- ALTER TABLE user_collections DROP CONSTRAINT IF EXISTS check_trade_qty_limit;
+-- ALTER TABLE user_collections DROP COLUMN IF EXISTS condition_notes, DROP COLUMN IF EXISTS for_trade_qty, DROP COLUMN IF EXISTS want_qty, DROP COLUMN IF EXISTS owned_qty;
+
+-- TEMPORARY DRIFT NOTE:
+-- Phase 1 is purely additive. Until Phase 2 DAL compatibility updates are shipped,
+-- new rows inserted by the legacy UI/DAL will write to the `status` column, leaving
+-- `owned_qty` and `want_qty` as their default value (0). This temporary data drift 
+-- is explicitly accepted to limit scope and risk in Phase 1.

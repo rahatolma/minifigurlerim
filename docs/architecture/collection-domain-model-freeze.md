@@ -36,6 +36,10 @@ To ensure zero downtime and zero data loss, the migration will be executed in fo
   - Records where `status = 'have'` → `owned_qty = 1`
   - Records where `status = 'want'` → `want_qty = 1`
 
+> [!WARNING]
+> **Temporary Data Drift Accepted:**
+> Phase 1 is purely an additive schema change. As long as the UI/DAL continues to write exclusively to the `status` column, newly inserted rows will have `owned_qty = 0` or `want_qty = 0` while possessing a `status` of 'have' or 'want'. This temporary data drift is an accepted consequence of the phased migration. It will be seamlessly resolved during Phase 2 (DAL Compatibility) via dual-writes or a quantity-first write approach. It is critical that the gap between Phase 1 and Phase 2 is kept as short as possible to minimize drift volume.
+
 ### Phase 2 — DAL Compatibility
 - Update the Data Access Layer (DAL) to read from and prioritize the new quantity columns.
 - The `status` column acts as a strict fallback to ensure backward compatibility.
