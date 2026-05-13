@@ -59,6 +59,11 @@ export async function signup(locale: string, formData: FormData) {
 
   if (error) {
     console.error(`[Auth Diagnostics] Signup Failed | Code: ${error.code} | Status: ${error.status} | Message: ${error.message}`);
+    
+    if (error.code === 'over_email_send_rate_limit' || error.status === 429) {
+      return redirect({ href: '/login?error=signup_rate_limited&type=register' as any, locale });
+    }
+    
     return redirect({ href: '/login?error=registration_failed&type=register' as any, locale });
   }
 

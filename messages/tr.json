@@ -1073,6 +1073,7 @@
     "Error_reset_failed": "Şifre sıfırlama bağlantısı gönderilirken bir hata oluştu.",
     "Error_terms_required": "Kullanım koşullarını ve gizlilik politikasını kabul etmeniz gerekmektedir.",
     "Error_registration_failed": "Kayıt sırasında bir hata oluştu.",
+    "Error_signup_rate_limited": "Çok fazla doğrulama e-postası gönderildi. Lütfen biraz bekleyip tekrar deneyin.",
     "Error_oauth_failed": "Google ile bağlantı kurulamadı. Lütfen daha sonra tekrar deneyin.",
     "Message_registration_success": "Kayıt başarılı! Lütfen hesabınıza giriş yapın.",
     "Message_registration_success_verify": "Kaydınız oluşturuldu. Lütfen hesabınızı aktifleştirmek için e-posta adresinize gönderilen onay linkine tıklayın.",
