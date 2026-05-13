@@ -629,7 +629,8 @@
     "Follow": "Takip Et",
     "LoginToSeeDetails1": "Detayları görmek",
     "LoginToSeeDetails2": "için erişim aç",
-    "RemoveFromCollection": "Koleksiyondan Çıkar"
+    "RemoveFromCollection": "Koleksiyondan Çıkar",
+    "Unfollow": "Takipten Çıkar"
   },
   "Newsletter": {
     "BlockTitle": "Son çıkan mini figürleri ve güncel haberleri yakından takip etmek istiyorsanız e-mail haber grubuna abone olun!",
