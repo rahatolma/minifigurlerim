@@ -93,8 +93,8 @@ export default function Header() {
                 <div className="w-[100px] h-[36px] bg-gray-200 animate-pulse rounded-sm"></div>
               ) : user ? (
                 <div className="relative">
-                   <button onClick={() => setMenuOpen(!menuOpen)} className="bg-gray-100 text-gray-800 font-black py-2.5 px-6 rounded-sm shadow-sm hover:bg-gray-200 border border-gray-200 transition-colors tracking-widest uppercase text-[10px] flex items-center gap-2">
-                      {user.email?.split('@')[0] || t('MyAccount')} ▼
+                    <button onClick={() => setMenuOpen(!menuOpen)} className="bg-gray-100 text-gray-800 font-black py-2.5 px-6 rounded-sm shadow-sm hover:bg-gray-200 border border-gray-200 transition-colors tracking-widest uppercase text-[10px] flex items-center gap-2">
+                      {user.user_metadata?.full_name || user.user_metadata?.name || 'Koleksiyoner'} ▼
                    </button>
                    
                    {menuOpen && (
@@ -102,6 +102,11 @@ export default function Header() {
                        <div className="fixed inset-0 z-50" onClick={() => setMenuOpen(false)}></div>
                        <div className="absolute right-0 top-full pt-2 z-[60]" style={{ width: '200px' }}>
                           <div className="bg-white border border-gray-100 shadow-xl rounded-xl flex flex-col py-2">
+                              {user.email && (
+                                <div className="px-4 pb-2 pt-1 mb-1 border-b border-gray-100 text-[10px] text-gray-400 break-all">
+                                  {user.email}
+                                </div>
+                              )}
                               <Link onClick={() => setMenuOpen(false)} href="/koleksiyonum" className="px-4 py-2 hover:bg-gray-50 text-xs font-bold text-gray-700">{t('MyCollection')}</Link>
                               <Link onClick={() => setMenuOpen(false)} href="/koleksiyonum/ayarlar" className="px-4 py-2 hover:bg-gray-50 text-xs font-bold text-gray-700">{t('Settings')}</Link>
                               <div className="w-full h-px bg-gray-100 my-1"></div>

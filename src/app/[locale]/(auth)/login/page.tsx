@@ -44,29 +44,15 @@ export default async function LoginPage({
   const forgotWithLocale = forgotPassword.bind(null, locale);
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] flex items-center justify-center p-4 sm:p-8 relative overflow-hidden pb-32 md:pb-8">
+    <div className="min-h-[calc(100vh-150px)] bg-[#F5F7FA] flex justify-center px-4 sm:px-8 py-8 sm:py-12 relative overflow-hidden pb-32 md:pb-8">
       
       {/* İnce bir arka plan deseni */}
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03] pointer-events-none"></div>
 
-      {/* Misafir Olarak Dön Butonu */}
-      <Link href="/" className="hidden md:flex absolute top-8 left-8 items-center gap-2 text-gray-500 hover:text-black transition-colors text-sm font-bold z-10 group bg-white/50 backdrop-blur-md px-4 py-2 rounded-full shadow-sm border border-gray-200">
-         <svg className="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-         {t('BackToSite')}
-      </Link>
-
       <div className="w-full max-w-5xl flex flex-col items-center z-10 gap-5 sm:gap-6 mt-2 sm:mt-0">
         
-        {/* LOGO ALANI */}
-        <Link href="/" className="inline-block hover:opacity-90 transition-opacity">
-           <img src="/images/site-logo.png" alt="Minifigürlerim Logo" className="h-[48px] w-auto drop-shadow-sm" />
-        </Link>
-
         {/* BEYAZ KART BÖLÜMÜ */}
         <div className="w-full bg-white rounded-[2rem] shadow-[0_20px_80px_rgba(0,0,0,0.08)] border border-gray-100 overflow-hidden relative flex flex-col md:flex-row">
-        
-        {/* Dekoratif Çizgi (Üst) */}
-        <div className="absolute top-0 left-0 right-0 h-1.5 sm:h-2 w-full bg-gradient-to-r from-[#D22B2B] via-yellow-400 to-[#1D2136]"></div>
         
         {/* SOL TARAF: Formlar */}
         <div className={`w-full md:w-1/2 p-6 sm:p-14 border-b-0 md:border-r border-gray-100 flex-col justify-center ${currentView === 'social' ? 'hidden md:flex' : 'flex'}`}>

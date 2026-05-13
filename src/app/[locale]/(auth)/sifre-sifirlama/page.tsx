@@ -36,23 +36,15 @@ export default async function ResetPasswordPage({
   const successMsg = successMsgKey && t.has(`Message_${successMsgKey}`) ? t(`Message_${successMsgKey}`) : successMsgKey;
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] flex items-center justify-center p-4 sm:p-8 relative overflow-hidden pb-32 md:pb-8">
+    <div className="min-h-[calc(100vh-150px)] bg-[#F5F7FA] flex justify-center px-4 sm:px-8 py-8 sm:py-12 relative overflow-hidden pb-32 md:pb-8">
       
       {/* İnce bir arka plan deseni */}
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03] pointer-events-none"></div>
 
       <div className="w-full max-w-lg flex flex-col items-center z-10 gap-5 sm:gap-6 mt-2 sm:mt-0">
         
-        {/* LOGO ALANI */}
-        <Link href="/" className="inline-block hover:opacity-90 transition-opacity">
-           <img src="/images/site-logo.png" alt="Minifigürlerim Logo" className="h-[48px] w-auto drop-shadow-sm" />
-        </Link>
-
         {/* BEYAZ KART BÖLÜMÜ */}
         <div className="w-full bg-white rounded-[2rem] shadow-[0_20px_80px_rgba(0,0,0,0.08)] border border-gray-100 overflow-hidden relative flex flex-col p-6 sm:p-14">
-          
-          {/* Dekoratif Çizgi (Üst) */}
-          <div className="absolute top-0 left-0 right-0 h-1.5 sm:h-2 w-full bg-gradient-to-r from-[#D22B2B] via-yellow-400 to-[#1D2136]"></div>
           
           <div className="mb-6 sm:mb-8">
             <h1 className="text-2xl sm:text-3xl font-black tracking-tighter text-gray-900 mb-1.5 sm:mb-2">{t('ResetPasswordTitle')}</h1>
