@@ -10,6 +10,7 @@ import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import { useTranslations, useLocale } from 'next-intl';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useTransition } from 'react';
+import { createClient } from '@/utils/supabase/client';
 
 export default function Header() {
   const { user, loading } = useAuth();
@@ -23,6 +24,8 @@ export default function Header() {
 
   const handleLogout = () => {
       startTransition(async () => {
+         const supabase = createClient();
+         await supabase.auth.signOut();
          await logOut(locale);
       });
   };
