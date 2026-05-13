@@ -85,6 +85,7 @@ export async function forgotPassword(locale: string, formData: FormData) {
   const { error } = await resetPasswordForEmailDal(email, `${origin}/api/auth/callback?next=/sifre-sifirlama`);
 
   if (error) {
+    console.error(`[Auth Diagnostics] Forgot Password Failed | Code: ${error.code} | Status: ${error.status} | Message: ${error.message}`);
     return redirect({ href: '/login?error=reset_failed&type=forgot' as any, locale });
   }
 
