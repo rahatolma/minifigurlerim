@@ -6,6 +6,7 @@ import * as Sentry from '@sentry/nextjs';
 import posthog from 'posthog-js';
 import { User, Session } from '@supabase/supabase-js';
 import { shouldTrackAnalytics } from '@/lib/analytics';
+import { usePathname } from '@/i18n/routing';
 
 interface AuthContextType {
   user: User | null;
@@ -19,6 +20,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const pathname = usePathname();
 
   useEffect(() => {
     const syncSentryAndPostHog = (sessionUser: User | null) => {
@@ -58,7 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [pathname]);
 
   return (
     <AuthContext.Provider value={{ user, session, loading }}>
