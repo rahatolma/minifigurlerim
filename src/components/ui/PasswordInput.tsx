@@ -7,9 +7,13 @@ interface PasswordInputProps {
   name: string;
   placeholder: string;
   required?: boolean;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  pattern?: string;
+  title?: string;
 }
 
-export default function PasswordInput({ id, name, placeholder, required = false }: PasswordInputProps) {
+export default function PasswordInput({ id, name, placeholder, required = false, value, onChange, pattern, title }: PasswordInputProps) {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -21,6 +25,10 @@ export default function PasswordInput({ id, name, placeholder, required = false 
         className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-medium outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all text-black placeholder:text-gray-400 pr-12"
         placeholder={placeholder}
         required={required}
+        value={value}
+        onChange={onChange}
+        pattern={pattern}
+        title={title}
       />
       <button
         type="button"
