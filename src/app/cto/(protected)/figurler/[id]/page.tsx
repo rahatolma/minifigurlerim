@@ -610,31 +610,13 @@ console.error(err);
                     <span className="text-[10px] font-black tracking-widest uppercase text-gray-800">2. DEĞER & TALEP</span>
                 </div>
                 
-                {/* Min Fiyat */}
+                {/* Referans Fiyat (Manuel Input) */}
                 <div className="flex border-b border-gray-100 items-center hover:bg-blue-50/30 transition-colors group">
                     <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-blue-400 transition-colors">
-                        <label className="text-gray-900 block font-black">Min Fiyat (USD)</label>
+                        <label className="text-gray-900 block font-black">Referans Fiyat (USD)</label>
                         <span className="text-[10px] text-blue-500 font-bold uppercase tracking-widest">Manuel Düzenlenebilir</span>
                     </div>
-                    <div className="w-2/3 py-2"><input name="min_price" type="text" value={formData.min_price} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" placeholder="Örn: 25.50" /></div>
-                </div>
-
-                {/* Max Fiyat */}
-                <div className="flex border-b border-gray-100 items-center hover:bg-blue-50/30 transition-colors group">
-                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-blue-400 transition-colors">
-                        <label className="text-gray-900 block font-black">Max Fiyat (USD)</label>
-                        <span className="text-[10px] text-blue-500 font-bold uppercase tracking-widest">Manuel Düzenlenebilir</span>
-                    </div>
-                    <div className="w-2/3 py-2"><input name="max_price" type="text" value={formData.max_price} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" placeholder="Örn: 40.00" /></div>
-                </div>
-
-                {/* Ortalama Fiyat */}
-                <div className="flex border-b border-gray-100 items-center hover:bg-blue-50/30 transition-colors group">
-                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-blue-400 transition-colors">
-                        <label className="text-gray-900 block font-black">Ortalama Fiyat (USD)</label>
-                        <span className="text-[10px] text-blue-500 font-bold uppercase tracking-widest">Manuel Düzenlenebilir</span>
-                    </div>
-                    <div className="w-2/3 py-2"><input name="avg_price" type="text" value={formData.avg_price} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" placeholder="Örn: 32.75" /></div>
+                    <div className="w-2/3 py-2"><input name="value_usd" type="text" value={formData.value_usd} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" placeholder="Örn: 25.50" /></div>
                 </div>
 
                 {/* Koleksiyon Değeri (Sistem Read-Only) */}
@@ -644,7 +626,7 @@ console.error(err);
                         <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Sistem / Read-Only</span>
                     </div>
                     <div className="w-2/3 py-2 px-3 text-gray-900 font-black">
-                        {formData.min_price && formData.max_price ? `$${formData.min_price} - $${formData.max_price}` : (formData.avg_price ? `$${formData.avg_price}` : 'Belirsiz')}
+                        {formData.value_usd ? `$${formData.value_usd}` : 'Belirsiz'}
                     </div>
                 </div>
 
