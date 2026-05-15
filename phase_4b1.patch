@@ -1,0 +1,181 @@
+From f705989f72be76d944c7582e6d07e2d02fdf57c0 Mon Sep 17 00:00:00 2001
+From: rahatolma <rahatolma@gmail.com>
+Date: Fri, 15 May 2026 15:07:23 +0300
+Subject: [PATCH] docs: soften assertions in snapshot and fix seri-kategorisi
+ leak in form renderer
+
+---
+ docs/architecture/definitions-usage-proof.md  | 20 ++++++++++---------
+ .../definitions-before-db-cleanup.md          | 10 +++++-----
+ .../admin/(protected)/figurler/[id]/page.tsx  |  4 ++--
+ .../admin/(protected)/figurler/yeni/page.tsx  |  4 ++--
+ .../cto/(protected)/figurler/[id]/page.tsx    |  4 ++--
+ .../cto/(protected)/figurler/yeni/page.tsx    |  4 ++--
+ 6 files changed, 24 insertions(+), 22 deletions(-)
+
+diff --git a/docs/architecture/definitions-usage-proof.md b/docs/architecture/definitions-usage-proof.md
+index 096c7f4..cb6c28f 100644
+--- a/docs/architecture/definitions-usage-proof.md
++++ b/docs/architecture/definitions-usage-proof.md
+@@ -1,7 +1,7 @@
+ # Definitions Usage Proof Report
+ 
+ ## Objective
+-This report verifies that hiding (and eventually deleting) the legacy definition groups (`marka`, `seri-adi`, `seri-no`, `seri-kategori`, `seri-kategorisi`) does NOT break the public application, collection logic, or the admin figure creation flow.
++This report verifies the current dependencies on the legacy definition groups (`marka`, `seri-adi`, `seri-no`, `seri-kategori`, `seri-kategorisi`) to ensure hiding them from the UI is stable.
+ 
+ ## 1. Native Database Columns (The Single Source of Truth)
+ 
+@@ -24,26 +24,28 @@ The platform architecture already relies on native database columns for these en
+ ## 2. Public Route Proof
+ 
+ ### Public Figure Card (`FigureCard.tsx` / `FigureCardClient.tsx`)
+-**Is it dependent on hidden groups?** No.
++**Dependency Check:** No known active dependency found in audited routes.
+ Figure cards display the series name and rarity. The series name is pulled directly from the `minifigures` table (`figure.series_name` or `figure.series.title`), and rarity is pulled via the `rarity_level` (or `rarity_id`).
+ 
+ ### Public Figure Detail Page (`/figurler/[slug]/page.tsx`)
+-**Is it dependent on hidden groups?** No.
++**Dependency Check:** No known active dependency found in audited routes.
+ The detail page fetches the figure and populates breadcrumbs/metadata using `figure.series_name` and `figure.category`. These are native text columns or JOINs to the `series` table.
+ 
+ ### Collection Filters (`/koleksiyonum`)
+-**Is it dependent on hidden groups?** No.
++**Dependency Check:** No known active dependency found in audited routes.
+ Filters are generated based on actual distinct values in the `series` table or the native `rarity` relations.
+ 
+ ## 3. Admin Route Proof
+ 
+-### Admin Figure Edit/New Form (`/cto/figurler/yeni/page.tsx`)
+-**Does it break if we hide these groups?** No.
+-The code inherently recognizes these as special or native fields. In fact, the dynamic attribute renderer already explicitly ignores them:
++### Admin Figure Edit/New Form (`/cto/figurler/yeni/page.tsx` & `[id]/page.tsx`)
++**Dependency Check:** No known active dependency found in audited routes.
++The code inherently recognizes these as special or native fields. The dynamic attribute renderer explicitly filters them:
+ ```typescript
+-{defGroups.filter(g => !['figur-rolu', 'figur-tipi', 'nadirlik-derecesi', 'marka', 'seri-adi', 'seri-no', 'seri-kategori'].includes(g.slug)).length > 0 && ...}
++{defGroups.filter(g => !['figur-rolu', 'figur-tipi', 'nadirlik-derecesi', 'marka', 'seri-adi', 'seri-no', 'seri-kategori', 'seri-kategorisi'].includes(g.slug)).length > 0 && ...}
+ ```
++*Note: The duplicate group slug `seri-kategorisi` was successfully added to the explicit exclusion filter list in Phase 4B-1 to prevent it from leaking into the form.*
++
+ The form relies on `seriesList` (fetched from `series` table) to populate the "Seri Adı" dropdown, not the definitions table.
+ 
+ ## Conclusion
+-The UI hiding in Phase 4B-1 is completely safe. The platform is decoupled from these specific taxonomy records, making them purely vestigial data.
++Currently treated as legacy/hidden groups. DB deletion requires separate migration review in the future. Hiding them from the UI in Phase 4B-1 does not break audited routes.
+diff --git a/docs/snapshots/definitions-before-db-cleanup.md b/docs/snapshots/definitions-before-db-cleanup.md
+index d48c760..e71906f 100644
+--- a/docs/snapshots/definitions-before-db-cleanup.md
++++ b/docs/snapshots/definitions-before-db-cleanup.md
+@@ -1,7 +1,7 @@
+ # Definitions Architecture Snapshot (Phase 4B-1)
+ 
+ ## Overview
+-This snapshot documents the state of the `definition_groups` and `categories` tables before any database cleanup operations are executed. In Phase 4B-1, certain legacy groups were intentionally **hidden from the Admin UI** to prevent data entry confusion, but they remain perfectly intact in the database.
++This snapshot documents the state of the `definition_groups` and `categories` tables before any database cleanup operations are considered. In Phase 4B-1, certain legacy groups were intentionally **hidden from the Admin UI** to prevent data entry confusion, but they remain perfectly intact in the database.
+ 
+ ## Hidden Definition Groups
+ The following group slugs have been hidden from the `/cto/tanimlar` and `/admin/tanimlar` routes:
+@@ -12,15 +12,15 @@ The following group slugs have been hidden from the `/cto/tanimlar` and `/admin/
+ - `seri-kategorisi` (Series Category - Duplicate)
+ 
+ ## Why Are They Hidden?
+-These fields are **Entity fields** or **System properties**, not reusable taxonomies:
+-1. **Series Properties** (`seri-adi`, `seri-no`, `seri-kategori`): These belong natively to the `series` table. Managing them as abstract "Taxonomies" in a separate table creates duplication and breaks relational integrity.
++Currently treated as legacy/hidden groups. These fields are Entity fields or System properties, not reusable taxonomies:
++1. **Series Properties** (`seri-adi`, `seri-no`, `seri-kategori`, `seri-kategorisi`): These belong natively to the `series` table. Managing them as abstract "Taxonomies" in a separate table creates duplication and breaks relational integrity.
+ 2. **Brand** (`marka`): The platform is heavily focused on LEGO®. While `brand` exists natively as a column on the `minifigures` table, managing it via the dynamic definitions interface is unnecessary overhead.
+ 
+ ## Future Action (Phase 4B-3 / Phase 4C)
+-These hidden records are scheduled for a formal database cleanup (DELETE migrations) in a subsequent phase, ONLY AFTER the duplicate prevention logic and `series` foreign-key constraints are fully validated.
++DB deletion requires separate migration review. A future cleanup may be considered ONLY after dependency verification and providing rollback SQL.
+ 
+ ## Rollback Procedure
+-If these fields need to be visible again in the UI before the DB cleanup, simply remove them from the `hiddenSlugs` array in `src/app/cto/(protected)/tanimlar/page.tsx` and `src/app/admin/(protected)/tanimlar/page.tsx`:
++If these fields need to be visible again in the UI before any potential DB cleanup, simply remove them from the `hiddenSlugs` array in `src/app/cto/(protected)/tanimlar/page.tsx` and `src/app/admin/(protected)/tanimlar/page.tsx`:
+ ```typescript
+ const hiddenSlugs = ['marka', 'seri-adi', 'seri-no', 'seri-kategori', 'seri-kategorisi'];
+ ```
+diff --git a/src/app/admin/(protected)/figurler/[id]/page.tsx b/src/app/admin/(protected)/figurler/[id]/page.tsx
+index a21465f..769aaa4 100644
+--- a/src/app/admin/(protected)/figurler/[id]/page.tsx
++++ b/src/app/admin/(protected)/figurler/[id]/page.tsx
+@@ -569,13 +569,13 @@ export default function EditFigurePage() {
+             </div>
+ 
+             {/* DİNAMİK TANIMLAR (Yukarıda Olmayan Ekstralar) */}
+-            {defGroups.filter(g => !['figur-rolu', 'figur-tipi', 'nadirlik-derecesi', 'marka', 'seri-adi', 'seri-no', 'seri-kategori'].includes(g.slug)).length > 0 && (
++            {defGroups.filter(g => !['figur-rolu', 'figur-tipi', 'nadirlik-derecesi', 'marka', 'seri-adi', 'seri-no', 'seri-kategori', 'seri-kategorisi'].includes(g.slug)).length > 0 && (
+                 <div className="bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden mb-8">
+                     <div className="bg-gray-50 py-3 px-6 border-b border-gray-200">
+                         <span className="text-[10px] font-black tracking-widest uppercase text-gray-500">EKSTRA SİSTEM TANIMLARI</span>
+                     </div>
+                     
+-                    {defGroups.filter(g => !['figur-rolu', 'figur-tipi', 'nadirlik-derecesi', 'marka', 'seri-adi', 'seri-no', 'seri-kategori'].includes(g.slug)).map(group => {
++                    {defGroups.filter(g => !['figur-rolu', 'figur-tipi', 'nadirlik-derecesi', 'marka', 'seri-adi', 'seri-no', 'seri-kategori', 'seri-kategorisi'].includes(g.slug)).map(group => {
+                         const groupCats = categories.filter(c => c.type === group.slug);
+                         return (
+                             <div key={group.id} className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+diff --git a/src/app/admin/(protected)/figurler/yeni/page.tsx b/src/app/admin/(protected)/figurler/yeni/page.tsx
+index 5fee206..2fa7972 100644
+--- a/src/app/admin/(protected)/figurler/yeni/page.tsx
++++ b/src/app/admin/(protected)/figurler/yeni/page.tsx
+@@ -523,13 +523,13 @@ export default function NewFigurePage() {
+             </div>
+ 
+             {/* DİNAMİK TANIMLAR (Yukarıda Olmayan Ekstralar) */}
+-            {defGroups.filter(g => !['figur-rolu', 'figur-tipi', 'nadirlik-derecesi', 'marka', 'seri-adi', 'seri-no', 'seri-kategori'].includes(g.slug)).length > 0 && (
++            {defGroups.filter(g => !['figur-rolu', 'figur-tipi', 'nadirlik-derecesi', 'marka', 'seri-adi', 'seri-no', 'seri-kategori', 'seri-kategorisi'].includes(g.slug)).length > 0 && (
+                 <div className="bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden mb-8">
+                     <div className="bg-gray-50 py-3 px-6 border-b border-gray-200">
+                         <span className="text-[10px] font-black tracking-widest uppercase text-gray-500">EKSTRA SİSTEM TANIMLARI</span>
+                     </div>
+                     
+-                    {defGroups.filter(g => !['figur-rolu', 'figur-tipi', 'nadirlik-derecesi', 'marka', 'seri-adi', 'seri-no', 'seri-kategori'].includes(g.slug)).map(group => {
++                    {defGroups.filter(g => !['figur-rolu', 'figur-tipi', 'nadirlik-derecesi', 'marka', 'seri-adi', 'seri-no', 'seri-kategori', 'seri-kategorisi'].includes(g.slug)).map(group => {
+                         const groupCats = categories.filter(c => c.type === group.slug);
+                         return (
+                             <div key={group.id} className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+diff --git a/src/app/cto/(protected)/figurler/[id]/page.tsx b/src/app/cto/(protected)/figurler/[id]/page.tsx
+index a0f0db2..0abdaac 100644
+--- a/src/app/cto/(protected)/figurler/[id]/page.tsx
++++ b/src/app/cto/(protected)/figurler/[id]/page.tsx
+@@ -711,13 +711,13 @@ console.error(err);
+             </div>
+ 
+             {/* DİNAMİK TANIMLAR (Yukarıda Olmayan Ekstralar) */}
+-            {defGroups.filter(g => !['figur-rolu', 'figur-tipi', 'nadirlik-derecesi', 'marka', 'seri-adi', 'seri-no', 'seri-kategori'].includes(g.slug)).length > 0 && (
++            {defGroups.filter(g => !['figur-rolu', 'figur-tipi', 'nadirlik-derecesi', 'marka', 'seri-adi', 'seri-no', 'seri-kategori', 'seri-kategorisi'].includes(g.slug)).length > 0 && (
+                 <div className="bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden mb-8">
+                     <div className="bg-gray-50 py-3 px-6 border-b border-gray-200">
+                         <span className="text-[10px] font-black tracking-widest uppercase text-gray-500">EKSTRA SİSTEM TANIMLARI</span>
+                     </div>
+                     
+-                    {defGroups.filter(g => !['figur-rolu', 'figur-tipi', 'nadirlik-derecesi', 'marka', 'seri-adi', 'seri-no', 'seri-kategori'].includes(g.slug)).map(group => {
++                    {defGroups.filter(g => !['figur-rolu', 'figur-tipi', 'nadirlik-derecesi', 'marka', 'seri-adi', 'seri-no', 'seri-kategori', 'seri-kategorisi'].includes(g.slug)).map(group => {
+                         const groupCats = categories.filter(c => c.type === group.slug);
+                         return (
+                             <div key={group.id} className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+diff --git a/src/app/cto/(protected)/figurler/yeni/page.tsx b/src/app/cto/(protected)/figurler/yeni/page.tsx
+index 077638a..aaf99fe 100644
+--- a/src/app/cto/(protected)/figurler/yeni/page.tsx
++++ b/src/app/cto/(protected)/figurler/yeni/page.tsx
+@@ -522,13 +522,13 @@ console.error(err);
+             </div>
+ 
+             {/* DİNAMİK TANIMLAR (Yukarıda Olmayan Ekstralar) */}
+-            {defGroups.filter(g => !['figur-rolu', 'figur-tipi', 'nadirlik-derecesi', 'marka', 'seri-adi', 'seri-no', 'seri-kategori'].includes(g.slug)).length > 0 && (
++            {defGroups.filter(g => !['figur-rolu', 'figur-tipi', 'nadirlik-derecesi', 'marka', 'seri-adi', 'seri-no', 'seri-kategori', 'seri-kategorisi'].includes(g.slug)).length > 0 && (
+                 <div className="bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden mb-8">
+                     <div className="bg-gray-50 py-3 px-6 border-b border-gray-200">
+                         <span className="text-[10px] font-black tracking-widest uppercase text-gray-500">EKSTRA SİSTEM TANIMLARI</span>
+                     </div>
+                     
+-                    {defGroups.filter(g => !['figur-rolu', 'figur-tipi', 'nadirlik-derecesi', 'marka', 'seri-adi', 'seri-no', 'seri-kategori'].includes(g.slug)).map(group => {
++                    {defGroups.filter(g => !['figur-rolu', 'figur-tipi', 'nadirlik-derecesi', 'marka', 'seri-adi', 'seri-no', 'seri-kategori', 'seri-kategorisi'].includes(g.slug)).map(group => {
+                         const groupCats = categories.filter(c => c.type === group.slug);
+                         return (
+                             <div key={group.id} className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
+-- 
+2.50.1 (Apple Git-155)
+
