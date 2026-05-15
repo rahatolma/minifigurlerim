@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import AffiliateRowClient from './AffiliateRowClient';
+import BorsaRowClient from './BorsaRowClient';
 import { getAuthUserProfile, getAdminBorsaFiguresDal } from '@/services/action_dal';
 
 export const metadata = {
@@ -8,7 +8,7 @@ export const metadata = {
 
 export const revalidate = 0;
 
-export default async function AdminAffiliatePage() {
+export default async function AdminBorsaPage() {
   const { user, profile } = await getAuthUserProfile();
 
   if (!user) redirect('/admin/login');
@@ -45,7 +45,7 @@ export default async function AdminAffiliatePage() {
               </thead>
               <tbody>
                  {figures?.map((fig: any) => (
-                    <AffiliateRowClient key={fig.id} figure={fig} />
+                    <BorsaRowClient key={fig.id} figure={fig} />
                  ))}
                   {(!figures || figures.length === 0) && (
                     <tr>

@@ -7,7 +7,7 @@ import NewsCard from '@/components/ui/NewsCard';
 import { supabase } from '@/utils/supabase/client';
 import { Link } from '@/i18n/routing';
 import LegoHeadIcon from '@/components/ui/icons/LegoHeadIcon';
-import { LayoutGrid, Package, TrendingUp, Heart } from 'lucide-react';
+import { LayoutGrid, Package, TrendingUp } from 'lucide-react';
 import { getHomepageData } from '@/services/homepageAggregation';
 import { getTranslations } from 'next-intl/server';
 import { mapSeriesToCardViewModel } from '@/services/mappers';
@@ -133,7 +133,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
              titleBlock={
                <div className="flex items-center gap-2 md:gap-4">
                  <div className="w-8 h-8 md:w-14 md:h-14 bg-white border-2 border-[#D22B2B] text-[#D22B2B] rounded-full flex items-center justify-center shadow-sm shrink-0">
-                     <Heart className="w-[16px] h-[16px] md:w-[28px] md:h-[28px]" strokeWidth={2.5} />
+                     <TrendingUp className="w-[16px] h-[16px] md:w-[28px] md:h-[28px]" strokeWidth={2.5} />
                  </div>
                  <h2 className="text-[17px] sm:text-2xl md:text-4xl font-black text-gray-900 leading-tight">{t('PopularFigures')}</h2>
                </div>
