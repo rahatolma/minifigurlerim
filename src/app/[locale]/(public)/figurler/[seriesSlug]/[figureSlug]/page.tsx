@@ -150,7 +150,15 @@ export default async function FigureDetail({
 
   // TR Pazar Arama Yönlendirme Kurgusu
   const EBAY_CAMP_ID = process.env.NEXT_PUBLIC_AMAZON_TR_TAG || 'minifigurlerim-21'; // Amazon Partner Kimliği
-  const searchKeyword = encodeURIComponent(`Lego Minifigure ${figure.figure_number || figure.figure_code || figure.figure_name}`);
+  
+  // Arama Query Kuralı: LEGO + figure name + minifigure + (varsa) series/set number
+  const buildSearchQuery = () => {
+    const baseQuery = `LEGO ${figure.figure_name} minifigure`;
+    const seriesOrProductNo = figure.series_number || figure.product_code;
+    return seriesOrProductNo ? `${baseQuery} ${seriesOrProductNo}` : baseQuery;
+  };
+  
+  const searchKeyword = encodeURIComponent(buildSearchQuery());
   const amazonUrl = `https://www.amazon.com.tr/s?k=${searchKeyword}&tag=${EBAY_CAMP_ID}`;
   const trendyolUrl = `https://www.trendyol.com/sr?q=${searchKeyword}`;
   const hepsiburadaUrl = `https://www.hepsiburada.com/ara?q=${searchKeyword}`;
