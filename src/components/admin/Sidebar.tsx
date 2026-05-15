@@ -43,7 +43,7 @@ export default function Sidebar() {
             <p className="text-[10px] text-gray-400 font-bold px-4 tracking-widest uppercase">Koleksiyon Verisi</p>
           </div>
           <Link href="/admin/tanimlar" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-bold transition-colors ${pathname?.startsWith('/admin/tanimlar') ? 'bg-[#111] text-white shadow-sm' : 'text-gray-600 hover:text-black hover:bg-gray-50'}`}>Tanımlar</Link>
-          <Link href="/admin/borsa" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-bold transition-colors ${pathname?.startsWith('/admin/borsa') ? 'bg-green-600 text-white shadow-sm' : 'text-green-600 hover:text-green-700 hover:bg-green-50'}`}>Fiyat / Affiliate</Link>
+          <Link href="/admin/affiliate" className={`block px-4 py-2.5 rounded-md text-[13.5px] font-bold transition-colors ${pathname?.startsWith('/admin/affiliate') ? 'bg-green-600 text-white shadow-sm' : 'text-green-600 hover:text-green-700 hover:bg-green-50'}`}>Fiyat / Affiliate</Link>
 
           <div className="mt-6 mb-1">
             <p className="text-[10px] text-gray-400 font-bold px-4 tracking-widest uppercase">Kitle & İletişim</p>

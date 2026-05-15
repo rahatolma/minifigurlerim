@@ -43,7 +43,7 @@ export default function Sidebar() {
             <p className="text-[10px] text-gray-400 font-extrabold px-4 tracking-[0.2em] uppercase">Koleksiyon Verisi</p>
           </div>
           <Link href="/cto/tanimlar" className={`block px-4 py-2.5 rounded-[12px] text-[13.5px] font-bold transition-all duration-200 ${pathname?.startsWith('/cto/tanimlar') ? 'bg-gray-900 text-white shadow-md shadow-gray-900/10' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/80 hover:scale-[0.98]'}`}>Tanımlar</Link>
-          <Link href="/cto/borsa" className={`block px-4 py-2.5 rounded-[12px] text-[13.5px] font-bold transition-all duration-200 ${pathname?.startsWith('/cto/borsa') ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20' : 'text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 hover:scale-[0.98]'}`}>Fiyat / Affiliate</Link>
+          <Link href="/cto/affiliate" className={`block px-4 py-2.5 rounded-[12px] text-[13.5px] font-bold transition-all duration-200 ${pathname?.startsWith('/cto/affiliate') ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20' : 'text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 hover:scale-[0.98]'}`}>Fiyat / Affiliate</Link>
 
           <div className="mt-8 mb-2">
             <p className="text-[10px] text-gray-400 font-extrabold px-4 tracking-[0.2em] uppercase">Kitle & İletişim</p>

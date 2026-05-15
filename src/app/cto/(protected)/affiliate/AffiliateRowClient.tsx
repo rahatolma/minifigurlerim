@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { updateBorsaData } from '@/app/admin/actions/borsa';
+import { updateBorsaData } from '@/app/cto/actions/affiliate';
 
-export default function BorsaRowClient({ 
+export default function AffiliateRowClient({ 
    figure 
 } : { 
    figure: any 

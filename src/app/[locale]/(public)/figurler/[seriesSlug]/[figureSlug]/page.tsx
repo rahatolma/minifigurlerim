@@ -155,31 +155,7 @@ export default async function FigureDetail({
   const trendyolUrl = `https://www.trendyol.com/sr?q=${searchKeyword}`;
   const hepsiburadaUrl = `https://www.hepsiburada.com/ara?q=${searchKeyword}`;
 
-  // 30 Günlük Momentum Hesaplaması (Market Sinyali İçin)
-  const views30d = rawFigure.view_count_30d || 0;
-  const col30d = rawFigure.collection_count_30d || 0;
-  const fav30d = rawFigure.favorite_count_30d || 0;
-  
-  // Etkileşim Ağırlığı: Koleksiyon(3x) + İstek(2x) + Görüntüleme(1x)
-  const momentumScore = (col30d * 3) + (fav30d * 2) + views30d;
-  
-  let demandSignal = t('Value.DemandWaiting');
-  let demandSubtext = t('Value.DemandSubtextWaiting');
-  
-  if (momentumScore > 100 || (rawFigure.demand_score || 0) > 80) {
-      demandSignal = t('Value.DemandStrong');
-      demandSubtext = t('Value.DemandSubtextStrong');
-  } else if (momentumScore > 30 || (rawFigure.demand_score || 0) > 50) {
-      demandSignal = t('Value.DemandRising');
-      demandSubtext = t('Value.DemandSubtextRising');
-  } else if (momentumScore > 5) {
-      demandSignal = t('Value.DemandStable');
-      demandSubtext = t('Value.DemandSubtextStable');
-  } else if (momentumScore === 0) {
-      demandSignal = t('Value.DemandWaiting');
-      demandSubtext = t('Value.DemandSubtextWaiting');
-  }
-  
+
   // Ana Görseller
   const images = figure.image_url ? [figure.image_url] : [];
   
@@ -372,39 +348,6 @@ export default async function FigureDetail({
 
             </div> {/* Üst Kutu Sonu */}
 
-            {/* 3- DEĞER VE TALEP MOTORU BLOĞU (MİNİMAL) */}
-            <div className="w-full bg-white border border-gray-100 rounded-xl p-4 sm:p-5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col gap-4">
-                <div className="flex gap-2 w-full">
-                    {/* 1. Koleksiyon Değeri Kutusu */}
-                    <div className="flex flex-col items-center justify-center bg-gray-50/50 px-2 py-2 rounded-lg border border-gray-100 flex-1 min-w-0">
-                        <span className="text-[8px] sm:text-[9px] text-[#D22B2B] font-bold uppercase tracking-widest mb-1 flex items-center justify-center gap-1 w-full truncate">
-                           <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg> 
-                           <span className="truncate">{t('Value.ColValue')}</span>
-                        </span>
-                        <span className="text-[10px] sm:text-[11px] font-bold text-gray-400 tracking-tight leading-tight w-full text-center" dangerouslySetInnerHTML={{ __html: t.raw('Value.EnoughData') }}>
-                        </span>
-                    </div>
-
-                    {/* 2. Değer Skoru Kutusu */}
-                    <div className="flex flex-col items-center justify-center bg-yellow-50/50 px-2 py-2 rounded-lg border border-yellow-100 flex-1 min-w-0">
-                        <span className="text-[8px] sm:text-[9px] text-yellow-600/80 font-bold uppercase tracking-widest mb-1 truncate w-full text-center">{t('Value.Score')}</span>
-                        <span className="text-[12px] sm:text-[14px] font-black text-yellow-700 truncate w-full text-center">
-                            {getLocalizedRarity(figure.rarity_level || '', tTax, locale) || '-'}
-                        </span>
-                    </div>
-
-                    {/* 3. Talep Sinyali Kutusu */}
-                    <div className="flex flex-col items-center justify-center bg-blue-50/50 px-2 py-2 rounded-lg border border-blue-100 flex-1 min-w-0">
-                        <span className="text-[8px] sm:text-[9px] text-blue-600/80 font-bold uppercase tracking-widest mb-1 truncate w-full text-center">{t('Value.Demand')}</span>
-                        <span className="text-[12px] sm:text-[14px] font-black text-blue-700 truncate w-full text-center">
-                            {demandSignal}
-                        </span>
-                    </div>
-                </div>
-                
-
-            </div>
-
 
             {/* 4- İLGİ VE AKTİVİTE BLOĞU */}
             <div className="w-full bg-white px-4 py-6 rounded-2xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col mt-2">
@@ -483,30 +426,7 @@ export default async function FigureDetail({
                   <p className="text-gray-500 text-xs sm:text-sm font-medium">{t('Market.Desc')}</p>
               </div>
               
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
-                  {/* Sol Kolon: Global Piyasa Görünümü */}
-                  <div className="flex flex-col gap-4">
-                      <div className="flex items-center gap-2 mb-2 pb-3 border-b border-gray-100">
-                          <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                          <span className="text-[11px] sm:text-[13px] font-black text-gray-900 uppercase tracking-widest">{t('Market.GlobalView')}</span>
-                      </div>
-                      <div className="flex flex-col items-center justify-center bg-gray-50/50 rounded-xl p-6 sm:p-8 border border-gray-100/50 flex-1 min-h-[220px]">
-                          <span className="text-gray-400 font-black text-[10px] sm:text-xs uppercase tracking-widest mb-3">{t('Market.MarketSignal')}</span>
-                          <span className={`font-black text-[13px] sm:text-sm uppercase tracking-widest px-4 py-2 rounded-xl border shadow-sm ${
-                              demandSignal === 'Güçlü (Sıcak)' ? 'bg-red-50 text-[#D22B2B] border-red-100' : 
-                              demandSignal === 'Yükseliyor' ? 'bg-blue-50 text-blue-600 border-blue-100' : 
-                              demandSignal === 'Stabil' ? 'bg-green-50 text-green-700 border-green-100' : 
-                              'bg-gray-100 text-gray-500 border-gray-200'
-                          }`}>
-                              {demandSignal}
-                          </span>
-                          <p className="mt-5 text-center text-[11px] sm:text-xs text-gray-500 font-medium leading-relaxed max-w-[250px]">
-                              {demandSubtext}
-                          </p>
-                      </div>
-                  </div>
-
-                  {/* Sağ Kolon: Türkiye'de Ara */}
+              <div className="grid grid-cols-1 max-w-3xl mx-auto gap-8 items-start">                  {/* Sağ Kolon: Türkiye'de Ara */}
                   <div className="flex flex-col gap-4">
                       <div className="flex items-center gap-2 mb-2 pb-3 border-b border-gray-100">
                          <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>

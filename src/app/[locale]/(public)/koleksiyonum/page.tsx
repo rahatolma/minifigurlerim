@@ -233,38 +233,8 @@ export default async function KoleksiyonumPage({
                 </div>
             </div>
 
-            {/* Borsa (KPI) 4'lü Kart Alanı */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-               {/* Portföy Değeri */}
-               <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.03)] relative overflow-hidden">
-                  <div className="absolute -right-12 -bottom-12 opacity-[0.03]">
-                      <svg className="w-48 h-48" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                  </div>
-                  <div className="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-6 z-10 relative">
-                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                  </div>
-                  <h3 className="font-bold text-gray-400 text-[11px] uppercase tracking-widest mb-1 z-10 relative">{t('WalletTitle')}</h3>
-                  <p className="text-3xl font-black text-gray-900 z-10 relative">${portfolioValue.toFixed(2)}</p>
-                  
-                  {portfolioValue > 0 ? (
-                     <div className="mt-4 flex items-center gap-2 z-10 relative">
-                        {calculatedGain > 0 ? (
-                            <p className="text-green-600 text-[10px] font-bold flex items-center gap-1 bg-green-50 px-2 py-1 rounded-md">
-                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
-                                {realGrowthStr} (%{percentGrowth})
-                            </p>
-                        ) : (
-                            <p className="text-gray-500 text-[9px] font-bold flex items-center gap-1 uppercase tracking-widest">
-                                {t('PendingApi')}
-                            </p>
-                        )}
-                     </div>
-                  ) : (
-                     <p className="text-gray-400 text-[9px] font-bold mt-4 flex items-center gap-1 uppercase tracking-widest z-10 relative">
-                        {t('PendingMarket')}
-                     </p>
-                  )}
-               </div>
+            {/* KPI 3'lü Kart Alanı */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                
                {/* Sahip Olduklarım */}
                <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.03)] relative overflow-hidden">
