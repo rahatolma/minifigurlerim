@@ -569,13 +569,13 @@ export default function EditFigurePage() {
             </div>
 
             {/* DİNAMİK TANIMLAR (Yukarıda Olmayan Ekstralar) */}
-            {defGroups.filter(g => !['figur-rolu', 'figur-tipi', 'nadirlik-derecesi', 'marka', 'seri-adi', 'seri-no', 'seri-kategori'].includes(g.slug)).length > 0 && (
+            {defGroups.filter(g => !['figur-rolu', 'figur-tipi', 'nadirlik-derecesi', 'marka', 'seri-adi', 'seri-no', 'seri-kategori', 'seri-kategorisi'].includes(g.slug)).length > 0 && (
                 <div className="bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden mb-8">
                     <div className="bg-gray-50 py-3 px-6 border-b border-gray-200">
                         <span className="text-[10px] font-black tracking-widest uppercase text-gray-500">EKSTRA SİSTEM TANIMLARI</span>
                     </div>
                     
-                    {defGroups.filter(g => !['figur-rolu', 'figur-tipi', 'nadirlik-derecesi', 'marka', 'seri-adi', 'seri-no', 'seri-kategori'].includes(g.slug)).map(group => {
+                    {defGroups.filter(g => !['figur-rolu', 'figur-tipi', 'nadirlik-derecesi', 'marka', 'seri-adi', 'seri-no', 'seri-kategori', 'seri-kategorisi'].includes(g.slug)).map(group => {
                         const groupCats = categories.filter(c => c.type === group.slug);
                         return (
                             <div key={group.id} className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
