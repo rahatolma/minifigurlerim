@@ -456,103 +456,39 @@ export default function EditFigurePage() {
                     <div className="w-2/3 py-2"><input name="piece_count" type="number" value={formData.piece_count} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" /></div>
                 </div>
 
-                {/* YENİ FİYAT VE DEĞER MOTORU (VALUE ENGINE) */}
+                {/* FİYAT & AFFILIATE */}
                 <div className="bg-gray-50 py-3 px-6 border-b border-gray-200 mt-4">
-                    <span className="text-[10px] font-black tracking-widest uppercase text-gray-500">Koleksiyon Değer Motoru (Value Engine)</span>
+                    <span className="text-[10px] font-black tracking-widest uppercase text-gray-500">Fiyat & Bağlantı (Referans)</span>
                 </div>
                 
-                {/* Min Fiyat */}
                 <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
-                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Min Fiyat (USD)</label></div>
-                    <div className="w-2/3 py-2"><input name="min_price" type="text" value={formData.min_price} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" placeholder="Örn: 25.50" /></div>
+                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Referans Fiyat (USD)</label></div>
+                    <div className="w-2/3 py-2"><input name="value_usd" type="text" value={formData.value_usd} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" placeholder="Örn: 15.50" /></div>
                 </div>
 
-                {/* Max Fiyat */}
-                <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
-                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Max Fiyat (USD)</label></div>
-                    <div className="w-2/3 py-2"><input name="max_price" type="text" value={formData.max_price} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" placeholder="Örn: 40.00" /></div>
-                </div>
-
-                {/* Ortalama Fiyat */}
-                <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
-                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Ortalama Fiyat (USD)</label></div>
-                    <div className="w-2/3 py-2"><input name="avg_price" type="text" value={formData.avg_price} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" placeholder="Örn: 32.75" /></div>
-                </div>
-
-                {/* Nadirlik Skoru */}
-                <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
-                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Nadirlik Skoru (1-5)</label></div>
-                    <div className="w-2/3 py-2">
-                        <select name="rarity_score" value={formData.rarity_score} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold appearance-none cursor-pointer">
-                            <option value="1">1 - Çok Yaygın / 🪨</option>
-                            <option value="2">2 - Yaygın / 🧩</option>
-                            <option value="3">3 - Orta / ⚡</option>
-                            <option value="4">4 - Nadir / 💎</option>
-                            <option value="5">5 - Çok Nadir / 🔥 Efsane</option>
-                        </select>
-                    </div>
-                </div>
-
-                {/* Seri Gücü Skoru */}
-                <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
-                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors"><label className="text-gray-900 block font-black">Seri Gücü Skoru (1-5)</label></div>
-                    <div className="w-2/3 py-2">
-                        <select name="series_score" value={formData.series_score} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-bold appearance-none cursor-pointer">
-                            <option value="1">1 - Sıradan Seriler</option>
-                            <option value="2">2 - Genel Seriler</option>
-                            <option value="3">3 - CMF Klasik Seriler</option>
-                            <option value="4">4 - Özel Seriler</option>
-                            <option value="5">5 - Güçlü IP (Star Wars, Marvel, vb.)</option>
-                        </select>
-                    </div>
-                </div>
-
-                {/* YENİ TALEP MOTORU (DEMAND ENGINE - MVP MANUEL) */}
+                {/* SİSTEM METRİKLERİ (READ-ONLY) */}
                 <div className="bg-gray-50 py-3 px-6 border-b border-gray-200 mt-4">
-                    <span className="text-[10px] font-black tracking-widest uppercase text-gray-500">Talep Sinyali Motoru (Demand Engine MVP)</span>
+                    <span className="text-[10px] font-black tracking-widest uppercase text-gray-500">İstihbarat & Sistem Metrikleri (Read-Only)</span>
                 </div>
                 
-                {/* 30 Günlük Görüntülenme */}
-                <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
-                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
-                        <label className="text-gray-900 block font-black">30g Görüntülenme</label>
-                        <span className="block text-[10px] text-gray-500 font-medium">Manuel başlangıç sinyali</span>
-                    </div>
-                    <div className="w-2/3 py-2"><input name="view_count_30d" type="number" min="0" value={formData.view_count_30d} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" /></div>
+                <div className="flex border-b border-gray-100 items-center bg-gray-50/50">
+                    <div className="w-1/3 py-4 pr-4 pl-6"><label className="text-gray-500 block font-black">30g Görüntülenme</label></div>
+                    <div className="w-2/3 py-2 px-3 text-gray-900 font-bold">{formData.view_count_30d || '0'}</div>
                 </div>
 
-                {/* 30 Günlük Koleksiyon */}
-                <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
-                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
-                        <label className="text-gray-900 block font-black">30g Koleksiyona Eklenme</label>
-                    </div>
-                    <div className="w-2/3 py-2"><input name="collection_count_30d" type="number" min="0" value={formData.collection_count_30d} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" /></div>
+                <div className="flex border-b border-gray-100 items-center bg-gray-50/50">
+                    <div className="w-1/3 py-4 pr-4 pl-6"><label className="text-gray-500 block font-black">30g Koleksiyona Eklenme</label></div>
+                    <div className="w-2/3 py-2 px-3 text-gray-900 font-bold">{formData.collection_count_30d || '0'}</div>
                 </div>
 
-                 {/* 30 Günlük Favori */}
-                 <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
-                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
-                        <label className="text-gray-900 block font-black">30g Favori / İstek List.</label>
-                    </div>
-                    <div className="w-2/3 py-2"><input name="favorite_count_30d" type="number" min="0" value={formData.favorite_count_30d} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" /></div>
+                <div className="flex border-b border-gray-100 items-center bg-gray-50/50">
+                    <div className="w-1/3 py-4 pr-4 pl-6"><label className="text-gray-500 block font-black">30g Favori / İstek Listesi</label></div>
+                    <div className="w-2/3 py-2 px-3 text-gray-900 font-bold">{formData.favorite_count_30d || '0'}</div>
                 </div>
 
-                {/* Puanlama (Rating) Sayısı */}
-                <div className="flex border-b border-gray-100 items-center hover:bg-gray-50 transition-colors group">
-                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent group-hover:border-black transition-colors">
-                        <label className="text-gray-900 block font-black">Etkileşim / Puan Sayısı</label>
-                    </div>
-                    <div className="w-2/3 py-2"><input name="rating_count" type="number" min="0" value={formData.rating_count} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" /></div>
-                </div>
-
-                {/* LEGACY DEĞER */}
-                <div className="bg-red-50 py-3 px-6 border-b border-red-100 mt-4">
-                    <span className="text-[10px] font-black tracking-widest uppercase text-red-500">ESKİ SİSTEM (LEGACY)</span>
-                </div>
-                
-                <div className="flex border-b border-gray-100 items-center hover:bg-red-50 transition-colors group opacity-60">
-                    <div className="w-1/3 py-4 pr-4 pl-6 border-l-2 border-transparent transition-colors"><label className="text-gray-900 block font-black">Eski Canlı Fiyat (value_usd)</label></div>
-                    <div className="w-2/3 py-2"><input name="value_usd" type="text" value={formData.value_usd} onChange={handleChange} className="w-full bg-transparent px-3 py-2 focus:outline-none text-black font-semibold" /></div>
+                <div className="flex border-b border-gray-100 items-center bg-gray-50/50">
+                    <div className="w-1/3 py-4 pr-4 pl-6"><label className="text-gray-500 block font-black">Etkileşim / Puan Sayısı</label></div>
+                    <div className="w-2/3 py-2 px-3 text-gray-900 font-bold">{formData.rating_count || '0'}</div>
                 </div>
 
                 {/* ÇIKIŞ TARİHİ AY */}
