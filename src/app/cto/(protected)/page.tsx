@@ -9,14 +9,15 @@ export default async function AdminDashboard() {
   const totalSeries = metrics.totalSeries || 0;
   const totalFigures = metrics.totalFigures || 0;
   
-  // Placeholders for Operational Health metrics
-  const totalMembers = '120+';
-  const pendingMembers = 3;
-  const missingEnContent = 12;
-  const missingImages = 5;
-  const missingAffiliate = 45;
-  const newMessages = 2;
-  const newSubscribers = 8;
+  const totalMembers = metrics.totalMembers || 0;
+  const pendingMembers = metrics.pendingMembers || 0;
+  const newMessages = metrics.newMessages || 0;
+  const newSubscribers = metrics.newSubscribers || 0;
+  
+  // Placeholders for future Data Quality Metrics (Phase 4C)
+  const missingEnContent = '?';
+  const missingImages = '?';
+  const missingAffiliate = '?';
 
   return (
     <div className="w-full max-w-[1600px] mx-auto p-8 md:p-12 pb-24">

@@ -408,11 +408,19 @@ export const getAdminDashboardMetricsDal = async () => {
   const [
     { count: totalSeries },
     { count: totalFigures },
-    { count: totalCollections }
+    { count: totalCollections },
+    { count: totalMembers },
+    { count: pendingMembers },
+    { count: newMessages },
+    { count: newSubscribers }
   ] = await Promise.all([
     supabaseAdmin.from('series').select(String('id'), { count: 'exact', head: true }),
     supabaseAdmin.from('minifigures').select(String('id'), { count: 'exact', head: true }),
-    supabaseAdmin.from('user_collections').select(String('id'), { count: 'exact', head: true })
+    supabaseAdmin.from('user_collections').select(String('id'), { count: 'exact', head: true }),
+    supabaseAdmin.from('profiles').select(String('id'), { count: 'exact', head: true }),
+    supabaseAdmin.from('profiles').select(String('id'), { count: 'exact', head: true }).eq('status', 'pending'),
+    supabaseAdmin.from('contact_messages').select(String('id'), { count: 'exact', head: true }),
+    supabaseAdmin.from('newsletter_subscribers').select(String('id'), { count: 'exact', head: true })
   ]);
 
   const thirtyDaysAgo = new Date();
@@ -429,7 +437,18 @@ export const getAdminDashboardMetricsDal = async () => {
     supabaseAdmin.from('series').select('id, name, image_url')
   ]);
 
-  return { totalSeries, totalFigures, totalCollections, rawCollections, allFigures, allSeries };
+  return { 
+    totalSeries: totalSeries || 0, 
+    totalFigures: totalFigures || 0, 
+    totalCollections: totalCollections || 0, 
+    totalMembers: totalMembers || 0,
+    pendingMembers: pendingMembers || 0,
+    newMessages: newMessages || 0,
+    newSubscribers: newSubscribers || 0,
+    rawCollections, 
+    allFigures, 
+    allSeries 
+  };
 };
 
 export const logAdminActionDal = async (actorId: string, targetId: string, action: string, prevState: any, newState: any, reason?: string) => {
