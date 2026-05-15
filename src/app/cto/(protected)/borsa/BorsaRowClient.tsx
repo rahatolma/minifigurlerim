@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { updateBorsaData } from '@/app/cto/actions/borsa';
+import { updateBorsaData } from '@/app/admin/actions/borsa';
 
 export default function BorsaRowClient({ 
    figure 
@@ -34,7 +34,7 @@ export default function BorsaRowClient({
                  </div>
                  <div>
                     <p className="text-sm font-black text-gray-900 line-clamp-1">{figure.name}</p>
-                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{figure.series_name} • {figure.figure_number}</p>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{figure.series_name} • {figure.figure_no}</p>
                  </div>
               </div>
            </td>
@@ -76,7 +76,7 @@ export default function BorsaRowClient({
               >
                   {loading ? '...' : (
                      <>
-                        YAYINLA
+                        KAYDET
                         <svg className="w-3 h-3 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4"></path></svg>
                      </>
                   )}

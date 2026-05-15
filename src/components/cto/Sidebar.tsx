@@ -31,31 +31,31 @@ export default function Sidebar() {
           <Link href="/cto" className={`block px-4 py-2.5 rounded-[12px] text-[13.5px] font-bold transition-all duration-200 ${pathname === '/cto' ? 'bg-gray-900 text-white shadow-md shadow-gray-900/10' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/80 hover:scale-[0.98]'}`}>Dashboard</Link>
           
           <div className="mt-8 mb-2">
-            <p className="text-[10px] text-gray-400 font-extrabold px-4 tracking-[0.2em] uppercase">Kullanıcılar</p>
+            <p className="text-[10px] text-gray-400 font-extrabold px-4 tracking-[0.2em] uppercase">İçerik</p>
           </div>
-          <Link href="/cto/kullanicilar" className={`block px-4 py-2.5 rounded-[12px] text-[13.5px] font-bold transition-all duration-200 ${pathname?.startsWith('/cto/kullanicilar') ? 'bg-gray-900 text-white shadow-md shadow-gray-900/10' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/80 hover:scale-[0.98]'}`}>Kullanıcı Yönetimi</Link>
-          <Link href="/cto/hakkimizda" className={`block px-4 py-2.5 rounded-[12px] text-[13.5px] font-bold transition-all duration-200 ${pathname === '/cto/hakkimizda' ? 'bg-gray-900 text-white shadow-md shadow-gray-900/10' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/80 hover:scale-[0.98]'}`}>Hakkımızda</Link>
-          <Link href="/cto/haberler" className={`block px-4 py-2.5 rounded-[12px] text-[13.5px] font-bold transition-all duration-200 ${pathname?.startsWith('/cto/haberler') ? 'bg-gray-900 text-white shadow-md shadow-gray-900/10' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/80 hover:scale-[0.98]'}`}>Haberler</Link>
-          <Link href="/cto/sss" className={`block px-4 py-2.5 rounded-[12px] text-[13.5px] font-bold transition-all duration-200 ${pathname?.startsWith('/cto/sss') ? 'bg-gray-900 text-white shadow-md shadow-gray-900/10' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/80 hover:scale-[0.98]'}`}>Sıkça Sorular</Link>
-
-          <div className="mt-8 mb-2">
-            <p className="text-[10px] text-gray-400 font-extrabold px-4 tracking-[0.2em] uppercase">Koleksiyon</p>
-          </div>
-          <Link href="/cto/tanimlar" className={`block px-4 py-2.5 rounded-[12px] text-[13.5px] font-bold transition-all duration-200 ${pathname?.startsWith('/cto/tanimlar') ? 'bg-gray-900 text-white shadow-md shadow-gray-900/10' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/80 hover:scale-[0.98]'}`}>Özellikler (Definitions)</Link>
           <Link href="/cto/seriler" className={`block px-4 py-2.5 rounded-[12px] text-[13.5px] font-bold transition-all duration-200 ${pathname?.startsWith('/cto/seriler') ? 'bg-[#D22B2B] text-white shadow-md shadow-[#D22B2B]/20' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/80 hover:scale-[0.98]'}`}>Seriler</Link>
           <Link href="/cto/figurler" className={`block px-4 py-2.5 rounded-[12px] text-[13.5px] font-bold transition-all duration-200 ${pathname?.startsWith('/cto/figurler') ? 'bg-[#D22B2B] text-white shadow-md shadow-[#D22B2B]/20' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/80 hover:scale-[0.98]'}`}>Figürler</Link>
-          <Link href="/cto/borsa" className={`block px-4 py-2.5 rounded-[12px] text-[13.5px] font-bold transition-all duration-200 ${pathname?.startsWith('/cto/borsa') ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20' : 'text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 hover:scale-[0.98]'}`}>Borsa / Fiyatlar</Link>
+          <Link href="/cto/haberler" className={`block px-4 py-2.5 rounded-[12px] text-[13.5px] font-bold transition-all duration-200 ${pathname?.startsWith('/cto/haberler') ? 'bg-gray-900 text-white shadow-md shadow-gray-900/10' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/80 hover:scale-[0.98]'}`}>Haberler</Link>
+          <Link href="/cto/hakkimizda" className={`block px-4 py-2.5 rounded-[12px] text-[13.5px] font-bold transition-all duration-200 ${pathname === '/cto/hakkimizda' ? 'bg-gray-900 text-white shadow-md shadow-gray-900/10' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/80 hover:scale-[0.98]'}`}>Hakkımızda</Link>
           <Link href="/cto/slaytlar" className={`block px-4 py-2.5 rounded-[12px] text-[13.5px] font-bold transition-all duration-200 ${pathname?.startsWith('/cto/slaytlar') ? 'bg-gray-900 text-white shadow-md shadow-gray-900/10' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/80 hover:scale-[0.98]'}`}>Slaytlar</Link>
 
           <div className="mt-8 mb-2">
-            <p className="text-[10px] text-gray-400 font-extrabold px-4 tracking-[0.2em] uppercase">İletişim</p>
+            <p className="text-[10px] text-gray-400 font-extrabold px-4 tracking-[0.2em] uppercase">Koleksiyon Verisi</p>
           </div>
-          <Link href="/cto/mesajlar" className={`block px-4 py-2.5 rounded-[12px] text-[13.5px] font-bold transition-all duration-200 ${pathname?.startsWith('/cto/mesajlar') ? 'bg-gray-900 text-white shadow-md shadow-gray-900/10' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/80 hover:scale-[0.98]'}`}>Gelen Mesajlar</Link>
+          <Link href="/cto/tanimlar" className={`block px-4 py-2.5 rounded-[12px] text-[13.5px] font-bold transition-all duration-200 ${pathname?.startsWith('/cto/tanimlar') ? 'bg-gray-900 text-white shadow-md shadow-gray-900/10' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/80 hover:scale-[0.98]'}`}>Tanımlar</Link>
+          <Link href="/cto/borsa" className={`block px-4 py-2.5 rounded-[12px] text-[13.5px] font-bold transition-all duration-200 ${pathname?.startsWith('/cto/borsa') ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20' : 'text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 hover:scale-[0.98]'}`}>Fiyat / Affiliate</Link>
 
           <div className="mt-8 mb-2">
-            <p className="text-[10px] text-gray-400 font-extrabold px-4 tracking-[0.2em] uppercase">Ayarlar</p>
+            <p className="text-[10px] text-gray-400 font-extrabold px-4 tracking-[0.2em] uppercase">Kitle & İletişim</p>
           </div>
-          <Link href="/cto/settings" className={`block px-4 py-2.5 rounded-[12px] text-[13.5px] font-bold transition-all duration-200 ${pathname?.startsWith('/cto/settings') ? 'bg-gray-900 text-white shadow-md shadow-gray-900/10' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/80 hover:scale-[0.98]'}`}>Authentication & Keys</Link>
+          <Link href="/cto/mesajlar" className={`block px-4 py-2.5 rounded-[12px] text-[13.5px] font-bold transition-all duration-200 ${pathname?.startsWith('/cto/mesajlar') ? 'bg-gray-900 text-white shadow-md shadow-gray-900/10' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/80 hover:scale-[0.98]'}`}>Gelen Mesajlar</Link>
+          <Link href="/cto/aboneler" className={`block px-4 py-2.5 rounded-[12px] text-[13.5px] font-bold transition-all duration-200 ${pathname?.startsWith('/cto/aboneler') ? 'bg-gray-900 text-white shadow-md shadow-gray-900/10' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/80 hover:scale-[0.98]'}`}>Bülten Aboneleri</Link>
+
+          <div className="mt-8 mb-2">
+            <p className="text-[10px] text-gray-400 font-extrabold px-4 tracking-[0.2em] uppercase">Sistem</p>
+          </div>
+          <Link href="/cto/kullanicilar" className={`block px-4 py-2.5 rounded-[12px] text-[13.5px] font-bold transition-all duration-200 ${pathname?.startsWith('/cto/kullanicilar') && !pathname?.startsWith('/cto/kullanicilar/audit') ? 'bg-gray-900 text-white shadow-md shadow-gray-900/10' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/80 hover:scale-[0.98]'}`}>Kullanıcı Yönetimi</Link>
+          <Link href="/cto/kullanicilar/audit" className={`block px-4 py-2.5 rounded-[12px] text-[13.5px] font-bold transition-all duration-200 ${pathname?.startsWith('/cto/kullanicilar/audit') ? 'bg-gray-900 text-white shadow-md shadow-gray-900/10' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/80 hover:scale-[0.98]'}`}>Audit Logları</Link>
         </nav>
       </aside>
   )
