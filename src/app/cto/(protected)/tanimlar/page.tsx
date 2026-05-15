@@ -39,7 +39,7 @@ export default function DefinitionsPage() {
       if (catsRes.error) throw catsRes.error;
       if (taxRes.error) throw taxRes.error;
 
-      const hiddenSlugs = ['marka', 'seri-adi', 'seri-no', 'seri-kategori', 'seri-kategorisi'];
+      const hiddenSlugs = ['marka', 'seri-adi', 'seri-no', 'seri-kategori', 'seri-kategorisi', 'seri_kategori', 'seri_kategorisi'];
       setDefinitionGroups((groupsRes.data || []).filter((g: any) => !hiddenSlugs.includes(g.slug)));
       setCategories(catsRes.data || []);
       setMissingTaxonomies(taxRes.data || []);
