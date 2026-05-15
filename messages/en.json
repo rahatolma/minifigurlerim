@@ -367,7 +367,7 @@
     "LoadMore": "Load More"
   },
   "AuthCTA": {
-    "LoggedInTitle": "Expand Your Portfolio. See Market Value.",
+    "LoggedInTitle": "Expand Your Collection. See Reference Value.",
     "LoggedOutTitle": "Start building your own collection.",
     "LoggedOutDesc": "Add your figures, track your progress.",
     "BtnLoggedIn": "Go to My Collection",
@@ -558,14 +558,14 @@
       "Demand": "Demand Signal",
       "DemandLow": "Low",
       "DemandSubtextLow": "Collector interest is currently at a low level.",
-      "DemandStrong": "Strong (Hot)",
+      "DemandStrong": "High",
       "DemandSubtextStrong": "A hot piece that collectors are showing intense interest in.",
-      "DemandRising": "Rising",
-      "DemandSubtextRising": "There is a clear movement in market demand for this minifigure.",
-      "DemandStable": "Stable",
-      "DemandSubtextStable": "Market interest is balanced and at normal levels.",
-      "DemandWaiting": "Waiting for Data",
-      "DemandSubtextWaiting": "There is no strong market movement for this minifigure yet."
+      "DemandRising": "Medium",
+      "DemandSubtextRising": "Collector interest for this minifigure is showing an upward trend.",
+      "DemandStable": "Normal",
+      "DemandSubtextStable": "Collector interest is currently balanced and at normal levels.",
+      "DemandWaiting": "Low",
+      "DemandSubtextWaiting": "There is no specific collector interest observed for this minifigure at the moment."
     },
     "Activity": {
       "Title": "Interest & Activity",
@@ -575,10 +575,10 @@
       "Interaction": "Interaction"
     },
     "Market": {
-      "Title": "Market & Opportunity",
-      "Desc": "Examine the market signals for this minifigure and discover opportunities.",
-      "GlobalView": "Global Market View",
-      "MarketSignal": "Market Signal",
+      "Title": "Purchase & Discovery",
+      "Desc": "Explore where to find this minifigure and review collector-focused reference information.",
+      "GlobalView": "Demand Indicators",
+      "MarketSignal": "Demand Signal",
       "SearchTR": "Search Online",
       "SupportText": "Purchases made through these links provide support to the platform."
     },
@@ -980,7 +980,7 @@
     "CompletedBadge": "COMPLETED",
     "WalletTitle": "Estimated Value",
     "PendingApi": "Waiting for API Data Sync",
-    "PendingMarket": "Waiting for Market Data",
+    "PendingMarket": "Waiting for Data",
     "VaultTitle": "Figures in Collection",
     "VaultItems": "Items",
     "CompletedSeriesTitle": "Completed Series",

@@ -367,7 +367,7 @@
     "LoadMore": "Daha Fazla Gör"
   },
   "AuthCTA": {
-    "LoggedInTitle": "Portföyünü Genişlet. Piyasa Değerini Gör.",
+    "LoggedInTitle": "Koleksiyonunu Genişlet. Referans Değerleri İncele.",
     "LoggedOutTitle": "Kendi koleksiyonunu oluşturmaya başla.",
     "LoggedOutDesc": "Sahip olduğun figürleri ekle, ilerlemeni takip et.",
     "BtnLoggedIn": "Koleksiyonuma Git",
@@ -558,14 +558,14 @@
       "Demand": "Talep Sinyali",
       "DemandLow": "Düşük",
       "DemandSubtextLow": "Koleksiyoner ilgisi şu an düşük seviyede.",
-      "DemandStrong": "Güçlü (Sıcak)",
+      "DemandStrong": "Yüksek",
       "DemandSubtextStrong": "Koleksiyonerlerin yoğun ilgi gösterdiği, sıcak bir parça.",
-      "DemandRising": "Yükseliyor",
-      "DemandSubtextRising": "Bu minifigüre olan piyasa talebinde net bir hareketlenme var.",
-      "DemandStable": "Stabil",
-      "DemandSubtextStable": "Piyasa ilgisi dengeli ve olağan seviyelerde seyrediyor.",
-      "DemandWaiting": "Veri Bekleniyor",
-      "DemandSubtextWaiting": "Bu minifigürde henüz güçlü bir piyasa hareketi oluşmadı."
+      "DemandRising": "Orta",
+      "DemandSubtextRising": "Koleksiyonerlerin bu minifigüre olan ilgisi artış gösteriyor.",
+      "DemandStable": "Normal",
+      "DemandSubtextStable": "Koleksiyoner ilgisi şu an için dengeli ve olağan seviyelerde.",
+      "DemandWaiting": "Düşük",
+      "DemandSubtextWaiting": "Bu minifigür için şu an spesifik bir koleksiyoner ilgisi gözlenmiyor."
     },
     "Activity": {
       "Title": "İlgi & Aktivite",
@@ -575,10 +575,10 @@
       "Interaction": "Etkileşim"
     },
     "Market": {
-      "Title": "Piyasa & Fırsat",
-      "Desc": "Bu minifigürün piyasa sinyallerini inceleyin ve fırsatları keşfedin.",
-      "GlobalView": "Global Piyasa Görünümü",
-      "MarketSignal": "Piyasa Sinyali",
+      "Title": "Satın Alma & Keşif",
+      "Desc": "Bu minifigürü bulabileceğiniz bağlantıları ve koleksiyoner odaklı referans bilgileri inceleyin.",
+      "GlobalView": "Talep Göstergeleri",
+      "MarketSignal": "Talep Sinyali",
       "SearchTR": "Türkiye'de Ara",
       "SupportText": "Bu bağlantılar üzerinden yapılan alışverişler platforma destek sağlar."
     },
@@ -978,9 +978,9 @@
     "Title2": "Özeti",
     "Intro": "Koleksiyonun büyüyor. Şu anda <red>{totalHave}</red> figürün var ve <red>{activeSeries}</red> seriye başladın.",
     "CompletedBadge": "TAMAMLADIN. DEVAM ET",
-    "WalletTitle": "Cüzdanın Gerçek Değeri (USD)",
+    "WalletTitle": "Koleksiyon Değeri (USD)",
     "PendingApi": "API Veri Senkronizasyonu Bekleniyor",
-    "PendingMarket": "Piyasa Verileri Bekleniyor",
+    "PendingMarket": "Veri Bekleniyor",
     "VaultTitle": "Kasamda Olan Figürler",
     "VaultItems": "Adet",
     "CompletedSeriesTitle": "Tamamlanan Seriler",
