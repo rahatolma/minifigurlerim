@@ -32,7 +32,7 @@ export default function DefinitionsPage() {
       if (groupsRes.error) throw groupsRes.error;
       if (catsRes.error) throw catsRes.error;
 
-      const hiddenSlugs = ['marka', 'seri-adi', 'seri-no', 'seri-kategori', 'seri-kategorisi'];
+      const hiddenSlugs = ['marka', 'seri-adi', 'seri-no', 'seri-kategori', 'seri-kategorisi', 'seri_kategori', 'seri_kategorisi'];
       setDefinitionGroups((groupsRes.data || []).filter((g: any) => !hiddenSlugs.includes(g.slug)));
       setCategories(catsRes.data || []);
       
