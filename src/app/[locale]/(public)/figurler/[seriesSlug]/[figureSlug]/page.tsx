@@ -514,7 +514,8 @@ export default async function FigureDetail({
                       </div>
                       <div className="flex flex-col justify-center flex-1 w-full bg-gray-50/50 rounded-xl p-6 sm:p-8 border border-gray-100/50 min-h-[220px]">
                          <MultiMarketButton 
-                            customLink={undefined}
+                            customLink={rawFigure.affiliate_link || undefined}
+                            recommendedText={t('Market.RecommendedStore')}
                             amazonUrl={amazonUrl} 
                             trendyolUrl={trendyolUrl} 
                             hepsiburadaUrl={hepsiburadaUrl}
