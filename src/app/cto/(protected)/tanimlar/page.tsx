@@ -39,7 +39,8 @@ export default function DefinitionsPage() {
       if (catsRes.error) throw catsRes.error;
       if (taxRes.error) throw taxRes.error;
 
-      setDefinitionGroups(groupsRes.data || []);
+      const hiddenSlugs = ['marka', 'seri-adi', 'seri-no', 'seri-kategori', 'seri-kategorisi'];
+      setDefinitionGroups((groupsRes.data || []).filter((g: any) => !hiddenSlugs.includes(g.slug)));
       setCategories(catsRes.data || []);
       setMissingTaxonomies(taxRes.data || []);
       
@@ -178,8 +179,8 @@ export default function DefinitionsPage() {
     <div className="p-12 pb-24 max-w-[1600px] w-full mx-auto">
       <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-            <h1 className="text-3xl font-black text-gray-900 mb-2">Sistem Tanımları</h1>
-            <p className="text-sm font-semibold text-gray-500 uppercase tracking-widest">ÇOKLU TANITIM VE VERİ YÖNETİMİ</p>
+            <h1 className="text-3xl font-black text-gray-900 mb-2">Figür Tanımları</h1>
+            <p className="text-sm font-semibold text-gray-500 tracking-wide">Figür rolü, tipi ve nadirlik gibi tekrar kullanılabilir sınıflandırmaları yönetin.</p>
         </div>
         
         {/* YENİ ANA GRUP EKLEME FORMU - Apple Kafası Üst Bar */}
