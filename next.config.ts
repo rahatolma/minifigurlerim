@@ -43,7 +43,7 @@ export default isDev
         },
         tunnelRoute: "/monitoring",
         sourcemaps: {
-          disable: true,
+          disable: false,
         },
         disableLogger: true,
       }
